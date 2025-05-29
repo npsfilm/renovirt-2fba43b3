@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useCustomerProfile } from '@/hooks/useCustomerProfile';
 import AuthLayout from '@/components/auth/AuthLayout';
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
@@ -9,29 +10,45 @@ import RegisterForm from '@/components/auth/RegisterForm';
 const Auth = () => {
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
   const { user } = useAuth();
+  const { getCustomerProfile } = useCustomerProfile();
   const navigate = useNavigate();
 
   // Redirect if already authenticated
   useEffect(() => {
-    if (user) {
-      // If user is confirmed (email verified), go to onboarding or home
-      if (user.email_confirmed_at) {
-        // Check if user has completed onboarding by checking for customer profile
-        // For now, just redirect to onboarding - you can add profile check later
-        navigate('/onboarding');
-      } else {
-        // If user is not confirmed, show email verification screen
-        navigate('/email-verification');
+    const checkUserProfileAndRedirect = async () => {
+      if (user) {
+        // If user is confirmed (email verified), check for profile completion
+        if (user.email_confirmed_at) {
+          try {
+            const profile = await getCustomerProfile();
+            
+            // If profile exists and has required fields, go to dashboard
+            if (profile && profile.first_name && profile.last_name && profile.role) {
+              navigate('/dashboard');
+            } else {
+              // If profile doesn't exist or is incomplete, go to onboarding
+              navigate('/onboarding');
+            }
+          } catch (error) {
+            // If there's an error fetching profile, assume it doesn't exist
+            navigate('/onboarding');
+          }
+        } else {
+          // If user is not confirmed, show email verification screen
+          navigate('/email-verification');
+        }
       }
-    }
-  }, [user, navigate]);
+    };
+
+    checkUserProfileAndRedirect();
+  }, [user, navigate, getCustomerProfile]);
 
   const handleAuthSuccess = (isRegistration = false) => {
     if (isRegistration) {
       // After registration, redirect to email verification
       navigate('/email-verification');
     } else {
-      // After login, redirect based on email confirmation status
+      // After login, redirect based on email confirmation status and profile completion
       // This will be handled by the useEffect above
     }
   };

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -81,11 +80,11 @@ export const useAuth = () => {
             if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
               logSecurityEvent('user_signed_in', { userId: session.user.id });
               
-              // Only redirect if we're not already on onboarding page
-              if (!window.location.pathname.includes('/onboarding')) {
-                // Use setTimeout to defer navigation and prevent deadlocks
+              // Don't automatically redirect to onboarding - let the Auth component handle profile checks
+              // Only redirect if we're on the auth page
+              if (window.location.pathname === '/auth') {
                 setTimeout(() => {
-                  window.location.href = '/onboarding';
+                  window.location.href = '/dashboard';
                 }, 0);
               }
             }
