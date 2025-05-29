@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -67,18 +66,18 @@ const Onboarding = () => {
           const hashTokens = validateUrlTokens(hash);
           const searchParams = new URLSearchParams(search);
           const accessToken = hashTokens?.accessToken || searchParams.get('access_token');
+          const refreshToken = searchParams.get('refresh_token');
           const type = hashTokens?.type || searchParams.get('type');
           
           if (accessToken && (type === 'signup' || type === 'email_confirmation')) {
             secureLog('Processing email confirmation with access token');
             logSecurityEvent('email_confirmation_processing', { type });
             
-            // Store the access token temporarily
-            localStorage.setItem('pending_access_token', accessToken);
-            
-            // The Supabase client will automatically handle the session
-            // We just need to wait for the auth state to update
-            const { data, error } = await supabase.auth.getSession();
+            // Set the session using the tokens from URL
+            const { data, error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken || ''
+            });
             
             if (error) {
               throw error;
@@ -91,20 +90,21 @@ const Onboarding = () => {
               // Clean up the URL for security
               window.history.replaceState({}, document.title, window.location.pathname);
               
-              // Remove temporary token
-              localStorage.removeItem('pending_access_token');
+              // Brief delay to ensure auth state updates
+              setTimeout(() => {
+                setIsConfirmingEmail(false);
+              }, 1000);
             } else {
-              // Sometimes there's a delay, we'll let the auth state change handler deal with it
-              secureLog('Session not immediately available, waiting for auth state change');
+              throw new Error('Session could not be established');
             }
           } else {
             secureLog('No valid confirmation tokens found in URL');
+            setIsConfirmingEmail(false);
           }
         } catch (error: any) {
           console.error('Error during email confirmation:', error);
           logSecurityEvent('email_confirmation_error', { error: error.message });
           setConfirmationError('Es gab ein Problem bei der E-Mail-Bestätigung. Bitte versuchen Sie es erneut.');
-        } finally {
           setIsConfirmingEmail(false);
         }
       }
@@ -144,6 +144,14 @@ const Onboarding = () => {
   const completeOnboarding = async () => {
     try {
       console.log('Completing onboarding with data:', onboardingData);
+      console.log('Current user:', user);
+      
+      // Check if user is authenticated before saving
+      if (!user) {
+        console.error('User not authenticated, redirecting to auth');
+        navigate('/auth');
+        return;
+      }
       
       await saveCustomerProfile({
         role: onboardingData.role,
@@ -158,7 +166,7 @@ const Onboarding = () => {
         dataSource: onboardingData.dataSource,
       });
 
-      navigate('/');
+      navigate('/dashboard');
     } catch (error) {
       console.error('Error completing onboarding:', error);
     }
