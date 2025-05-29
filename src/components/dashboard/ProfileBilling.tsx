@@ -13,15 +13,55 @@ import {
   Mail,
   Settings
 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const ProfileBilling = () => {
-  // Mock user data
+  const { user } = useAuth();
+
+  const { data: customerProfile } = useQuery({
+    queryKey: ['customer-profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      const { data, error } = await supabase
+        .from('customer_profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  const { data: recentInvoices } = useQuery({
+    queryKey: ['user-invoices', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      
+      const { data, error } = await supabase
+        .from('orders')
+        .select('id, total_price, created_at, status')
+        .eq('user_id', user.id)
+        .eq('status', 'completed')
+        .order('created_at', { ascending: false })
+        .limit(3);
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user?.id,
+  });
+
   const userProfile = {
-    name: 'Max Mustermann',
-    email: 'max.mustermann@example.com',
-    phone: '+49 123 456789',
-    company: 'Mustermann Immobilien GmbH',
-    address: 'Musterstraße 123, 12345 Musterstadt'
+    name: customerProfile ? `${customerProfile.first_name || ''} ${customerProfile.last_name || ''}`.trim() : user?.email?.split('@')[0] || 'Nutzer',
+    email: user?.email || '',
+    phone: customerProfile?.phone || '',
+    company: customerProfile?.company || '',
+    address: customerProfile?.address || ''
   };
 
   const paymentMethod = {
@@ -30,11 +70,9 @@ const ProfileBilling = () => {
     expiry: '12/26'
   };
 
-  const recentInvoices = [
-    { id: 'RE-2024-001', date: '2024-01-28', amount: '€156.00', status: 'paid' },
-    { id: 'RE-2024-002', date: '2024-01-20', amount: '€89.90', status: 'paid' },
-    { id: 'RE-2024-003', date: '2024-01-15', amount: '€45.00', status: 'paid' }
-  ];
+  const formatInvoiceId = (orderId: string) => {
+    return `RE-${orderId.slice(0, 8).toUpperCase()}`;
+  };
 
   return (
     <div className="space-y-6">
@@ -54,7 +92,9 @@ const ProfileBilling = () => {
               </div>
               <div>
                 <p className="font-medium text-gray-900">{userProfile.name}</p>
-                <p className="text-sm text-gray-500">{userProfile.company}</p>
+                {userProfile.company && (
+                  <p className="text-sm text-gray-500">{userProfile.company}</p>
+                )}
               </div>
             </div>
             
@@ -63,14 +103,18 @@ const ProfileBilling = () => {
                 <Mail className="w-4 h-4" />
                 <span>{userProfile.email}</span>
               </div>
-              <div className="flex items-center space-x-2 text-gray-600">
-                <Phone className="w-4 h-4" />
-                <span>{userProfile.phone}</span>
-              </div>
-              <div className="flex items-center space-x-2 text-gray-600">
-                <MapPin className="w-4 h-4" />
-                <span>{userProfile.address}</span>
-              </div>
+              {userProfile.phone && (
+                <div className="flex items-center space-x-2 text-gray-600">
+                  <Phone className="w-4 h-4" />
+                  <span>{userProfile.phone}</span>
+                </div>
+              )}
+              {userProfile.address && (
+                <div className="flex items-center space-x-2 text-gray-600">
+                  <MapPin className="w-4 h-4" />
+                  <span>{userProfile.address}</span>
+                </div>
+              )}
             </div>
           </div>
           
@@ -112,22 +156,26 @@ const ProfileBilling = () => {
           {/* Recent Invoices */}
           <div>
             <h4 className="font-medium text-gray-900 mb-3">Aktuelle Rechnungen</h4>
-            <div className="space-y-2">
-              {recentInvoices.map((invoice) => (
-                <div key={invoice.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">{invoice.id}</p>
-                    <p className="text-xs text-gray-500">{invoice.date}</p>
+            {recentInvoices?.length ? (
+              <div className="space-y-2">
+                {recentInvoices.map((invoice) => (
+                  <div key={invoice.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">{formatInvoiceId(invoice.id)}</p>
+                      <p className="text-xs text-gray-500">{new Date(invoice.created_at).toLocaleDateString('de-DE')}</p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium text-gray-900">€{parseFloat(invoice.total_price?.toString() || '0').toFixed(2)}</span>
+                      <Button variant="ghost" size="sm">
+                        <Download className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm font-medium text-gray-900">{invoice.amount}</span>
-                    <Button variant="ghost" size="sm">
-                      <Download className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500">Noch keine Rechnungen vorhanden</p>
+            )}
           </div>
 
           <Button variant="outline" size="sm" className="w-full">

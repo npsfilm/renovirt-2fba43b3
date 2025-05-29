@@ -5,40 +5,30 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Download, FileText, MessageSquare, Image } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 const RecentActivity = () => {
-  // Mock data - in real app this would come from API
-  const recentOrders = [
-    {
-      id: '1',
-      status: 'completed',
-      statusLabel: 'Fertig',
-      progress: 100,
-      imageCount: 12,
-      previewImage: '/placeholder.svg',
-      completedAt: '2024-01-28',
-      hasInvoice: true,
-      hasFeedback: false
+  const { user } = useAuth();
+
+  const { data: recentOrders } = useQuery({
+    queryKey: ['user-recent-activity', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      
+      const { data, error } = await supabase
+        .from('orders')
+        .select('id, status, image_count, total_price, created_at, updated_at')
+        .eq('user_id', user.id)
+        .order('updated_at', { ascending: false })
+        .limit(3);
+
+      if (error) throw error;
+      return data || [];
     },
-    {
-      id: '2',
-      status: 'processing',
-      statusLabel: 'In Bearbeitung',
-      progress: 65,
-      imageCount: 8,
-      previewImage: '/placeholder.svg',
-      estimatedCompletion: '2024-01-30'
-    },
-    {
-      id: '3',
-      status: 'payment_pending',
-      statusLabel: 'Zahlung ausstehend',
-      progress: 100,
-      imageCount: 5,
-      previewImage: '/placeholder.svg',
-      amount: '€89.90'
-    }
-  ];
+    enabled: !!user?.id,
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -48,10 +38,65 @@ const RecentActivity = () => {
         return 'bg-blue-100 text-blue-800';
       case 'payment_pending':
         return 'bg-yellow-100 text-yellow-800';
+      case 'pending':
+        return 'bg-gray-100 text-gray-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
   };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return 'Fertig';
+      case 'processing':
+        return 'In Bearbeitung';
+      case 'payment_pending':
+        return 'Zahlung ausstehend';
+      case 'pending':
+        return 'Ausstehend';
+      default:
+        return status;
+    }
+  };
+
+  const getProgress = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return 100;
+      case 'processing':
+        return 65;
+      case 'payment_pending':
+        return 100;
+      case 'pending':
+        return 10;
+      default:
+        return 0;
+    }
+  };
+
+  const formatOrderId = (id: string) => {
+    return id.slice(0, 8).toUpperCase();
+  };
+
+  if (!recentOrders?.length) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Image className="w-5 h-5 mr-2 text-blue-600" />
+            Letzte Aktivitäten
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-6 text-gray-500">
+            <Image className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+            <p className="text-sm">Noch keine Aktivitäten</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
@@ -71,15 +116,15 @@ const RecentActivity = () => {
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">
-                    Bestellung #{order.id}
+                    Bestellung #{formatOrderId(order.id)}
                   </p>
                   <p className="text-sm text-gray-500">
-                    {order.imageCount} Bilder
+                    {order.image_count} Bilder
                   </p>
                 </div>
               </div>
-              <Badge className={getStatusColor(order.status)}>
-                {order.statusLabel}
+              <Badge className={getStatusColor(order.status || 'pending')}>
+                {getStatusLabel(order.status || 'pending')}
               </Badge>
             </div>
 
@@ -87,11 +132,11 @@ const RecentActivity = () => {
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Fortschritt</span>
-                  <span className="text-gray-900">{order.progress}%</span>
+                  <span className="text-gray-900">{getProgress(order.status)}%</span>
                 </div>
-                <Progress value={order.progress} className="h-2" />
+                <Progress value={getProgress(order.status)} className="h-2" />
                 <p className="text-xs text-gray-500">
-                  Voraussichtlich fertig: {order.estimatedCompletion}
+                  Wird bearbeitet...
                 </p>
               </div>
             )}
@@ -107,18 +152,16 @@ const RecentActivity = () => {
                     <MessageSquare className="w-4 h-4 mr-1" />
                     Feedback
                   </Button>
-                  {order.hasInvoice && (
-                    <Button size="sm" variant="outline">
-                      <FileText className="w-4 h-4 mr-1" />
-                      Rechnung
-                    </Button>
-                  )}
+                  <Button size="sm" variant="outline">
+                    <FileText className="w-4 h-4 mr-1" />
+                    Rechnung
+                  </Button>
                 </>
               )}
               
               {order.status === 'payment_pending' && (
                 <Button size="sm">
-                  Jetzt bezahlen ({order.amount})
+                  Jetzt bezahlen (€{parseFloat(order.total_price?.toString() || '0').toFixed(2)})
                 </Button>
               )}
             </div>

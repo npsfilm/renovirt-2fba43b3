@@ -4,40 +4,48 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Search, Calendar, FileText, RotateCcw, Plus, MessageSquare } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 const OrdersOverview = () => {
   const [filter, setFilter] = useState('all');
+  const { user } = useAuth();
+  const navigate = useNavigate();
   
-  // Mock data
-  const orders = [
-    {
-      id: 'ORD-001',
-      date: '2024-01-28',
-      status: 'completed',
-      statusLabel: 'Abgeschlossen',
-      imageCount: 12,
-      amount: '€156.00',
-      service: 'Premium Retusche'
+  const { data: orders } = useQuery({
+    queryKey: ['user-orders', user?.id, filter],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      
+      let query = supabase
+        .from('orders')
+        .select(`
+          id,
+          created_at,
+          status,
+          image_count,
+          total_price,
+          packages(name)
+        `)
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (filter !== 'all') {
+        if (filter === 'pending') {
+          query = query.in('status', ['pending', 'payment_pending']);
+        } else {
+          query = query.eq('status', filter);
+        }
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data || [];
     },
-    {
-      id: 'ORD-002',
-      date: '2024-01-25',
-      status: 'processing',
-      statusLabel: 'In Bearbeitung',
-      imageCount: 8,
-      amount: '€89.90',
-      service: 'Standard Bearbeitung'
-    },
-    {
-      id: 'ORD-003',
-      date: '2024-01-20',
-      status: 'completed',
-      statusLabel: 'Abgeschlossen',
-      imageCount: 5,
-      amount: '€45.00',
-      service: 'Basis Optimierung'
-    }
-  ];
+    enabled: !!user?.id,
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -47,10 +55,57 @@ const OrdersOverview = () => {
         return 'bg-blue-100 text-blue-800';
       case 'payment_pending':
         return 'bg-yellow-100 text-yellow-800';
+      case 'pending':
+        return 'bg-gray-100 text-gray-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
   };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return 'Abgeschlossen';
+      case 'processing':
+        return 'In Bearbeitung';
+      case 'payment_pending':
+        return 'Zahlung ausstehend';
+      case 'pending':
+        return 'Ausstehend';
+      default:
+        return status;
+    }
+  };
+
+  const formatOrderId = (id: string) => {
+    return `ORD-${id.slice(0, 6).toUpperCase()}`;
+  };
+
+  if (!orders?.length) {
+    return (
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center">
+              <FileText className="w-5 h-5 mr-2 text-blue-600" />
+              Ihre Bestellungen
+            </CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8 text-gray-500">
+            <FileText className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+            <p className="text-lg font-medium mb-2">Noch keine Bestellungen</p>
+            <p className="text-sm mb-4">Erstellen Sie Ihre erste Bestellung, um loszulegen.</p>
+            <Button onClick={() => navigate('/order-flow')}>
+              <Plus className="w-4 h-4 mr-2" />
+              Neue Bestellung erstellen
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
@@ -102,26 +157,26 @@ const OrdersOverview = () => {
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <div className="flex items-center space-x-3">
-                    <h3 className="font-medium text-gray-900">{order.id}</h3>
-                    <Badge className={getStatusColor(order.status)}>
-                      {order.statusLabel}
+                    <h3 className="font-medium text-gray-900">{formatOrderId(order.id)}</h3>
+                    <Badge className={getStatusColor(order.status || 'pending')}>
+                      {getStatusLabel(order.status || 'pending')}
                     </Badge>
                   </div>
                   <p className="text-sm text-gray-500 mt-1">
-                    {order.service} • {order.imageCount} Bilder • {order.date}
+                    {(order.packages as any)?.name || 'Standard Paket'} • {order.image_count} Bilder • {new Date(order.created_at).toLocaleDateString('de-DE')}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-gray-900">{order.amount}</p>
+                  <p className="font-semibold text-gray-900">€{parseFloat(order.total_price?.toString() || '0').toFixed(2)}</p>
                 </div>
               </div>
 
               <div className="flex items-center space-x-2">
-                <Button size="sm" variant="outline">
+                <Button size="sm" variant="outline" onClick={() => navigate('/order-flow')}>
                   <RotateCcw className="w-4 h-4 mr-1" />
                   Erneut bestellen
                 </Button>
-                <Button size="sm" variant="outline">
+                <Button size="sm" variant="outline" onClick={() => navigate('/order-flow')}>
                   <Plus className="w-4 h-4 mr-1" />
                   Nachbestellen
                 </Button>

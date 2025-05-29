@@ -2,33 +2,74 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { FileText, Clock, CheckCircle, CreditCard } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 const QuickStats = () => {
+  const { user } = useAuth();
+
+  const { data: orderStats } = useQuery({
+    queryKey: ['user-order-stats', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      const { data: orders, error } = await supabase
+        .from('orders')
+        .select('status, total_price')
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      const activeOrders = orders?.filter(order => 
+        order.status === 'pending' || order.status === 'processing'
+      ).length || 0;
+
+      const completedOrders = orders?.filter(order => 
+        order.status === 'completed'
+      ).length || 0;
+
+      const totalOrders = orders?.length || 0;
+
+      const pendingPayment = orders?.filter(order => 
+        order.status === 'payment_pending'
+      ).reduce((sum, order) => sum + (parseFloat(order.total_price?.toString() || '0')), 0) || 0;
+
+      return {
+        activeOrders,
+        completedOrders,
+        totalOrders,
+        pendingPayment: pendingPayment.toFixed(2)
+      };
+    },
+    enabled: !!user?.id,
+  });
+
   const stats = [
     {
       title: "Aktive Bestellungen",
-      value: "2",
+      value: orderStats?.activeOrders?.toString() || "0",
       icon: Clock,
       color: "text-blue-600",
       bgColor: "bg-blue-50"
     },
     {
       title: "Abgeschlossen",
-      value: "12",
+      value: orderStats?.completedOrders?.toString() || "0",
       icon: CheckCircle,
       color: "text-green-600",
       bgColor: "bg-green-50"
     },
     {
       title: "Gesamt Bestellungen",
-      value: "14",
+      value: orderStats?.totalOrders?.toString() || "0",
       icon: FileText,
       color: "text-gray-600",
       bgColor: "bg-gray-50"
     },
     {
       title: "Offene Rechnung",
-      value: "€89.90",
+      value: orderStats?.pendingPayment ? `€${orderStats.pendingPayment}` : "€0.00",
       icon: CreditCard,
       color: "text-orange-600",
       bgColor: "bg-orange-50"
