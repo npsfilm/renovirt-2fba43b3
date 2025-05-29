@@ -1,70 +1,61 @@
 
 import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Plus, 
-  Image, 
-  Download, 
-  FileText, 
-  Bell,
-  Calendar,
-  Search
-} from 'lucide-react';
+import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import AppSidebar from '@/components/layout/AppSidebar';
 import WelcomeSection from '@/components/dashboard/WelcomeSection';
-import RecentActivity from '@/components/dashboard/RecentActivity';
-import OrdersOverview from '@/components/dashboard/OrdersOverview';
-import AIToolsQuickAccess from '@/components/dashboard/AIToolsQuickAccess';
-import ProfileBilling from '@/components/dashboard/ProfileBilling';
+import QuickStats from '@/components/dashboard/QuickStats';
+import QuickActions from '@/components/dashboard/QuickActions';
+import RecentOrdersCompact from '@/components/dashboard/RecentOrdersCompact';
+import { Button } from '@/components/ui/button';
+import { Bell } from 'lucide-react';
 
 const Dashboard = () => {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-            <p className="text-sm text-gray-600 mt-1">
-              Schnellstart: Ihre Bilder in wenigen Klicks optimieren
-            </p>
-          </div>
-          <div className="flex items-center space-x-4">
-            <Button variant="outline" size="sm">
-              <Bell className="w-4 h-4 mr-2" />
-              Benachrichtigungen
-            </Button>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Neue Bestellung
-            </Button>
-          </div>
-        </div>
-      </header>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <AppSidebar />
+        <SidebarInset>
+          {/* Header */}
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+            <SidebarTrigger className="-ml-1" />
+            <div className="flex flex-1 items-center justify-between">
+              <div>
+                <h1 className="text-xl font-semibold">Dashboard</h1>
+                <p className="text-sm text-gray-600">
+                  Schnellstart: Ihre Bilder in wenigen Klicks optimieren
+                </p>
+              </div>
+              <Button variant="outline" size="sm">
+                <Bell className="w-4 h-4 mr-2" />
+                Benachrichtigungen
+              </Button>
+            </div>
+          </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+          {/* Main Content */}
+          <main className="flex-1 space-y-6 p-6">
+            {/* Welcome Section */}
             <WelcomeSection />
-            <RecentActivity />
-            <OrdersOverview />
-          </div>
 
-          {/* Right Column - Sidebar */}
-          <div className="space-y-8">
-            <AIToolsQuickAccess />
-            <ProfileBilling />
-          </div>
-        </div>
-      </main>
-    </div>
+            {/* Quick Stats */}
+            <QuickStats />
+
+            {/* Main Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <RecentOrdersCompact />
+              </div>
+              <div>
+                <QuickActions />
+              </div>
+            </div>
+          </main>
+        </SidebarInset>
+      </div>
+    </SidebarProvider>
   );
 };
 
