@@ -21,7 +21,7 @@ const AdminOrders = () => {
         .from('orders')
         .select(`
           *,
-          customer_profiles!inner(
+          customer_profiles(
             first_name,
             last_name,
             company,
@@ -53,7 +53,7 @@ const AdminOrders = () => {
     const statusConfig = {
       pending: { label: 'Ausstehend', variant: 'secondary' as const },
       processing: { label: 'In Bearbeitung', variant: 'default' as const },
-      completed: { label: 'Abgeschlossen', variant: 'success' as const },
+      completed: { label: 'Abgeschlossen', variant: 'outline' as const },
       cancelled: { label: 'Storniert', variant: 'destructive' as const },
     };
 
