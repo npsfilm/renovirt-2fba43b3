@@ -1,28 +1,14 @@
+
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Building, Camera, Users } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/use-toast';
+import AuthLayout from '@/components/auth/AuthLayout';
+import LoginForm from '@/components/auth/LoginForm';
+import RegisterForm from '@/components/auth/RegisterForm';
 
 const Auth = () => {
-  const [selectedRole, setSelectedRole] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    firstName: '',
-    lastName: '',
-  });
-  const [loading, setLoading] = useState(false);
-
-  const { user, signUp, signIn, signInWithGoogle } = useAuth();
-  const { toast } = useToast();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   // Redirect if already authenticated
@@ -32,430 +18,47 @@ const Auth = () => {
     }
   }, [user, navigate]);
 
-  const roles = [
-    {
-      id: 'broker',
-      icon: Building,
-      title: 'Makler',
-      description: 'Immobilienvermarktung'
-    },
-    {
-      id: 'architect',
-      icon: Users,
-      title: 'Architekt',
-      description: 'Architekturvisualisierung'
-    },
-    {
-      id: 'photographer',
-      icon: Camera,
-      title: 'Fotograf',
-      description: 'Immobilienfotografie'
-    }
-  ];
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const { error } = await signIn(formData.email, formData.password);
-      
-      if (error) {
-        toast({
-          title: 'Anmeldung fehlgeschlagen',
-          description: error.message,
-          variant: 'destructive',
-        });
-      } else {
-        toast({
-          title: 'Erfolgreich angemeldet',
-          description: 'Willkommen zurück!',
-        });
-        navigate('/');
-      }
-    } catch (error) {
-      toast({
-        title: 'Fehler',
-        description: 'Ein unerwarteter Fehler ist aufgetreten.',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedRole) {
-      toast({
-        title: 'Rolle erforderlich',
-        description: 'Bitte wählen Sie Ihre Rolle aus.',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const { error } = await signUp(formData.email, formData.password, {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        role: selectedRole,
-      });
-
-      if (error) {
-        toast({
-          title: 'Registrierung fehlgeschlagen',
-          description: error.message,
-          variant: 'destructive',
-        });
-      } else {
-        toast({
-          title: 'Registrierung erfolgreich',
-          description: 'Ihr Konto wurde erstellt!',
-        });
-        navigate('/');
-      }
-    } catch (error) {
-      toast({
-        title: 'Fehler',
-        description: 'Ein unerwarteter Fehler ist aufgetreten.',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGoogleAuth = async () => {
-    setLoading(true);
-    try {
-      const { error } = await signInWithGoogle();
-      if (error) {
-        toast({
-          title: 'Google-Anmeldung fehlgeschlagen',
-          description: error.message,
-          variant: 'destructive',
-        });
-      }
-    } catch (error) {
-      toast({
-        title: 'Fehler',
-        description: 'Ein unerwarteter Fehler ist aufgetreten.',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
+  const handleAuthSuccess = () => {
+    navigate('/');
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Left side - Image/Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 to-green-600 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="relative z-10 flex flex-col justify-between p-12 text-white">
-          <div>
-            <Link to="/" className="flex items-center gap-2 text-2xl font-bold mb-8">
-              <ArrowLeft className="w-6 h-6" />
-              <span>Renovirt</span>
-            </Link>
-          </div>
-          
-          <div className="space-y-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <h2 className="text-4xl font-bold leading-tight">
-                Immobilienbilder perfekt in 3 Minuten
-              </h2>
-              <p className="text-xl text-white/90 mt-4">
-                KI-gestützte Bildbearbeitung für professionelle Immobilienpräsentationen
-              </p>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="grid grid-cols-1 gap-4"
-            >
-              <div className="flex items-center gap-3 text-white/90">
-                <div className="w-2 h-2 bg-white rounded-full" />
-                <span>Upload & automatische KI-Bearbeitung</span>
-              </div>
-              <div className="flex items-center gap-3 text-white/90">
-                <div className="w-2 h-2 bg-white rounded-full" />
-                <span>Professionelle Editing-Presets</span>
-              </div>
-              <div className="flex items-center gap-3 text-white/90">
-                <div className="w-2 h-2 bg-white rounded-full" />
-                <span>PDF-Export & Download</span>
-              </div>
-            </motion.div>
-          </div>
-          
-          <div className="text-sm text-white/70">
-            © 2024 Renovirt. Alle Rechte vorbehalten.
-          </div>
+    <AuthLayout>
+      {/* Custom Tab Navigation */}
+      <div className="w-full mb-8">
+        <div className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground w-full">
+          <button
+            onClick={() => setActiveTab('login')}
+            className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full ${
+              activeTab === 'login'
+                ? 'bg-background text-foreground shadow-sm'
+                : ''
+            }`}
+          >
+            Anmelden
+          </button>
+          <button
+            onClick={() => setActiveTab('register')}
+            className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full ${
+              activeTab === 'register'
+                ? 'bg-background text-foreground shadow-sm'
+                : ''
+            }`}
+          >
+            Registrieren
+          </button>
         </div>
       </div>
 
-      {/* Right side - Auth Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="w-full max-w-md"
-        >
-          {/* Custom Tab Navigation */}
-          <div className="w-full mb-8">
-            <div className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground w-full">
-              <button
-                onClick={() => setActiveTab('login')}
-                className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full ${
-                  activeTab === 'login'
-                    ? 'bg-background text-foreground shadow-sm'
-                    : ''
-                }`}
-              >
-                Anmelden
-              </button>
-              <button
-                onClick={() => setActiveTab('register')}
-                className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full ${
-                  activeTab === 'register'
-                    ? 'bg-background text-foreground shadow-sm'
-                    : ''
-                }`}
-              >
-                Registrieren
-              </button>
-            </div>
-          </div>
+      {/* Forms */}
+      {activeTab === 'login' && (
+        <LoginForm onSuccess={handleAuthSuccess} />
+      )}
 
-          {/* Login Tab */}
-          {activeTab === 'login' && (
-            <Card>
-              <CardHeader className="text-center">
-                <CardTitle className="text-2xl">Willkommen zurück</CardTitle>
-                <CardDescription>
-                  Melden Sie sich in Ihrem Renovirt-Konto an
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleLogin} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">E-Mail</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="ihre.email@beispiel.de"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Passwort</Label>
-                    <Input
-                      id="password"
-                      name="password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? 'Wird angemeldet...' : 'Anmelden'}
-                  </Button>
-                </form>
-                
-                <div className="relative my-6">
-                  <Separator />
-                  <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2 text-sm text-muted-foreground">
-                    oder
-                  </span>
-                </div>
-                
-                <div className="space-y-3">
-                  <Button 
-                    variant="outline" 
-                    className="w-full" 
-                    onClick={handleGoogleAuth}
-                    disabled={loading}
-                    type="button"
-                  >
-                    <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-                      <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                      <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                      <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                      <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                    </svg>
-                    Mit Google anmelden
-                  </Button>
-                </div>
-                
-                <div className="text-center text-sm text-muted-foreground mt-4">
-                  <Link to="/forgot-password" className="hover:text-primary">
-                    Passwort vergessen?
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Register Tab */}
-          {activeTab === 'register' && (
-            <Card>
-              <CardHeader className="text-center">
-                <CardTitle className="text-2xl">Konto erstellen</CardTitle>
-                <CardDescription>
-                  Starten Sie mit Renovirt in wenigen Minuten
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleRegister} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="firstName">Vorname</Label>
-                      <Input
-                        id="firstName"
-                        name="firstName"
-                        placeholder="Max"
-                        value={formData.firstName}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="lastName">Nachname</Label>
-                      <Input
-                        id="lastName"
-                        name="lastName"
-                        placeholder="Mustermann"
-                        value={formData.lastName}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="registerEmail">E-Mail</Label>
-                    <Input
-                      id="registerEmail"
-                      name="email"
-                      type="email"
-                      placeholder="ihre.email@beispiel.de"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>Ihre Rolle</Label>
-                    <div className="grid grid-cols-1 gap-2">
-                      {roles.map((role) => {
-                        const Icon = role.icon;
-                        return (
-                          <button
-                            key={role.id}
-                            type="button"
-                            onClick={() => setSelectedRole(role.id)}
-                            className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
-                              selectedRole === role.id
-                                ? 'border-primary bg-primary/5'
-                                : 'border-gray-200 hover:border-gray-300'
-                            }`}
-                          >
-                            <Icon className="w-5 h-5 text-primary" />
-                            <div className="text-left">
-                              <div className="font-medium">{role.title}</div>
-                              <div className="text-sm text-muted-foreground">{role.description}</div>
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="registerPassword">Passwort</Label>
-                    <Input
-                      id="registerPassword"
-                      name="password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
-                    disabled={!selectedRole || loading}
-                  >
-                    {loading ? 'Wird erstellt...' : 'Konto erstellen'}
-                  </Button>
-                </form>
-                
-                <div className="relative my-6">
-                  <Separator />
-                  <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2 text-sm text-muted-foreground">
-                    oder
-                  </span>
-                </div>
-                
-                <Button 
-                  variant="outline" 
-                  className="w-full" 
-                  onClick={handleGoogleAuth}
-                  disabled={loading}
-                  type="button"
-                >
-                  <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                  </svg>
-                  Mit Google registrieren
-                </Button>
-                
-                <div className="text-center text-sm text-muted-foreground mt-4">
-                  Mit der Registrierung stimmen Sie unseren{' '}
-                  <Link to="/terms" className="hover:text-primary">
-                    AGB
-                  </Link>{' '}
-                  und der{' '}
-                  <Link to="/privacy" className="hover:text-primary">
-                    Datenschutzerklärung
-                  </Link>{' '}
-                  zu.
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </motion.div>
-      </div>
-    </div>
+      {activeTab === 'register' && (
+        <RegisterForm onSuccess={handleAuthSuccess} />
+      )}
+    </AuthLayout>
   );
 };
 
