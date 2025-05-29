@@ -8,18 +8,28 @@ import RegisterForm from '@/components/auth/RegisterForm';
 
 const Auth = () => {
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
+  const [isNewUser, setIsNewUser] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
 
   // Redirect if already authenticated
   useEffect(() => {
     if (user) {
+      if (isNewUser) {
+        navigate('/onboarding');
+      } else {
+        navigate('/');
+      }
+    }
+  }, [user, navigate, isNewUser]);
+
+  const handleAuthSuccess = (isRegistration = false) => {
+    if (isRegistration) {
+      setIsNewUser(true);
+      navigate('/onboarding');
+    } else {
       navigate('/');
     }
-  }, [user, navigate]);
-
-  const handleAuthSuccess = () => {
-    navigate('/');
   };
 
   return (
@@ -52,11 +62,11 @@ const Auth = () => {
 
       {/* Forms */}
       {activeTab === 'login' && (
-        <LoginForm onSuccess={handleAuthSuccess} />
+        <LoginForm onSuccess={() => handleAuthSuccess(false)} />
       )}
 
       {activeTab === 'register' && (
-        <RegisterForm onSuccess={handleAuthSuccess} />
+        <RegisterForm onSuccess={() => handleAuthSuccess(true)} />
       )}
     </AuthLayout>
   );
