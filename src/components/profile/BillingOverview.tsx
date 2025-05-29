@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { 
-  CreditCard, 
   Download, 
   FileText, 
   Calendar,
@@ -120,29 +119,28 @@ const BillingOverview = () => {
         </Card>
       </div>
 
-      {/* Payment Method */}
+      {/* Payment Information */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center">
-            <CreditCard className="w-5 h-5 mr-2 text-green-600" />
-            Zahlungsmethode
+          <CardTitle className="text-blue-600">
+            Zahlungsabwicklung
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="border rounded-lg p-4">
+          <div className="border rounded-lg p-4 bg-blue-50">
             <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center space-x-3">
-                <CreditCard className="w-6 h-6 text-gray-400" />
-                <div>
-                  <p className="font-medium text-gray-900">Kreditkarte ****1234</p>
-                  <p className="text-sm text-gray-500">Läuft ab 12/26</p>
-                </div>
+              <div>
+                <p className="font-medium text-gray-900">Sichere Zahlung über Stripe</p>
+                <p className="text-sm text-gray-600">
+                  Alle Zahlungen werden sicher über Stripe abgewickelt. 
+                  Wir speichern keine Zahlungsdaten auf unseren Servern.
+                </p>
               </div>
-              <Badge className="bg-green-100 text-green-800">Aktiv</Badge>
+              <Badge className="bg-green-100 text-green-800">Sicher</Badge>
             </div>
-            <Button variant="outline" size="sm">
-              Zahlungsmethode ändern
-            </Button>
+            <p className="text-xs text-gray-500">
+              Bei jeder Bestellung werden Sie zu einem sicheren Stripe-Checkout weitergeleitet.
+            </p>
           </div>
         </CardContent>
       </Card>

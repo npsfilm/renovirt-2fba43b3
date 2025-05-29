@@ -25,7 +25,12 @@ const ProfileForm = () => {
     firstName: '',
     lastName: '',
     company: '',
-    address: '',
+    billingEmail: '',
+    vatId: '',
+    street: '',
+    city: '',
+    postalCode: '',
+    country: 'Deutschland',
     phone: '',
     industry: '',
     responsibility: '',
@@ -50,13 +55,21 @@ const ProfileForm = () => {
 
   useEffect(() => {
     if (existingProfile) {
+      // Parse address if it exists
+      const addressParts = existingProfile.address ? existingProfile.address.split(', ') : ['', '', '', ''];
+      
       setFormData({
         role: existingProfile.role || '',
         salutation: existingProfile.salutation || '',
         firstName: existingProfile.first_name || '',
         lastName: existingProfile.last_name || '',
         company: existingProfile.company || '',
-        address: existingProfile.address || '',
+        billingEmail: existingProfile.billing_email || '',
+        vatId: existingProfile.vat_id || '',
+        street: addressParts[0] || '',
+        city: addressParts[1] || '',
+        postalCode: addressParts[2] || '',
+        country: addressParts[3] || 'Deutschland',
         phone: existingProfile.phone || '',
         industry: existingProfile.industry || '',
         responsibility: existingProfile.responsibility || '',
@@ -72,12 +85,15 @@ const ProfileForm = () => {
     e.preventDefault();
     
     try {
+      // Combine address fields
+      const address = `${formData.street}, ${formData.city}, ${formData.postalCode}, ${formData.country}`;
+      
       await saveCustomerProfile({
         ...formData,
+        address,
         dataSource: 'profile_update',
       });
       
-      // Invalidate and refetch profile data
       queryClient.invalidateQueries({ queryKey: ['customer-profile', user?.id] });
       
       toast({
@@ -172,8 +188,23 @@ const ProfileForm = () => {
                 />
               </div>
               <p className="text-xs text-gray-500 mt-1">
-                E-Mail-Adresse kann nicht geändert werden
+                E-Mail-Adresse kann nicht geändert werden. Bitte melden Sie sich bei unserem{' '}
+                <a href="/contact" className="text-blue-600 hover:underline">Support</a>.
               </p>
+            </div>
+
+            <div>
+              <Label htmlFor="billingEmail">Rechnungs-E-Mail</Label>
+              <div className="flex items-center space-x-2">
+                <Mail className="w-4 h-4 text-gray-400" />
+                <Input
+                  id="billingEmail"
+                  type="email"
+                  value={formData.billingEmail}
+                  onChange={(e) => handleInputChange('billingEmail', e.target.value)}
+                  placeholder="Separate E-Mail für Rechnungsversand (optional)"
+                />
+              </div>
             </div>
 
             <div>
@@ -209,6 +240,19 @@ const ProfileForm = () => {
             </div>
 
             <div>
+              <Label htmlFor="vatId">Umsatzsteuer-ID</Label>
+              <Input
+                id="vatId"
+                value={formData.vatId}
+                onChange={(e) => handleInputChange('vatId', e.target.value)}
+                placeholder="DE123456789 (verpflichtend bei Unternehmen außerhalb von DE)"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Optional - verpflichtend bei Unternehmen außerhalb von Deutschland
+              </p>
+            </div>
+
+            <div>
               <Label htmlFor="industry">Branche</Label>
               <div className="flex items-center space-x-2">
                 <Briefcase className="w-4 h-4 text-gray-400" />
@@ -231,18 +275,61 @@ const ProfileForm = () => {
                 rows={3}
               />
             </div>
+          </div>
 
+          {/* Address Information */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium text-gray-900">Rechnungsadresse</h3>
+            
             <div>
-              <Label htmlFor="address">Adresse</Label>
-              <div className="flex items-start space-x-2">
-                <MapPin className="w-4 h-4 text-gray-400 mt-3" />
-                <Textarea
-                  id="address"
-                  value={formData.address}
-                  onChange={(e) => handleInputChange('address', e.target.value)}
-                  placeholder="Straße, PLZ, Stadt"
-                  rows={3}
+              <Label htmlFor="street">Straße</Label>
+              <div className="flex items-center space-x-2">
+                <MapPin className="w-4 h-4 text-gray-400" />
+                <Input
+                  id="street"
+                  value={formData.street}
+                  onChange={(e) => handleInputChange('street', e.target.value)}
+                  placeholder="Straße und Hausnummer"
                 />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="city">Stadt</Label>
+                <Input
+                  id="city"
+                  value={formData.city}
+                  onChange={(e) => handleInputChange('city', e.target.value)}
+                  placeholder="Stadt"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="postalCode">PLZ</Label>
+                <Input
+                  id="postalCode"
+                  value={formData.postalCode}
+                  onChange={(e) => handleInputChange('postalCode', e.target.value)}
+                  placeholder="12345"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="country">Land</Label>
+                <Select value={formData.country} onValueChange={(value) => handleInputChange('country', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Land wählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Deutschland">Deutschland</SelectItem>
+                    <SelectItem value="Österreich">Österreich</SelectItem>
+                    <SelectItem value="Schweiz">Schweiz</SelectItem>
+                    <SelectItem value="Niederlande">Niederlande</SelectItem>
+                    <SelectItem value="Belgien">Belgien</SelectItem>
+                    <SelectItem value="Frankreich">Frankreich</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>

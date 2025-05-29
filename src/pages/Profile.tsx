@@ -3,18 +3,140 @@ import React, { useState } from 'react';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/layout/AppSidebar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { User, CreditCard, Settings, Bell } from 'lucide-react';
+import { User, CreditCard, Settings, Bell, AlertTriangle } from 'lucide-react';
 import ProfileForm from '@/components/profile/ProfileForm';
 import BillingOverview from '@/components/profile/BillingOverview';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const Profile = () => {
-  const [emailNotifications, setEmailNotifications] = useState(true);
-  const [smsNotifications, setSmsNotifications] = useState(false);
-  const [marketingEmails, setMarketingEmails] = useState(true);
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [deleteConfirmation, setDeleteConfirmation] = useState('');
+
+  // Notification preferences state
+  const [notifications, setNotifications] = useState({
+    marketingEmails: false,
+    smsNotifications: false,
+    orderUpdates: true,
+  });
+
+  // Fetch notification preferences
+  const { data: notificationPrefs } = useQuery({
+    queryKey: ['notification-preferences', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      const { data, error } = await supabase
+        .from('customer_profiles')
+        .select('marketing_emails, sms_notifications, order_updates')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  // Update notifications when data is fetched
+  React.useEffect(() => {
+    if (notificationPrefs) {
+      setNotifications({
+        marketingEmails: notificationPrefs.marketing_emails || false,
+        smsNotifications: notificationPrefs.sms_notifications || false,
+        orderUpdates: notificationPrefs.order_updates !== false,
+      });
+    }
+  }, [notificationPrefs]);
+
+  // Save notification preferences
+  const saveNotificationsMutation = useMutation({
+    mutationFn: async (newNotifications: typeof notifications) => {
+      const { error } = await supabase
+        .from('customer_profiles')
+        .upsert({
+          user_id: user?.id,
+          marketing_emails: newNotifications.marketingEmails,
+          sms_notifications: newNotifications.smsNotifications,
+          order_updates: newNotifications.orderUpdates,
+          updated_at: new Date().toISOString(),
+        }, { 
+          onConflict: 'user_id',
+          ignoreDuplicates: false 
+        });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Einstellungen gespeichert',
+        description: 'Ihre Benachrichtigungseinstellungen wurden aktualisiert.',
+      });
+      queryClient.invalidateQueries({ queryKey: ['notification-preferences', user?.id] });
+    },
+    onError: () => {
+      toast({
+        title: 'Fehler',
+        description: 'Beim Speichern der Einstellungen ist ein Fehler aufgetreten.',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const handleNotificationChange = (key: keyof typeof notifications, value: boolean) => {
+    const newNotifications = { ...notifications, [key]: value };
+    setNotifications(newNotifications);
+  };
+
+  const handleSaveNotifications = () => {
+    saveNotificationsMutation.mutate(notifications);
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmation !== 'Löschen') {
+      toast({
+        title: 'Bestätigung erforderlich',
+        description: 'Bitte geben Sie "Löschen" ein, um Ihr Konto zu löschen.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      // Send email to admin team (this would be handled by an edge function in production)
+      const { error } = await supabase.functions.invoke('send-account-deletion-request', {
+        body: { 
+          userId: user?.id, 
+          email: user?.email,
+          requestedAt: new Date().toISOString()
+        }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Löschungsanfrage gesendet',
+        description: 'Ihr Konto wird von unserem Team manuell gelöscht. Sie erhalten eine Bestätigung per E-Mail.',
+      });
+      
+      setDeleteConfirmation('');
+    } catch (error) {
+      toast({
+        title: 'Fehler',
+        description: 'Beim Senden der Löschungsanfrage ist ein Fehler aufgetreten.',
+        variant: 'destructive',
+      });
+    }
+  };
 
   return (
     <SidebarProvider>
@@ -61,15 +183,16 @@ const Profile = () => {
                   <CardContent className="space-y-6">
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
-                        <Label htmlFor="email-notifications">E-Mail-Benachrichtigungen</Label>
+                        <Label htmlFor="order-updates">Bestellbestätigungen</Label>
                         <p className="text-sm text-gray-500">
-                          Erhalten Sie Updates zu Ihren Bestellungen per E-Mail
+                          Wichtige Updates zu Ihren Bestellungen (verpflichtend)
                         </p>
                       </div>
                       <Switch
-                        id="email-notifications"
-                        checked={emailNotifications}
-                        onCheckedChange={setEmailNotifications}
+                        id="order-updates"
+                        checked={notifications.orderUpdates}
+                        onCheckedChange={(value) => handleNotificationChange('orderUpdates', value)}
+                        disabled
                       />
                     </div>
 
@@ -82,8 +205,8 @@ const Profile = () => {
                       </div>
                       <Switch
                         id="sms-notifications"
-                        checked={smsNotifications}
-                        onCheckedChange={setSmsNotifications}
+                        checked={notifications.smsNotifications}
+                        onCheckedChange={(value) => handleNotificationChange('smsNotifications', value)}
                       />
                     </div>
 
@@ -96,20 +219,28 @@ const Profile = () => {
                       </div>
                       <Switch
                         id="marketing-emails"
-                        checked={marketingEmails}
-                        onCheckedChange={setMarketingEmails}
+                        checked={notifications.marketingEmails}
+                        onCheckedChange={(value) => handleNotificationChange('marketingEmails', value)}
                       />
                     </div>
 
                     <div className="pt-4 border-t">
-                      <Button>Einstellungen speichern</Button>
+                      <Button 
+                        onClick={handleSaveNotifications}
+                        disabled={saveNotificationsMutation.isPending}
+                      >
+                        {saveNotificationsMutation.isPending ? 'Speichern...' : 'Einstellungen speichern'}
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
 
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-red-600">Gefahrenzone</CardTitle>
+                    <CardTitle className="text-red-600 flex items-center">
+                      <AlertTriangle className="w-5 h-5 mr-2" />
+                      Gefahrenzone
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="p-4 border border-red-200 rounded-lg bg-red-50">
@@ -117,10 +248,30 @@ const Profile = () => {
                       <p className="text-sm text-red-700 mb-4">
                         Das Löschen Ihres Kontos kann nicht rückgängig gemacht werden. 
                         Alle Ihre Daten und Bestellungen werden permanent entfernt.
+                        Eine E-Mail wird an unser Admin-Team gesendet und Ihr Konto wird manuell gelöscht.
                       </p>
-                      <Button variant="destructive" size="sm">
-                        Konto löschen
-                      </Button>
+                      <div className="space-y-3">
+                        <div>
+                          <Label htmlFor="delete-confirmation" className="text-red-900">
+                            Geben Sie "Löschen" ein, um zu bestätigen:
+                          </Label>
+                          <Input
+                            id="delete-confirmation"
+                            value={deleteConfirmation}
+                            onChange={(e) => setDeleteConfirmation(e.target.value)}
+                            placeholder="Löschen"
+                            className="mt-1"
+                          />
+                        </div>
+                        <Button 
+                          variant="destructive" 
+                          size="sm"
+                          onClick={handleDeleteAccount}
+                          disabled={deleteConfirmation !== 'Löschen'}
+                        >
+                          Konto löschen
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

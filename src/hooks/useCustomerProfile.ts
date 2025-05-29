@@ -11,6 +11,8 @@ export interface CustomerProfileData {
   firstName: string;
   lastName: string;
   company: string;
+  billingEmail?: string;
+  vatId?: string;
   address: string;
   phone: string;
   industry: string;
@@ -45,6 +47,10 @@ export const useCustomerProfile = () => {
     if (data.phone && !validatePhone(data.phone)) {
       errors.push('Ungültiges Telefonnummer-Format');
     }
+
+    if (data.billingEmail && !validateEmail(data.billingEmail)) {
+      errors.push('Ungültiges E-Mail-Format für Rechnungs-E-Mail');
+    }
     
     return { valid: errors.length === 0, errors };
   };
@@ -56,6 +62,8 @@ export const useCustomerProfile = () => {
       firstName: sanitizeInput(data.firstName),
       lastName: sanitizeInput(data.lastName),
       company: sanitizeInput(data.company),
+      billingEmail: data.billingEmail ? sanitizeInput(data.billingEmail) : undefined,
+      vatId: data.vatId ? sanitizeInput(data.vatId) : undefined,
       address: sanitizeInput(data.address),
       phone: sanitizeInput(data.phone),
       industry: sanitizeInput(data.industry),
@@ -92,19 +100,25 @@ export const useCustomerProfile = () => {
       
       const { data: profileData, error } = await supabase
         .from('customer_profiles')
-        .insert({
+        .upsert({
           user_id: user.user.id,
           role: sanitizedData.role,
           salutation: sanitizedData.salutation,
           first_name: sanitizedData.firstName,
           last_name: sanitizedData.lastName,
           company: sanitizedData.company,
+          billing_email: sanitizedData.billingEmail,
+          vat_id: sanitizedData.vatId,
           address: sanitizedData.address,
           phone: sanitizedData.phone,
           industry: sanitizedData.industry,
           responsibility: sanitizedData.responsibility,
           data_source: sanitizedData.dataSource,
-          app_role: 'client', // Set default role to client
+          app_role: 'client',
+          updated_at: new Date().toISOString(),
+        }, { 
+          onConflict: 'user_id',
+          ignoreDuplicates: false 
         })
         .select()
         .single();
