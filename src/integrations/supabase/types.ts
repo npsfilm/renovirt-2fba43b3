@@ -172,9 +172,11 @@ export type Database = {
           bracketing_enabled: boolean | null
           bracketing_exposures: number | null
           created_at: string
+          customer_email: string | null
           id: string
           image_count: number
           package_id: string | null
+          photo_type: string | null
           status: string | null
           terms_accepted: boolean | null
           total_price: number
@@ -185,9 +187,11 @@ export type Database = {
           bracketing_enabled?: boolean | null
           bracketing_exposures?: number | null
           created_at?: string
+          customer_email?: string | null
           id?: string
           image_count?: number
           package_id?: string | null
+          photo_type?: string | null
           status?: string | null
           terms_accepted?: boolean | null
           total_price: number
@@ -198,9 +202,11 @@ export type Database = {
           bracketing_enabled?: boolean | null
           bracketing_exposures?: number | null
           created_at?: string
+          customer_email?: string | null
           id?: string
           image_count?: number
           package_id?: string | null
+          photo_type?: string | null
           status?: string | null
           terms_accepted?: boolean | null
           total_price?: number

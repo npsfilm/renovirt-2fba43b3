@@ -1,10 +1,12 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, Clock, Download, Users, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useOrders } from '@/hooks/useOrders';
 
 interface OrderData {
   files: File[];
@@ -15,6 +17,7 @@ interface OrderData {
     watermark: boolean;
   };
   email?: string;
+  photoType?: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5';
 }
 
 interface ConfirmationStepProps {
@@ -22,8 +25,62 @@ interface ConfirmationStepProps {
 }
 
 const ConfirmationStep = ({ orderData }: ConfirmationStepProps) => {
+  const { packages, addOns } = useOrders();
   const orderId = `ORD-${Date.now().toString().slice(-6)}`;
   const estimatedDelivery = orderData.extras.express ? '24h' : '24–48h';
+
+  const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
+  
+  // Calculate effective image count for bracketing
+  let imageCount = orderData.files.length;
+  if (orderData.photoType === 'bracketing-3') {
+    imageCount = Math.floor(orderData.files.length / 3);
+  } else if (orderData.photoType === 'bracketing-5') {
+    imageCount = Math.floor(orderData.files.length / 5);
+  }
+
+  // Send confirmation email
+  useEffect(() => {
+    const sendConfirmationEmail = async () => {
+      if (!orderData.email || !selectedPackage) return;
+
+      const selectedExtras = addOns
+        .filter(addon => orderData.extras[addon.name as keyof typeof orderData.extras])
+        .map(addon => addon.description);
+
+      const totalPrice = selectedPackage.base_price * imageCount + 
+        addOns.reduce((total, addon) => {
+          if (orderData.extras[addon.name as keyof typeof orderData.extras] && !addon.is_free) {
+            return total + (addon.price * imageCount);
+          }
+          return total;
+        }, 0);
+
+      try {
+        const { error } = await supabase.functions.invoke('send-order-confirmation', {
+          body: {
+            orderId,
+            customerEmail: orderData.email,
+            orderDetails: {
+              packageName: selectedPackage.description,
+              photoType: orderData.photoType || 'Standard',
+              imageCount,
+              totalPrice,
+              extras: selectedExtras,
+            },
+          },
+        });
+
+        if (error) {
+          console.error('Failed to send confirmation email:', error);
+        }
+      } catch (error) {
+        console.error('Failed to send confirmation email:', error);
+      }
+    };
+
+    sendConfirmationEmail();
+  }, [orderData, selectedPackage, addOns, imageCount, orderId]);
 
   return (
     <div className="space-y-6 text-center">
@@ -52,11 +109,11 @@ const ConfirmationStep = ({ orderData }: ConfirmationStepProps) => {
               <div className="text-sm space-y-1">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Paket:</span>
-                  <span>{orderData.package === 'basic' ? 'Basic HDR' : 'Premium HDR & Retusche'}</span>
+                  <span>{selectedPackage?.description || orderData.package}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Bilder:</span>
-                  <span>{orderData.files.length}</span>
+                  <span>{imageCount}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">E-Mail:</span>
@@ -88,7 +145,7 @@ const ConfirmationStep = ({ orderData }: ConfirmationStepProps) => {
                   <Badge variant="outline">Express-Bearbeitung</Badge>
                 )}
                 {orderData.extras.upscale && (
-                  <Badge variant="outline">Weichzeichnen</Badge>
+                  <Badge variant="outline">AI Upscaling</Badge>
                 )}
                 {orderData.extras.watermark && (
                   <Badge variant="outline">Eigenes Wasserzeichen</Badge>
