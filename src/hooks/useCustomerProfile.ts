@@ -104,6 +104,7 @@ export const useCustomerProfile = () => {
           industry: sanitizedData.industry,
           responsibility: sanitizedData.responsibility,
           data_source: sanitizedData.dataSource,
+          app_role: 'client', // Set default role to client
         })
         .select()
         .single();

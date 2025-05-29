@@ -39,6 +39,7 @@ export type Database = {
       customer_profiles: {
         Row: {
           address: string | null
+          app_role: Database["public"]["Enums"]["app_role"]
           company: string | null
           created_at: string
           data_source: string | null
@@ -55,6 +56,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          app_role?: Database["public"]["Enums"]["app_role"]
           company?: string | null
           created_at?: string
           data_source?: string | null
@@ -71,6 +73,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          app_role?: Database["public"]["Enums"]["app_role"]
           company?: string | null
           created_at?: string
           data_source?: string | null
@@ -282,10 +285,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_admin_role: {
+        Args: { user_uuid: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "client"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -400,6 +406,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "client"],
+    },
   },
 } as const
