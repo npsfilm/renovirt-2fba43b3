@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useCustomerProfile } from '@/hooks/useCustomerProfile';
 import AuthLayout from '@/components/auth/AuthLayout';
@@ -12,6 +12,10 @@ const Auth = () => {
   const { user } = useAuth();
   const { getCustomerProfile } = useCustomerProfile();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Get the page the user was trying to access before being redirected to login
+  const from = location.state?.from?.pathname || '/dashboard';
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -22,9 +26,9 @@ const Auth = () => {
           try {
             const profile = await getCustomerProfile();
             
-            // If profile exists and has required fields, go to dashboard
+            // If profile exists and has required fields, go to originally requested page or dashboard
             if (profile && profile.first_name && profile.last_name && profile.role) {
-              navigate('/dashboard');
+              navigate(from, { replace: true });
             } else {
               // If profile doesn't exist or is incomplete, go to onboarding
               navigate('/onboarding');
@@ -41,7 +45,7 @@ const Auth = () => {
     };
 
     checkUserProfileAndRedirect();
-  }, [user, navigate, getCustomerProfile]);
+  }, [user, navigate, getCustomerProfile, from]);
 
   const handleAuthSuccess = (isRegistration = false) => {
     if (isRegistration) {
