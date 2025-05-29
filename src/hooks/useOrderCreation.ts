@@ -54,6 +54,7 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
           bracketing_exposures: bracketingExposures,
           terms_accepted: orderData.acceptedTerms,
           status: 'pending',
+          payment_method: null, // Will be set when payment is processed
         })
         .select()
         .single();

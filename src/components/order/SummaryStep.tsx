@@ -6,7 +6,9 @@ import PaymentMethodSelector from './summary/PaymentMethodSelector';
 import TermsAcceptance from './summary/TermsAcceptance';
 import PriceSummary from './summary/PriceSummary';
 import { useOrders } from '@/hooks/useOrders';
+import { usePayment } from '@/hooks/usePayment';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 import type { OrderData } from '@/utils/orderValidation';
 
 interface SummaryStepProps {
@@ -18,17 +20,41 @@ interface SummaryStepProps {
 
 const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepProps) => {
   const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'invoice'>('stripe');
-  const { createOrder, isCreatingOrder } = useOrders();
+  const { createOrder, isCreatingOrder, calculateTotalPrice } = useOrders();
+  const { processPayment, isProcessingPayment } = usePayment();
   const { user } = useAuth();
+  const { toast } = useToast();
 
   const canProceed = orderData.acceptedTerms && orderData.email && user;
+  const totalPrice = calculateTotalPrice(orderData);
 
   const handleSubmitOrder = async () => {
     if (!canProceed) return;
 
     try {
-      await createOrder(orderData);
-      onNext(); // Move to confirmation step
+      // Create order first
+      const order = await createOrder(orderData);
+      
+      if (paymentMethod === 'stripe') {
+        // Process Stripe payment
+        await processPayment({
+          orderId: order.id,
+          amount: totalPrice,
+          currency: 'eur'
+        });
+        
+        toast({
+          title: "Weiterleitung zur Zahlung",
+          description: "Sie werden zur sicheren Stripe-Zahlungsseite weitergeleitet.",
+        });
+      } else {
+        // Invoice payment - order is created with pending status
+        toast({
+          title: "Bestellung erfolgreich erstellt!",
+          description: "Sie erhalten in Kürze eine Rechnung per E-Mail.",
+        });
+        onNext(); // Move to confirmation step
+      }
     } catch (error) {
       console.error('Order submission failed:', error);
     }
@@ -71,10 +97,11 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
         </Button>
         <Button 
           onClick={handleSubmitOrder}
-          disabled={!canProceed || isCreatingOrder}
+          disabled={!canProceed || isCreatingOrder || isProcessingPayment}
           className="min-w-[200px] bg-green-600 hover:bg-green-700"
         >
-          {isCreatingOrder ? "Wird erstellt..." : "Kostenpflichtig bestellen →"}
+          {isCreatingOrder || isProcessingPayment ? "Wird erstellt..." : 
+           paymentMethod === 'stripe' ? "Zur Zahlung →" : "Kostenpflichtig bestellen →"}
         </Button>
       </div>
     </div>
