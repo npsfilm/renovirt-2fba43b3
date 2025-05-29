@@ -2,7 +2,7 @@
 import React, { useCallback, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, Shield, Info } from 'lucide-react';
+import { Upload, Shield, Info, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface UploadStepProps {
@@ -42,11 +42,24 @@ const UploadStep = ({ files, onFilesChange, onNext }: UploadStepProps) => {
     return true;
   };
 
-  const handleFiles = useCallback((newFiles: FileList | null) => {
+  const handleFiles = useCallback((newFiles: FileList | File[]) => {
     if (!newFiles) return;
 
-    const validFiles = Array.from(newFiles).filter(validateFile);
-    const totalFiles = files.length + validFiles.length;
+    const fileArray = Array.isArray(newFiles) ? newFiles : Array.from(newFiles);
+    const validFiles = fileArray.filter(validateFile);
+    
+    // Check for duplicates
+    const existingNames = files.map(f => f.name);
+    const uniqueFiles = validFiles.filter(file => !existingNames.includes(file.name));
+    
+    if (uniqueFiles.length !== validFiles.length) {
+      toast({
+        title: "Duplikate entfernt",
+        description: "Einige Dateien waren bereits hochgeladen und wurden übersprungen.",
+      });
+    }
+
+    const totalFiles = files.length + uniqueFiles.length;
 
     if (totalFiles > maxFiles) {
       toast({
@@ -57,7 +70,13 @@ const UploadStep = ({ files, onFilesChange, onNext }: UploadStepProps) => {
       return;
     }
 
-    onFilesChange([...files, ...validFiles]);
+    if (uniqueFiles.length > 0) {
+      onFilesChange([...files, ...uniqueFiles]);
+      toast({
+        title: "Dateien hochgeladen",
+        description: `${uniqueFiles.length} Datei(en) erfolgreich hinzugefügt.`,
+      });
+    }
   }, [files, onFilesChange, toast]);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
@@ -74,16 +93,28 @@ const UploadStep = ({ files, onFilesChange, onNext }: UploadStepProps) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    handleFiles(e.dataTransfer.files);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFiles(e.dataTransfer.files);
+      e.dataTransfer.clearData();
+    }
   }, [handleFiles]);
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    handleFiles(e.target.files);
+    if (e.target.files && e.target.files.length > 0) {
+      handleFiles(e.target.files);
+      // Reset the input so the same file can be selected again if needed
+      e.target.value = '';
+    }
   }, [handleFiles]);
 
   const removeFile = (index: number) => {
     const newFiles = files.filter((_, i) => i !== index);
     onFilesChange(newFiles);
+    toast({
+      title: "Datei entfernt",
+      description: "Die Datei wurde aus der Liste entfernt.",
+    });
   };
 
   const canProceed = files.length > 0;
@@ -98,13 +129,14 @@ const UploadStep = ({ files, onFilesChange, onNext }: UploadStepProps) => {
       <Card>
         <CardContent className="p-8">
           <div
-            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-              dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
+              dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
             }`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
             onDrop={handleDrop}
+            onClick={() => document.getElementById('file-upload')?.click()}
           >
             <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
@@ -114,7 +146,7 @@ const UploadStep = ({ files, onFilesChange, onNext }: UploadStepProps) => {
               Unterstützte Formate: JPG, PNG, CR2, CR3, NEF, ARW, DNG, ZIP
             </p>
             <p className="text-sm text-gray-500 mb-4">
-              Max 25MB pro Datei, bis zu 100 Dateien
+              Max 25MB pro Datei, bis zu {maxFiles} Dateien
             </p>
             <input
               type="file"
@@ -124,11 +156,9 @@ const UploadStep = ({ files, onFilesChange, onNext }: UploadStepProps) => {
               className="hidden"
               id="file-upload"
             />
-            <label htmlFor="file-upload">
-              <Button variant="outline" className="cursor-pointer">
-                Dateien auswählen
-              </Button>
-            </label>
+            <Button variant="outline" type="button">
+              Dateien auswählen
+            </Button>
           </div>
 
           {files.length > 0 && (
@@ -138,8 +168,8 @@ const UploadStep = ({ files, onFilesChange, onNext }: UploadStepProps) => {
               </h4>
               <div className="space-y-2 max-h-40 overflow-y-auto">
                 {files.map((file, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                    <div className="flex items-center space-x-2">
+                  <div key={`${file.name}-${index}`} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
+                    <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
                         <Upload className="w-4 h-4 text-blue-600" />
                       </div>
@@ -154,9 +184,9 @@ const UploadStep = ({ files, onFilesChange, onNext }: UploadStepProps) => {
                       variant="ghost"
                       size="sm"
                       onClick={() => removeFile(index)}
-                      className="text-red-600 hover:text-red-700"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
                     >
-                      Entfernen
+                      <X className="w-4 h-4" />
                     </Button>
                   </div>
                 ))}
