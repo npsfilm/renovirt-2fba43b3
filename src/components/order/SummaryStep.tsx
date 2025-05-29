@@ -7,20 +7,7 @@ import TermsAcceptance from './summary/TermsAcceptance';
 import PriceSummary from './summary/PriceSummary';
 import { useOrders } from '@/hooks/useOrders';
 import { useAuth } from '@/hooks/useAuth';
-
-interface OrderData {
-  photoType?: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5';
-  files: File[];
-  package?: 'basic' | 'premium';
-  extras: {
-    express: boolean;
-    upscale: boolean;
-    watermark: boolean;
-  };
-  email?: string;
-  couponCode?: string;
-  acceptedTerms: boolean;
-}
+import type { OrderData } from '@/utils/orderValidation';
 
 interface SummaryStepProps {
   orderData: OrderData;

@@ -7,18 +7,8 @@ import { CheckCircle, Clock, Download, Users, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useOrders } from '@/hooks/useOrders';
-
-interface OrderData {
-  files: File[];
-  package?: 'basic' | 'premium';
-  extras: {
-    express: boolean;
-    upscale: boolean;
-    watermark: boolean;
-  };
-  email?: string;
-  photoType?: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5';
-}
+import { calculateEffectiveImageCount } from '@/utils/orderValidation';
+import type { OrderData } from '@/utils/orderValidation';
 
 interface ConfirmationStepProps {
   orderData: OrderData;
@@ -30,14 +20,7 @@ const ConfirmationStep = ({ orderData }: ConfirmationStepProps) => {
   const estimatedDelivery = orderData.extras.express ? '24h' : '24–48h';
 
   const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
-  
-  // Calculate effective image count for bracketing
-  let imageCount = orderData.files.length;
-  if (orderData.photoType === 'bracketing-3') {
-    imageCount = Math.floor(orderData.files.length / 3);
-  } else if (orderData.photoType === 'bracketing-5') {
-    imageCount = Math.floor(orderData.files.length / 5);
-  }
+  const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
 
   // Send confirmation email
   useEffect(() => {
