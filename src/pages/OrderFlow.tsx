@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/layout/AppSidebar';
@@ -35,10 +34,26 @@ const OrderFlow = () => {
   });
 
   const steps = [
-    { number: 1, title: 'Upload', status: currentStep > 1 ? 'completed' : currentStep === 1 ? 'current' : 'upcoming' },
-    { number: 2, title: 'Paket', status: currentStep > 2 ? 'completed' : currentStep === 2 ? 'current' : 'upcoming' },
-    { number: 3, title: 'Übersicht', status: currentStep > 3 ? 'completed' : currentStep === 3 ? 'current' : 'upcoming' },
-    { number: 4, title: 'Bestätigung', status: currentStep === 4 ? 'completed' : 'upcoming' },
+    { 
+      number: 1, 
+      title: 'Upload', 
+      status: (currentStep > 1 ? 'completed' : currentStep === 1 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
+    },
+    { 
+      number: 2, 
+      title: 'Paket', 
+      status: (currentStep > 2 ? 'completed' : currentStep === 2 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
+    },
+    { 
+      number: 3, 
+      title: 'Übersicht', 
+      status: (currentStep > 3 ? 'completed' : currentStep === 3 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
+    },
+    { 
+      number: 4, 
+      title: 'Bestätigung', 
+      status: (currentStep === 4 ? 'completed' : 'upcoming') as 'completed' | 'current' | 'upcoming'
+    },
   ];
 
   const updateOrderData = (updates: Partial<OrderData>) => {

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -45,7 +44,7 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
   const basePrice = orderData.package ? packagePrices[orderData.package] : 0;
   const extrasCost = Object.entries(orderData.extras)
     .filter(([_, enabled]) => enabled)
-    .reduce((sum, [extra, _]) => sum + extrasPrices[extra as keyof typeof extraPrices], 0);
+    .reduce((sum, [extra, _]) => sum + extraPrices[extra as keyof typeof extraPrices], 0);
   
   const subtotal = (basePrice + extrasCost) * orderData.files.length;
   const discount = orderData.couponCode === 'WELCOME10' ? subtotal * 0.1 : 0;
