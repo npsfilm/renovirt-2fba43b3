@@ -21,7 +21,7 @@ const AdminOrders = () => {
         .from('orders')
         .select(`
           *,
-          customer_profiles (
+          customer_profiles!fk_orders_customer_profiles (
             first_name,
             last_name,
             company,
