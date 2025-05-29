@@ -1,10 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useCustomerProfile } from '@/hooks/useCustomerProfile';
 import { Progress } from '@/components/ui/progress';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
+import { validateUrlTokens, secureLog, logSecurityEvent } from '@/utils/authSecurity';
 import WelcomeStep from '@/components/onboarding/WelcomeStep';
 import RoleSelectionStep from '@/components/onboarding/RoleSelectionStep';
 import ProfileDataStep from '@/components/onboarding/ProfileDataStep';
@@ -12,6 +14,7 @@ import ResponsibilityStep from '@/components/onboarding/ResponsibilityStep';
 import DataSourceStep from '@/components/onboarding/DataSourceStep';
 import QuickStartStep from '@/components/onboarding/QuickStartStep';
 import CompletionStep from '@/components/onboarding/CompletionStep';
+import EmailConfirmationHandler from '@/components/onboarding/EmailConfirmationHandler';
 
 export interface OnboardingData {
   role: string;
@@ -28,6 +31,8 @@ export interface OnboardingData {
 
 const Onboarding = () => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [isConfirmingEmail, setIsConfirmingEmail] = useState(false);
+  const [confirmationError, setConfirmationError] = useState<string | null>(null);
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({
     role: '',
     salutation: '',
@@ -44,6 +49,69 @@ const Onboarding = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { saveCustomerProfile, loading } = useCustomerProfile();
+
+  // Handle email confirmation on page load
+  useEffect(() => {
+    const handleEmailConfirmation = async () => {
+      // Check URL hash for tokens (email confirmation links use hash)
+      const hash = window.location.hash;
+      // Also check search params as a fallback
+      const search = window.location.search;
+      
+      if (hash || search) {
+        setIsConfirmingEmail(true);
+        secureLog('Email confirmation detected on onboarding page');
+        
+        try {
+          // Extract tokens from URL
+          const hashTokens = validateUrlTokens(hash);
+          const searchParams = new URLSearchParams(search);
+          const accessToken = hashTokens?.accessToken || searchParams.get('access_token');
+          const type = hashTokens?.type || searchParams.get('type');
+          
+          if (accessToken && (type === 'signup' || type === 'email_confirmation')) {
+            secureLog('Processing email confirmation with access token');
+            logSecurityEvent('email_confirmation_processing', { type });
+            
+            // Store the access token temporarily
+            localStorage.setItem('pending_access_token', accessToken);
+            
+            // The Supabase client will automatically handle the session
+            // We just need to wait for the auth state to update
+            const { data, error } = await supabase.auth.getSession();
+            
+            if (error) {
+              throw error;
+            }
+            
+            if (data.session) {
+              secureLog('Email confirmation successful, session established');
+              logSecurityEvent('email_confirmation_success', { userId: data.session.user.id });
+              
+              // Clean up the URL for security
+              window.history.replaceState({}, document.title, window.location.pathname);
+              
+              // Remove temporary token
+              localStorage.removeItem('pending_access_token');
+            } else {
+              // Sometimes there's a delay, we'll let the auth state change handler deal with it
+              secureLog('Session not immediately available, waiting for auth state change');
+            }
+          } else {
+            secureLog('No valid confirmation tokens found in URL');
+          }
+        } catch (error: any) {
+          console.error('Error during email confirmation:', error);
+          logSecurityEvent('email_confirmation_error', { error: error.message });
+          setConfirmationError('Es gab ein Problem bei der E-Mail-Bestätigung. Bitte versuchen Sie es erneut.');
+        } finally {
+          setIsConfirmingEmail(false);
+        }
+      }
+    };
+
+    handleEmailConfirmation();
+  }, []);
 
   const steps = [
     { component: WelcomeStep, title: 'Willkommen' },
@@ -95,6 +163,11 @@ const Onboarding = () => {
       console.error('Error completing onboarding:', error);
     }
   };
+
+  // Show email confirmation handler if we're processing confirmation
+  if (isConfirmingEmail) {
+    return <EmailConfirmationHandler error={confirmationError} />;
+  }
 
   const CurrentStepComponent = steps[currentStep].component;
 

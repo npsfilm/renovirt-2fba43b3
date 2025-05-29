@@ -35,7 +35,7 @@ export const validateUrlTokens = (hash: string) => {
     // Validate token format (basic check)
     if (accessToken && typeof accessToken === 'string' && accessToken.length > 10) {
       // Additional validation for token format
-      const tokenPattern = /^[A-Za-z0-9\-_]+$/;
+      const tokenPattern = /^[A-Za-z0-9\-_.]+$/;
       if (!tokenPattern.test(accessToken)) {
         console.warn('Invalid token format detected');
         return null;
@@ -49,6 +49,38 @@ export const validateUrlTokens = (hash: string) => {
     console.error('Error parsing URL parameters:', error);
     return null;
   }
+};
+
+/**
+ * Secure logging utility
+ */
+export const secureLog = (message: string, data?: any) => {
+  // In development, log everything. In production, be more selective
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[AUTH] ${message}`, data);
+  } else {
+    // Only log important events in production
+    if (message.includes('error') || message.includes('failed')) {
+      console.error(`[AUTH] ${message}`, data);
+    }
+  }
+};
+
+/**
+ * Security event logging
+ */
+export const logSecurityEvent = (event: string, data?: any) => {
+  const timestamp = new Date().toISOString();
+  const logData = {
+    event,
+    timestamp,
+    userAgent: navigator.userAgent,
+    url: window.location.href,
+    ...data
+  };
+  
+  // In production, you might want to send this to a monitoring service
+  secureLog(`Security Event: ${event}`, logData);
 };
 
 /**
