@@ -30,15 +30,15 @@ const QuickStartStep = ({ nextStep, prevStep }: QuickStartStepProps) => {
   return (
     <div className="space-y-8">
       <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold text-gray-900">Testen Sie unsere KI kostenlos</h2>
-        <p className="text-lg text-gray-600">
+        <h2 className="text-2xl font-bold text-gray-900">Testen Sie unsere KI kostenlos</h2>
+        <p className="text-gray-600">
           Laden Sie bis zu 3 Bilder hoch und erleben Sie die Qualität unserer Bearbeitung.
         </p>
       </div>
 
       <div className="space-y-6">
         {/* Upload Area */}
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-gray-400 transition-colors">
           <input
             type="file"
             multiple
@@ -50,8 +50,8 @@ const QuickStartStep = ({ nextStep, prevStep }: QuickStartStepProps) => {
           />
           <label htmlFor="file-upload" className="cursor-pointer">
             <div className="space-y-4">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
-                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
               </div>
@@ -69,11 +69,11 @@ const QuickStartStep = ({ nextStep, prevStep }: QuickStartStepProps) => {
 
         {/* Uploaded Files */}
         {uploadedFiles.length > 0 && (
-          <div className="space-y-3">
+          <div className="space-y-4">
             <h3 className="font-medium text-gray-900">Hochgeladene Bilder ({uploadedFiles.length}/3)</h3>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {uploadedFiles.map((file, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-blue-100 rounded flex items-center justify-center">
                       <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,7 +87,7 @@ const QuickStartStep = ({ nextStep, prevStep }: QuickStartStepProps) => {
                   </div>
                   <button
                     onClick={() => removeFile(index)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-red-500 hover:text-red-700 p-1"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -100,7 +100,7 @@ const QuickStartStep = ({ nextStep, prevStep }: QuickStartStepProps) => {
         )}
 
         {/* Benefits */}
-        <div className="bg-green-50 p-6 rounded-lg">
+        <div className="bg-green-50 border border-green-200 rounded-lg p-6">
           <h3 className="font-medium text-green-900 mb-3">Was Sie erwartet:</h3>
           <ul className="space-y-2 text-sm text-green-800">
             <li className="flex items-center space-x-2">
@@ -119,7 +119,7 @@ const QuickStartStep = ({ nextStep, prevStep }: QuickStartStepProps) => {
         </div>
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between pt-4">
         <Button variant="outline" onClick={prevStep}>
           Zurück
         </Button>

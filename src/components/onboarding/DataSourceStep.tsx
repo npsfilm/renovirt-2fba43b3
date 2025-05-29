@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { OnboardingData } from '@/pages/Onboarding';
@@ -31,8 +32,8 @@ const DataSourceStep = ({ data, updateData, nextStep, prevStep }: DataSourceStep
   return (
     <div className="space-y-8">
       <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold text-gray-900">Wie sind Sie auf uns aufmerksam geworden?</h2>
-        <p className="text-lg text-gray-600">
+        <h2 className="text-2xl font-bold text-gray-900">Wie sind Sie auf uns aufmerksam geworden?</h2>
+        <p className="text-gray-600">
           Helfen Sie uns dabei, unsere Services zu verbessern.
         </p>
       </div>
@@ -45,13 +46,13 @@ const DataSourceStep = ({ data, updateData, nextStep, prevStep }: DataSourceStep
             <button
               key={source.id}
               onClick={() => selectDataSource(source.id)}
-              className={`p-4 rounded-lg border-2 transition-all text-center ${
+              className={`p-6 rounded-lg border-2 transition-all text-center hover:shadow-md ${
                 isSelected
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                  ? 'border-blue-500 bg-blue-50 shadow-md'
+                  : 'border-gray-200 hover:border-gray-300'
               }`}
             >
-              <div className="text-2xl mb-2">{source.icon}</div>
+              <div className="text-3xl mb-3">{source.icon}</div>
               <div className={`text-sm font-medium ${
                 isSelected ? 'text-blue-900' : 'text-gray-900'
               }`}>
@@ -62,7 +63,7 @@ const DataSourceStep = ({ data, updateData, nextStep, prevStep }: DataSourceStep
         })}
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between pt-4">
         <Button variant="outline" onClick={prevStep}>
           Zurück
         </Button>

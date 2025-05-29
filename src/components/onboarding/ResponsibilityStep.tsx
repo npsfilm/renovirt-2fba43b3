@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { OnboardingData } from '@/pages/Onboarding';
@@ -43,8 +44,8 @@ const ResponsibilityStep = ({ data, updateData, nextStep, prevStep }: Responsibi
   return (
     <div className="space-y-8">
       <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold text-gray-900">Ihre Zuständigkeit</h2>
-        <p className="text-lg text-gray-600">
+        <h2 className="text-2xl font-bold text-gray-900">Ihre Zuständigkeit</h2>
+        <p className="text-gray-600">
           Welche Position beschreibt Ihre Rolle im Unternehmen am besten?
         </p>
       </div>
@@ -57,13 +58,13 @@ const ResponsibilityStep = ({ data, updateData, nextStep, prevStep }: Responsibi
             <button
               key={responsibility.id}
               onClick={() => selectResponsibility(responsibility.id)}
-              className={`p-6 rounded-lg border-2 transition-all text-left ${
+              className={`p-6 rounded-lg border-2 transition-all text-left hover:shadow-md ${
                 isSelected
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                  ? 'border-blue-500 bg-blue-50 shadow-md'
+                  : 'border-gray-200 hover:border-gray-300'
               }`}
             >
-              <h3 className={`font-semibold mb-2 ${
+              <h3 className={`font-semibold mb-2 text-lg ${
                 isSelected ? 'text-blue-900' : 'text-gray-900'
               }`}>
                 {responsibility.title}
@@ -78,7 +79,7 @@ const ResponsibilityStep = ({ data, updateData, nextStep, prevStep }: Responsibi
         })}
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between pt-4">
         <Button variant="outline" onClick={prevStep}>
           Zurück
         </Button>
