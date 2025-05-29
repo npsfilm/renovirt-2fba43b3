@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -154,16 +153,28 @@ const Onboarding = () => {
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <CurrentStepComponent
-                data={onboardingData}
-                updateData={updateData}
-                nextStep={nextStep}
-                prevStep={prevStep}
-                currentStep={currentStep}
-                totalSteps={steps.length}
-                completeOnboarding={completeOnboarding}
-                loading={loading}
-              />
+              {currentStep === steps.length - 1 ? (
+                <CurrentStepComponent
+                  data={onboardingData}
+                  updateData={updateData}
+                  nextStep={nextStep}
+                  prevStep={prevStep}
+                  currentStep={currentStep}
+                  totalSteps={steps.length}
+                  completeOnboarding={completeOnboarding}
+                  loading={loading}
+                />
+              ) : (
+                <CurrentStepComponent
+                  data={onboardingData}
+                  updateData={updateData}
+                  nextStep={nextStep}
+                  prevStep={prevStep}
+                  currentStep={currentStep}
+                  totalSteps={steps.length}
+                  completeOnboarding={completeOnboarding}
+                />
+              )}
             </motion.div>
           </AnimatePresence>
         </div>
