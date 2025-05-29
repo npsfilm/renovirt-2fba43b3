@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -154,7 +155,7 @@ const Onboarding = () => {
               transition={{ duration: 0.3 }}
             >
               {currentStep === steps.length - 1 ? (
-                <CurrentStepComponent
+                <CompletionStep
                   data={onboardingData}
                   updateData={updateData}
                   nextStep={nextStep}
