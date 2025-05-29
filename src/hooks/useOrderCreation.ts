@@ -109,7 +109,7 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
   });
 
   return {
-    createOrder: createOrderMutation.mutate,
+    createOrder: createOrderMutation.mutateAsync, // Return the async function that returns the order
     isCreatingOrder: createOrderMutation.isPending,
   };
 };
