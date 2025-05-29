@@ -9,13 +9,19 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set up auth state listener
+    // Handle the auth state change, including email confirmation
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+
+        // Handle email confirmation redirect
+        if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
+          // User just confirmed their email, redirect to onboarding
+          window.location.href = '/onboarding';
+        }
       }
     );
 
@@ -43,6 +49,7 @@ export const useAuth = () => {
           last_name: userData.lastName,
           role: userData.role,
         },
+        emailRedirectTo: `${window.location.origin}/onboarding`,
       },
     });
     return { data, error };
@@ -60,7 +67,7 @@ export const useAuth = () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/`,
+        redirectTo: `${window.location.origin}/onboarding`,
       },
     });
     return { data, error };

@@ -8,27 +8,31 @@ import RegisterForm from '@/components/auth/RegisterForm';
 
 const Auth = () => {
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
-  const [isNewUser, setIsNewUser] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
 
   // Redirect if already authenticated
   useEffect(() => {
     if (user) {
-      if (isNewUser) {
+      // If user is confirmed (email verified), go to onboarding or home
+      if (user.email_confirmed_at) {
+        // Check if user has completed onboarding by checking for customer profile
+        // For now, just redirect to onboarding - you can add profile check later
         navigate('/onboarding');
       } else {
-        navigate('/');
+        // If user is not confirmed, show email verification screen
+        navigate('/email-verification');
       }
     }
-  }, [user, navigate, isNewUser]);
+  }, [user, navigate]);
 
   const handleAuthSuccess = (isRegistration = false) => {
     if (isRegistration) {
-      setIsNewUser(true);
-      navigate('/onboarding');
+      // After registration, redirect to email verification
+      navigate('/email-verification');
     } else {
-      navigate('/');
+      // After login, redirect based on email confirmation status
+      // This will be handled by the useEffect above
     }
   };
 
