@@ -17,21 +17,21 @@ const AdminRoute = ({ children }: AdminRouteProps) => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Überprüfe Berechtigung...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Überprüfe Admin-Berechtigung...</p>
         </div>
       </div>
     );
   }
 
-  // Redirect to login if not authenticated
+  // Redirect to admin login if not authenticated
   if (!user) {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/admin-auth" replace />;
   }
 
-  // Redirect to dashboard if not admin (return 404-like experience)
+  // Redirect to admin login if not admin (instead of regular dashboard)
   if (!isAdmin) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/admin-auth" replace />;
   }
 
   return <>{children}</>;

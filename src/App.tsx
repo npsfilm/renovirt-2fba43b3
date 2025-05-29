@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AdminRoute from "@/components/admin/AdminRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import AdminAuth from "./pages/AdminAuth";
 import EmailVerification from "./pages/EmailVerification";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";

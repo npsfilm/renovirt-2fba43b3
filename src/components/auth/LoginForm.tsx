@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -147,9 +146,12 @@ const LoginForm = ({ onSuccess }: LoginFormProps) => {
           </Button>
         </div>
         
-        <div className="text-center text-sm text-muted-foreground mt-4">
-          <Link to="/forgot-password" className="hover:text-primary">
+        <div className="text-center text-sm text-muted-foreground mt-4 space-y-2">
+          <Link to="/forgot-password" className="block hover:text-primary">
             Passwort vergessen?
+          </Link>
+          <Link to="/admin-auth" className="block text-red-600 hover:text-red-700 font-medium">
+            Admin Portal →
           </Link>
         </div>
       </CardContent>
