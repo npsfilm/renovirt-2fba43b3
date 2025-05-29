@@ -1,4 +1,3 @@
-
 import React, { useCallback, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,17 +6,35 @@ import { useToast } from '@/hooks/use-toast';
 
 interface UploadStepProps {
   files: File[];
+  photoType?: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5';
   onFilesChange: (files: File[]) => void;
   onNext: () => void;
+  onPrev: () => void;
 }
 
-const UploadStep = ({ files, onFilesChange, onNext }: UploadStepProps) => {
+const UploadStep = ({ files, photoType, onFilesChange, onNext, onPrev }: UploadStepProps) => {
   const [dragActive, setDragActive] = useState(false);
   const { toast } = useToast();
 
   const supportedFormats = ['jpg', 'jpeg', 'png', 'cr2', 'cr3', 'nef', 'arw', 'dng', 'zip'];
   const maxFileSize = 25 * 1024 * 1024; // 25MB
   const maxFiles = 100;
+
+  // Calculate effective photos based on bracketing
+  const getEffectivePhotoCount = (fileCount: number): number => {
+    if (photoType === 'bracketing-3') {
+      return Math.floor(fileCount / 3);
+    } else if (photoType === 'bracketing-5') {
+      return Math.floor(fileCount / 5);
+    }
+    return fileCount;
+  };
+
+  const getBracketingDivisor = (): number => {
+    if (photoType === 'bracketing-3') return 3;
+    if (photoType === 'bracketing-5') return 5;
+    return 1;
+  };
 
   const validateFile = (file: File): boolean => {
     const extension = file.name.split('.').pop()?.toLowerCase();
@@ -103,7 +120,6 @@ const UploadStep = ({ files, onFilesChange, onNext }: UploadStepProps) => {
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       handleFiles(e.target.files);
-      // Reset the input so the same file can be selected again if needed
       e.target.value = '';
     }
   }, [handleFiles]);
@@ -118,6 +134,8 @@ const UploadStep = ({ files, onFilesChange, onNext }: UploadStepProps) => {
   };
 
   const canProceed = files.length > 0;
+  const effectivePhotos = getEffectivePhotoCount(files.length);
+  const bracketingDivisor = getBracketingDivisor();
 
   return (
     <div className="space-y-6">
@@ -125,6 +143,21 @@ const UploadStep = ({ files, onFilesChange, onNext }: UploadStepProps) => {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Laden Sie Ihre Bilder hoch</h1>
         <p className="text-gray-600">Wir holen das Beste aus Ihren Fotos – oft genügt schon ein Klick für beeindruckende Ergebnisse.</p>
       </div>
+
+      {photoType?.startsWith('bracketing') && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <div className="flex items-start space-x-3">
+            <Info className="w-5 h-5 text-amber-600 mt-0.5" />
+            <div>
+              <h4 className="text-sm font-medium text-amber-900">Bracketing-Modus aktiv</h4>
+              <p className="text-sm text-amber-700">
+                Stellen Sie sicher, dass Sie Ihre Bilder in {bracketingDivisor}er-Gruppen hochladen. 
+                Jede Gruppe wird zu einem HDR-Bild verarbeitet.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Card>
         <CardContent className="p-8">
@@ -163,9 +196,21 @@ const UploadStep = ({ files, onFilesChange, onNext }: UploadStepProps) => {
 
           {files.length > 0 && (
             <div className="mt-6">
-              <h4 className="text-sm font-medium text-gray-900 mb-3">
-                Hochgeladene Dateien ({files.length}):
-              </h4>
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-sm font-medium text-gray-900">
+                  Hochgeladene Dateien ({files.length}):
+                </h4>
+                {photoType?.startsWith('bracketing') && (
+                  <div className="text-sm text-gray-600">
+                    Effektive Fotos: <span className="font-medium text-gray-900">{effectivePhotos}</span>
+                    {files.length % bracketingDivisor !== 0 && (
+                      <span className="text-amber-600 ml-2">
+                        ({files.length % bracketingDivisor} unvollständige Gruppe)
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
               <div className="space-y-2 max-h-40 overflow-y-auto">
                 {files.map((file, index) => (
                   <div key={`${file.name}-${index}`} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
@@ -213,7 +258,10 @@ const UploadStep = ({ files, onFilesChange, onNext }: UploadStepProps) => {
         </div>
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-between">
+        <Button variant="outline" onClick={onPrev}>
+          ← Zurück zum Typ
+        </Button>
         <Button 
           onClick={onNext} 
           disabled={!canProceed}

@@ -1,6 +1,8 @@
+
 import React, { useState } from 'react';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/layout/AppSidebar';
+import PhotoTypeStep from '@/components/order/PhotoTypeStep';
 import UploadStep from '@/components/order/UploadStep';
 import PackageStep from '@/components/order/PackageStep';
 import SummaryStep from '@/components/order/SummaryStep';
@@ -8,7 +10,7 @@ import ConfirmationStep from '@/components/order/ConfirmationStep';
 import OrderProgress from '@/components/order/OrderProgress';
 
 interface OrderData {
-  photoType?: string;
+  photoType?: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5';
   files: File[];
   package?: 'basic' | 'premium';
   extras: {
@@ -36,23 +38,28 @@ const OrderFlow = () => {
   const steps = [
     { 
       number: 1, 
-      title: 'Upload', 
+      title: 'Typ wählen', 
       status: (currentStep > 1 ? 'completed' : currentStep === 1 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
     },
     { 
       number: 2, 
-      title: 'Paket', 
+      title: 'Upload', 
       status: (currentStep > 2 ? 'completed' : currentStep === 2 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
     },
     { 
       number: 3, 
-      title: 'Übersicht', 
+      title: 'Paket', 
       status: (currentStep > 3 ? 'completed' : currentStep === 3 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
     },
     { 
       number: 4, 
+      title: 'Übersicht', 
+      status: (currentStep > 4 ? 'completed' : currentStep === 4 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
+    },
+    { 
+      number: 5, 
       title: 'Bestätigung', 
-      status: (currentStep === 4 ? 'completed' : 'upcoming') as 'completed' | 'current' | 'upcoming'
+      status: (currentStep === 5 ? 'completed' : 'upcoming') as 'completed' | 'current' | 'upcoming'
     },
   ];
 
@@ -61,7 +68,7 @@ const OrderFlow = () => {
   };
 
   const nextStep = () => {
-    if (currentStep < 4) {
+    if (currentStep < 5) {
       setCurrentStep(prev => prev + 1);
     }
   };
@@ -76,13 +83,23 @@ const OrderFlow = () => {
     switch (currentStep) {
       case 1:
         return (
-          <UploadStep
-            files={orderData.files}
-            onFilesChange={(files) => updateOrderData({ files })}
+          <PhotoTypeStep
+            selectedType={orderData.photoType}
+            onTypeChange={(type) => updateOrderData({ photoType: type })}
             onNext={nextStep}
           />
         );
       case 2:
+        return (
+          <UploadStep
+            files={orderData.files}
+            photoType={orderData.photoType}
+            onFilesChange={(files) => updateOrderData({ files })}
+            onNext={nextStep}
+            onPrev={prevStep}
+          />
+        );
+      case 3:
         return (
           <PackageStep
             selectedPackage={orderData.package}
@@ -91,7 +108,7 @@ const OrderFlow = () => {
             onPrev={prevStep}
           />
         );
-      case 3:
+      case 4:
         return (
           <SummaryStep
             orderData={orderData}
@@ -100,7 +117,7 @@ const OrderFlow = () => {
             onPrev={prevStep}
           />
         );
-      case 4:
+      case 5:
         return <ConfirmationStep orderData={orderData} />;
       default:
         return null;

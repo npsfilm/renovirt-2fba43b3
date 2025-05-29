@@ -7,6 +7,7 @@ import TermsAcceptance from './summary/TermsAcceptance';
 import PriceSummary from './summary/PriceSummary';
 
 interface OrderData {
+  photoType?: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5';
   files: File[];
   package?: 'basic' | 'premium';
   extras: {
