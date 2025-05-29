@@ -4,6 +4,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useToast } from './use-toast';
+import { validateFile, sanitizeFilename } from '@/utils/inputValidation';
+import { secureLog, logSecurityEvent } from '@/utils/secureLogging';
 
 interface OrderData {
   photoType?: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5';
@@ -80,30 +82,49 @@ export const useOrders = () => {
     return total;
   };
 
-  // Upload files to storage
+  // Upload files to storage with validation
   const uploadFiles = async (files: File[], orderId: string, photoType?: string) => {
+    // Validate all files first
+    for (const file of files) {
+      const validation = validateFile(file);
+      if (!validation.valid) {
+        throw new Error(`File validation failed: ${validation.error}`);
+      }
+    }
+
     const uploadPromises = files.map(async (file, index) => {
-      const fileName = `${orderId}/${Date.now()}-${index}-${file.name}`;
+      const sanitizedFileName = sanitizeFilename(file.name);
+      const fileName = `${orderId}/${Date.now()}-${index}-${sanitizedFileName}`;
+      
+      secureLog('Uploading file:', { fileName: sanitizedFileName, size: file.size });
       
       const { error: uploadError } = await supabase.storage
         .from('order-images')
         .upload(`${user?.id}/${fileName}`, file);
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        logSecurityEvent('file_upload_failed', { fileName: sanitizedFileName, error: uploadError.message });
+        throw uploadError;
+      }
 
       // Save file metadata to database
       const { error: dbError } = await supabase
         .from('order_images')
         .insert({
           order_id: orderId,
-          file_name: file.name,
+          file_name: sanitizedFileName,
           file_size: file.size,
           file_type: file.type,
           storage_path: `${user?.id}/${fileName}`,
           is_bracketing_set: photoType?.startsWith('bracketing') || false,
         });
 
-      if (dbError) throw dbError;
+      if (dbError) {
+        logSecurityEvent('file_metadata_save_failed', { fileName: sanitizedFileName, error: dbError.message });
+        throw dbError;
+      }
+      
+      logSecurityEvent('file_uploaded_successfully', { fileName: sanitizedFileName });
     });
 
     await Promise.all(uploadPromises);
@@ -112,7 +133,12 @@ export const useOrders = () => {
   // Create order mutation
   const createOrderMutation = useMutation({
     mutationFn: async (orderData: OrderData) => {
-      if (!user) throw new Error('User not authenticated');
+      if (!user) {
+        logSecurityEvent('order_creation_unauthorized');
+        throw new Error('User not authenticated');
+      }
+      
+      logSecurityEvent('order_creation_started', { userId: user.id });
       
       const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
       if (!selectedPackage) throw new Error('Package not found');
@@ -152,7 +178,10 @@ export const useOrders = () => {
         .select()
         .single();
 
-      if (orderError) throw orderError;
+      if (orderError) {
+        logSecurityEvent('order_creation_failed', { userId: user.id, error: orderError.message });
+        throw orderError;
+      }
 
       // Upload files
       await uploadFiles(orderData.files, order.id, orderData.photoType);
@@ -172,9 +201,13 @@ export const useOrders = () => {
             }))
           );
 
-        if (addOnsError) throw addOnsError;
+        if (addOnsError) {
+          logSecurityEvent('order_addons_failed', { orderId: order.id, error: addOnsError.message });
+          throw addOnsError;
+        }
       }
 
+      logSecurityEvent('order_created_successfully', { orderId: order.id, userId: user.id });
       return order;
     },
     onSuccess: (order) => {
@@ -185,7 +218,7 @@ export const useOrders = () => {
       });
     },
     onError: (error) => {
-      console.error('Order creation error:', error);
+      secureLog('Order creation error:', error);
       toast({
         title: "Fehler bei der Bestellung",
         description: "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
