@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -46,7 +47,7 @@ const Onboarding = () => {
   });
 
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { saveCustomerProfile, loading } = useCustomerProfile();
 
   // Handle email confirmation on page load
@@ -113,6 +114,14 @@ const Onboarding = () => {
     handleEmailConfirmation();
   }, []);
 
+  // Redirect to auth if not authenticated and not loading
+  useEffect(() => {
+    if (!authLoading && !user && !isConfirmingEmail) {
+      console.log('User not authenticated, redirecting to auth page');
+      navigate('/auth');
+    }
+  }, [user, authLoading, isConfirmingEmail, navigate]);
+
   const steps = [
     { component: WelcomeStep, title: 'Willkommen' },
     { component: RoleSelectionStep, title: 'Rollenwahl' },
@@ -145,6 +154,13 @@ const Onboarding = () => {
     try {
       console.log('Completing onboarding with data:', onboardingData);
       console.log('Current user:', user);
+      console.log('Auth loading:', authLoading);
+      
+      // Wait for auth to finish loading
+      if (authLoading) {
+        console.log('Auth still loading, waiting...');
+        return;
+      }
       
       // Check if user is authenticated before saving
       if (!user) {
@@ -152,6 +168,16 @@ const Onboarding = () => {
         navigate('/auth');
         return;
       }
+      
+      // Verify we have a valid session
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        console.error('No valid session found, redirecting to auth');
+        navigate('/auth');
+        return;
+      }
+      
+      console.log('Valid session found, proceeding with profile save');
       
       await saveCustomerProfile({
         role: onboardingData.role,
@@ -171,6 +197,18 @@ const Onboarding = () => {
       console.error('Error completing onboarding:', error);
     }
   };
+
+  // Show loading state while auth is loading
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Laden...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Show email confirmation handler if we're processing confirmation
   if (isConfirmingEmail) {

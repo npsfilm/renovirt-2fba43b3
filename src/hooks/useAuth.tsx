@@ -11,67 +11,102 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if we're coming from an email confirmation link
-    const handleEmailConfirmation = () => {
-      const tokens = validateUrlTokens(window.location.hash);
+    // Handle email confirmation from URL tokens
+    const handleEmailConfirmation = async () => {
+      const hash = window.location.hash;
+      const search = window.location.search;
       
-      if (tokens?.accessToken && tokens?.type === 'signup') {
-        secureLog('Email confirmation detected, redirecting to onboarding...');
-        logSecurityEvent('email_confirmation', { type: tokens.type });
+      if (hash || search) {
+        secureLog('Email confirmation detected in useAuth');
         
-        // Clear the hash from URL for security
-        window.history.replaceState({}, document.title, window.location.pathname);
-        
-        // Redirect to onboarding
-        setTimeout(() => {
-          window.location.href = '/onboarding';
-        }, 100);
-        return true;
+        try {
+          const hashTokens = validateUrlTokens(hash);
+          const searchParams = new URLSearchParams(search);
+          const accessToken = hashTokens?.accessToken || searchParams.get('access_token');
+          const refreshToken = searchParams.get('refresh_token');
+          const type = hashTokens?.type || searchParams.get('type');
+          
+          if (accessToken && (type === 'signup' || type === 'email_confirmation')) {
+            secureLog('Processing email confirmation with access token in useAuth');
+            
+            // Set the session using the tokens from URL
+            const { data, error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken || ''
+            });
+            
+            if (error) {
+              throw error;
+            }
+            
+            if (data.session) {
+              secureLog('Email confirmation successful, session established in useAuth');
+              setSession(data.session);
+              setUser(data.session.user);
+              setLoading(false);
+              
+              // Clean up the URL for security
+              window.history.replaceState({}, document.title, window.location.pathname);
+              
+              // Redirect to onboarding after successful confirmation
+              if (window.location.pathname !== '/onboarding') {
+                setTimeout(() => {
+                  window.location.href = '/onboarding';
+                }, 500);
+              }
+              
+              return true;
+            }
+          }
+        } catch (error: any) {
+          console.error('Error during email confirmation in useAuth:', error);
+          setLoading(false);
+        }
       }
       return false;
     };
 
     // Handle email confirmation first
-    const isEmailConfirmation = handleEmailConfirmation();
-    
-    if (!isEmailConfirmation) {
-      // Handle the auth state change for normal flow
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(
-        (event, session) => {
-          secureLog('Auth state changed:', { event, userEmail: session?.user?.email });
+    handleEmailConfirmation().then((wasEmailConfirmation) => {
+      if (!wasEmailConfirmation) {
+        // Normal auth state handling
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+          (event, session) => {
+            secureLog('Auth state changed:', { event, userEmail: session?.user?.email });
+            setSession(session);
+            setUser(session?.user ?? null);
+            setLoading(false);
+
+            // Handle different auth events
+            if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
+              logSecurityEvent('user_signed_in', { userId: session.user.id });
+              
+              // Only redirect if we're not already on onboarding page
+              if (!window.location.pathname.includes('/onboarding')) {
+                // Use setTimeout to defer navigation and prevent deadlocks
+                setTimeout(() => {
+                  window.location.href = '/onboarding';
+                }, 0);
+              }
+            }
+            
+            if (event === 'SIGNED_OUT') {
+              logSecurityEvent('user_signed_out');
+              cleanupAuthState();
+            }
+          }
+        );
+
+        // Get initial session
+        supabase.auth.getSession().then(({ data: { session } }) => {
           setSession(session);
           setUser(session?.user ?? null);
           setLoading(false);
+        });
 
-          // Handle different auth events
-          if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
-            logSecurityEvent('user_signed_in', { userId: session.user.id });
-            
-            // Only redirect if we're not already on onboarding page
-            if (!window.location.pathname.includes('/onboarding')) {
-              // Use setTimeout to defer navigation and prevent deadlocks
-              setTimeout(() => {
-                window.location.href = '/onboarding';
-              }, 0);
-            }
-          }
-          
-          if (event === 'SIGNED_OUT') {
-            logSecurityEvent('user_signed_out');
-            cleanupAuthState();
-          }
-        }
-      );
-
-      // Get initial session
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      });
-
-      return () => subscription.unsubscribe();
-    }
+        return () => subscription.unsubscribe();
+      }
+    });
   }, []);
 
   const signUp = async (email: string, password: string, userData: {
