@@ -63,16 +63,13 @@ const Profile = () => {
     mutationFn: async (newNotifications: typeof notifications) => {
       const { error } = await supabase
         .from('customer_profiles')
-        .upsert({
-          user_id: user?.id,
+        .update({
           marketing_emails: newNotifications.marketingEmails,
           sms_notifications: newNotifications.smsNotifications,
           order_updates: newNotifications.orderUpdates,
           updated_at: new Date().toISOString(),
-        }, { 
-          onConflict: 'user_id',
-          ignoreDuplicates: false 
-        });
+        })
+        .eq('user_id', user?.id);
 
       if (error) throw error;
     },
