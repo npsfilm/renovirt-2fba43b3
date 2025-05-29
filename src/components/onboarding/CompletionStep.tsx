@@ -11,9 +11,10 @@ interface CompletionStepProps {
   currentStep: number;
   totalSteps: number;
   completeOnboarding: () => void;
+  loading?: boolean;
 }
 
-const CompletionStep = ({ data, completeOnboarding }: CompletionStepProps) => {
+const CompletionStep = ({ data, completeOnboarding, loading }: CompletionStepProps) => {
   const getRoleTitle = (role: string) => {
     const roles: { [key: string]: string } = {
       'makler': 'Makler',
@@ -88,8 +89,13 @@ const CompletionStep = ({ data, completeOnboarding }: CompletionStepProps) => {
         </div>
       </div>
 
-      <Button onClick={completeOnboarding} size="lg" className="px-8">
-        Zum Dashboard
+      <Button 
+        onClick={completeOnboarding} 
+        size="lg" 
+        className="px-8"
+        disabled={loading}
+      >
+        {loading ? 'Speichere...' : 'Zum Dashboard'}
       </Button>
     </div>
   );

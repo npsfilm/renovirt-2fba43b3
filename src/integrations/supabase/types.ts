@@ -36,6 +36,57 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_profiles: {
+        Row: {
+          address: string | null
+          company: string | null
+          created_at: string
+          data_source: string | null
+          first_name: string | null
+          id: string
+          industry: string | null
+          last_name: string | null
+          phone: string | null
+          responsibility: string | null
+          role: string
+          salutation: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          company?: string | null
+          created_at?: string
+          data_source?: string | null
+          first_name?: string | null
+          id?: string
+          industry?: string | null
+          last_name?: string | null
+          phone?: string | null
+          responsibility?: string | null
+          role: string
+          salutation?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          company?: string | null
+          created_at?: string
+          data_source?: string | null
+          first_name?: string | null
+          id?: string
+          industry?: string | null
+          last_name?: string | null
+          phone?: string | null
+          responsibility?: string | null
+          role?: string
+          salutation?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       order_add_ons: {
         Row: {
           add_on_id: string

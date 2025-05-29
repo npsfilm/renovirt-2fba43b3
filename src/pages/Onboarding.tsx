@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useCustomerProfile } from '@/hooks/useCustomerProfile';
 import { Progress } from '@/components/ui/progress';
 import { motion, AnimatePresence } from 'framer-motion';
 import WelcomeStep from '@/components/onboarding/WelcomeStep';
@@ -42,6 +43,7 @@ const Onboarding = () => {
 
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { saveCustomerProfile, loading } = useCustomerProfile();
 
   const steps = [
     { component: WelcomeStep, title: 'Willkommen' },
@@ -71,10 +73,30 @@ const Onboarding = () => {
     setOnboardingData(prev => ({ ...prev, ...data }));
   };
 
-  const completeOnboarding = () => {
-    // TODO: Save onboarding data to database
-    console.log('Onboarding completed:', onboardingData);
-    navigate('/');
+  const completeOnboarding = async () => {
+    try {
+      console.log('Completing onboarding with data:', onboardingData);
+      
+      // Save customer profile to Supabase
+      await saveCustomerProfile({
+        role: onboardingData.role,
+        salutation: onboardingData.salutation,
+        firstName: onboardingData.firstName,
+        lastName: onboardingData.lastName,
+        company: onboardingData.company,
+        address: onboardingData.address,
+        phone: onboardingData.phone,
+        industry: onboardingData.industry,
+        responsibility: onboardingData.responsibility,
+        dataSource: onboardingData.dataSource,
+      });
+
+      // Navigate to dashboard
+      navigate('/');
+    } catch (error) {
+      console.error('Error completing onboarding:', error);
+      // Don't navigate if there was an error saving
+    }
   };
 
   const CurrentStepComponent = steps[currentStep].component;
@@ -140,6 +162,7 @@ const Onboarding = () => {
                 currentStep={currentStep}
                 totalSteps={steps.length}
                 completeOnboarding={completeOnboarding}
+                loading={loading}
               />
             </motion.div>
           </AnimatePresence>
