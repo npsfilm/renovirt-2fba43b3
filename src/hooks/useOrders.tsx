@@ -81,7 +81,7 @@ export const useOrders = () => {
   };
 
   // Upload files to storage
-  const uploadFiles = async (files: File[], orderId: string) => {
+  const uploadFiles = async (files: File[], orderId: string, photoType?: string) => {
     const uploadPromises = files.map(async (file, index) => {
       const fileName = `${orderId}/${Date.now()}-${index}-${file.name}`;
       
@@ -100,7 +100,7 @@ export const useOrders = () => {
           file_size: file.size,
           file_type: file.type,
           storage_path: `${user?.id}/${fileName}`,
-          is_bracketing_set: orderData.photoType?.startsWith('bracketing') || false,
+          is_bracketing_set: photoType?.startsWith('bracketing') || false,
         });
 
       if (dbError) throw dbError;
@@ -155,7 +155,7 @@ export const useOrders = () => {
       if (orderError) throw orderError;
 
       // Upload files
-      await uploadFiles(orderData.files, order.id);
+      await uploadFiles(orderData.files, order.id, orderData.photoType);
 
       // Add selected extras
       const selectedAddOns = addOns.filter(addon => 
