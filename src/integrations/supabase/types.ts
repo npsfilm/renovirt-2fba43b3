@@ -40,6 +40,7 @@ export type Database = {
         Row: {
           address: string | null
           app_role: Database["public"]["Enums"]["app_role"]
+          billing_email: string | null
           company: string | null
           created_at: string
           data_source: string | null
@@ -47,16 +48,21 @@ export type Database = {
           id: string
           industry: string | null
           last_name: string | null
+          marketing_emails: boolean | null
+          order_updates: boolean | null
           phone: string | null
           responsibility: string | null
           role: string
           salutation: string | null
+          sms_notifications: boolean | null
           updated_at: string
           user_id: string
+          vat_id: string | null
         }
         Insert: {
           address?: string | null
           app_role?: Database["public"]["Enums"]["app_role"]
+          billing_email?: string | null
           company?: string | null
           created_at?: string
           data_source?: string | null
@@ -64,16 +70,21 @@ export type Database = {
           id?: string
           industry?: string | null
           last_name?: string | null
+          marketing_emails?: boolean | null
+          order_updates?: boolean | null
           phone?: string | null
           responsibility?: string | null
           role: string
           salutation?: string | null
+          sms_notifications?: boolean | null
           updated_at?: string
           user_id: string
+          vat_id?: string | null
         }
         Update: {
           address?: string | null
           app_role?: Database["public"]["Enums"]["app_role"]
+          billing_email?: string | null
           company?: string | null
           created_at?: string
           data_source?: string | null
@@ -81,12 +92,16 @@ export type Database = {
           id?: string
           industry?: string | null
           last_name?: string | null
+          marketing_emails?: boolean | null
+          order_updates?: boolean | null
           phone?: string | null
           responsibility?: string | null
           role?: string
           salutation?: string | null
+          sms_notifications?: boolean | null
           updated_at?: string
           user_id?: string
+          vat_id?: string | null
         }
         Relationships: []
       }
