@@ -13,6 +13,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, Download, Image, FileText, Package } from 'lucide-react';
 import OrderStatusBadge from './OrderStatusBadge';
+import { downloadFile } from '@/utils/fileDownloadService';
+import { createOrderNotification } from '@/utils/notificationService';
 
 interface OrderDetailsModalProps {
   orderId: string;
@@ -60,6 +62,7 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
 
       if (error) throw error;
       setSelectedStatus(data.status || 'pending');
+      setNotes(data.admin_notes || '');
       return data;
     },
     enabled: isOpen,
@@ -78,6 +81,25 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
         .eq('id', orderId);
 
       if (error) throw error;
+
+      // Create notification for customer
+      if (order?.user_id && status !== order.status) {
+        const statusMessages = {
+          'pending': 'Ihre Bestellung wird bearbeitet',
+          'processing': 'Ihre Bestellung ist in Bearbeitung',
+          'ready_for_review': 'Ihre Bestellung ist zur Überprüfung bereit',
+          'completed': 'Ihre Bestellung wurde abgeschlossen',
+          'cancelled': 'Ihre Bestellung wurde storniert'
+        };
+
+        await createOrderNotification({
+          order_id: orderId,
+          user_id: order.user_id,
+          title: 'Bestellstatus aktualisiert',
+          message: statusMessages[status as keyof typeof statusMessages] || 'Status wurde aktualisiert',
+          type: status === 'completed' ? 'success' : 'info'
+        });
+      }
     },
     onSuccess: () => {
       toast({
@@ -124,6 +146,17 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
       });
 
       await Promise.all(uploadPromises);
+
+      // Notify customer about new files
+      if (order?.user_id) {
+        await createOrderNotification({
+          order_id: orderId,
+          user_id: order.user_id,
+          title: 'Neue Dateien verfügbar',
+          message: `${files.length} neue Datei(en) wurden zu Ihrer Bestellung hinzugefügt`,
+          type: 'success'
+        });
+      }
     },
     onSuccess: () => {
       toast({
@@ -149,6 +182,23 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
   const handleFileUpload = () => {
     if (uploadFiles && uploadFiles.length > 0) {
       uploadFilesMutation.mutate(uploadFiles);
+    }
+  };
+
+  const handleFileDownload = async (image: any) => {
+    try {
+      const bucket = image.storage_path.includes('order-deliverables') ? 'order-deliverables' : 'order-images';
+      await downloadFile(bucket, image.storage_path, image.file_name);
+      toast({
+        title: "Download gestartet",
+        description: `${image.file_name} wird heruntergeladen...`,
+      });
+    } catch (error) {
+      toast({
+        title: "Download-Fehler",
+        description: "Die Datei konnte nicht heruntergeladen werden.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -222,6 +272,13 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
                 <Label className="text-sm font-medium">Erstellt am</Label>
                 <p className="text-sm">{new Date(order?.created_at).toLocaleDateString('de-DE')}</p>
               </div>
+
+              {order?.admin_notes && (
+                <div>
+                  <Label className="text-sm font-medium">Admin-Notizen</Label>
+                  <p className="text-sm text-gray-600">{order.admin_notes}</p>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -317,7 +374,11 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
                         </p>
                       </div>
                     </div>
-                    <Button size="sm" variant="outline">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => handleFileDownload(image)}
+                    >
                       <Download className="w-4 h-4" />
                     </Button>
                   </div>

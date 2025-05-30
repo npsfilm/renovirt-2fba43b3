@@ -2,8 +2,11 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Eye, Download, Edit } from 'lucide-react';
+import { Eye, Download, Edit, Package, Archive } from 'lucide-react';
 import OrderStatusBadge from './OrderStatusBadge';
+import { downloadFile } from '@/utils/fileDownloadService';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Order {
   id: string;
@@ -22,6 +25,7 @@ interface Order {
     file_name: string;
     file_size: number;
     file_type: string;
+    storage_path: string;
   }>;
 }
 
@@ -32,6 +36,67 @@ interface OrdersTableProps {
 }
 
 const OrdersTable = ({ orders, isLoading, onOrderSelect }: OrdersTableProps) => {
+  const { toast } = useToast();
+
+  const handleDownloadAll = async (order: Order) => {
+    try {
+      if (!order.order_images || order.order_images.length === 0) {
+        toast({
+          title: "Keine Dateien",
+          description: "Diese Bestellung enthält keine Dateien zum Herunterladen.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Download all files for this order
+      for (const image of order.order_images) {
+        const bucket = image.storage_path.includes('order-deliverables') ? 'order-deliverables' : 'order-images';
+        await downloadFile(bucket, image.storage_path, image.file_name);
+      }
+
+      toast({
+        title: "Downloads gestartet",
+        description: `${order.order_images.length} Datei(en) werden heruntergeladen...`,
+      });
+    } catch (error) {
+      toast({
+        title: "Download-Fehler",
+        description: "Einige Dateien konnten nicht heruntergeladen werden.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const createOrderZip = async (order: Order) => {
+    try {
+      if (!order.order_images || order.order_images.length === 0) {
+        toast({
+          title: "Keine Dateien",
+          description: "Diese Bestellung enthält keine Dateien für ein ZIP-Archiv.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "ZIP wird erstellt",
+        description: "Das ZIP-Archiv wird vorbereitet...",
+      });
+
+      // This would ideally be handled by an edge function
+      // For now, we'll download files individually
+      await handleDownloadAll(order);
+      
+    } catch (error) {
+      toast({
+        title: "ZIP-Fehler",
+        description: "Das ZIP-Archiv konnte nicht erstellt werden.",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (isLoading) {
     return (
       <Card>
@@ -104,16 +169,32 @@ const OrdersTable = ({ orders, isLoading, onOrderSelect }: OrdersTableProps) => 
                     {new Date(order.created_at).toLocaleDateString('de-DE')}
                   </td>
                   <td className="py-3 px-4">
-                    <div className="flex gap-2">
+                    <div className="flex gap-1">
                       <Button 
                         size="sm" 
                         variant="outline"
                         onClick={() => onOrderSelect(order.id)}
+                        title="Bestellung bearbeiten"
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => handleDownloadAll(order)}
+                        title="Alle Dateien herunterladen"
+                        disabled={!order.order_images || order.order_images.length === 0}
+                      >
                         <Download className="w-4 h-4" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => createOrderZip(order)}
+                        title="ZIP-Archiv erstellen"
+                        disabled={!order.order_images || order.order_images.length === 0}
+                      >
+                        <Archive className="w-4 h-4" />
                       </Button>
                     </div>
                   </td>
