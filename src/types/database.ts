@@ -1,4 +1,3 @@
-
 // Local type definitions for new database structures
 export interface OrderNotification {
   id: string;
@@ -6,18 +5,23 @@ export interface OrderNotification {
   user_id: string;
   title: string;
   message: string;
-  type?: 'info' | 'success' | 'warning' | 'error';
-  read?: boolean;
+  type: 'info' | 'success' | 'warning' | 'error';
+  read: boolean;
   created_at: string;
 }
 
 export interface ExtendedOrder {
   id: string;
   user_id: string;
-  customer_email: string;
+  package_id?: string;
+  customer_email?: string;
+  photo_type?: string;
   image_count: number;
   total_price: number;
-  status: string;
+  bracketing_enabled?: boolean;
+  bracketing_exposures?: number;
+  terms_accepted?: boolean;
+  status?: string;
   created_at: string;
   updated_at: string;
   admin_notes?: string;

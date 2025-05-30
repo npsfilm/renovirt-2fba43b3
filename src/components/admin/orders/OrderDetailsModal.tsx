@@ -6,10 +6,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import OrderStatusBadge from './OrderStatusBadge';
 import { downloadFile } from '@/utils/fileDownloadService';
-import { createOrderNotification } from '@/utils/notificationService';
 import OrderInfo from './OrderInfo';
 import StatusManager from './StatusManager';
-import FileUploadManager from './FileUploadManager';
 import OrderFilesList from './OrderFilesList';
 import type { ExtendedOrder } from '@/types/database';
 
@@ -22,7 +20,6 @@ interface OrderDetailsModalProps {
 const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps) => {
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [notes, setNotes] = useState('');
-  const [uploadFiles, setUploadFiles] = useState<FileList | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -85,25 +82,6 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
         .eq('id', orderId);
 
       if (error) throw error;
-
-      // Create notification for customer
-      if (order?.user_id && status !== order.status) {
-        const statusMessages = {
-          'pending': 'Ihre Bestellung wird bearbeitet',
-          'processing': 'Ihre Bestellung ist in Bearbeitung',
-          'ready_for_review': 'Ihre Bestellung ist zur Überprüfung bereit',
-          'completed': 'Ihre Bestellung wurde abgeschlossen',
-          'cancelled': 'Ihre Bestellung wurde storniert'
-        };
-
-        await createOrderNotification({
-          order_id: orderId,
-          user_id: order.user_id,
-          title: 'Bestellstatus aktualisiert',
-          message: statusMessages[status as keyof typeof statusMessages] || 'Status wurde aktualisiert',
-          type: status === 'completed' ? 'success' : 'info'
-        });
-      }
     },
     onSuccess: () => {
       toast({
@@ -122,71 +100,8 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
     },
   });
 
-  // Upload files to order
-  const uploadFilesMutation = useMutation({
-    mutationFn: async (files: FileList) => {
-      const uploadPromises = Array.from(files).map(async (file) => {
-        const fileName = `${orderId}/${Date.now()}-${file.name}`;
-        
-        // Upload to storage
-        const { error: uploadError } = await supabase.storage
-          .from('order-deliverables')
-          .upload(fileName, file);
-
-        if (uploadError) throw uploadError;
-
-        // Save metadata to database
-        const { error: dbError } = await supabase
-          .from('order_images')
-          .insert({
-            order_id: orderId,
-            file_name: file.name,
-            file_size: file.size,
-            file_type: file.type,
-            storage_path: fileName,
-          });
-
-        if (dbError) throw dbError;
-      });
-
-      await Promise.all(uploadPromises);
-
-      // Notify customer about new files
-      if (order?.user_id) {
-        await createOrderNotification({
-          order_id: orderId,
-          user_id: order.user_id,
-          title: 'Neue Dateien verfügbar',
-          message: `${files.length} neue Datei(en) wurden zu Ihrer Bestellung hinzugefügt`,
-          type: 'success'
-        });
-      }
-    },
-    onSuccess: () => {
-      toast({
-        title: "Dateien hochgeladen",
-        description: "Die Dateien wurden erfolgreich hochgeladen.",
-      });
-      setUploadFiles(null);
-      queryClient.invalidateQueries({ queryKey: ['order-details', orderId] });
-    },
-    onError: () => {
-      toast({
-        title: "Upload-Fehler",
-        description: "Die Dateien konnten nicht hochgeladen werden.",
-        variant: "destructive",
-      });
-    },
-  });
-
   const handleStatusUpdate = () => {
     updateStatusMutation.mutate({ status: selectedStatus, notes });
-  };
-
-  const handleFileUpload = () => {
-    if (uploadFiles && uploadFiles.length > 0) {
-      uploadFilesMutation.mutate(uploadFiles);
-    }
   };
 
   const handleFileDownload = async (image: any) => {
@@ -240,17 +155,12 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
             isUpdating={updateStatusMutation.isPending}
           />
 
-          <FileUploadManager
-            uploadFiles={uploadFiles}
-            setUploadFiles={setUploadFiles}
-            onFileUpload={handleFileUpload}
-            isUploading={uploadFilesMutation.isPending}
-          />
-
-          <OrderFilesList
-            order={order}
-            onFileDownload={handleFileDownload}
-          />
+          <div className="lg:col-span-2">
+            <OrderFilesList
+              order={order}
+              onFileDownload={handleFileDownload}
+            />
+          </div>
         </div>
       </DialogContent>
     </Dialog>
