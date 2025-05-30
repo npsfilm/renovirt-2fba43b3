@@ -9,6 +9,7 @@ import { downloadFile } from '@/utils/fileDownloadService';
 import OrderInfo from './OrderInfo';
 import StatusManager from './StatusManager';
 import OrderFilesList from './OrderFilesList';
+import OrderStatusTimeline from '@/components/order/OrderStatusTimeline';
 import type { ExtendedOrder } from '@/types/database';
 
 interface OrderDetailsModalProps {
@@ -20,6 +21,8 @@ interface OrderDetailsModalProps {
 const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps) => {
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [notes, setNotes] = useState('');
+  const [message, setMessage] = useState('');
+  const [estimatedCompletion, setEstimatedCompletion] = useState('');
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -59,27 +62,40 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
       const orderData = data as ExtendedOrder;
       setSelectedStatus(orderData.status || 'pending');
       setNotes(orderData.admin_notes || '');
+      if (orderData.estimated_completion) {
+        setEstimatedCompletion(new Date(orderData.estimated_completion).toISOString().slice(0, 16));
+      }
       return orderData;
     },
     enabled: isOpen,
   });
 
-  // Update order status
-  const updateStatusMutation = useMutation({
-    mutationFn: async ({ status, notes }: { status: string; notes?: string }) => {
-      const updateData: any = { 
-        status,
-        updated_at: new Date().toISOString()
-      };
-      
-      if (notes) {
-        updateData.admin_notes = notes;
-      }
+  // Fetch status history
+  const { data: statusHistory } = useQuery({
+    queryKey: ['order-status-history', orderId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('order_status_history')
+        .select('*')
+        .eq('order_id', orderId)
+        .order('created_at', { ascending: false });
 
-      const { error } = await supabase
-        .from('orders')
-        .update(updateData)
-        .eq('id', orderId);
+      if (error) throw error;
+      return data;
+    },
+    enabled: isOpen,
+  });
+
+  // Update order status using the function
+  const updateStatusMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.rpc('update_order_status', {
+        p_order_id: orderId,
+        p_status: selectedStatus,
+        p_message: message || null,
+        p_estimated_completion: estimatedCompletion ? new Date(estimatedCompletion).toISOString() : null,
+        p_admin_notes: notes || null,
+      });
 
       if (error) throw error;
     },
@@ -90,6 +106,8 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
       });
       queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
       queryClient.invalidateQueries({ queryKey: ['order-details', orderId] });
+      queryClient.invalidateQueries({ queryKey: ['order-status-history', orderId] });
+      setMessage(''); // Reset message after update
     },
     onError: () => {
       toast({
@@ -101,7 +119,7 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
   });
 
   const handleStatusUpdate = () => {
-    updateStatusMutation.mutate({ status: selectedStatus, notes });
+    updateStatusMutation.mutate();
   };
 
   const handleFileDownload = async (image: any) => {
@@ -135,7 +153,7 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             Bestellung #{order?.id.slice(0, 8)}
@@ -143,22 +161,38 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
           </DialogTitle>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <OrderInfo order={order} />
-          
-          <StatusManager
-            selectedStatus={selectedStatus}
-            setSelectedStatus={setSelectedStatus}
-            notes={notes}
-            setNotes={setNotes}
-            onStatusUpdate={handleStatusUpdate}
-            isUpdating={updateStatusMutation.isPending}
-          />
-
-          <div className="lg:col-span-2">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column - Order Info and Files */}
+          <div className="lg:col-span-2 space-y-6">
+            <OrderInfo order={order} />
+            
             <OrderFilesList
               order={order}
               onFileDownload={handleFileDownload}
+            />
+
+            {statusHistory && statusHistory.length > 0 && (
+              <OrderStatusTimeline
+                statusHistory={statusHistory}
+                currentStatus={order?.status || 'pending'}
+                estimatedCompletion={order?.estimated_completion}
+              />
+            )}
+          </div>
+
+          {/* Right Column - Status Management */}
+          <div>
+            <StatusManager
+              selectedStatus={selectedStatus}
+              setSelectedStatus={setSelectedStatus}
+              notes={notes}
+              setNotes={setNotes}
+              message={message}
+              setMessage={setMessage}
+              estimatedCompletion={estimatedCompletion}
+              setEstimatedCompletion={setEstimatedCompletion}
+              onStatusUpdate={handleStatusUpdate}
+              isUpdating={updateStatusMutation.isPending}
             />
           </div>
         </div>

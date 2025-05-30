@@ -5,12 +5,17 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 
 interface StatusManagerProps {
   selectedStatus: string;
   setSelectedStatus: (status: string) => void;
   notes: string;
   setNotes: (notes: string) => void;
+  message: string;
+  setMessage: (message: string) => void;
+  estimatedCompletion: string;
+  setEstimatedCompletion: (date: string) => void;
   onStatusUpdate: () => void;
   isUpdating: boolean;
 }
@@ -20,6 +25,10 @@ const StatusManager = ({
   setSelectedStatus,
   notes,
   setNotes,
+  message,
+  setMessage,
+  estimatedCompletion,
+  setEstimatedCompletion,
   onStatusUpdate,
   isUpdating
 }: StatusManagerProps) => {
@@ -38,15 +47,37 @@ const StatusManager = ({
             <SelectContent>
               <SelectItem value="pending">Ausstehend</SelectItem>
               <SelectItem value="processing">In Bearbeitung</SelectItem>
-              <SelectItem value="ready_for_review">Zur Überprüfung bereit</SelectItem>
+              <SelectItem value="quality_check">Qualitätsprüfung</SelectItem>
               <SelectItem value="completed">Abgeschlossen</SelectItem>
+              <SelectItem value="delivered">Ausgeliefert</SelectItem>
               <SelectItem value="cancelled">Storniert</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div>
-          <Label htmlFor="notes">Admin-Notizen</Label>
+          <Label htmlFor="message">Nachricht an Kunde (optional)</Label>
+          <Textarea
+            id="message"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Zusätzliche Informationen für den Kunden..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="estimatedCompletion">Geschätzte Fertigstellung</Label>
+          <Input
+            id="estimatedCompletion"
+            type="datetime-local"
+            value={estimatedCompletion}
+            onChange={(e) => setEstimatedCompletion(e.target.value)}
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="notes">Admin-Notizen (intern)</Label>
           <Textarea
             id="notes"
             value={notes}

@@ -23,9 +23,20 @@ export interface OrderNotificationInput {
 
 export const createOrderNotification = async (notification: OrderNotificationInput) => {
   try {
-    // For now, just log the notification since the table doesn't exist yet
-    secureLog('Notification would be created:', notification);
-    return { success: true };
+    const { data, error } = await supabase
+      .from('order_notifications')
+      .insert({
+        order_id: notification.order_id,
+        user_id: notification.user_id,
+        title: notification.title,
+        message: notification.message,
+        type: notification.type || 'info',
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return { success: true, data };
   } catch (error) {
     secureLog('Failed to create notification:', error);
     return { success: false, error };
@@ -34,9 +45,15 @@ export const createOrderNotification = async (notification: OrderNotificationInp
 
 export const getOrderNotifications = async (userId: string): Promise<OrderNotification[]> => {
   try {
-    // Return empty array for now since table doesn't exist
-    secureLog('Getting notifications for user:', userId);
-    return [];
+    const { data, error } = await supabase
+      .from('order_notifications')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (error) throw error;
+    return data || [];
   } catch (error) {
     secureLog('Failed to fetch notifications:', error);
     return [];
@@ -45,10 +62,31 @@ export const getOrderNotifications = async (userId: string): Promise<OrderNotifi
 
 export const markNotificationAsRead = async (notificationId: string) => {
   try {
-    secureLog('Marking notification as read:', notificationId);
+    const { error } = await supabase
+      .from('order_notifications')
+      .update({ read: true })
+      .eq('id', notificationId);
+
+    if (error) throw error;
     return { success: true };
   } catch (error) {
     secureLog('Failed to mark notification as read:', error);
+    return { success: false, error };
+  }
+};
+
+export const markAllNotificationsAsRead = async (userId: string) => {
+  try {
+    const { error } = await supabase
+      .from('order_notifications')
+      .update({ read: true })
+      .eq('user_id', userId)
+      .eq('read', false);
+
+    if (error) throw error;
+    return { success: true };
+  } catch (error) {
+    secureLog('Failed to mark all notifications as read:', error);
     return { success: false, error };
   }
 };
