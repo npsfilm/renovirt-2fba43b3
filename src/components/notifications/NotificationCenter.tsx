@@ -1,13 +1,14 @@
 
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Bell, Check, X } from 'lucide-react';
+import { Bell, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
 import { getOrderNotifications, markNotificationAsRead } from '@/utils/notificationService';
 import { useToast } from '@/hooks/use-toast';
+import type { OrderNotification } from '@/types/database';
 
 const NotificationCenter = () => {
   const { user } = useAuth();
@@ -27,7 +28,7 @@ const NotificationCenter = () => {
     },
   });
 
-  const unreadCount = notifications?.filter(n => !n.read).length || 0;
+  const unreadCount = notifications?.filter((n: OrderNotification) => !n.read).length || 0;
 
   const getNotificationColor = (type: string) => {
     switch (type) {
@@ -72,11 +73,11 @@ const NotificationCenter = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-3 max-h-96 overflow-y-auto">
-          {notifications?.map((notification) => (
+          {notifications?.map((notification: OrderNotification) => (
             <div
               key={notification.id}
               className={`p-3 rounded-lg border ${
-                notification.read ? 'bg-gray-50 border-gray-200' : getNotificationColor(notification.type)
+                notification.read ? 'bg-gray-50 border-gray-200' : getNotificationColor(notification.type || 'info')
               }`}
             >
               <div className="flex items-start justify-between">

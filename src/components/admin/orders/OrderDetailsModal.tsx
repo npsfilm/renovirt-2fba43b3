@@ -4,7 +4,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,6 +14,7 @@ import { Upload, Download, Image, FileText, Package } from 'lucide-react';
 import OrderStatusBadge from './OrderStatusBadge';
 import { downloadFile } from '@/utils/fileDownloadService';
 import { createOrderNotification } from '@/utils/notificationService';
+import type { ExtendedOrder } from '@/types/database';
 
 interface OrderDetailsModalProps {
   orderId: string;
@@ -32,7 +32,7 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
   // Fetch order details
   const { data: order, isLoading } = useQuery({
     queryKey: ['order-details', orderId],
-    queryFn: async () => {
+    queryFn: async (): Promise<ExtendedOrder> => {
       const { data, error } = await supabase
         .from('orders')
         .select(`
@@ -61,9 +61,11 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
         .single();
 
       if (error) throw error;
-      setSelectedStatus(data.status || 'pending');
-      setNotes(data.admin_notes || '');
-      return data;
+      
+      const orderData = data as ExtendedOrder;
+      setSelectedStatus(orderData.status || 'pending');
+      setNotes((orderData as any).admin_notes || '');
+      return orderData;
     },
     enabled: isOpen,
   });
@@ -71,13 +73,18 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
   // Update order status
   const updateStatusMutation = useMutation({
     mutationFn: async ({ status, notes }: { status: string; notes?: string }) => {
+      const updateData: any = { 
+        status,
+        updated_at: new Date().toISOString()
+      };
+      
+      if (notes) {
+        updateData.admin_notes = notes;
+      }
+
       const { error } = await supabase
         .from('orders')
-        .update({ 
-          status,
-          updated_at: new Date().toISOString(),
-          ...(notes && { admin_notes: notes })
-        })
+        .update(updateData)
         .eq('id', orderId);
 
       if (error) throw error;
@@ -221,6 +228,8 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
     );
   }
 
+  const adminNotes = (order as any)?.admin_notes || '';
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -244,7 +253,7 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
                   {order?.customer_profiles?.first_name} {order?.customer_profiles?.last_name}
                 </p>
                 {order?.customer_profiles?.company && (
-                  <p className="text-xs text-gray-500">{order?.customer_profiles?.company}</p>
+                  <p className="text-xs text-gray-500">{order.customer_profiles.company}</p>
                 )}
               </div>
               
@@ -270,13 +279,13 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
 
               <div>
                 <Label className="text-sm font-medium">Erstellt am</Label>
-                <p className="text-sm">{new Date(order?.created_at).toLocaleDateString('de-DE')}</p>
+                <p className="text-sm">{new Date(order?.created_at || '').toLocaleDateString('de-DE')}</p>
               </div>
 
-              {order?.admin_notes && (
+              {adminNotes && (
                 <div>
                   <Label className="text-sm font-medium">Admin-Notizen</Label>
-                  <p className="text-sm text-gray-600">{order.admin_notes}</p>
+                  <p className="text-sm text-gray-600">{adminNotes}</p>
                 </div>
               )}
             </CardContent>
