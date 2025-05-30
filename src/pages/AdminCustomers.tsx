@@ -8,10 +8,14 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Search, User, Mail, Phone, Building } from 'lucide-react';
+import { Search, User, Mail, Phone, Building, FileText, ShoppingCart } from 'lucide-react';
+import CustomerDetailsModal from '@/components/admin/customers/CustomerDetailsModal';
+import CustomerOrdersModal from '@/components/admin/customers/CustomerOrdersModal';
 
 const AdminCustomers = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
+  const [selectedCustomerForOrders, setSelectedCustomerForOrders] = useState<{id: string, name: string} | null>(null);
 
   const { data: customers, isLoading } = useQuery({
     queryKey: ['admin-customers', searchTerm],
@@ -42,10 +46,25 @@ const AdminCustomers = () => {
       makler: { label: 'Makler', variant: 'secondary' as const },
       architekt: { label: 'Architekt', variant: 'secondary' as const },
       fotograf: { label: 'Fotograf', variant: 'secondary' as const },
+      projektentwickler: { label: 'Projektentwickler', variant: 'secondary' as const },
+      investor: { label: 'Investor', variant: 'secondary' as const },
     };
 
     const config = roleConfig[role as keyof typeof roleConfig] || { label: role, variant: 'default' as const };
     return <Badge variant={config.variant}>{config.label}</Badge>;
+  };
+
+  const handleDetailsClick = (customerId: string) => {
+    setSelectedCustomerId(customerId);
+  };
+
+  const handleOrdersClick = (customerId: string, customerName: string) => {
+    setSelectedCustomerForOrders({ id: customerId, name: customerName });
+  };
+
+  const handleAttachInvoice = (customerId: string) => {
+    // TODO: Implement invoice attachment functionality
+    console.log('Attach invoice for customer:', customerId);
   };
 
   return (
@@ -57,7 +76,7 @@ const AdminCustomers = () => {
           <div>
             <h1 className="text-xl font-semibold text-gray-900">Kunden verwalten</h1>
             <p className="text-sm text-gray-600">
-              Alle registrierten Kunden anzeigen und verwalten
+              Alle registrierten Kunden anzeigen und verwalten ({customers?.length || 0} Kunden)
             </p>
           </div>
         </div>
@@ -128,6 +147,13 @@ const AdminCustomers = () => {
                     </div>
                   )}
 
+                  {customer.billing_email && (
+                    <div className="flex items-center space-x-2 text-sm text-gray-600">
+                      <Mail className="w-4 h-4" />
+                      <span className="truncate">{customer.billing_email}</span>
+                    </div>
+                  )}
+
                   {customer.industry && (
                     <div className="text-sm text-gray-600">
                       <span className="font-medium">Branche:</span> {customer.industry}
@@ -145,23 +171,60 @@ const AdminCustomers = () => {
                   </div>
 
                   <div className="flex gap-2 pt-3">
-                    <Button size="sm" variant="outline" className="flex-1">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="flex-1"
+                      onClick={() => handleDetailsClick(customer.id)}
+                    >
+                      <User className="w-4 h-4 mr-1" />
                       Details
                     </Button>
-                    <Button size="sm" variant="outline" className="flex-1">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="flex-1"
+                      onClick={() => handleOrdersClick(customer.id, `${customer.first_name} ${customer.last_name}`)}
+                    >
+                      <ShoppingCart className="w-4 h-4 mr-1" />
                       Bestellungen
                     </Button>
                   </div>
+                  
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => handleAttachInvoice(customer.id)}
+                  >
+                    <FileText className="w-4 h-4 mr-1" />
+                    Rechnung anhängen
+                  </Button>
                 </CardContent>
               </Card>
             ))
           ) : (
             <div className="col-span-full text-center py-8 text-gray-500">
-              Keine Kunden gefunden
+              <User className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+              <p>Keine Kunden gefunden</p>
             </div>
           )}
         </div>
       </main>
+
+      {/* Modals */}
+      <CustomerDetailsModal
+        customerId={selectedCustomerId}
+        isOpen={!!selectedCustomerId}
+        onClose={() => setSelectedCustomerId(null)}
+      />
+
+      <CustomerOrdersModal
+        customerId={selectedCustomerForOrders?.id || null}
+        customerName={selectedCustomerForOrders?.name || ''}
+        isOpen={!!selectedCustomerForOrders}
+        onClose={() => setSelectedCustomerForOrders(null)}
+      />
     </AdminLayout>
   );
 };
