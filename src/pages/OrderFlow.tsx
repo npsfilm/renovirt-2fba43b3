@@ -8,7 +8,8 @@ import SummaryStep from '@/components/order/SummaryStep';
 import ConfirmationStep from '@/components/order/ConfirmationStep';
 import OrderProgress from '@/components/order/OrderProgress';
 import { useAuth } from '@/hooks/useAuth';
-import { useCustomerProfile } from '@/hooks/useCustomerProfile';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface OrderData {
   photoType?: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5';
@@ -28,7 +29,24 @@ interface OrderData {
 const OrderFlow = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const { user } = useAuth();
-  const { profile } = useCustomerProfile();
+  
+  // Fetch customer profile data
+  const { data: profile } = useQuery({
+    queryKey: ['customer-profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      const { data, error } = await supabase
+        .from('customer_profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
   
   const [orderData, setOrderData] = useState<OrderData>({
     files: [],
