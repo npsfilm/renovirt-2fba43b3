@@ -1,63 +1,45 @@
 
 import React from 'react';
-import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import { useAuth } from '@/hooks/useAuth';
+import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/layout/AppSidebar';
+import PageHeader from '@/components/layout/PageHeader';
 import WelcomeSection from '@/components/dashboard/WelcomeSection';
+import QuickStats from '@/components/dashboard/QuickStats';
 import QuickActions from '@/components/dashboard/QuickActions';
 import RecentOrdersCompact from '@/components/dashboard/RecentOrdersCompact';
-import RecentActivity from '@/components/dashboard/RecentActivity';
-import QuickStats from '@/components/dashboard/QuickStats';
-import AIToolsQuickAccess from '@/components/dashboard/AIToolsQuickAccess';
-import ProfileBilling from '@/components/dashboard/ProfileBilling';
-import { useRealTimeOrderUpdates } from '@/hooks/useRealTimeOrderUpdates';
+import NotificationCenter from '@/components/notifications/NotificationCenter';
 
 const Dashboard = () => {
-  // Enable real-time updates for order status changes
-  useRealTimeOrderUpdates();
+  const { user } = useAuth();
 
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <SidebarInset>
-          {/* Header */}
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-white px-4">
-            <SidebarTrigger className="-ml-1" />
-            <div className="flex flex-1 items-center justify-between">
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
-                <p className="text-sm text-gray-600">
-                  Willkommen zurück! Hier ist Ihr Überblick.
-                </p>
-              </div>
-            </div>
-          </header>
+          <PageHeader 
+            title="Dashboard" 
+            subtitle="Schnellstart: Ihre Bilder in wenigen Klicks optimieren"
+          />
 
           {/* Main Content */}
-          <main className="flex-1 p-6 space-y-6">
-            {/* Welcome and Quick Actions */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2">
-                <WelcomeSection />
-              </div>
-              <div>
-                <QuickActions />
-              </div>
-            </div>
+          <main className="flex-1 space-y-6 p-6">
+            {/* Welcome Section */}
+            <WelcomeSection />
 
-            {/* Stats Overview */}
+            {/* Quick Stats */}
             <QuickStats />
 
-            {/* Recent Orders and Activity */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <RecentOrdersCompact />
-              <RecentActivity />
-            </div>
-
-            {/* Additional Sections */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <AIToolsQuickAccess />
-              <ProfileBilling />
+            {/* Main Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <RecentOrdersCompact />
+              </div>
+              <div className="space-y-6">
+                <QuickActions />
+                <NotificationCenter />
+              </div>
             </div>
           </main>
         </SidebarInset>

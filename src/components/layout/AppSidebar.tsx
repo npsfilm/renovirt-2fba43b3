@@ -1,4 +1,6 @@
 
+import { Calendar, Home, Inbox, Search, Settings, ShoppingCart, Sparkles, User, Shield, LogOut } from "lucide-react"
+
 import {
   Sidebar,
   SidebarContent,
@@ -10,105 +12,77 @@ import {
   SidebarMenuItem,
   SidebarHeader,
   SidebarFooter,
-} from '@/components/ui/sidebar';
-import { 
-  Home, 
-  ShoppingCart, 
-  User, 
-  Wand2, 
-  LogOut,
-  Settings,
-  Users,
-  BarChart3,
-  Package
-} from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { useAdminRole } from '@/hooks/useAdminRole';
-import { Button } from '@/components/ui/button';
-import NotificationBell from '@/components/notifications/NotificationBell';
+} from "@/components/ui/sidebar"
+import { useNavigate, useLocation } from "react-router-dom"
+import { useAdminRole } from "@/hooks/useAdminRole"
+import { useAuth } from "@/hooks/useAuth"
+import { Button } from "@/components/ui/button"
 
-const AppSidebar = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { signOut } = useAuth();
-  const { isAdmin } = useAdminRole();
+// Menu items - removed Gallery
+const items = [
+  {
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: Home,
+  },
+  {
+    title: "Bestellungen",
+    url: "/orders",
+    icon: ShoppingCart,
+  },
+  {
+    title: "AI Tools",
+    url: "/ai-tools",
+    icon: Sparkles,
+  },
+  {
+    title: "Profil & Abrechnung",
+    url: "/profile",
+    icon: User,
+  },
+  {
+    title: "Einstellungen",
+    url: "/settings",
+    icon: Settings,
+  },
+  {
+    title: "Hilfe",
+    url: "/help",
+    icon: Search,
+  },
+]
 
-  const customerItems = [
-    {
-      title: 'Dashboard',
-      url: '/dashboard',
-      icon: Home,
-    },
-    {
-      title: 'Neue Bestellung',
-      url: '/order-flow',
-      icon: ShoppingCart,
-    },
-    {
-      title: 'Meine Bestellungen',
-      url: '/orders',
-      icon: Package,
-    },
-    {
-      title: 'AI Tools',
-      url: '/ai-tools',
-      icon: Wand2,
-    },
-    {
-      title: 'Profil',
-      url: '/profile',
-      icon: User,
-    },
-  ];
+export default function AppSidebar() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { isAdmin } = useAdminRole()
+  const { signOut } = useAuth()
 
-  const adminItems = [
-    {
-      title: 'Admin Dashboard',
-      url: '/admin/dashboard',
-      icon: BarChart3,
-    },
-    {
-      title: 'Bestellungen',
-      url: '/admin/orders',
-      icon: Package,
-    },
-    {
-      title: 'Kunden',
-      url: '/admin/customers',
-      icon: Users,
-    },
-    {
-      title: 'Analytics',
-      url: '/admin/analytics',
-      icon: BarChart3,
-    },
-    {
-      title: 'Einstellungen',
-      url: '/admin/settings',
-      icon: Settings,
-    },
-  ];
-
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      navigate('/auth');
-    } catch (error) {
-      console.error('Logout error:', error);
+  const isActivePath = (path: string) => {
+    if (path === '/dashboard') {
+      return location.pathname === '/dashboard'
     }
-  };
+    return location.pathname.startsWith(path)
+  }
 
-  const isActive = (url: string) => {
-    return location.pathname === url;
-  };
+  const handleLogout = async () => {
+    try {
+      await signOut()
+      navigate('/auth')
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
+  }
 
   return (
     <Sidebar>
       <SidebarHeader className="p-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">HDR Service</h2>
-          <NotificationBell />
+        <div className="flex items-center gap-2">
+          <img 
+            src="/lovable-uploads/d6ac9ba9-7ad2-408b-a2b0-5f31c269dd53.png" 
+            alt="Renovirt Logo" 
+            className="h-8 w-auto"
+          />
         </div>
       </SidebarHeader>
       
@@ -117,55 +91,55 @@ const AppSidebar = () => {
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {customerItems.map((item) => (
+              {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
-                    onClick={() => navigate(item.url)}
-                    isActive={isActive(item.url)}
+                    asChild
+                    isActive={isActivePath(item.url)}
                   >
-                    <item.icon className="w-4 h-4" />
-                    <span>{item.title}</span>
+                    <button 
+                      onClick={() => navigate(item.url)}
+                      className="w-full flex items-center gap-2"
+                    >
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </button>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              
+              {/* Admin Panel Access - Only show to admins */}
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton 
+                    asChild
+                    isActive={location.pathname.startsWith('/management')}
+                  >
+                    <button 
+                      onClick={() => navigate('/management')}
+                      className="w-full flex items-center gap-2 text-red-600 hover:text-red-700"
+                    >
+                      <Shield />
+                      <span>Admin Panel</span>
+                    </button>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
-        {isAdmin && (
-          <SidebarGroup>
-            <SidebarGroupLabel>Administration</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {adminItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton 
-                      onClick={() => navigate(item.url)}
-                      isActive={isActive(item.url)}
-                    >
-                      <item.icon className="w-4 h-4" />
-                      <span>{item.title}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
       </SidebarContent>
-
+      
       <SidebarFooter className="p-4">
         <Button 
           variant="ghost" 
-          onClick={handleSignOut}
-          className="w-full justify-start"
+          onClick={handleLogout}
+          className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
         >
           <LogOut className="w-4 h-4 mr-2" />
           Abmelden
         </Button>
       </SidebarFooter>
     </Sidebar>
-  );
-};
-
-export default AppSidebar;
+  )
+}
