@@ -53,7 +53,18 @@ export const getOrderNotifications = async (userId: string): Promise<OrderNotifi
       .limit(50);
 
     if (error) throw error;
-    return data || [];
+    
+    // Type assertion to ensure proper typing
+    return (data || []).map(item => ({
+      id: item.id,
+      order_id: item.order_id,
+      user_id: item.user_id,
+      title: item.title,
+      message: item.message,
+      type: item.type as 'info' | 'success' | 'warning' | 'error',
+      read: item.read,
+      created_at: item.created_at,
+    }));
   } catch (error) {
     secureLog('Failed to fetch notifications:', error);
     return [];
