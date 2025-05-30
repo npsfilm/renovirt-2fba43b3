@@ -15,6 +15,18 @@ serve(async (req) => {
   }
 
   try {
+    // Check if Stripe secret key is available
+    const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeSecretKey) {
+      console.error("STRIPE_SECRET_KEY is not configured in edge function secrets");
+      return new Response(JSON.stringify({ 
+        error: "Stripe is not configured. Please contact support." 
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500,
+      });
+    }
+
     // Create Supabase client
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
@@ -39,7 +51,7 @@ serve(async (req) => {
     }
 
     // Initialize Stripe
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+    const stripe = new Stripe(stripeSecretKey, {
       apiVersion: "2023-10-16",
     });
 
@@ -92,7 +104,6 @@ serve(async (req) => {
       .from("orders")
       .update({ 
         stripe_session_id: session.id,
-        payment_method: "stripe",
         updated_at: new Date().toISOString()
       })
       .eq("id", orderId);

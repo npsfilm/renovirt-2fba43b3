@@ -36,15 +36,36 @@ const handler = async (req: Request): Promise<Response> => {
       ? `<p><strong>Gewählte Extras:</strong> ${orderDetails.extras.join(', ')}</p>`
       : '';
 
+    // Check if RESEND_API_KEY is configured
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    if (!resendApiKey) {
+      console.log("RESEND_API_KEY not configured. Order details:", { orderId, customerEmail, orderDetails });
+      return new Response(JSON.stringify({ 
+        message: "E-Mail-Service nicht konfiguriert",
+        orderId,
+        orderDetails 
+      }), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders,
+        },
+      });
+    }
+
+    // For development, use the verified email address
+    const toEmail = customerEmail === "hello@npsfilm.de" ? customerEmail : "hello@npsfilm.de";
+    
     const emailResponse = await resend.emails.send({
-      from: "HDR Service <noreply@resend.dev>",
-      to: [customerEmail],
+      from: "HDR Service <hello@npsfilm.de>",
+      to: [toEmail],
       subject: `Bestellbestätigung - Bestellung ${orderId.slice(-6)}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="text-align: center; margin-bottom: 30px;">
             <h1 style="color: #333; margin-bottom: 10px;">Vielen Dank für Ihre Bestellung!</h1>
             <p style="color: #666; font-size: 16px;">Wir haben Ihre Zahlung erhalten und starten sofort mit der Bearbeitung.</p>
+            ${customerEmail !== "hello@npsfilm.de" ? `<p style="color: #888; font-size: 14px;"><em>Hinweis: Diese E-Mail wurde an ${customerEmail} gesendet (Entwicklungsmodus)</em></p>` : ''}
           </div>
 
           <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
@@ -53,6 +74,10 @@ const handler = async (req: Request): Promise<Response> => {
               <tr>
                 <td style="padding: 8px 0; border-bottom: 1px solid #ddd;"><strong>Bestellnummer:</strong></td>
                 <td style="padding: 8px 0; border-bottom: 1px solid #ddd; text-align: right;">${orderId.slice(-6)}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #ddd;"><strong>Kunden-E-Mail:</strong></td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #ddd; text-align: right;">${customerEmail}</td>
               </tr>
               <tr>
                 <td style="padding: 8px 0; border-bottom: 1px solid #ddd;"><strong>Paket:</strong></td>

@@ -23,11 +23,21 @@ export const usePayment = () => {
     },
     onError: (error) => {
       console.error('Payment error:', error);
-      toast({
-        title: "Zahlungsfehler",
-        description: "Bei der Zahlung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
-        variant: "destructive",
-      });
+      
+      // Check if it's a Stripe configuration error
+      if (error.message?.includes('Stripe is not configured')) {
+        toast({
+          title: "Zahlungsanbieter nicht verfügbar",
+          description: "Die Stripe-Integration ist nicht konfiguriert. Bitte kontaktieren Sie den Support.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Zahlungsfehler",
+          description: "Bei der Zahlung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+          variant: "destructive",
+        });
+      }
     },
   });
 
