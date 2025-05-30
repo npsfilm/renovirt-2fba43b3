@@ -43,7 +43,7 @@ export const getOrderNotifications = async (userId: string): Promise<OrderNotifi
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return (data as OrderNotification[]) || [];
+    return (data as unknown as OrderNotification[]) || [];
   } catch (error) {
     secureLog('Failed to fetch notifications:', error);
     return [];
