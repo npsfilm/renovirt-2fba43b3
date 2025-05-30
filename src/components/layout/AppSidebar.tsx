@@ -1,5 +1,5 @@
 
-import { Calendar, Home, Inbox, Search, Settings, ShoppingCart, Sparkles, User, Shield } from "lucide-react"
+import { Calendar, Home, Inbox, Search, Settings, ShoppingCart, Sparkles, User, Shield, LogOut } from "lucide-react"
 
 import {
   Sidebar,
@@ -10,9 +10,13 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarHeader,
+  SidebarFooter,
 } from "@/components/ui/sidebar"
 import { useNavigate, useLocation } from "react-router-dom"
 import { useAdminRole } from "@/hooks/useAdminRole"
+import { useAuth } from "@/hooks/useAuth"
+import { Button } from "@/components/ui/button"
 
 // Menu items.
 const items = [
@@ -57,6 +61,7 @@ export default function AppSidebar() {
   const navigate = useNavigate()
   const location = useLocation()
   const { isAdmin } = useAdminRole()
+  const { signOut } = useAuth()
 
   const isActivePath = (path: string) => {
     if (path === '/dashboard') {
@@ -65,11 +70,30 @@ export default function AppSidebar() {
     return location.pathname.startsWith(path)
   }
 
+  const handleLogout = async () => {
+    try {
+      await signOut()
+      navigate('/auth')
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
+  }
+
   return (
     <Sidebar>
+      <SidebarHeader className="p-4">
+        <div className="flex items-center gap-2">
+          <img 
+            src="/lovable-uploads/d6ac9ba9-7ad2-408b-a2b0-5f31c269dd53.png" 
+            alt="Renovirt Logo" 
+            className="h-8 w-auto"
+          />
+        </div>
+      </SidebarHeader>
+      
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Renovirt</SidebarGroupLabel>
+          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
@@ -110,6 +134,17 @@ export default function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      
+      <SidebarFooter className="p-4">
+        <Button 
+          variant="ghost" 
+          onClick={handleLogout}
+          className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+        >
+          <LogOut className="w-4 h-4 mr-2" />
+          Abmelden
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   )
 }
