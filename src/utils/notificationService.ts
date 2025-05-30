@@ -13,29 +13,18 @@ export interface OrderNotificationInput {
 
 export const createOrderNotification = async (notification: OrderNotificationInput) => {
   try {
-    // Use raw SQL query since the table might not be in generated types yet
-    const { error } = await supabase.rpc('create_notification', {
-      p_order_id: notification.order_id,
-      p_user_id: notification.user_id,
-      p_title: notification.title,
-      p_message: notification.message,
-      p_type: notification.type || 'info'
-    });
-
-    if (error) {
-      // Fallback to direct table access if RPC doesn't exist
-      const { error: insertError } = await supabase
-        .from('order_notifications' as any)
-        .insert({
-          order_id: notification.order_id,
-          user_id: notification.user_id,
-          title: notification.title,
-          message: notification.message,
-          type: notification.type || 'info',
-        });
-      
-      if (insertError) throw insertError;
-    }
+    // Direct insert into order_notifications table
+    const { error } = await supabase
+      .from('order_notifications' as any)
+      .insert({
+        order_id: notification.order_id,
+        user_id: notification.user_id,
+        title: notification.title,
+        message: notification.message,
+        type: notification.type || 'info',
+      });
+    
+    if (error) throw error;
     
     secureLog('Notification created successfully');
     return { success: true };
@@ -54,7 +43,7 @@ export const getOrderNotifications = async (userId: string): Promise<OrderNotifi
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    return (data as OrderNotification[]) || [];
   } catch (error) {
     secureLog('Failed to fetch notifications:', error);
     return [];
