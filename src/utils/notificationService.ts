@@ -13,9 +13,8 @@ export interface OrderNotificationInput {
 
 export const createOrderNotification = async (notification: OrderNotificationInput) => {
   try {
-    // Direct insert into order_notifications table
     const { error } = await supabase
-      .from('order_notifications' as any)
+      .from('order_notifications')
       .insert({
         order_id: notification.order_id,
         user_id: notification.user_id,
@@ -37,13 +36,13 @@ export const createOrderNotification = async (notification: OrderNotificationInp
 export const getOrderNotifications = async (userId: string): Promise<OrderNotification[]> => {
   try {
     const { data, error } = await supabase
-      .from('order_notifications' as any)
+      .from('order_notifications')
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return (data as unknown as OrderNotification[]) || [];
+    return data || [];
   } catch (error) {
     secureLog('Failed to fetch notifications:', error);
     return [];
@@ -53,7 +52,7 @@ export const getOrderNotifications = async (userId: string): Promise<OrderNotifi
 export const markNotificationAsRead = async (notificationId: string) => {
   try {
     const { error } = await supabase
-      .from('order_notifications' as any)
+      .from('order_notifications')
       .update({ read: true })
       .eq('id', notificationId);
 

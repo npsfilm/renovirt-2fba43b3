@@ -1,34 +1,14 @@
 
 import React from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Bell, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useAuth } from '@/hooks/useAuth';
-import { getOrderNotifications, markNotificationAsRead } from '@/utils/notificationService';
-import { useToast } from '@/hooks/use-toast';
+import { useNotifications } from '@/hooks/useNotifications';
 import type { OrderNotification } from '@/types/database';
 
 const NotificationCenter = () => {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-  const { data: notifications, isLoading } = useQuery({
-    queryKey: ['notifications', user?.id],
-    queryFn: () => getOrderNotifications(user?.id || ''),
-    enabled: !!user?.id,
-  });
-
-  const markAsReadMutation = useMutation({
-    mutationFn: markNotificationAsRead,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
-    },
-  });
-
-  const unreadCount = notifications?.filter((n: OrderNotification) => !n.read).length || 0;
+  const { notifications, isLoading, unreadCount, markAsRead } = useNotifications();
 
   const getNotificationColor = (type: string) => {
     switch (type) {
@@ -98,7 +78,7 @@ const NotificationCenter = () => {
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={() => markAsReadMutation.mutate(notification.id)}
+                    onClick={() => markAsRead(notification.id)}
                     className="ml-2"
                   >
                     <Check className="w-4 h-4" />

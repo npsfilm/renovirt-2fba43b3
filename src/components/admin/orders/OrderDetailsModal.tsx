@@ -1,19 +1,16 @@
 
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, Download, Image, FileText, Package } from 'lucide-react';
 import OrderStatusBadge from './OrderStatusBadge';
 import { downloadFile } from '@/utils/fileDownloadService';
 import { createOrderNotification } from '@/utils/notificationService';
+import OrderInfo from './OrderInfo';
+import StatusManager from './StatusManager';
+import FileUploadManager from './FileUploadManager';
+import OrderFilesList from './OrderFilesList';
 import type { ExtendedOrder } from '@/types/database';
 
 interface OrderDetailsModalProps {
@@ -64,7 +61,7 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
       
       const orderData = data as ExtendedOrder;
       setSelectedStatus(orderData.status || 'pending');
-      setNotes((orderData as any).admin_notes || '');
+      setNotes(orderData.admin_notes || '');
       return orderData;
     },
     enabled: isOpen,
@@ -209,13 +206,6 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
     }
   };
 
-  const getFileIcon = (fileType: string) => {
-    if (fileType.startsWith('image/')) return <Image className="w-4 h-4" />;
-    if (fileType.includes('pdf')) return <FileText className="w-4 h-4" />;
-    if (fileType.includes('zip')) return <Package className="w-4 h-4" />;
-    return <FileText className="w-4 h-4" />;
-  };
-
   if (isLoading) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -228,8 +218,6 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
     );
   }
 
-  const adminNotes = (order as any)?.admin_notes || '';
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -241,164 +229,28 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
         </DialogHeader>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Order Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Bestellinformationen</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label className="text-sm font-medium">Kunde</Label>
-                <p className="text-sm">
-                  {order?.customer_profiles?.first_name} {order?.customer_profiles?.last_name}
-                </p>
-                {order?.customer_profiles?.company && (
-                  <p className="text-xs text-gray-500">{order.customer_profiles.company}</p>
-                )}
-              </div>
-              
-              <div>
-                <Label className="text-sm font-medium">E-Mail</Label>
-                <p className="text-sm">{order?.customer_email}</p>
-              </div>
+          <OrderInfo order={order} />
+          
+          <StatusManager
+            selectedStatus={selectedStatus}
+            setSelectedStatus={setSelectedStatus}
+            notes={notes}
+            setNotes={setNotes}
+            onStatusUpdate={handleStatusUpdate}
+            isUpdating={updateStatusMutation.isPending}
+          />
 
-              <div>
-                <Label className="text-sm font-medium">Paket</Label>
-                <p className="text-sm">{order?.packages?.name || 'N/A'}</p>
-              </div>
+          <FileUploadManager
+            uploadFiles={uploadFiles}
+            setUploadFiles={setUploadFiles}
+            onFileUpload={handleFileUpload}
+            isUploading={uploadFilesMutation.isPending}
+          />
 
-              <div>
-                <Label className="text-sm font-medium">Bilder</Label>
-                <p className="text-sm">{order?.image_count || 0}</p>
-              </div>
-
-              <div>
-                <Label className="text-sm font-medium">Gesamtpreis</Label>
-                <p className="text-sm font-bold">€{parseFloat(order?.total_price?.toString() || '0').toFixed(2)}</p>
-              </div>
-
-              <div>
-                <Label className="text-sm font-medium">Erstellt am</Label>
-                <p className="text-sm">{new Date(order?.created_at || '').toLocaleDateString('de-DE')}</p>
-              </div>
-
-              {adminNotes && (
-                <div>
-                  <Label className="text-sm font-medium">Admin-Notizen</Label>
-                  <p className="text-sm text-gray-600">{adminNotes}</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Status Management */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Status verwalten</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="status">Status ändern</Label>
-                <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Status auswählen" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pending">Ausstehend</SelectItem>
-                    <SelectItem value="processing">In Bearbeitung</SelectItem>
-                    <SelectItem value="ready_for_review">Zur Überprüfung bereit</SelectItem>
-                    <SelectItem value="completed">Abgeschlossen</SelectItem>
-                    <SelectItem value="cancelled">Storniert</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="notes">Admin-Notizen</Label>
-                <Textarea
-                  id="notes"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Interne Notizen hinzufügen..."
-                  rows={3}
-                />
-              </div>
-
-              <Button
-                onClick={handleStatusUpdate}
-                disabled={updateStatusMutation.isPending}
-                className="w-full"
-              >
-                {updateStatusMutation.isPending ? 'Wird aktualisiert...' : 'Status aktualisieren'}
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* File Upload */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Dateien hochladen</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="file-upload">Bearbeitete Bilder, Rechnungen, etc.</Label>
-                <Input
-                  id="file-upload"
-                  type="file"
-                  multiple
-                  accept="image/*,.pdf,.zip"
-                  onChange={(e) => setUploadFiles(e.target.files)}
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Unterstützte Formate: Bilder, PDF, ZIP
-                </p>
-              </div>
-
-              <Button
-                onClick={handleFileUpload}
-                disabled={!uploadFiles || uploadFiles.length === 0 || uploadFilesMutation.isPending}
-                className="w-full"
-              >
-                <Upload className="w-4 h-4 mr-2" />
-                {uploadFilesMutation.isPending ? 'Wird hochgeladen...' : 'Dateien hochladen'}
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Order Files */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Bestelldateien ({order?.order_images?.length || 0})</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2 max-h-64 overflow-y-auto">
-                {order?.order_images?.map((image) => (
-                  <div key={image.id} className="flex items-center justify-between p-2 border rounded">
-                    <div className="flex items-center gap-2">
-                      {getFileIcon(image.file_type)}
-                      <div>
-                        <p className="text-sm font-medium">{image.file_name}</p>
-                        <p className="text-xs text-gray-500">
-                          {(image.file_size / 1024 / 1024).toFixed(1)} MB
-                        </p>
-                      </div>
-                    </div>
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => handleFileDownload(image)}
-                    >
-                      <Download className="w-4 h-4" />
-                    </Button>
-                  </div>
-                )) || (
-                  <p className="text-sm text-gray-500 text-center py-4">
-                    Keine Dateien vorhanden
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          <OrderFilesList
+            order={order}
+            onFileDownload={handleFileDownload}
+          />
         </div>
       </DialogContent>
     </Dialog>

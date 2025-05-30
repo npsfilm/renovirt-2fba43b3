@@ -8,6 +8,7 @@ import WelcomeSection from '@/components/dashboard/WelcomeSection';
 import QuickStats from '@/components/dashboard/QuickStats';
 import QuickActions from '@/components/dashboard/QuickActions';
 import RecentOrdersCompact from '@/components/dashboard/RecentOrdersCompact';
+import NotificationCenter from '@/components/notifications/NotificationCenter';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -35,8 +36,9 @@ const Dashboard = () => {
               <div className="lg:col-span-2">
                 <RecentOrdersCompact />
               </div>
-              <div>
+              <div className="space-y-6">
                 <QuickActions />
+                <NotificationCenter />
               </div>
             </div>
           </main>
