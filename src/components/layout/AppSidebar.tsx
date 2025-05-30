@@ -18,7 +18,7 @@ import { useAdminRole } from "@/hooks/useAdminRole"
 import { useAuth } from "@/hooks/useAuth"
 import { Button } from "@/components/ui/button"
 
-// Menu items.
+// Menu items - removed Gallery
 const items = [
   {
     title: "Dashboard",
@@ -34,11 +34,6 @@ const items = [
     title: "AI Tools",
     url: "/ai-tools",
     icon: Sparkles,
-  },
-  {
-    title: "Galerie",
-    url: "/gallery",
-    icon: Inbox,
   },
   {
     title: "Profil & Abrechnung",

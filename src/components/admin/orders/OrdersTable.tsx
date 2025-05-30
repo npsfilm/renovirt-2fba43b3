@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Eye, Download } from 'lucide-react';
+import { Eye, Download, Edit } from 'lucide-react';
 import OrderStatusBadge from './OrderStatusBadge';
 
 interface Order {
@@ -17,14 +17,21 @@ interface Order {
     last_name: string;
     company?: string;
   } | null;
+  order_images?: Array<{
+    id: string;
+    file_name: string;
+    file_size: number;
+    file_type: string;
+  }>;
 }
 
 interface OrdersTableProps {
   orders: Order[] | undefined;
   isLoading: boolean;
+  onOrderSelect: (orderId: string) => void;
 }
 
-const OrdersTable = ({ orders, isLoading }: OrdersTableProps) => {
+const OrdersTable = ({ orders, isLoading, onOrderSelect }: OrdersTableProps) => {
   if (isLoading) {
     return (
       <Card>
@@ -84,7 +91,7 @@ const OrdersTable = ({ orders, isLoading }: OrdersTableProps) => {
                   </td>
                   <td className="py-3 px-4">
                     <span className="bg-gray-100 px-2 py-1 rounded text-xs">
-                      {order.image_count}
+                      {order.order_images?.length || order.image_count || 0}
                     </span>
                   </td>
                   <td className="py-3 px-4 font-medium">
@@ -98,8 +105,12 @@ const OrdersTable = ({ orders, isLoading }: OrdersTableProps) => {
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline">
-                        <Eye className="w-4 h-4" />
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => onOrderSelect(order.id)}
+                      >
+                        <Edit className="w-4 h-4" />
                       </Button>
                       <Button size="sm" variant="outline">
                         <Download className="w-4 h-4" />

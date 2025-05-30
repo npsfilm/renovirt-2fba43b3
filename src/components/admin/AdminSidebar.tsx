@@ -30,6 +30,7 @@ const AdminSidebar = () => {
   const location = useLocation();
   const { signOut } = useAuth();
 
+  // Removed Gallery from admin menu items
   const adminMenuItems = [
     {
       title: 'Dashboard',
@@ -74,10 +75,14 @@ const AdminSidebar = () => {
     <Sidebar className="border-r border-gray-200 bg-white">
       <SidebarHeader className="border-b border-gray-200 p-4">
         <div className="flex items-center gap-2">
-          <Shield className="w-8 h-8 text-red-500" />
+          <img 
+            src="/lovable-uploads/d6ac9ba9-7ad2-408b-a2b0-5f31c269dd53.png" 
+            alt="Renovirt Logo" 
+            className="h-8 w-auto"
+          />
           <div>
-            <h2 className="text-lg font-bold text-gray-900">Renovirt Admin</h2>
-            <p className="text-xs text-gray-500">Management Panel</p>
+            <h2 className="text-lg font-bold text-gray-900">Admin Panel</h2>
+            <p className="text-xs text-gray-500">Management Dashboard</p>
           </div>
         </div>
       </SidebarHeader>

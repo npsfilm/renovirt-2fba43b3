@@ -6,12 +6,14 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import OrdersFilters from '@/components/admin/orders/OrdersFilters';
 import OrdersTable from '@/components/admin/orders/OrdersTable';
+import OrderDetailsModal from '@/components/admin/orders/OrderDetailsModal';
 
 const AdminOrders = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
-  const { data: orders, isLoading } = useQuery({
+  const { data: orders, isLoading, refetch } = useQuery({
     queryKey: ['admin-orders', searchTerm, statusFilter],
     queryFn: async () => {
       let query = supabase
@@ -23,6 +25,14 @@ const AdminOrders = () => {
             last_name,
             company,
             user_id
+          ),
+          order_images (
+            id,
+            file_name,
+            file_size,
+            file_type,
+            storage_path,
+            created_at
           )
         `)
         .order('created_at', { ascending: false });
@@ -45,6 +55,15 @@ const AdminOrders = () => {
       return data;
     },
   });
+
+  const handleOrderSelect = (orderId: string) => {
+    setSelectedOrderId(orderId);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedOrderId(null);
+    refetch(); // Refresh orders after modal closes
+  };
 
   return (
     <AdminLayout>
@@ -70,7 +89,19 @@ const AdminOrders = () => {
           setStatusFilter={setStatusFilter}
         />
         
-        <OrdersTable orders={orders} isLoading={isLoading} />
+        <OrdersTable 
+          orders={orders} 
+          isLoading={isLoading} 
+          onOrderSelect={handleOrderSelect}
+        />
+        
+        {selectedOrderId && (
+          <OrderDetailsModal
+            orderId={selectedOrderId}
+            isOpen={!!selectedOrderId}
+            onClose={handleCloseModal}
+          />
+        )}
       </main>
     </AdminLayout>
   );

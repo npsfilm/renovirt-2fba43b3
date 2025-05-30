@@ -81,11 +81,6 @@ const AppContent = () => {
           <Profile />
         </ProtectedRoute>
       } />
-      <Route path="/gallery" element={
-        <ProtectedRoute>
-          <Profile />
-        </ProtectedRoute>
-      } />
       <Route path="/help" element={
         <ProtectedRoute>
           <Profile />
