@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/layout/AppSidebar';
 import PhotoTypeStep from '@/components/order/PhotoTypeStep';
@@ -8,6 +7,8 @@ import PackageStep from '@/components/order/PackageStep';
 import SummaryStep from '@/components/order/SummaryStep';
 import ConfirmationStep from '@/components/order/ConfirmationStep';
 import OrderProgress from '@/components/order/OrderProgress';
+import { useAuth } from '@/hooks/useAuth';
+import { useCustomerProfile } from '@/hooks/useCustomerProfile';
 
 interface OrderData {
   photoType?: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5';
@@ -21,10 +22,14 @@ interface OrderData {
   email?: string;
   couponCode?: string;
   acceptedTerms: boolean;
+  watermarkFile?: File;
 }
 
 const OrderFlow = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const { user } = useAuth();
+  const { profile } = useCustomerProfile();
+  
   const [orderData, setOrderData] = useState<OrderData>({
     files: [],
     extras: {
@@ -34,6 +39,15 @@ const OrderFlow = () => {
     },
     acceptedTerms: false,
   });
+
+  // Auto-fill email when user or profile data is available
+  useEffect(() => {
+    if (user?.email && !orderData.email) {
+      setOrderData(prev => ({ ...prev, email: user.email }));
+    } else if (profile?.billing_email && !orderData.email) {
+      setOrderData(prev => ({ ...prev, email: profile.billing_email }));
+    }
+  }, [user, profile, orderData.email]);
 
   const steps = [
     { 

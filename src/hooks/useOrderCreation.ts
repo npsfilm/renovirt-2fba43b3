@@ -40,7 +40,7 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
         bracketingExposures = 5;
       }
 
-      // Create order
+      // Create order without payment_method field
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
@@ -54,7 +54,6 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
           bracketing_exposures: bracketingExposures,
           terms_accepted: orderData.acceptedTerms,
           status: 'pending',
-          payment_method: null, // Will be set when payment is processed
         })
         .select()
         .single();
@@ -66,6 +65,11 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
 
       // Upload files
       await uploadOrderFiles(orderData.files, order.id, user.id, orderData.photoType);
+
+      // Upload watermark file if provided
+      if (orderData.watermarkFile && orderData.extras.watermark) {
+        await uploadWatermarkFile(orderData.watermarkFile, order.id, user.id);
+      }
 
       // Add selected extras
       const selectedAddOns = addOns.filter(addon => 
@@ -109,7 +113,38 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
   });
 
   return {
-    createOrder: createOrderMutation.mutateAsync, // Return the async function that returns the order
+    createOrder: createOrderMutation.mutateAsync,
     isCreatingOrder: createOrderMutation.isPending,
   };
+};
+
+// Helper function to upload watermark files
+const uploadWatermarkFile = async (file: File, orderId: string, userId: string) => {
+  const fileName = `${orderId}/watermark-${Date.now()}-${file.name}`;
+  
+  const { error: uploadError } = await supabase.storage
+    .from('order-images')
+    .upload(`${userId}/${fileName}`, file);
+
+  if (uploadError) {
+    logSecurityEvent('watermark_upload_failed', { fileName: file.name, error: uploadError.message });
+    throw uploadError;
+  }
+
+  // Save watermark metadata to database
+  const { error: dbError } = await supabase
+    .from('order_images')
+    .insert({
+      order_id: orderId,
+      file_name: `watermark-${file.name}`,
+      file_size: file.size,
+      file_type: file.type,
+      storage_path: `${userId}/${fileName}`,
+      is_bracketing_set: false,
+    });
+
+  if (dbError) {
+    logSecurityEvent('watermark_metadata_save_failed', { fileName: file.name, error: dbError.message });
+    throw dbError;
+  }
 };
