@@ -3,13 +3,17 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Search, Calendar, FileText, RotateCcw, Plus, MessageSquare } from 'lucide-react';
+import { Search, Calendar, FileText, RotateCcw, Plus, MessageSquare, Eye } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
-const OrdersOverview = () => {
+interface OrdersOverviewProps {
+  onOrderSelect?: (orderId: string) => void;
+}
+
+const OrdersOverview = ({ onOrderSelect }: OrdersOverviewProps) => {
   const [filter, setFilter] = useState('all');
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -79,6 +83,12 @@ const OrdersOverview = () => {
 
   const formatOrderId = (id: string) => {
     return `ORD-${id.slice(0, 6).toUpperCase()}`;
+  };
+
+  const handleOrderClick = (orderId: string) => {
+    if (onOrderSelect) {
+      onOrderSelect(orderId);
+    }
   };
 
   if (!orders?.length) {
@@ -157,7 +167,12 @@ const OrdersOverview = () => {
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <div className="flex items-center space-x-3">
-                    <h3 className="font-medium text-gray-900">{formatOrderId(order.id)}</h3>
+                    <button
+                      onClick={() => handleOrderClick(order.id)}
+                      className="font-medium text-blue-600 hover:text-blue-800 cursor-pointer"
+                    >
+                      {formatOrderId(order.id)}
+                    </button>
                     <Badge className={getStatusColor(order.status || 'pending')}>
                       {getStatusLabel(order.status || 'pending')}
                     </Badge>
@@ -166,8 +181,16 @@ const OrdersOverview = () => {
                     {(order.packages as any)?.name || 'Standard Paket'} • {order.image_count} Bilder • {new Date(order.created_at).toLocaleDateString('de-DE')}
                   </p>
                 </div>
-                <div className="text-right">
+                <div className="flex items-center space-x-2">
                   <p className="font-semibold text-gray-900">€{parseFloat(order.total_price?.toString() || '0').toFixed(2)}</p>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => handleOrderClick(order.id)}
+                    title="Bestellung anzeigen"
+                  >
+                    <Eye className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
 

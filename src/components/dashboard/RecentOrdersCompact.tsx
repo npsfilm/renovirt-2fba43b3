@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FileText, ArrowRight, Download } from 'lucide-react';
+import { FileText, ArrowRight, Download, Eye } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -65,6 +65,10 @@ const RecentOrdersCompact = () => {
     return `ORD-${id.slice(0, 6).toUpperCase()}`;
   };
 
+  const handleOrderClick = (orderId: string) => {
+    navigate(`/orders?selected=${orderId}`);
+  };
+
   if (!recentOrders?.length) {
     return (
       <Card>
@@ -101,7 +105,12 @@ const RecentOrdersCompact = () => {
             <div className="flex items-center space-x-3">
               <FileText className="w-4 h-4 text-gray-400" />
               <div>
-                <p className="text-sm font-medium text-gray-900">{formatOrderId(order.id)}</p>
+                <button 
+                  onClick={() => handleOrderClick(order.id)}
+                  className="text-sm font-medium text-blue-600 hover:text-blue-800 cursor-pointer"
+                >
+                  {formatOrderId(order.id)}
+                </button>
                 <p className="text-xs text-gray-500">
                   {order.image_count} Bilder • {new Date(order.created_at).toLocaleDateString('de-DE')}
                 </p>
@@ -111,6 +120,14 @@ const RecentOrdersCompact = () => {
               <Badge className={`text-xs ${getStatusColor(order.status || 'pending')}`}>
                 {getStatusLabel(order.status || 'pending')}
               </Badge>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => handleOrderClick(order.id)}
+                title="Bestellung anzeigen"
+              >
+                <Eye className="w-3 h-3" />
+              </Button>
               {order.status === 'completed' && (
                 <Button variant="ghost" size="sm">
                   <Download className="w-3 h-3" />
