@@ -57,7 +57,11 @@ export const getOrderNotifications = async (userId: string): Promise<OrderNotifi
 
     if (error) throw error;
     
-    return data || [];
+    // Type cast the data to ensure proper typing
+    return (data || []).map(notification => ({
+      ...notification,
+      type: notification.type as 'info' | 'success' | 'warning' | 'error'
+    }));
   } catch (error) {
     secureLog('Failed to fetch notifications:', error);
     return [];
