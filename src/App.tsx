@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,6 +17,10 @@ import OrderFlow from "./pages/OrderFlow";
 import Orders from "./pages/Orders";
 import AITools from "./pages/AITools";
 import Profile from "./pages/Profile";
+import Billing from "./pages/Billing";
+import Settings from "./pages/Settings";
+import Help from "./pages/Help";
+import PaymentSuccess from "./components/order/PaymentSuccess";
 import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminOrders from "./pages/AdminOrders";
@@ -74,17 +79,22 @@ const AppContent = () => {
       } />
       <Route path="/billing" element={
         <ProtectedRoute>
-          <Profile />
+          <Billing />
         </ProtectedRoute>
       } />
       <Route path="/settings" element={
         <ProtectedRoute>
-          <Profile />
+          <Settings />
         </ProtectedRoute>
       } />
       <Route path="/help" element={
         <ProtectedRoute>
-          <Profile />
+          <Help />
+        </ProtectedRoute>
+      } />
+      <Route path="/payment/success" element={
+        <ProtectedRoute>
+          <PaymentSuccess />
         </ProtectedRoute>
       } />
       

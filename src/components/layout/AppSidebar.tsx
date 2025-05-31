@@ -1,5 +1,5 @@
 
-import { Calendar, Home, Inbox, Search, Settings, ShoppingCart, Sparkles, User, Shield, LogOut } from "lucide-react"
+import { Calendar, Home, Inbox, Search, Settings, ShoppingCart, Sparkles, User, Shield, LogOut, CreditCard, HelpCircle } from "lucide-react"
 
 import {
   Sidebar,
@@ -18,8 +18,8 @@ import { useAdminRole } from "@/hooks/useAdminRole"
 import { useAuth } from "@/hooks/useAuth"
 import { Button } from "@/components/ui/button"
 
-// Menu items - removed Gallery
-const items = [
+// Main navigation items
+const mainItems = [
   {
     title: "Dashboard",
     url: "/dashboard",
@@ -35,10 +35,19 @@ const items = [
     url: "/ai-tools",
     icon: Sparkles,
   },
+]
+
+// Account & settings items
+const accountItems = [
   {
-    title: "Profil & Abrechnung",
+    title: "Profil",
     url: "/profile",
     icon: User,
+  },
+  {
+    title: "Abrechnung",
+    url: "/billing",
+    icon: CreditCard,
   },
   {
     title: "Einstellungen",
@@ -48,7 +57,7 @@ const items = [
   {
     title: "Hilfe",
     url: "/help",
-    icon: Search,
+    icon: HelpCircle,
   },
 ]
 
@@ -91,7 +100,31 @@ export default function AppSidebar() {
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {mainItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton 
+                    asChild
+                    isActive={isActivePath(item.url)}
+                  >
+                    <button 
+                      onClick={() => navigate(item.url)}
+                      className="w-full flex items-center gap-2"
+                    >
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </button>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Konto</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {accountItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild
