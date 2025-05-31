@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { supabase } from '@/integrations/supabase/client';
+import { createOrderNotification } from '@/utils/notificationService';
 
 interface StatusManagerProps {
   selectedStatus: string;
@@ -23,6 +25,12 @@ const StatusManager = ({
   onStatusUpdate,
   isUpdating
 }: StatusManagerProps) => {
+
+  const handleStatusUpdate = async () => {
+    // Call the parent's update function
+    onStatusUpdate();
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -57,7 +65,7 @@ const StatusManager = ({
         </div>
 
         <Button
-          onClick={onStatusUpdate}
+          onClick={handleStatusUpdate}
           disabled={isUpdating}
           className="w-full"
         >

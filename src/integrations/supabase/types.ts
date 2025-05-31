@@ -185,47 +185,147 @@ export type Database = {
           },
         ]
       }
+      order_notifications: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          notification_type: string | null
+          order_id: string
+          read: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          notification_type?: string | null
+          order_id: string
+          read?: boolean
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          notification_type?: string | null
+          order_id?: string
+          read?: boolean
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_notifications_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_status_history: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          estimated_completion: string | null
+          id: string
+          message: string | null
+          order_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          estimated_completion?: string | null
+          id?: string
+          message?: string | null
+          order_id: string
+          status: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          estimated_completion?: string | null
+          id?: string
+          message?: string | null
+          order_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_status_history_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
+          admin_notes: string | null
           bracketing_enabled: boolean | null
           bracketing_exposures: number | null
           created_at: string
           customer_email: string | null
+          delivery_status: string | null
+          estimated_completion: string | null
           id: string
           image_count: number
           package_id: string | null
+          payment_method: string | null
+          payment_status: string | null
           photo_type: string | null
           status: string | null
+          stripe_session_id: string | null
           terms_accepted: boolean | null
           total_price: number
           updated_at: string
           user_id: string
         }
         Insert: {
+          admin_notes?: string | null
           bracketing_enabled?: boolean | null
           bracketing_exposures?: number | null
           created_at?: string
           customer_email?: string | null
+          delivery_status?: string | null
+          estimated_completion?: string | null
           id?: string
           image_count?: number
           package_id?: string | null
+          payment_method?: string | null
+          payment_status?: string | null
           photo_type?: string | null
           status?: string | null
+          stripe_session_id?: string | null
           terms_accepted?: boolean | null
           total_price: number
           updated_at?: string
           user_id: string
         }
         Update: {
+          admin_notes?: string | null
           bracketing_enabled?: boolean | null
           bracketing_exposures?: number | null
           created_at?: string
           customer_email?: string | null
+          delivery_status?: string | null
+          estimated_completion?: string | null
           id?: string
           image_count?: number
           package_id?: string | null
+          payment_method?: string | null
+          payment_status?: string | null
           photo_type?: string | null
           status?: string | null
+          stripe_session_id?: string | null
           terms_accepted?: boolean | null
           total_price?: number
           updated_at?: string
@@ -313,6 +413,24 @@ export type Database = {
       has_admin_role: {
         Args: { user_uuid: string }
         Returns: boolean
+      }
+      update_order_payment_status: {
+        Args: {
+          p_order_id: string
+          p_payment_status: string
+          p_stripe_session_id?: string
+        }
+        Returns: undefined
+      }
+      update_order_status: {
+        Args: {
+          p_order_id: string
+          p_status: string
+          p_message?: string
+          p_estimated_completion?: string
+          p_admin_notes?: string
+        }
+        Returns: undefined
       }
     }
     Enums: {

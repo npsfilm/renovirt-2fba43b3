@@ -64,34 +64,28 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
     enabled: isOpen,
   });
 
-  // Update order status
+  // Update order status using the database function
   const updateStatusMutation = useMutation({
     mutationFn: async ({ status, notes }: { status: string; notes?: string }) => {
-      const updateData: any = { 
-        status,
-        updated_at: new Date().toISOString()
-      };
-      
-      if (notes) {
-        updateData.admin_notes = notes;
-      }
-
-      const { error } = await supabase
-        .from('orders')
-        .update(updateData)
-        .eq('id', orderId);
+      const { error } = await supabase.rpc('update_order_status', {
+        p_order_id: orderId,
+        p_status: status,
+        p_message: `Status aktualisiert von Admin`,
+        p_admin_notes: notes
+      });
 
       if (error) throw error;
     },
     onSuccess: () => {
       toast({
         title: "Status aktualisiert",
-        description: "Der Bestellstatus wurde erfolgreich aktualisiert.",
+        description: "Der Bestellstatus wurde erfolgreich aktualisiert und der Kunde wurde benachrichtigt.",
       });
       queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
       queryClient.invalidateQueries({ queryKey: ['order-details', orderId] });
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error('Status update error:', error);
       toast({
         title: "Fehler",
         description: "Der Status konnte nicht aktualisiert werden.",

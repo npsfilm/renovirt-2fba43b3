@@ -9,6 +9,10 @@ interface CreatePaymentParams {
   currency?: string;
 }
 
+interface VerifyPaymentParams {
+  sessionId: string;
+}
+
 export const usePayment = () => {
   const { toast } = useToast();
 
@@ -21,10 +25,9 @@ export const usePayment = () => {
       if (error) throw error;
       return data;
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Payment error:', error);
       
-      // Check if it's a Stripe configuration error
       if (error.message?.includes('Stripe is not configured')) {
         toast({
           title: "Zahlungsanbieter nicht verfügbar",
@@ -38,6 +41,33 @@ export const usePayment = () => {
           variant: "destructive",
         });
       }
+    },
+  });
+
+  const verifyPaymentMutation = useMutation({
+    mutationFn: async ({ sessionId }: VerifyPaymentParams) => {
+      const { data, error } = await supabase.functions.invoke('verify-payment', {
+        body: { sessionId }
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      if (data.paymentStatus === 'paid') {
+        toast({
+          title: "Zahlung erfolgreich!",
+          description: "Ihre Zahlung wurde verarbeitet. Die Bearbeitung beginnt nun.",
+        });
+      }
+    },
+    onError: (error: any) => {
+      console.error('Payment verification error:', error);
+      toast({
+        title: "Zahlungsverifizierung fehlgeschlagen",
+        description: "Die Zahlung konnte nicht verifiziert werden. Bitte kontaktieren Sie den Support.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -57,8 +87,14 @@ export const usePayment = () => {
     }
   };
 
+  const verifyPayment = async (params: VerifyPaymentParams) => {
+    return await verifyPaymentMutation.mutateAsync(params);
+  };
+
   return {
     processPayment,
+    verifyPayment,
     isProcessingPayment: createPaymentMutation.isPending,
+    isVerifyingPayment: verifyPaymentMutation.isPending,
   };
 };

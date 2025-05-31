@@ -15,31 +15,23 @@ serve(async (req) => {
   }
 
   try {
-    // Check if Stripe secret key is available
-    const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
-    if (!stripeSecretKey) {
-      console.error("STRIPE_SECRET_KEY is not configured in edge function secrets");
-      return new Response(JSON.stringify({ 
-        error: "Stripe is not configured. Please contact support." 
-      }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 500,
-      });
-    }
-
-    // Create Supabase client
+    // Create Supabase client for user authentication
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? ""
     );
 
-    // Get the authenticated user
-    const authHeader = req.headers.get("Authorization")!;
-    const token = authHeader.replace("Bearer ", "");
-    const { data } = await supabaseClient.auth.getUser(token);
-    const user = data.user;
+    // Get the authorization header
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      throw new Error("No authorization header");
+    }
 
-    if (!user?.email) {
+    // Get user from token
+    const token = authHeader.replace("Bearer ", "");
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
+    
+    if (userError || !user) {
       throw new Error("User not authenticated");
     }
 
@@ -47,36 +39,41 @@ serve(async (req) => {
     const { orderId, amount, currency = "eur" } = await req.json();
 
     if (!orderId || !amount) {
-      throw new Error("Missing orderId or amount");
+      throw new Error("Missing required parameters: orderId and amount");
     }
 
     // Initialize Stripe
-    const stripe = new Stripe(stripeSecretKey, {
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeKey) {
+      throw new Error("Stripe is not configured. Please contact support.");
+    }
+
+    const stripe = new Stripe(stripeKey, {
       apiVersion: "2023-10-16",
     });
 
     // Check if a Stripe customer exists for this user
     const customers = await stripe.customers.list({ 
-      email: user.email, 
+      email: user.email!, 
       limit: 1 
     });
-
+    
     let customerId;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
     }
 
-    // Create Stripe checkout session
+    // Create checkout session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
-      customer_email: customerId ? undefined : user.email,
+      customer_email: customerId ? undefined : user.email!,
       line_items: [
         {
           price_data: {
             currency: currency,
             product_data: {
-              name: "Fotobearbeitung",
-              description: `Bestellung ${orderId.slice(-8)}`,
+              name: `Order ${orderId.slice(0, 8)}`,
+              description: "Professional image editing service",
             },
             unit_amount: Math.round(amount * 100), // Convert to cents
           },
@@ -84,45 +81,51 @@ serve(async (req) => {
         },
       ],
       mode: "payment",
-      payment_method_types: ["card", "paypal"],
-      success_url: `${req.headers.get("origin")}/order-flow?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get("origin")}/order-flow?canceled=true`,
+      success_url: `${req.headers.get("origin")}/orders?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.get("origin")}/orders?payment=cancelled`,
       metadata: {
-        order_id: orderId,
-        user_id: user.id,
+        orderId: orderId,
+        userId: user.id,
       },
     });
 
-    // Update order with Stripe session ID
+    // Update order with Stripe session ID and payment method
     const supabaseService = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-      { auth: { persistSession: false } }
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    await supabaseService
+    const { error: updateError } = await supabaseService
       .from("orders")
-      .update({ 
+      .update({
         stripe_session_id: session.id,
-        updated_at: new Date().toISOString()
+        payment_method: "stripe",
+        payment_status: "pending",
+        updated_at: new Date().toISOString(),
       })
       .eq("id", orderId);
 
-    return new Response(JSON.stringify({ 
-      url: session.url,
-      sessionId: session.id 
-    }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
-    });
+    if (updateError) {
+      console.error("Failed to update order with session ID:", updateError);
+    }
+
+    return new Response(
+      JSON.stringify({ url: session.url }),
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      }
+    );
 
   } catch (error) {
     console.error("Payment creation error:", error);
-    return new Response(JSON.stringify({ 
-      error: error.message 
-    }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+    
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500,
+      }
+    );
   }
 });
