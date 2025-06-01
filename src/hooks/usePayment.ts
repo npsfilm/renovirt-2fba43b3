@@ -76,8 +76,8 @@ export const usePayment = () => {
       const result = await createPaymentMutation.mutateAsync(params);
       
       if (result.url) {
-        // Open Stripe checkout in a new tab
-        window.open(result.url, '_blank');
+        // Redirect to Stripe checkout in the same window for better UX
+        window.location.href = result.url;
       }
       
       return result;

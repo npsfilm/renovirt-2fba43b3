@@ -12,24 +12,27 @@ const PaymentSuccess = () => {
   const { verifyPayment, isVerifyingPayment } = usePayment();
   const navigate = useNavigate();
   const [verified, setVerified] = React.useState(false);
+  const [verificationComplete, setVerificationComplete] = React.useState(false);
 
   useEffect(() => {
     const sessionId = searchParams.get('session_id');
     
-    if (sessionId && !verified) {
+    if (sessionId && !verified && !verificationComplete) {
+      setVerificationComplete(true);
       verifyPayment({ sessionId })
         .then(() => {
           setVerified(true);
         })
         .catch((error) => {
           console.error('Payment verification failed:', error);
+          setVerified(false);
         });
     }
-  }, [searchParams, verifyPayment, verified]);
+  }, [searchParams, verifyPayment, verified, verificationComplete]);
 
-  if (isVerifyingPayment) {
+  if (isVerifyingPayment || !verificationComplete) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <Card className="w-full max-w-md">
           <CardContent className="flex flex-col items-center space-y-4 pt-6">
             <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
@@ -43,7 +46,7 @@ const PaymentSuccess = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-[400px]">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
