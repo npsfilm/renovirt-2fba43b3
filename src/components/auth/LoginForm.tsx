@@ -84,17 +84,17 @@ const LoginForm = ({ onSuccess }: LoginFormProps) => {
   };
 
   return (
-    <Card>
+    <Card className="bg-gray-800 border-gray-700">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl">Willkommen zurück</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-2xl text-white">Anmelden</CardTitle>
+        <CardDescription className="text-gray-300">
           Melden Sie sich in Ihrem Renovirt-Konto an
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">E-Mail</Label>
+            <Label htmlFor="email" className="text-white">E-Mail</Label>
             <Input
               id="email"
               name="email"
@@ -103,10 +103,11 @@ const LoginForm = ({ onSuccess }: LoginFormProps) => {
               value={formData.email}
               onChange={handleInputChange}
               required
+              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Passwort</Label>
+            <Label htmlFor="password" className="text-white">Passwort</Label>
             <Input
               id="password"
               name="password"
@@ -115,16 +116,17 @@ const LoginForm = ({ onSuccess }: LoginFormProps) => {
               value={formData.password}
               onChange={handleInputChange}
               required
+              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
             />
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={loading}>
             {loading ? 'Wird angemeldet...' : 'Anmelden'}
           </Button>
         </form>
         
         <div className="relative my-6">
-          <Separator />
-          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2 text-sm text-muted-foreground">
+          <Separator className="bg-gray-600" />
+          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-800 px-2 text-sm text-gray-400">
             oder
           </span>
         </div>
@@ -132,7 +134,7 @@ const LoginForm = ({ onSuccess }: LoginFormProps) => {
         <div className="space-y-3">
           <Button 
             variant="outline" 
-            className="w-full" 
+            className="w-full bg-gray-700 border-gray-600 text-white hover:bg-gray-600" 
             onClick={handleGoogleAuth}
             disabled={loading}
             type="button"
@@ -147,8 +149,8 @@ const LoginForm = ({ onSuccess }: LoginFormProps) => {
           </Button>
         </div>
         
-        <div className="text-center text-sm text-muted-foreground mt-4">
-          <Link to="/forgot-password" className="hover:text-primary">
+        <div className="text-center text-sm text-gray-400 mt-4">
+          <Link to="/forgot-password" className="hover:text-green-400">
             Passwort vergessen?
           </Link>
         </div>

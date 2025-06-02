@@ -2,7 +2,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -10,29 +9,40 @@ interface AuthLayoutProps {
 
 const AuthLayout = ({ children }: AuthLayoutProps) => {
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Left side - Image/Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 to-green-600 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="relative z-10 flex flex-col justify-between p-12 text-white">
-          <div>
-            <Link to="/" className="flex items-center gap-2 text-2xl font-bold mb-8">
-              <ArrowLeft className="w-6 h-6" />
-              <span>Renovirt</span>
-            </Link>
+    <div className="min-h-screen bg-gray-900 flex">
+      {/* Left side - Auth Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-900">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="w-full max-w-md"
+        >
+          <div className="mb-8 text-center">
+            <img 
+              src="/lovable-uploads/9ec7c3ad-34b9-4fea-a9e9-0d4a0a5532e9.png" 
+              alt="Renovirt Logo" 
+              className="h-12 mx-auto mb-4"
+            />
           </div>
-          
-          <div className="space-y-6">
+          {children}
+        </motion.div>
+      </div>
+
+      {/* Right side - Marketing Content */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-green-600 via-green-500 to-green-700 relative overflow-hidden">
+        <div className="absolute inset-0 bg-black/10" />
+        <div className="relative z-10 flex flex-col justify-between p-12 text-white">
+          <div className="flex-1 flex flex-col justify-center space-y-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <h2 className="text-4xl font-bold leading-tight">
-                Immobilienbilder perfekt in 3 Minuten
-              </h2>
-              <p className="text-xl text-white/90 mt-4">
-                KI-gestützte Bildbearbeitung für professionelle Immobilienpräsentationen
+              <h1 className="text-5xl font-bold leading-tight mb-6">
+                30.000+ bearbeitete Immobilienbilder für Makler, Fotografen & Architekten
+              </h1>
+              <p className="text-xl text-white/95 leading-relaxed">
+                Setzen auch Sie auf Qualität, die verkauft – mit unserer 48h Bildbearbeitung in Studioqualität.
               </p>
             </motion.div>
             
@@ -58,20 +68,9 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
           </div>
           
           <div className="text-sm text-white/70">
-            © 2024 Renovirt. Alle Rechte vorbehalten.
+            Made with love in Augsburg.
           </div>
         </div>
-      </div>
-
-      {/* Right side - Auth Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="w-full max-w-md"
-        >
-          {children}
-        </motion.div>
       </div>
     </div>
   );
