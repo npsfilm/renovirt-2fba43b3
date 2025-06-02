@@ -29,32 +29,88 @@ const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
     });
   };
 
+  const validateForm = () => {
+    if (!formData.email || !formData.password || !formData.firstName || !formData.lastName) {
+      toast({
+        title: 'Fehler',
+        description: 'Bitte füllen Sie alle Felder aus.',
+        variant: 'destructive',
+      });
+      return false;
+    }
+
+    if (formData.password.length < 6) {
+      toast({
+        title: 'Fehler',
+        description: 'Das Passwort muss mindestens 6 Zeichen lang sein.',
+        variant: 'destructive',
+      });
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast({
+        title: 'Fehler',
+        description: 'Bitte geben Sie eine gültige E-Mail-Adresse ein.',
+        variant: 'destructive',
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // Default role to 'customer' since we removed the role selector
-      const { error } = await signUp(formData.email, formData.password, {
+      console.log('Attempting registration with:', { 
+        email: formData.email, 
+        firstName: formData.firstName, 
+        lastName: formData.lastName 
+      });
+      
+      const { data, error } = await signUp(formData.email, formData.password, {
         firstName: formData.firstName,
         lastName: formData.lastName,
         role: 'customer',
       });
 
+      console.log('Registration result:', { data, error });
+
       if (error) {
+        let errorMessage = 'Ein Fehler ist bei der Registrierung aufgetreten.';
+        
+        if (error.message.includes('User already registered')) {
+          errorMessage = 'Ein Benutzer mit dieser E-Mail-Adresse existiert bereits.';
+        } else if (error.message.includes('Password should be at least')) {
+          errorMessage = 'Das Passwort ist zu schwach. Bitte wählen Sie ein stärkeres Passwort.';
+        } else if (error.message.includes('Invalid email')) {
+          errorMessage = 'Bitte geben Sie eine gültige E-Mail-Adresse ein.';
+        }
+        
         toast({
           title: 'Registrierung fehlgeschlagen',
-          description: error.message,
+          description: errorMessage,
           variant: 'destructive',
         });
-      } else {
+      } else if (data?.user) {
+        console.log('Registration successful for user:', data.user.email);
         toast({
           title: 'Registrierung erfolgreich',
           description: 'Bitte überprüfen Sie Ihre E-Mail für die Bestätigung.',
         });
         onSuccess();
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Registration error:', error);
       toast({
         title: 'Fehler',
         description: 'Ein unerwarteter Fehler ist aufgetreten.',
@@ -68,15 +124,22 @@ const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
   const handleGoogleAuth = async () => {
     setLoading(true);
     try {
-      const { error } = await signInWithGoogle();
+      console.log('Attempting Google registration');
+      const { data, error } = await signInWithGoogle();
+      
       if (error) {
+        console.error('Google registration error:', error);
         toast({
           title: 'Google-Registrierung fehlgeschlagen',
-          description: error.message,
+          description: error.message || 'Fehler bei der Google-Registrierung.',
           variant: 'destructive',
         });
+      } else {
+        console.log('Google registration initiated successfully');
+        // Google auth will redirect, so no need to call onSuccess here
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Google registration error:', error);
       toast({
         title: 'Fehler',
         description: 'Ein unerwarteter Fehler ist aufgetreten.',
@@ -170,10 +233,11 @@ const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
             id="registerPassword"
             name="password"
             type="password"
-            placeholder="Passwort"
+            placeholder="Passwort (mindestens 6 Zeichen)"
             value={formData.password}
             onChange={handleInputChange}
             required
+            minLength={6}
             className="bg-gray-800 border-gray-700 text-white placeholder-gray-500 h-12"
           />
         </div>

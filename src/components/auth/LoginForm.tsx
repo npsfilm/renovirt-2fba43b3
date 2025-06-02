@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -30,25 +29,50 @@ const LoginForm = ({ onSuccess }: LoginFormProps) => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formData.email || !formData.password) {
+      toast({
+        title: 'Fehler',
+        description: 'Bitte geben Sie E-Mail und Passwort ein.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const { error } = await signIn(formData.email, formData.password);
+      console.log('Attempting login with:', { email: formData.email });
+      const { data, error } = await signIn(formData.email, formData.password);
+      
+      console.log('Login result:', { data, error });
       
       if (error) {
+        let errorMessage = 'Ein Fehler ist bei der Anmeldung aufgetreten.';
+        
+        if (error.message.includes('Invalid login credentials')) {
+          errorMessage = 'Ungültige E-Mail oder Passwort.';
+        } else if (error.message.includes('Email not confirmed')) {
+          errorMessage = 'Bitte bestätigen Sie Ihre E-Mail-Adresse.';
+        } else if (error.message.includes('Too many requests')) {
+          errorMessage = 'Zu viele Anmeldeversuche. Bitte versuchen Sie es später erneut.';
+        }
+        
         toast({
           title: 'Anmeldung fehlgeschlagen',
-          description: error.message,
+          description: errorMessage,
           variant: 'destructive',
         });
-      } else {
+      } else if (data?.user) {
+        console.log('Login successful for user:', data.user.email);
         toast({
           title: 'Erfolgreich angemeldet',
           description: 'Willkommen zurück!',
         });
         onSuccess();
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Login error:', error);
       toast({
         title: 'Fehler',
         description: 'Ein unerwarteter Fehler ist aufgetreten.',
@@ -62,15 +86,22 @@ const LoginForm = ({ onSuccess }: LoginFormProps) => {
   const handleGoogleAuth = async () => {
     setLoading(true);
     try {
-      const { error } = await signInWithGoogle();
+      console.log('Attempting Google authentication');
+      const { data, error } = await signInWithGoogle();
+      
       if (error) {
+        console.error('Google auth error:', error);
         toast({
           title: 'Google-Anmeldung fehlgeschlagen',
-          description: error.message,
+          description: error.message || 'Fehler bei der Google-Anmeldung.',
           variant: 'destructive',
         });
+      } else {
+        console.log('Google auth initiated successfully');
+        // Google auth will redirect, so no need to call onSuccess here
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Google auth error:', error);
       toast({
         title: 'Fehler',
         description: 'Ein unerwarteter Fehler ist aufgetreten.',
