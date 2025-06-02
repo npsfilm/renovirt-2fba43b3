@@ -1,16 +1,17 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import PasswordValidation from './PasswordValidation';
 
 interface RegisterFormProps {
   onSuccess: () => void;
+  onSwitchToLogin: () => void;
 }
 
-const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
+const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -18,15 +19,29 @@ const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
     lastName: '',
   });
   const [loading, setLoading] = useState(false);
+  const [showPasswordValidation, setShowPasswordValidation] = useState(false);
 
   const { signUp, signInWithGoogle } = useAuth();
   const { toast } = useToast();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
+
+    if (name === 'password') {
+      setShowPasswordValidation(value.length > 0);
+    }
+  };
+
+  const validatePassword = (password: string) => {
+    const hasMinLength = password.length >= 10;
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!$%&=?*#+-<>]/.test(password);
+    
+    return hasMinLength && hasNumber && hasSpecialChar;
   };
 
   const validateForm = () => {
@@ -39,10 +54,10 @@ const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
       return false;
     }
 
-    if (formData.password.length < 6) {
+    if (!validatePassword(formData.password)) {
       toast({
         title: 'Fehler',
-        description: 'Das Passwort muss mindestens 6 Zeichen lang sein.',
+        description: 'Das Passwort erfüllt nicht alle Anforderungen.',
         variant: 'destructive',
       });
       return false;
@@ -136,7 +151,6 @@ const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
         });
       } else {
         console.log('Google registration initiated successfully');
-        // Google auth will redirect, so no need to call onSuccess here
       }
     } catch (error: any) {
       console.error('Google registration error:', error);
@@ -156,7 +170,10 @@ const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
         <h1 className="text-2xl font-semibold text-white mb-2">Konto erstellen</h1>
         <p className="text-gray-400 text-sm">
           Haben Sie bereits ein Konto?{' '}
-          <button className="text-white underline hover:no-underline">
+          <button 
+            onClick={onSwitchToLogin}
+            className="text-white underline hover:no-underline cursor-pointer"
+          >
             Anmelden
           </button>
         </p>
@@ -233,13 +250,15 @@ const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
             id="registerPassword"
             name="password"
             type="password"
-            placeholder="Passwort (mindestens 6 Zeichen)"
+            placeholder="Passwort (mindestens 10 Zeichen)"
             value={formData.password}
             onChange={handleInputChange}
             required
-            minLength={6}
             className="bg-gray-800 border-gray-700 text-white placeholder-gray-500 h-12"
           />
+          {showPasswordValidation && (
+            <PasswordValidation password={formData.password} />
+          )}
         </div>
         
         <Button type="submit" className="w-full bg-white text-black hover:bg-gray-100 h-12 font-medium" disabled={loading}>

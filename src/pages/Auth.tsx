@@ -57,6 +57,14 @@ const Auth = () => {
     }
   };
 
+  const handleSwitchToRegister = () => {
+    setActiveTab('register');
+  };
+
+  const handleSwitchToLogin = () => {
+    setActiveTab('login');
+  };
+
   return (
     <AuthLayout>
       {/* Custom Tab Navigation */}
@@ -87,11 +95,17 @@ const Auth = () => {
 
       {/* Forms */}
       {activeTab === 'login' && (
-        <LoginForm onSuccess={() => handleAuthSuccess(false)} />
+        <LoginForm 
+          onSuccess={() => handleAuthSuccess(false)} 
+          onSwitchToRegister={handleSwitchToRegister}
+        />
       )}
 
       {activeTab === 'register' && (
-        <RegisterForm onSuccess={() => handleAuthSuccess(true)} />
+        <RegisterForm 
+          onSuccess={() => handleAuthSuccess(true)}
+          onSwitchToLogin={handleSwitchToLogin}
+        />
       )}
     </AuthLayout>
   );

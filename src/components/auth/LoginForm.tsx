@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,9 +7,10 @@ import { useToast } from '@/hooks/use-toast';
 
 interface LoginFormProps {
   onSuccess: () => void;
+  onSwitchToRegister: () => void;
 }
 
-const LoginForm = ({ onSuccess }: LoginFormProps) => {
+const LoginForm = ({ onSuccess, onSwitchToRegister }: LoginFormProps) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -66,8 +66,8 @@ const LoginForm = ({ onSuccess }: LoginFormProps) => {
       } else if (data?.user) {
         console.log('Login successful for user:', data.user.email);
         toast({
-          title: 'Erfolgreich angemeldet',
-          description: 'Willkommen zurück!',
+          title: 'Willkommen zurück!',
+          description: 'Sie wurden erfolgreich angemeldet.',
         });
         onSuccess();
       }
@@ -98,7 +98,6 @@ const LoginForm = ({ onSuccess }: LoginFormProps) => {
         });
       } else {
         console.log('Google auth initiated successfully');
-        // Google auth will redirect, so no need to call onSuccess here
       }
     } catch (error: any) {
       console.error('Google auth error:', error);
@@ -118,7 +117,10 @@ const LoginForm = ({ onSuccess }: LoginFormProps) => {
         <h1 className="text-2xl font-semibold text-white mb-2">Anmelden</h1>
         <p className="text-gray-400 text-sm">
           Haben Sie noch kein Konto?{' '}
-          <button className="text-white underline hover:no-underline">
+          <button 
+            onClick={onSwitchToRegister}
+            className="text-white underline hover:no-underline cursor-pointer"
+          >
             Registrieren
           </button>
         </p>
