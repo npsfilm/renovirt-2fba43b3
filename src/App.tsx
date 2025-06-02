@@ -26,6 +26,7 @@ import AdminOrders from "./pages/AdminOrders";
 import AdminCustomers from "./pages/AdminCustomers";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminSettings from "./pages/AdminSettings";
+import ForgotPassword from "./pages/ForgotPassword";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const AppContent = () => {
       {/* Public routes */}
       <Route path="/auth" element={<Auth />} />
       <Route path="/admin-auth" element={<AdminAuth />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
       
       {/* Protected routes that require authentication */}
       <Route path="/email-verification" element={

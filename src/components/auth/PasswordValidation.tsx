@@ -9,7 +9,7 @@ interface PasswordValidationProps {
 const PasswordValidation = ({ password }: PasswordValidationProps) => {
   const hasMinLength = password.length >= 10;
   const hasNumber = /\d/.test(password);
-  const hasSpecialChar = /[!$%&=?*#+-<>]/.test(password);
+  const hasSpecialChar = /[!$%&=?*#+\-<>]/.test(password);
 
   const ValidationItem = ({ isValid, text }: { isValid: boolean; text: string }) => (
     <div className={`flex items-center space-x-2 text-sm ${isValid ? 'text-green-500' : 'text-red-500'}`}>
