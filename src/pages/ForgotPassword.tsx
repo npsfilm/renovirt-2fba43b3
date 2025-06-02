@@ -3,29 +3,27 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Link } from 'react-router-dom';
-import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import AuthLayout from '@/components/auth/AuthLayout';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
-  const { toast } = useToast();
+  const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!email) {
-      toast({
-        title: 'Fehler',
-        description: 'Bitte geben Sie Ihre E-Mail-Adresse ein.',
-        variant: 'destructive',
+      setMessage({
+        text: 'Bitte geben Sie Ihre E-Mail-Adresse ein.',
+        type: 'error'
       });
       return;
     }
 
     setLoading(true);
+    setMessage(null);
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -33,55 +31,25 @@ const ForgotPassword = () => {
       });
 
       if (error) {
-        toast({
-          title: 'Fehler',
-          description: 'Es gab ein Problem beim Senden der E-Mail. Bitte versuchen Sie es erneut.',
-          variant: 'destructive',
+        setMessage({
+          text: 'Es gab ein Problem beim Senden der E-Mail. Bitte versuchen Sie es erneut.',
+          type: 'error'
         });
       } else {
-        setEmailSent(true);
-        toast({
-          title: 'E-Mail gesendet',
-          description: 'Wir haben Ihnen einen Link zum Zurücksetzen Ihres Passworts gesendet.',
+        setMessage({
+          text: 'Wenn ein Account mit dieser E-Mail existiert, senden wir Ihnen einen Link zum zurücksetzen.',
+          type: 'success'
         });
       }
     } catch (error) {
-      toast({
-        title: 'Fehler',
-        description: 'Ein unerwarteter Fehler ist aufgetreten.',
-        variant: 'destructive',
+      setMessage({
+        text: 'Ein unerwarteter Fehler ist aufgetreten.',
+        type: 'error'
       });
     } finally {
       setLoading(false);
     }
   };
-
-  if (emailSent) {
-    return (
-      <AuthLayout>
-        <div className="text-center space-y-6">
-          <h1 className="text-2xl font-semibold text-white">E-Mail gesendet</h1>
-          <div className="space-y-4">
-            <p className="text-gray-400">
-              Wir haben Ihnen einen Link zum Zurücksetzen Ihres Passworts an{' '}
-              <span className="text-white font-medium">{email}</span> gesendet.
-            </p>
-            <p className="text-gray-400 text-sm">
-              Überprüfen Sie Ihren Posteingang und folgen Sie den Anweisungen in der E-Mail.
-            </p>
-          </div>
-          <div className="pt-4">
-            <Link 
-              to="/auth" 
-              className="text-white underline hover:no-underline"
-            >
-              ← Zurück zur Anmeldung
-            </Link>
-          </div>
-        </div>
-      </AuthLayout>
-    );
-  }
 
   return (
     <AuthLayout>
@@ -115,6 +83,16 @@ const ForgotPassword = () => {
             {loading ? 'Wird gesendet...' : 'Passwort zurücksetzen'}
           </Button>
         </form>
+
+        {message && (
+          <div className={`p-4 rounded-md border ${
+            message.type === 'success' 
+              ? 'bg-green-900/20 border-green-700 text-green-400' 
+              : 'bg-red-900/20 border-red-700 text-red-400'
+          }`}>
+            <p className="text-sm">{message.text}</p>
+          </div>
+        )}
         
         <div className="text-center text-sm text-gray-400">
           <Link to="/auth" className="hover:text-white transition-colors">
