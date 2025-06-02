@@ -28,10 +28,9 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
       </div>
 
       {/* Right side - Marketing Content */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-amber-600 via-orange-500 to-red-600 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="relative z-10 flex flex-col justify-between p-12 text-white">
-          <div className="flex-1 flex flex-col justify-center space-y-8">
+      <div className="hidden lg:flex lg:w-1/2 bg-gray-900 relative overflow-hidden">
+        <div className="relative z-10 flex flex-col justify-center items-center p-12 text-white h-full">
+          <div className="max-w-lg text-center space-y-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -40,33 +39,13 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
               <h1 className="text-4xl font-bold leading-tight mb-6 text-white">
                 30.000+ bearbeitete Immobilienbilder für Makler, Fotografen & Architekten
               </h1>
-              <p className="text-xl text-white/90 leading-relaxed mb-12">
+              <p className="text-xl text-gray-300 leading-relaxed">
                 Setzen auch Sie auf Qualität, die verkauft – mit unserer 48h Bildbearbeitung in Studioqualität.
               </p>
             </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="grid grid-cols-1 gap-4"
-            >
-              <div className="flex items-center gap-3 text-white/90">
-                <div className="w-2 h-2 bg-white rounded-full" />
-                <span>Upload & automatische KI-Bearbeitung</span>
-              </div>
-              <div className="flex items-center gap-3 text-white/90">
-                <div className="w-2 h-2 bg-white rounded-full" />
-                <span>Professionelle Editing-Presets</span>
-              </div>
-              <div className="flex items-center gap-3 text-white/90">
-                <div className="w-2 h-2 bg-white rounded-full" />
-                <span>PDF-Export & Download</span>
-              </div>
-            </motion.div>
           </div>
           
-          <div className="text-sm text-white/70">
+          <div className="absolute bottom-12 text-sm text-gray-400">
             Made with love in Augsburg.
           </div>
         </div>
