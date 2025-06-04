@@ -10,11 +10,15 @@ import QuickActions from '@/components/dashboard/QuickActions';
 import AIToolsQuickAccess from '@/components/dashboard/AIToolsQuickAccess';
 import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications';
 import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
+import { useOrderCleanup } from '@/hooks/useOrderCleanup';
 
 const Dashboard = () => {
   // Enable real-time updates
   useRealtimeNotifications();
   useRealtimeOrders();
+  
+  // Enable periodic cleanup of abandoned draft orders
+  useOrderCleanup();
 
   return (
     <SidebarProvider>

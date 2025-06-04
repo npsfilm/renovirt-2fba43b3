@@ -32,11 +32,11 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
     if (!canProceed) return;
 
     try {
-      // Create order first
-      const order = await createOrder(orderData);
+      // Create order with payment method
+      const order = await createOrder(orderData, paymentMethod);
       
       if (paymentMethod === 'stripe') {
-        // Process Stripe payment
+        // Process Stripe payment - order is created as draft
         await processPayment({
           orderId: order.id,
           amount: totalPrice,
@@ -48,7 +48,7 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
           description: "Sie werden zur sicheren Stripe-Zahlungsseite weitergeleitet.",
         });
       } else {
-        // Invoice payment - order is created with pending status
+        // Invoice payment - order is immediately visible
         toast({
           title: "Bestellung erfolgreich erstellt!",
           description: "Sie erhalten in Kürze eine Rechnung per E-Mail.",

@@ -45,16 +45,17 @@ serve(async (req) => {
 
     // Update payment status based on session status
     let paymentStatus = "pending";
-    let orderStatus = "pending";
+    let paymentFlowStatus = "payment_pending";
 
     if (session.payment_status === "paid") {
       paymentStatus = "paid";
-      orderStatus = "processing";
+      paymentFlowStatus = "payment_completed";
     } else if (session.payment_status === "unpaid") {
       paymentStatus = "failed";
+      paymentFlowStatus = "payment_failed";
     }
 
-    // Update the order
+    // Update the order using our enhanced function
     const { error: updateError } = await supabase.rpc('update_order_payment_status', {
       p_order_id: session.metadata?.orderId,
       p_payment_status: paymentStatus,
@@ -88,7 +89,7 @@ serve(async (req) => {
       JSON.stringify({ 
         success: true, 
         paymentStatus,
-        orderStatus 
+        paymentFlowStatus
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

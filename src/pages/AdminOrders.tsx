@@ -39,6 +39,7 @@ const AdminOrders = () => {
             created_at
           )
         `)
+        .neq('payment_flow_status', 'draft') // Exclude draft orders
         .order('created_at', { ascending: false });
 
       if (statusFilter !== 'all') {

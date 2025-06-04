@@ -279,6 +279,7 @@ export type Database = {
           id: string
           image_count: number
           package_id: string | null
+          payment_flow_status: string | null
           payment_method: string | null
           payment_status: string | null
           photo_type: string | null
@@ -300,6 +301,7 @@ export type Database = {
           id?: string
           image_count?: number
           package_id?: string | null
+          payment_flow_status?: string | null
           payment_method?: string | null
           payment_status?: string | null
           photo_type?: string | null
@@ -321,6 +323,7 @@ export type Database = {
           id?: string
           image_count?: number
           package_id?: string | null
+          payment_flow_status?: string | null
           payment_method?: string | null
           payment_status?: string | null
           photo_type?: string | null
@@ -410,6 +413,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_abandoned_draft_orders: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       has_admin_role: {
         Args: { user_uuid: string }
         Returns: boolean

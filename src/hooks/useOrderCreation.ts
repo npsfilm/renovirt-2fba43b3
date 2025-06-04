@@ -15,13 +15,13 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
   const queryClient = useQueryClient();
 
   const createOrderMutation = useMutation({
-    mutationFn: async (orderData: OrderData) => {
+    mutationFn: async ({ orderData, paymentMethod }: { orderData: OrderData; paymentMethod: 'stripe' | 'invoice' }) => {
       if (!user) {
         logSecurityEvent('order_creation_unauthorized');
         throw new Error('User not authenticated');
       }
       
-      logSecurityEvent('order_creation_started', { userId: user.id });
+      logSecurityEvent('order_creation_started', { userId: user.id, paymentMethod });
       
       const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
       if (!selectedPackage) throw new Error('Package not found');
@@ -40,7 +40,11 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
         bracketingExposures = 5;
       }
 
-      // Create order without payment_method field
+      // Determine payment flow status based on payment method
+      const paymentFlowStatus = paymentMethod === 'stripe' ? 'draft' : 'payment_completed';
+      const orderStatus = paymentMethod === 'stripe' ? 'pending' : 'pending';
+
+      // Create order with appropriate payment flow status
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
@@ -53,7 +57,9 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
           bracketing_enabled: bracketingEnabled,
           bracketing_exposures: bracketingExposures,
           terms_accepted: orderData.acceptedTerms,
-          status: 'pending',
+          status: orderStatus,
+          payment_flow_status: paymentFlowStatus,
+          payment_status: paymentMethod === 'invoice' ? 'pending' : null,
         })
         .select()
         .single();
@@ -92,14 +98,26 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
         }
       }
 
-      logSecurityEvent('order_created_successfully', { orderId: order.id, userId: user.id });
+      logSecurityEvent('order_created_successfully', { 
+        orderId: order.id, 
+        userId: user.id, 
+        paymentMethod,
+        paymentFlowStatus 
+      });
       return order;
     },
-    onSuccess: (order) => {
-      queryClient.invalidateQueries({ queryKey: ['orders'] });
+    onSuccess: (order, { paymentMethod }) => {
+      // Only invalidate queries for invoice payments (immediately visible)
+      if (paymentMethod === 'invoice') {
+        queryClient.invalidateQueries({ queryKey: ['orders'] });
+        queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+      }
+      
       toast({
-        title: "Bestellung erfolgreich erstellt!",
-        description: `Ihre Bestellung ${order.id.slice(-6)} wurde erfolgreich übermittelt.`,
+        title: paymentMethod === 'stripe' ? "Zur Zahlung weitergeleitet" : "Bestellung erfolgreich erstellt!",
+        description: paymentMethod === 'stripe' 
+          ? "Ihre Bestellung wird nach erfolgreicher Zahlung verarbeitet."
+          : `Ihre Bestellung ${order.id.slice(-6)} wurde erfolgreich übermittelt.`,
       });
     },
     onError: (error) => {
