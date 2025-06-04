@@ -11,6 +11,7 @@ interface WelcomeStepProps {
   currentStep: number;
   totalSteps: number;
   completeOnboarding: () => void;
+  loading?: boolean;
 }
 
 const WelcomeStep = ({ nextStep }: WelcomeStepProps) => {
