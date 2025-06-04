@@ -1,149 +1,84 @@
+import { Suspense, lazy } from 'react';
+import { Toaster } from '@/components/ui/toaster';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import SecurityHeaders from '@/components/security/SecurityHeaders';
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import AdminRoute from "@/components/admin/AdminRoute";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import { useInactivityLogout } from "@/hooks/useInactivityLogout";
-import Auth from "./pages/Auth";
-import AdminAuth from "./pages/AdminAuth";
-import EmailVerification from "./pages/EmailVerification";
-import Onboarding from "./pages/Onboarding";
-import Dashboard from "./pages/Dashboard";
-import OrderFlow from "./pages/OrderFlow";
-import Orders from "./pages/Orders";
-import AITools from "./pages/AITools";
-import Profile from "./pages/Profile";
-import Billing from "./pages/Billing";
-import Settings from "./pages/Settings";
-import Help from "./pages/Help";
-import PaymentSuccess from "./components/order/PaymentSuccess";
-import NotFound from "./pages/NotFound";
-import AdminDashboard from "./pages/AdminDashboard";
-import AdminOrders from "./pages/AdminOrders";
-import AdminCustomers from "./pages/AdminCustomers";
-import AdminAnalytics from "./pages/AdminAnalytics";
-import AdminSettings from "./pages/AdminSettings";
-import ForgotPassword from "./pages/ForgotPassword";
+const Auth = lazy(() => import('@/pages/Auth'));
+const Dashboard = lazy(() => import('@/pages/Dashboard'));
+const Onboarding = lazy(() => import('@/pages/Onboarding'));
+const ProtectedRoute = lazy(() => import('@/components/auth/ProtectedRoute'));
+const AdminDashboard = lazy(() => import('@/pages/AdminDashboard'));
+const AdminAuth = lazy(() => import('@/pages/AdminAuth'));
+const OrdersPage = lazy(() => import('@/pages/OrdersPage'));
+const OrderFlow = lazy(() => import('@/pages/OrderFlow'));
+const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
+const ContactPage = lazy(() => import('@/pages/ContactPage'));
+const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    },
+  },
+});
 
-const AppContent = () => {
-  // Initialize inactivity logout
-  useInactivityLogout();
-
+function App() {
   return (
-    <Routes>
-      {/* Redirect root to auth */}
-      <Route path="/" element={<Navigate to="/auth" replace />} />
-      
-      {/* Public routes */}
-      <Route path="/auth" element={<Auth />} />
-      <Route path="/admin-auth" element={<AdminAuth />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      
-      {/* Protected routes that require authentication */}
-      <Route path="/email-verification" element={
-        <ProtectedRoute>
-          <EmailVerification />
-        </ProtectedRoute>
-      } />
-      <Route path="/onboarding" element={
-        <ProtectedRoute>
-          <Onboarding />
-        </ProtectedRoute>
-      } />
-      <Route path="/dashboard" element={
-        <ProtectedRoute>
-          <Dashboard />
-        </ProtectedRoute>
-      } />
-      <Route path="/order-flow" element={
-        <ProtectedRoute>
-          <OrderFlow />
-        </ProtectedRoute>
-      } />
-      <Route path="/orders" element={
-        <ProtectedRoute>
-          <Orders />
-        </ProtectedRoute>
-      } />
-      <Route path="/ai-tools" element={
-        <ProtectedRoute>
-          <AITools />
-        </ProtectedRoute>
-      } />
-      <Route path="/profile" element={
-        <ProtectedRoute>
-          <Profile />
-        </ProtectedRoute>
-      } />
-      <Route path="/billing" element={
-        <ProtectedRoute>
-          <Billing />
-        </ProtectedRoute>
-      } />
-      <Route path="/settings" element={
-        <ProtectedRoute>
-          <Settings />
-        </ProtectedRoute>
-      } />
-      <Route path="/help" element={
-        <ProtectedRoute>
-          <Help />
-        </ProtectedRoute>
-      } />
-      <Route path="/payment/success" element={
-        <ProtectedRoute>
-          <PaymentSuccess />
-        </ProtectedRoute>
-      } />
-      
-      {/* Admin Routes - Protected with both auth and admin role */}
-      <Route path="/management" element={
-        <AdminRoute>
-          <AdminDashboard />
-        </AdminRoute>
-      } />
-      <Route path="/management/orders" element={
-        <AdminRoute>
-          <AdminOrders />
-        </AdminRoute>
-      } />
-      <Route path="/management/customers" element={
-        <AdminRoute>
-          <AdminCustomers />
-        </AdminRoute>
-      } />
-      <Route path="/management/analytics" element={
-        <AdminRoute>
-          <AdminAnalytics />
-        </AdminRoute>
-      } />
-      <Route path="/management/settings" element={
-        <AdminRoute>
-          <AdminSettings />
-        </AdminRoute>
-      } />
-      
-      {/* Catch-all route */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <SecurityHeaders />
+        <Toaster />
+        <BrowserRouter>
+          <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><p>Laden...</p></div>}>
+            <Routes>
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/" element={<Navigate to="/dashboard" />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/orders"
+                element={
+                  <ProtectedRoute>
+                    <OrdersPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/order-flow"
+                element={
+                  <ProtectedRoute>
+                    <OrderFlow />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <ProfilePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/management" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/admin-auth" element={<AdminAuth />} />
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </Suspense>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
-};
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AppContent />
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+}
 
 export default App;
