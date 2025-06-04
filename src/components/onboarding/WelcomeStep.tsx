@@ -15,60 +15,70 @@ interface WelcomeStepProps {
 
 const WelcomeStep = ({ nextStep }: WelcomeStepProps) => {
   return (
-    <div className="text-center space-y-8">
-      <div className="space-y-6">
-        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-          <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
+    <div className="max-w-2xl">
+      <div className="mb-8">
+        <div className="flex items-center mb-6">
+          <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mr-4">
+            <span className="text-2xl">👋</span>
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Willkommen bei ImmoOnPoint!</h1>
+            <p className="text-orange-600 font-medium">Please enter your personal details.</p>
+          </div>
         </div>
-        
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            Willkommen bei Renovirt!
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Optimieren Sie Ihre Immobilienbilder in Minuten – ohne technisches Vorwissen.
+      </div>
+
+      <div className="space-y-6">
+        <div className="bg-gray-50 rounded-lg p-6">
+          <p className="text-gray-700 text-lg leading-relaxed mb-4">
+            Wir helfen Ihnen, Ihre Immobilienfotos professionell & effizient bearbeiten zu lassen – 
+            <span className="font-semibold text-gray-900"> in 48 h, made in Germany</span>.
+          </p>
+          <p className="text-gray-600">
+            In 3 kurzen Schritten lernen wir Sie besser kennen, damit wir den Service auf Sie abstimmen können.
           </p>
         </div>
-      </div>
 
-      <div className="bg-gray-50 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">So einfach geht's:</h3>
-        <div className="grid grid-cols-3 gap-6 text-center">
-          <div className="space-y-3">
-            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center mx-auto">
-              <span className="text-white font-semibold text-sm">1</span>
+        <div className="grid grid-cols-3 gap-4 py-6">
+          <div className="text-center">
+            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+              <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
             </div>
-            <div>
-              <h4 className="font-medium text-gray-900">Upload</h4>
-              <p className="text-sm text-gray-600">Bilder hochladen</p>
-            </div>
+            <h3 className="font-medium text-gray-900 text-sm">Rolle auswählen</h3>
+            <p className="text-xs text-gray-500 mt-1">Welche Rolle beschreibt Sie?</p>
           </div>
-          <div className="space-y-3">
-            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center mx-auto">
-              <span className="text-white font-semibold text-sm">2</span>
+          <div className="text-center">
+            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+              <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
             </div>
-            <div>
-              <h4 className="font-medium text-gray-900">KI-Bearbeitung</h4>
-              <p className="text-sm text-gray-600">Automatische Optimierung</p>
-            </div>
+            <h3 className="font-medium text-gray-900 text-sm">Unternehmensdaten</h3>
+            <p className="text-xs text-gray-500 mt-1">Für rechtssichere Abrechnung</p>
           </div>
-          <div className="space-y-3">
-            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center mx-auto">
-              <span className="text-white font-semibold text-sm">3</span>
+          <div className="text-center">
+            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+              <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
             </div>
-            <div>
-              <h4 className="font-medium text-gray-900">Download</h4>
-              <p className="text-sm text-gray-600">Perfekte Ergebnisse</p>
-            </div>
+            <h3 className="font-medium text-gray-900 text-sm">Sofort loslegen</h3>
+            <p className="text-xs text-gray-500 mt-1">Erste Fotos hochladen</p>
           </div>
         </div>
-      </div>
 
-      <Button onClick={nextStep} size="lg" className="px-8">
-        Los geht's
-      </Button>
+        <div className="pt-6">
+          <Button 
+            onClick={nextStep} 
+            className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-lg font-medium"
+            size="lg"
+          >
+            Los geht's
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };

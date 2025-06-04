@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { OnboardingData } from '@/pages/Onboarding';
 
@@ -11,126 +11,121 @@ interface QuickStartStepProps {
   currentStep: number;
   totalSteps: number;
   completeOnboarding: () => void;
+  loading?: boolean;
 }
 
-const QuickStartStep = ({ nextStep, prevStep }: QuickStartStepProps) => {
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    if (files.length + uploadedFiles.length <= 3) {
-      setUploadedFiles(prev => [...prev, ...files]);
-    }
-  };
-
-  const removeFile = (index: number) => {
-    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+const QuickStartStep = ({ data, prevStep, completeOnboarding, loading }: QuickStartStepProps) => {
+  const handleStartUploading = () => {
+    completeOnboarding();
   };
 
   return (
-    <div className="space-y-8">
-      <div className="text-center space-y-4">
-        <h2 className="text-2xl font-bold text-gray-900">Testen Sie unsere KI kostenlos</h2>
+    <div className="max-w-2xl">
+      <div className="text-center mb-8">
+        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">✅ Perfekt – Sie sind startklar!</h2>
         <p className="text-gray-600">
-          Laden Sie bis zu 3 Bilder hoch und erleben Sie die Qualität unserer Bearbeitung.
+          Was möchten Sie als Nächstes tun?
         </p>
       </div>
 
-      <div className="space-y-6">
-        {/* Upload Area */}
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-gray-400 transition-colors">
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            onChange={handleFileUpload}
-            className="hidden"
-            id="file-upload"
-            disabled={uploadedFiles.length >= 3}
-          />
-          <label htmlFor="file-upload" className="cursor-pointer">
-            <div className="space-y-4">
-              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
-                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-lg font-medium text-gray-900">
-                  {uploadedFiles.length >= 3 ? 'Maximum erreicht (3/3)' : 'Bilder hier hinziehen oder klicken'}
-                </p>
-                <p className="text-sm text-gray-500">
-                  JPG, PNG • Noch {3 - uploadedFiles.length} Bilder möglich
-                </p>
-              </div>
+      <div className="space-y-4 mb-8">
+        <button
+          onClick={handleStartUploading}
+          disabled={loading}
+          className="w-full p-6 rounded-lg border-2 border-orange-200 bg-orange-50 hover:bg-orange-100 hover:border-orange-300 transition-all text-left group"
+        >
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center text-white group-hover:bg-orange-600 transition-colors">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
             </div>
-          </label>
-        </div>
-
-        {/* Uploaded Files */}
-        {uploadedFiles.length > 0 && (
-          <div className="space-y-4">
-            <h3 className="font-medium text-gray-900">Hochgeladene Bilder ({uploadedFiles.length}/3)</h3>
-            <div className="space-y-3">
-              {uploadedFiles.map((file, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded flex items-center justify-center">
-                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">{file.name}</p>
-                      <p className="text-xs text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => removeFile(index)}
-                    className="text-red-500 hover:text-red-700 p-1"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-              ))}
+            <div>
+              <h3 className="font-semibold text-gray-900 text-lg">📁 Jetzt Immobilienfotos hochladen</h3>
+              <p className="text-gray-600">Laden Sie Ihre ersten Bilder hoch und lassen Sie sie professionell bearbeiten</p>
             </div>
           </div>
-        )}
+        </button>
 
-        {/* Benefits */}
-        <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-          <h3 className="font-medium text-green-900 mb-3">Was Sie erwartet:</h3>
-          <ul className="space-y-2 text-sm text-green-800">
-            <li className="flex items-center space-x-2">
-              <span className="w-1.5 h-1.5 bg-green-600 rounded-full"></span>
-              <span>Automatische Farb- und Belichtungskorrektur</span>
-            </li>
-            <li className="flex items-center space-x-2">
-              <span className="w-1.5 h-1.5 bg-green-600 rounded-full"></span>
-              <span>Professionelle Bildoptimierung</span>
-            </li>
-            <li className="flex items-center space-x-2">
-              <span className="w-1.5 h-1.5 bg-green-600 rounded-full"></span>
-              <span>Sofortiger Download in hoher Qualität</span>
-            </li>
-          </ul>
+        <button
+          onClick={handleStartUploading}
+          disabled={loading}
+          className="w-full p-6 rounded-lg border-2 border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all text-left"
+        >
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-gray-600">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 text-lg">👀 Beispiele ansehen / Demo ansehen</h3>
+              <p className="text-gray-600">Sehen Sie sich Beispiele unserer Arbeit an</p>
+            </div>
+          </div>
+        </button>
+
+        <button
+          onClick={handleStartUploading}
+          disabled={loading}
+          className="w-full p-6 rounded-lg border-2 border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all text-left"
+        >
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-gray-600">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 text-lg">🧠 Fragen? → Hilfe-Center</h3>
+              <p className="text-gray-600">Besuchen Sie unser Hilfe-Center für häufige Fragen</p>
+            </div>
+          </div>
+        </button>
+      </div>
+
+      {/* Summary */}
+      <div className="bg-gray-50 rounded-lg p-6 mb-8">
+        <h3 className="font-semibold text-gray-900 mb-4">Ihre Daten im Überblick:</h3>
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <span className="text-gray-600">Rolle:</span>
+            <span className="ml-2 font-medium">{data.role}</span>
+          </div>
+          <div>
+            <span className="text-gray-600">Name:</span>
+            <span className="ml-2 font-medium">{data.firstName} {data.lastName}</span>
+          </div>
+          {data.company && (
+            <div>
+              <span className="text-gray-600">Firma:</span>
+              <span className="ml-2 font-medium">{data.company}</span>
+            </div>
+          )}
+          <div>
+            <span className="text-gray-600">Quelle:</span>
+            <span className="ml-2 font-medium">{data.source}</span>
+          </div>
         </div>
       </div>
 
-      <div className="flex justify-between pt-4">
-        <Button variant="outline" onClick={prevStep}>
+      <div className="flex justify-between">
+        <Button variant="outline" onClick={prevStep} disabled={loading}>
           Zurück
         </Button>
-        <div className="space-x-3">
-          <Button variant="outline" onClick={nextStep}>
-            Später testen
-          </Button>
-          <Button onClick={nextStep} disabled={uploadedFiles.length === 0}>
-            {uploadedFiles.length > 0 ? 'Bilder bearbeiten' : 'Bilder hochladen'}
-          </Button>
-        </div>
+        <Button 
+          onClick={handleStartUploading}
+          className="bg-orange-500 hover:bg-orange-600 text-white px-8"
+          disabled={loading}
+        >
+          {loading ? 'Wird eingerichtet...' : 'Zum Dashboard'}
+        </Button>
       </div>
     </div>
   );
