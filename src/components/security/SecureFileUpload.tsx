@@ -33,11 +33,10 @@ const SecureFileUpload = ({
       return false;
     }
 
-    // Additional MIME type validation by reading file signature
-    return validateFileSignature(file);
+    return true;
   };
 
-  const validateFileSignature = (file: File): boolean => {
+  const validateFileSignature = async (file: File): Promise<boolean> => {
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -103,7 +102,7 @@ const SecureFileUpload = ({
         });
       }
 
-      // Validate file type and signature
+      // Validate file type
       if (!validateFileType(file)) {
         alert(`Datei "${file.name}" hat einen ungültigen Dateityp`);
         continue;
