@@ -7,8 +7,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { Package, Users, DollarSign, TrendingUp } from 'lucide-react';
 
 const OrderAnalytics = () => {
-  // Fetch order statistics
-  const { data: stats } = useQuery({
+  // Fetch order statistics with real-time updates
+  const { data: stats, isLoading } = useQuery({
     queryKey: ['order-analytics'],
     queryFn: async () => {
       // Get total orders
@@ -46,14 +46,18 @@ const OrderAnalytics = () => {
 
       const { data: monthlyData } = await supabase
         .from('orders')
-        .select('created_at')
+        .select('created_at, total_price')
         .gte('created_at', sixMonthsAgo.toISOString());
 
       const monthlyOrders = monthlyData?.reduce((acc, order) => {
         const month = new Date(order.created_at).toLocaleDateString('de-DE', { month: 'short', year: 'numeric' });
-        acc[month] = (acc[month] || 0) + 1;
+        acc[month] = {
+          month,
+          orders: (acc[month]?.orders || 0) + 1,
+          revenue: (acc[month]?.revenue || 0) + parseFloat(order.total_price?.toString() || '0')
+        };
         return acc;
-      }, {} as Record<string, number>) || {};
+      }, {} as Record<string, { month: string; orders: number; revenue: number }>) || {};
 
       return {
         totalOrders: totalOrders || 0,
@@ -64,12 +68,10 @@ const OrderAnalytics = () => {
           status,
           count,
         })),
-        monthlyOrders: Object.entries(monthlyOrders).map(([month, count]) => ({
-          month,
-          orders: count,
-        })),
+        monthlyOrders: Object.values(monthlyOrders),
       };
     },
+    refetchInterval: 30000, // Refetch every 30 seconds for live updates
   });
 
   const statusColors = {
@@ -79,6 +81,26 @@ const OrderAnalytics = () => {
     completed: '#10b981',
     cancelled: '#ef4444',
   };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i}>
+              <CardContent className="p-6">
+                <div className="animate-pulse">
+                  <div className="h-8 w-8 bg-gray-200 rounded mb-4"></div>
+                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-6 bg-gray-200 rounded"></div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

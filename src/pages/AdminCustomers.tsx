@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { SidebarTrigger } from '@/components/ui/sidebar';
@@ -11,11 +10,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { Search, User, Mail, Phone, Building, FileText, ShoppingCart } from 'lucide-react';
 import CustomerDetailsModal from '@/components/admin/customers/CustomerDetailsModal';
 import CustomerOrdersModal from '@/components/admin/customers/CustomerOrdersModal';
+import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
 
 const AdminCustomers = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
   const [selectedCustomerForOrders, setSelectedCustomerForOrders] = useState<{id: string, name: string} | null>(null);
+
+  // Enable real-time updates
+  useRealtimeOrders();
 
   const { data: customers, isLoading } = useQuery({
     queryKey: ['admin-customers', searchTerm],

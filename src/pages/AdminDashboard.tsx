@@ -3,8 +3,12 @@ import React from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import OrderAnalytics from '@/components/admin/analytics/OrderAnalytics';
+import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
 
 const AdminDashboard = () => {
+  // Enable real-time updates for admin dashboard
+  useRealtimeOrders();
+
   return (
     <AdminLayout>
       {/* Header */}

@@ -6,11 +6,15 @@ import PageHeader from '@/components/layout/PageHeader';
 import OrdersOverview from '@/components/dashboard/OrdersOverview';
 import OrderDetailsModal from '@/components/orders/OrderDetailsModal';
 import { useSearchParams } from 'react-router-dom';
+import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
 
 const Orders = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Enable real-time updates
+  useRealtimeOrders();
 
   // Check for selected order in URL params
   useEffect(() => {

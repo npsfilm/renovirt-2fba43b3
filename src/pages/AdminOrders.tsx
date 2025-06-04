@@ -7,11 +7,15 @@ import { supabase } from '@/integrations/supabase/client';
 import OrdersFilters from '@/components/admin/orders/OrdersFilters';
 import OrdersTable from '@/components/admin/orders/OrdersTable';
 import OrderDetailsModal from '@/components/admin/orders/OrderDetailsModal';
+import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
 
 const AdminOrders = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+
+  // Enable real-time updates
+  useRealtimeOrders();
 
   const { data: orders, isLoading, refetch } = useQuery({
     queryKey: ['admin-orders', searchTerm, statusFilter],

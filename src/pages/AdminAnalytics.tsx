@@ -5,8 +5,12 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 import OrderAnalytics from '@/components/admin/analytics/OrderAnalytics';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart3, TrendingUp, Users, ShoppingCart } from 'lucide-react';
+import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
 
 const AdminAnalytics = () => {
+  // Enable real-time updates
+  useRealtimeOrders();
+
   return (
     <AdminLayout>
       {/* Header */}
