@@ -1,4 +1,5 @@
 
+
 import { Suspense, lazy } from 'react';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -10,8 +11,13 @@ const Auth = lazy(() => import('@/pages/Auth'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const Onboarding = lazy(() => import('@/pages/Onboarding'));
 const ProtectedRoute = lazy(() => import('@/components/auth/ProtectedRoute'));
+const AdminRoute = lazy(() => import('@/components/admin/AdminRoute'));
 const AdminDashboard = lazy(() => import('@/pages/AdminDashboard'));
 const AdminAuth = lazy(() => import('@/pages/AdminAuth'));
+const AdminOrders = lazy(() => import('@/pages/AdminOrders'));
+const AdminCustomers = lazy(() => import('@/pages/AdminCustomers'));
+const AdminAnalytics = lazy(() => import('@/pages/AdminAnalytics'));
+const AdminSettings = lazy(() => import('@/pages/AdminSettings'));
 const Orders = lazy(() => import('@/pages/Orders'));
 const OrderFlow = lazy(() => import('@/pages/OrderFlow'));
 const Profile = lazy(() => import('@/pages/Profile'));
@@ -71,8 +77,15 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/management" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+              
+              {/* Admin Routes */}
+              <Route path="/management" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+              <Route path="/management/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />
+              <Route path="/management/customers" element={<AdminRoute><AdminCustomers /></AdminRoute>} />
+              <Route path="/management/analytics" element={<AdminRoute><AdminAnalytics /></AdminRoute>} />
+              <Route path="/management/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
               <Route path="/admin-auth" element={<AdminAuth />} />
+              
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
@@ -83,3 +96,4 @@ function App() {
 }
 
 export default App;
+
