@@ -24,9 +24,9 @@ const ReferralBox = () => {
         .select('code')
         .eq('user_id', user.id)
         .eq('is_active', true)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') throw error;
+      if (error) throw error;
       return data?.code || null;
     },
     enabled: !!user?.id,
