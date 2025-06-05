@@ -7,7 +7,7 @@ import { uploadOrderFiles } from '@/utils/fileUploadService';
 import { calculateOrderTotal } from '@/utils/orderPricing';
 import { calculateEffectiveImageCount } from '@/utils/orderValidation';
 import { secureLog, logSecurityEvent } from '@/utils/secureLogging';
-import { ensureUniqueOrderNumber, generateOrderNumber } from '@/utils/orderNumberGenerator';
+import { generateOrderNumber } from '@/utils/orderNumberGenerator';
 import type { OrderData } from '@/utils/orderValidation';
 
 export const useOrderCreation = (packages: any[], addOns: any[]) => {
@@ -41,18 +41,8 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
         bracketingExposures = 5;
       }
 
-      // Generate unique order number using utility function
-      const orderNumber = await ensureUniqueOrderNumber(
-        generateOrderNumber,
-        async (orderNum: string) => {
-          const { data } = await supabase
-            .from('orders')
-            .select('id')
-            .eq('order_number', orderNum)
-            .maybeSingle();
-          return data === null;
-        }
-      );
+      // Simple order number generation
+      const orderNumber = generateOrderNumber();
 
       // Determine payment flow status based on payment method
       const paymentFlowStatus = paymentMethod === 'stripe' ? 'draft' : 'payment_completed';
