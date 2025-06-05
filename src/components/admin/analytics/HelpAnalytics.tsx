@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
@@ -34,6 +33,7 @@ const HelpAnalytics = () => {
   }
 
   const dailyData = analytics?.daily_stats || [];
+  const topQuestions = Array.isArray(analytics?.top_questions) ? analytics.top_questions : [];
 
   return (
     <div className="space-y-6">
@@ -126,7 +126,7 @@ const HelpAnalytics = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {analytics?.top_questions?.slice(0, 5).map((question: string, index: number) => (
+              {topQuestions.slice(0, 5).map((question: string, index: number) => (
                 <div key={index} className="flex items-start gap-3">
                   <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                     {index + 1}

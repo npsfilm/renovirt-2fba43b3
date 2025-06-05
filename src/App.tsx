@@ -27,7 +27,7 @@ import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminSettings from "./pages/AdminSettings";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AdminRoute from "./components/admin/AdminRoute";
-import { StripeProvider } from "./components/payment/StripeProvider";
+import StripeProvider from "./components/payment/StripeProvider";
 import GlobalAIWidget from "./components/layout/GlobalAIWidget";
 
 const queryClient = new QueryClient();
