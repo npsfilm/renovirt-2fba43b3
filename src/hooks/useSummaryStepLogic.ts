@@ -19,7 +19,7 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const canProceed = orderData.acceptedTerms && orderData.email && user;
+  const canProceed = orderData.acceptedTerms && orderData.email && !!user;
   const basePrice = calculateTotalPrice(orderData);
   const creditDiscount = creditsToUse * 1;
   const finalPrice = Math.max(0, basePrice - creditDiscount);
