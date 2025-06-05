@@ -1,3 +1,4 @@
+
 // Local type definitions for new database structures
 export interface OrderNotification {
   id: string;
@@ -24,6 +25,8 @@ export interface ExtendedOrder {
   status?: string;
   created_at: string;
   updated_at: string;
+  order_number?: string;
+  payment_status?: string;
   admin_notes?: string;
   delivery_status?: string;
   customer_profiles?: {
