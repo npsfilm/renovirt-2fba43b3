@@ -7,6 +7,7 @@ import { uploadOrderFiles } from '@/utils/fileUploadService';
 import { calculateOrderTotal } from '@/utils/orderPricing';
 import { calculateEffectiveImageCount } from '@/utils/orderValidation';
 import { secureLog, logSecurityEvent } from '@/utils/secureLogging';
+import { generateOrderNumber, ensureUniqueOrderNumber } from '@/utils/orderNumberGenerator';
 import type { OrderData } from '@/utils/orderValidation';
 
 export const useOrderCreation = (packages: any[], addOns: any[]) => {
@@ -40,15 +41,29 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
         bracketingExposures = 5;
       }
 
+      // Generate unique order number
+      const orderNumber = await ensureUniqueOrderNumber(
+        generateOrderNumber,
+        async (num) => {
+          const { data } = await supabase
+            .from('orders')
+            .select('id')
+            .eq('order_number', num)
+            .maybeSingle();
+          return !data;
+        }
+      );
+
       // Determine payment flow status based on payment method
       const paymentFlowStatus = paymentMethod === 'stripe' ? 'draft' : 'payment_completed';
       const orderStatus = paymentMethod === 'stripe' ? 'pending' : 'pending';
 
-      // Create order with appropriate payment flow status
+      // Create order with appropriate payment flow status and order number
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
           user_id: user.id,
+          order_number: orderNumber,
           package_id: selectedPackage.id,
           customer_email: orderData.email,
           photo_type: orderData.photoType,
@@ -100,6 +115,7 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
 
       logSecurityEvent('order_created_successfully', { 
         orderId: order.id, 
+        orderNumber: orderNumber,
         userId: user.id, 
         paymentMethod,
         paymentFlowStatus 
@@ -117,7 +133,7 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
         title: paymentMethod === 'stripe' ? "Zur Zahlung weitergeleitet" : "Bestellung erfolgreich erstellt!",
         description: paymentMethod === 'stripe' 
           ? "Ihre Bestellung wird nach erfolgreicher Zahlung verarbeitet."
-          : `Ihre Bestellung ${order.id.slice(-6)} wurde erfolgreich übermittelt.`,
+          : `Ihre Bestellung ${order.order_number} wurde erfolgreich übermittelt.`,
       });
     },
     onError: (error) => {

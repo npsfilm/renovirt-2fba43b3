@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/layout/AppSidebar';
@@ -37,6 +36,7 @@ const OrderFlow = () => {
   
   const [orderData, setOrderData] = useState<OrderData>({
     files: [],
+    package: 'premium', // Pre-select premium package
     extras: {
       express: false,
       upscale: false,

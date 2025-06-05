@@ -11,7 +11,7 @@ const corsHeaders = {
 };
 
 interface OrderConfirmationRequest {
-  orderId: string;
+  orderNumber: string;
   customerEmail: string;
   orderDetails: {
     packageName: string;
@@ -28,7 +28,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { orderId, customerEmail, orderDetails }: OrderConfirmationRequest = await req.json();
+    const { orderNumber, customerEmail, orderDetails }: OrderConfirmationRequest = await req.json();
 
     const estimatedDelivery = orderDetails.extras.includes('Express Processing') ? '24h' : '24–48h';
     
@@ -39,10 +39,10 @@ const handler = async (req: Request): Promise<Response> => {
     // Check if RESEND_API_KEY is configured
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     if (!resendApiKey) {
-      console.log("RESEND_API_KEY not configured. Order details:", { orderId, customerEmail, orderDetails });
+      console.log("RESEND_API_KEY not configured. Order details:", { orderNumber, customerEmail, orderDetails });
       return new Response(JSON.stringify({ 
         message: "E-Mail-Service nicht konfiguriert",
-        orderId,
+        orderNumber,
         orderDetails 
       }), {
         status: 200,
@@ -59,7 +59,7 @@ const handler = async (req: Request): Promise<Response> => {
     const emailResponse = await resend.emails.send({
       from: "HDR Service <hello@npsfilm.de>",
       to: [toEmail],
-      subject: `Bestellbestätigung - Bestellung ${orderId.slice(-6)}`,
+      subject: `Bestellbestätigung - Bestellung ${orderNumber}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="text-align: center; margin-bottom: 30px;">
@@ -73,7 +73,7 @@ const handler = async (req: Request): Promise<Response> => {
             <table style="width: 100%; border-collapse: collapse;">
               <tr>
                 <td style="padding: 8px 0; border-bottom: 1px solid #ddd;"><strong>Bestellnummer:</strong></td>
-                <td style="padding: 8px 0; border-bottom: 1px solid #ddd; text-align: right;">${orderId.slice(-6)}</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #ddd; text-align: right;">${orderNumber}</td>
               </tr>
               <tr>
                 <td style="padding: 8px 0; border-bottom: 1px solid #ddd;"><strong>Kunden-E-Mail:</strong></td>
