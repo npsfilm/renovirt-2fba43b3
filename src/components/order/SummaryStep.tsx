@@ -63,7 +63,7 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
       // Create order with updated price - ensure all required properties are present
       const orderDataWithCredits: OrderData = {
         ...orderData,
-        files: orderData.files, // Explicitly ensure files is present
+        files: orderData.files || [], // Ensure files is always present as an array
         creditsUsed: creditsToUse,
         originalPrice: basePrice,
         finalPrice: finalPrice
