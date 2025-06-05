@@ -108,6 +108,108 @@ export type Database = {
         }
         Relationships: []
       }
+      help_documents: {
+        Row: {
+          content: string
+          created_by: string | null
+          file_name: string | null
+          id: string
+          is_active: boolean
+          title: string
+          updated_at: string
+          upload_date: string
+        }
+        Insert: {
+          content: string
+          created_by?: string | null
+          file_name?: string | null
+          id?: string
+          is_active?: boolean
+          title: string
+          updated_at?: string
+          upload_date?: string
+        }
+        Update: {
+          content?: string
+          created_by?: string | null
+          file_name?: string | null
+          id?: string
+          is_active?: boolean
+          title?: string
+          updated_at?: string
+          upload_date?: string
+        }
+        Relationships: []
+      }
+      help_interactions: {
+        Row: {
+          ai_response: string
+          contacted_support: boolean
+          created_at: string
+          feedback_rating: number | null
+          id: string
+          ip_address: unknown | null
+          question: string
+          response_time_ms: number | null
+          session_id: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          ai_response: string
+          contacted_support?: boolean
+          created_at?: string
+          feedback_rating?: number | null
+          id?: string
+          ip_address?: unknown | null
+          question: string
+          response_time_ms?: number | null
+          session_id: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          ai_response?: string
+          contacted_support?: boolean
+          created_at?: string
+          feedback_rating?: number | null
+          id?: string
+          ip_address?: unknown | null
+          question?: string
+          response_time_ms?: number | null
+          session_id?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      help_question_patterns: {
+        Row: {
+          avg_satisfaction: number | null
+          count: number
+          created_at: string
+          id: string
+          last_asked: string
+          question_pattern: string
+        }
+        Insert: {
+          avg_satisfaction?: number | null
+          count?: number
+          created_at?: string
+          id?: string
+          last_asked?: string
+          question_pattern: string
+        }
+        Update: {
+          avg_satisfaction?: number | null
+          count?: number
+          created_at?: string
+          id?: string
+          last_asked?: string
+          question_pattern?: string
+        }
+        Relationships: []
+      }
       order_add_ons: {
         Row: {
           add_on_id: string
@@ -621,6 +723,16 @@ export type Database = {
       generate_referral_code: {
         Args: { user_uuid: string }
         Returns: string
+      }
+      get_help_analytics: {
+        Args: { start_date?: string; end_date?: string }
+        Returns: {
+          total_questions: number
+          avg_satisfaction: number
+          support_contact_rate: number
+          top_questions: string[]
+          daily_stats: Json
+        }[]
       }
       get_user_credits: {
         Args: { user_uuid: string }
