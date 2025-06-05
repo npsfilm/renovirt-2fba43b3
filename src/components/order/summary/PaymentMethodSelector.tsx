@@ -25,8 +25,8 @@ const PaymentMethodSelector = ({ paymentMethod, onPaymentMethodChange }: Payment
                 <div className="flex-1">
                   <div className="flex items-center space-x-3">
                     <img 
-                      src="/lovable-uploads/819e5e7a-f577-4df0-bb54-2358e513d5bc.png" 
-                      alt="Visa" 
+                      src="/lovable-uploads/afe41099-f9af-4290-9dad-bb31fb7cf67f.png" 
+                      alt="Stripe" 
                       className="w-8 h-5 object-contain"
                     />
                     <span className="font-medium">Kreditkarte / Online-Zahlung</span>
@@ -57,10 +57,6 @@ const PaymentMethodSelector = ({ paymentMethod, onPaymentMethodChange }: Payment
             </Label>
           </div>
         </RadioGroup>
-        
-        <div className="mt-4 pt-4 border-t">
-          <PaymentIcons />
-        </div>
       </CardContent>
     </Card>
   );

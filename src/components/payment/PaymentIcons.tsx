@@ -10,36 +10,36 @@ interface PaymentIconsProps {
 export const PaymentIcons = ({ showSecurity = true, className = "" }: PaymentIconsProps) => {
   return (
     <div className={`space-y-3 ${className}`}>
-      <div className="flex items-center justify-center flex-wrap gap-3">
+      <div className="flex items-center justify-start flex-wrap gap-3">
         <img 
           src="/lovable-uploads/819e5e7a-f577-4df0-bb54-2358e513d5bc.png" 
           alt="Visa" 
-          className="h-8 object-contain"
+          className="h-7 object-contain"
         />
         <img 
           src="/lovable-uploads/77777e02-5a5e-4d6b-a181-95ebade8bf9e.png" 
           alt="Mastercard" 
-          className="h-8 object-contain"
+          className="h-7 object-contain"
         />
         <img 
           src="/lovable-uploads/d2f87edb-2e0b-43b8-b23a-9672cbd709a5.png" 
           alt="Apple Pay" 
-          className="h-8 object-contain"
+          className="h-7 object-contain"
         />
         <img 
           src="/lovable-uploads/16638ecb-4c78-4658-8ef3-b071e022292f.png" 
           alt="Google Pay" 
-          className="h-8 object-contain"
+          className="h-7 object-contain"
         />
         <img 
           src="/lovable-uploads/a9107e55-f9c2-4c64-84ca-2bc5931e76ca.png" 
           alt="PayPal" 
-          className="h-8 object-contain"
+          className="h-7 object-contain"
         />
         <img 
           src="/lovable-uploads/c0a174f6-b11b-4637-a8dd-1e03fe663449.png" 
           alt="Klarna" 
-          className="h-8 object-contain"
+          className="h-7 object-contain"
         />
       </div>
       
