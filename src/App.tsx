@@ -1,5 +1,4 @@
 
-
 import { Suspense, lazy } from 'react';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -23,6 +22,9 @@ const OrderFlow = lazy(() => import('@/pages/OrderFlow'));
 const Profile = lazy(() => import('@/pages/Profile'));
 const Help = lazy(() => import('@/pages/Help'));
 const NotFound = lazy(() => import('@/pages/NotFound'));
+const AITools = lazy(() => import('@/pages/AITools'));
+const Billing = lazy(() => import('@/pages/Billing'));
+const Settings = lazy(() => import('@/pages/Settings'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -77,6 +79,30 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/ai-tools"
+                element={
+                  <ProtectedRoute>
+                    <AITools />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/billing"
+                element={
+                  <ProtectedRoute>
+                    <Billing />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/settings"
+                element={
+                  <ProtectedRoute>
+                    <Settings />
+                  </ProtectedRoute>
+                }
+              />
               
               {/* Admin Routes */}
               <Route path="/management" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
@@ -96,4 +122,3 @@ function App() {
 }
 
 export default App;
-
