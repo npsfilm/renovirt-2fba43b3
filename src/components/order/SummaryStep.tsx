@@ -62,11 +62,21 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
 
       // Create order with updated price - ensure all required properties are present
       const orderDataWithCredits: OrderData = {
-        ...orderData,
-        files: orderData.files || [], // Ensure files is always present as an array
+        email: orderData.email,
+        contactPerson: orderData.contactPerson,
+        company: orderData.company,
+        photoType: orderData.photoType,
+        package: orderData.package,
+        imageCount: orderData.imageCount,
+        files: orderData.files,
+        extras: orderData.extras,
+        specialRequests: orderData.specialRequests,
+        acceptedTerms: orderData.acceptedTerms,
         creditsUsed: creditsToUse,
         originalPrice: basePrice,
-        finalPrice: finalPrice
+        finalPrice: finalPrice,
+        watermarkFile: orderData.watermarkFile,
+        couponCode: orderData.couponCode
       };
 
       const order = await createOrder(orderDataWithCredits, paymentMethod);
