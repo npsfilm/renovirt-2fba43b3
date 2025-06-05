@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useOrders } from '@/hooks/useOrders';
 import CreditsApplication from './CreditsApplication';
+import { calculateEffectiveImageCount } from '@/utils/orderValidation';
 import type { OrderData } from '@/utils/orderValidation';
 
 interface PriceSummaryProps {
@@ -16,6 +17,9 @@ const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSum
   const basePrice = calculateTotalPrice(orderData);
   const creditDiscount = creditsToUse * 1; // 1 Euro per credit
   const finalPrice = Math.max(0, basePrice - creditDiscount);
+  
+  // Calculate effective image count
+  const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
 
   return (
     <div className="space-y-4">
@@ -54,7 +58,7 @@ const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSum
           totalPrice={basePrice}
           creditsToUse={creditsToUse}
           onCreditsChange={onCreditsChange}
-          imageCount={orderData.imageCount}
+          imageCount={imageCount}
         />
       )}
     </div>

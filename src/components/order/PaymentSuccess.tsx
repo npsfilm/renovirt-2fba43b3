@@ -6,14 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { usePayment } from '@/hooks/usePayment';
 import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/use-toast';
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { handlePaymentSuccess } = usePayment();
   const { user } = useAuth();
-  const { toast } = useToast();
 
   useEffect(() => {
     const orderId = searchParams.get('order_id');

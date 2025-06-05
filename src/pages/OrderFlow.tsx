@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/layout/AppSidebar';
@@ -10,21 +11,7 @@ import OrderProgress from '@/components/order/OrderProgress';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-
-interface OrderData {
-  photoType?: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5';
-  files: File[];
-  package?: 'basic' | 'premium';
-  extras: {
-    express: boolean;
-    upscale: boolean;
-    watermark: boolean;
-  };
-  email?: string;
-  couponCode?: string;
-  acceptedTerms: boolean;
-  watermarkFile?: File;
-}
+import type { OrderData } from '@/utils/orderValidation';
 
 const OrderFlow = () => {
   const [currentStep, setCurrentStep] = useState(1);
