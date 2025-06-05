@@ -1,130 +1,50 @@
 
 import React, { useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { usePayment } from '@/hooks/usePayment';
-import { useQueryClient } from '@tanstack/react-query';
-import { CheckCircle, Loader2, AlertCircle } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { usePayment } from '@/hooks/usePayment';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
-  const { verifyPayment, isVerifyingPayment } = usePayment();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const [verified, setVerified] = React.useState(false);
-  const [verificationComplete, setVerificationComplete] = React.useState(false);
-  const [verificationError, setVerificationError] = React.useState(false);
+  const { handlePaymentSuccess } = usePayment();
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   useEffect(() => {
+    const orderId = searchParams.get('order_id');
     const sessionId = searchParams.get('session_id');
-    
-    if (sessionId && !verified && !verificationComplete) {
-      setVerificationComplete(true);
-      verifyPayment({ sessionId })
-        .then(() => {
-          setVerified(true);
-          // Invalidate queries to show the new order
-          queryClient.invalidateQueries({ queryKey: ['orders'] });
-          queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
-          queryClient.invalidateQueries({ queryKey: ['notifications'] });
-        })
-        .catch((error) => {
-          console.error('Payment verification failed:', error);
-          setVerified(false);
-          setVerificationError(true);
-        });
+
+    if (orderId && sessionId && user) {
+      handlePaymentSuccess(orderId, user.id);
     }
-  }, [searchParams, verifyPayment, verified, verificationComplete, queryClient]);
-
-  if (isVerifyingPayment || !verificationComplete) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <Card className="w-full max-w-md">
-          <CardContent className="flex flex-col items-center space-y-4 pt-6">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-            <div className="text-center">
-              <p className="text-lg font-medium text-gray-900 mb-2">
-                Zahlung wird verifiziert...
-              </p>
-              <p className="text-sm text-gray-600">
-                Wir überprüfen Ihre Zahlung und erstellen Ihre Bestellung. Dies dauert nur wenige Sekunden.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (verificationError) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <div className="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
-              <AlertCircle className="h-6 w-6 text-red-600" />
-            </div>
-            <CardTitle className="text-2xl text-red-600">
-              Verifizierung fehlgeschlagen
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-center space-y-4">
-            <p className="text-gray-600">
-              Die Zahlungsverifizierung konnte nicht abgeschlossen werden. Bitte kontaktieren Sie den Support.
-            </p>
-            <div className="space-y-2 pt-4">
-              <Button 
-                onClick={() => navigate('/orders')} 
-                className="w-full"
-              >
-                Zu meinen Bestellungen
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => navigate('/dashboard')}
-                className="w-full"
-              >
-                Zum Dashboard
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  }, [searchParams, user, handlePaymentSuccess]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-            <CheckCircle className="h-6 w-6 text-green-600" />
+            <CheckCircle className="w-6 h-6 text-green-600" />
           </div>
-          <CardTitle className="text-2xl text-green-600">
+          <CardTitle className="text-xl font-semibold text-gray-900">
             Zahlung erfolgreich!
           </CardTitle>
         </CardHeader>
-        <CardContent className="text-center space-y-4">
+        <CardContent className="space-y-4 text-center">
           <p className="text-gray-600">
-            Ihre Zahlung wurde erfolgreich verarbeitet und Ihre Bestellung wurde erstellt. Die Bearbeitung Ihrer Bilder beginnt nun.
+            Ihre Bestellung wurde erfolgreich verarbeitet. Sie erhalten in Kürze eine Bestätigungs-E-Mail.
           </p>
-          <p className="text-sm text-gray-500">
-            Sie erhalten eine Benachrichtigung, sobald Ihre Bilder fertig bearbeitet sind.
-          </p>
-          <div className="space-y-2 pt-4">
-            <Button 
-              onClick={() => navigate('/orders')} 
-              className="w-full"
-            >
-              Zu meinen Bestellungen
+          <div className="space-y-2">
+            <Button onClick={() => navigate('/orders')} className="w-full">
+              Meine Bestellungen ansehen
             </Button>
-            <Button 
-              variant="outline" 
-              onClick={() => navigate('/dashboard')}
-              className="w-full"
-            >
-              Zum Dashboard
+            <Button variant="outline" onClick={() => navigate('/dashboard')} className="w-full">
+              Zurück zum Dashboard
             </Button>
           </div>
         </CardContent>

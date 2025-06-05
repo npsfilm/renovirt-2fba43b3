@@ -1,55 +1,38 @@
 
-export interface OrderData {
-  photoType?: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5';
-  files: File[];
-  package?: 'basic' | 'premium';
-  extras: {
-    express: boolean;
-    upscale: boolean;
-    watermark: boolean;
-  };
-  email?: string;
-  couponCode?: string;
-  acceptedTerms: boolean;
-  watermarkFile?: File;
-}
+import { z } from 'zod';
 
-export const validateOrderFiles = (files: File[]) => {
-  const errors: string[] = [];
-  const supportedFormats = ['jpg', 'jpeg', 'png', 'cr2', 'cr3', 'nef', 'arw', 'dng', 'zip'];
-  const maxFileSize = 25 * 1024 * 1024; // 25MB
-  const maxFiles = 100;
+export const OrderDataSchema = z.object({
+  email: z.string().email(),
+  contactPerson: z.string().optional(),
+  company: z.string().optional(),
+  photoType: z.enum(['interior', 'exterior', 'both']),
+  packageType: z.enum(['basic', 'standard', 'premium']),
+  imageCount: z.number().min(1),
+  files: z.array(z.object({
+    file: z.instanceof(File),
+    id: z.string(),
+    preview: z.string()
+  })),
+  specialRequests: z.string().optional(),
+  acceptedTerms: z.boolean(),
+  creditsUsed: z.number().optional().default(0),
+  originalPrice: z.number().optional(),
+  finalPrice: z.number().optional()
+});
 
-  if (files.length === 0) {
-    errors.push('Mindestens eine Datei muss hochgeladen werden');
-  }
+export type OrderData = z.infer<typeof OrderDataSchema>;
 
-  if (files.length > maxFiles) {
-    errors.push(`Maximal ${maxFiles} Dateien erlaubt`);
-  }
-
-  files.forEach((file, index) => {
-    const extension = file.name.split('.').pop()?.toLowerCase();
-    if (!extension || !supportedFormats.includes(extension)) {
-      errors.push(`Datei ${index + 1}: Ungültiges Format (${extension})`);
+export const validateOrderData = (data: Partial<OrderData>): { isValid: boolean; errors: string[] } => {
+  try {
+    OrderDataSchema.parse(data);
+    return { isValid: true, errors: [] };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return {
+        isValid: false,
+        errors: error.errors.map(err => `${err.path.join('.')}: ${err.message}`)
+      };
     }
-
-    if (file.size > maxFileSize) {
-      errors.push(`Datei ${index + 1}: Zu groß (max 25MB)`);
-    }
-  });
-
-  return {
-    isValid: errors.length === 0,
-    errors
-  };
-};
-
-export const calculateEffectiveImageCount = (files: File[], photoType?: string): number => {
-  if (photoType === 'bracketing-3') {
-    return Math.floor(files.length / 3);
-  } else if (photoType === 'bracketing-5') {
-    return Math.floor(files.length / 5);
+    return { isValid: false, errors: ['Unknown validation error'] };
   }
-  return files.length;
 };
