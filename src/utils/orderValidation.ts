@@ -1,4 +1,3 @@
-
 import { z } from 'zod';
 
 export const OrderDataSchema = z.object({
@@ -8,7 +7,7 @@ export const OrderDataSchema = z.object({
   photoType: z.enum(['handy', 'kamera', 'bracketing-3', 'bracketing-5']).optional(),
   package: z.enum(['basic', 'premium']).optional(),
   imageCount: z.number().min(1).optional(),
-  files: z.array(z.instanceof(File)).default([]), // Remove optional, just use default
+  files: z.array(z.instanceof(File)).default([]),
   extras: z.object({
     express: z.boolean(),
     upscale: z.boolean(),
@@ -23,7 +22,28 @@ export const OrderDataSchema = z.object({
   couponCode: z.string().optional(),
 });
 
-export type OrderData = z.infer<typeof OrderDataSchema>;
+// Manually define the type to properly reflect the schema after parsing
+export type OrderData = {
+  email?: string;
+  contactPerson?: string;
+  company?: string;
+  photoType?: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5';
+  package?: 'basic' | 'premium';
+  imageCount?: number;
+  files: File[]; // Required after schema parsing due to default
+  extras: {
+    express: boolean;
+    upscale: boolean;
+    watermark: boolean;
+  };
+  specialRequests?: string;
+  acceptedTerms: boolean;
+  creditsUsed?: number;
+  originalPrice?: number;
+  finalPrice?: number;
+  watermarkFile?: File;
+  couponCode?: string;
+};
 
 export const validateOrderData = (data: Partial<OrderData>): { isValid: boolean; errors: string[] } => {
   try {
