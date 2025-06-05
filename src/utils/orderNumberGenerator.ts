@@ -1,8 +1,14 @@
 
 export const generateOrderNumber = (): string => {
-  // Generate 6-digit random number
-  const randomNumber = Math.floor(100000 + Math.random() * 900000);
-  return `RV-${randomNumber}`;
+  // Get current date
+  const now = new Date();
+  const day = now.getDate().toString().padStart(2, '0');
+  const month = (now.getMonth() + 1).toString().padStart(2, '0');
+  
+  // Generate 3 random digits
+  const randomNumbers = Math.floor(100 + Math.random() * 900);
+  
+  return `RV-${day}${month}${randomNumbers}`;
 };
 
 export const ensureUniqueOrderNumber = async (generateFn: () => string, checkUnique: (orderNumber: string) => Promise<boolean>): Promise<string> => {

@@ -41,20 +41,20 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
         bracketingExposures = 5;
       }
 
-      // Generate unique order number with explicit typing
-      let orderNumber: string = '';
-      let attempts: number = 0;
-      const maxAttempts: number = 10;
+      // Generate unique order number
+      let orderNumber = '';
+      let attempts = 0;
+      const maxAttempts = 10;
       
       while (attempts < maxAttempts) {
         orderNumber = generateOrderNumber();
-        const { data } = await supabase
+        const { data: existingOrder } = await supabase
           .from('orders')
           .select('id')
           .eq('order_number', orderNumber)
           .maybeSingle();
         
-        if (!data) {
+        if (!existingOrder) {
           break;
         }
         attempts++;
