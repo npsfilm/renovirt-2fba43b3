@@ -1,103 +1,18 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { Bot, MessageCircle, ThumbsUp, Phone } from 'lucide-react';
-
-// Define proper TypeScript interfaces for chart data
-interface ChartDataPoint {
-  date: string;
-  questions: number;
-  satisfaction: number;
-}
-
-interface AnalyticsData {
-  total_questions: number;
-  avg_satisfaction: number | null;
-  support_contact_rate: number | null;
-  top_questions: string[];
-  daily_stats: ChartDataPoint[];
-}
-
-// Transform raw database data into properly typed chart data
-const transformAnalyticsData = (rawData: any): AnalyticsData | null => {
-  if (!rawData) return null;
-
-  // Transform daily_stats from JSONB to proper chart data
-  const transformedDailyStats: ChartDataPoint[] = [];
-  
-  if (rawData.daily_stats && Array.isArray(rawData.daily_stats)) {
-    rawData.daily_stats.forEach((item: any) => {
-      if (item && typeof item === 'object') {
-        transformedDailyStats.push({
-          date: item.date || new Date().toISOString(),
-          questions: Number(item.questions) || 0,
-          satisfaction: Number(item.satisfaction) || 0
-        });
-      }
-    });
-  }
-
-  return {
-    total_questions: Number(rawData.total_questions) || 0,
-    avg_satisfaction: rawData.avg_satisfaction ? Number(rawData.avg_satisfaction) : null,
-    support_contact_rate: rawData.support_contact_rate ? Number(rawData.support_contact_rate) : null,
-    top_questions: getTopQuestions(rawData),
-    daily_stats: transformedDailyStats
-  };
-};
-
-// Type guard function to safely handle top_questions
-const getTopQuestions = (data: any): string[] => {
-  if (!data?.top_questions) return [];
-  
-  // If it's already an array, filter to ensure all items are strings
-  if (Array.isArray(data.top_questions)) {
-    return data.top_questions.filter((item: any): item is string => 
-      typeof item === 'string'
-    );
-  }
-  
-  // If it's a single string, wrap it in an array
-  if (typeof data.top_questions === 'string') {
-    return [data.top_questions];
-  }
-  
-  // For any other type, return empty array
-  return [];
-};
+import { useHelpAnalytics, useRecentHelpInteractions } from './hooks/useHelpAnalytics';
+import AnalyticsMetrics from './components/AnalyticsMetrics';
+import DailyStatsChart from './components/DailyStatsChart';
+import TopQuestions from './components/TopQuestions';
+import RecentInteractions from './components/RecentInteractions';
 
 const HelpAnalytics = () => {
-  const { data: rawAnalytics, isLoading } = useQuery({
-    queryKey: ['help-analytics'],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_help_analytics');
-      if (error) throw error;
-      return data[0];
-    }
-  });
-
-  const { data: recentInteractions } = useQuery({
-    queryKey: ['recent-help-interactions'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('help_interactions')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(10);
-      if (error) throw error;
-      return data;
-    }
-  });
+  const { analytics, isLoading } = useHelpAnalytics();
+  const { data: recentInteractions } = useRecentHelpInteractions();
 
   if (isLoading) {
     return <div className="p-6">Lade Analytics...</div>;
   }
-
-  // Transform the raw data into properly typed chart data
-  const analytics = transformAnalyticsData(rawAnalytics);
 
   if (!analytics) {
     return <div className="p-6">Keine Analytics-Daten verfügbar</div>;
@@ -106,137 +21,15 @@ const HelpAnalytics = () => {
   return (
     <div className="space-y-6">
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Gesamtfragen</CardTitle>
-            <MessageCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{analytics.total_questions}</div>
-            <p className="text-xs text-muted-foreground">Letzten 30 Tage</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Zufriedenheit</CardTitle>
-            <ThumbsUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {analytics.avg_satisfaction ? `${(analytics.avg_satisfaction * 100).toFixed(0)}%` : 'N/A'}
-            </div>
-            <p className="text-xs text-muted-foreground">Durchschnittliche Bewertung</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Support-Kontakte</CardTitle>
-            <Phone className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {analytics.support_contact_rate ? `${analytics.support_contact_rate.toFixed(1)}%` : '0%'}
-            </div>
-            <p className="text-xs text-muted-foreground">Weiterleitungsrate</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">AI-Effizienz</CardTitle>
-            <Bot className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {analytics.support_contact_rate ? `${(100 - analytics.support_contact_rate).toFixed(1)}%` : '100%'}
-            </div>
-            <p className="text-xs text-muted-foreground">Selbst gelöste Fragen</p>
-          </CardContent>
-        </Card>
-      </div>
+      <AnalyticsMetrics analytics={analytics} />
 
       {/* Daily Questions Chart */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Tägliche Fragen</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={analytics.daily_stats}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="date" 
-                tickFormatter={(value) => new Date(value).toLocaleDateString('de-DE')}
-              />
-              <YAxis />
-              <Tooltip 
-                labelFormatter={(value) => new Date(value).toLocaleDateString('de-DE')}
-                formatter={(value: number, name: string) => [
-                  name === 'questions' ? value : `${(value * 100).toFixed(0)}%`,
-                  name === 'questions' ? 'Fragen' : 'Zufriedenheit'
-                ]}
-              />
-              <Line type="monotone" dataKey="questions" stroke="#8884d8" name="questions" />
-              <Line type="monotone" dataKey="satisfaction" stroke="#82ca9d" name="satisfaction" />
-            </LineChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+      <DailyStatsChart data={analytics.daily_stats} />
 
-      {/* Top Questions */}
+      {/* Top Questions and Recent Interactions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Häufigste Fragen</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {analytics.top_questions.slice(0, 5).map((question, index) => (
-                <div key={index} className="flex items-start gap-3">
-                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                    {index + 1}
-                  </span>
-                  <p className="text-sm text-gray-600 flex-1">{question}</p>
-                </div>
-              ))}
-              {analytics.top_questions.length === 0 && (
-                <p className="text-sm text-gray-500">Keine Daten verfügbar</p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Letzte Interaktionen</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {recentInteractions?.slice(0, 5).map((interaction) => (
-                <div key={interaction.id} className="border-l-4 border-blue-200 pl-3">
-                  <p className="text-sm font-medium truncate">{interaction.question}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs text-gray-500">
-                      {new Date(interaction.created_at).toLocaleString('de-DE')}
-                    </span>
-                    {interaction.feedback_rating === 1 && (
-                      <ThumbsUp className="w-3 h-3 text-green-600" />
-                    )}
-                    {interaction.contacted_support && (
-                      <Phone className="w-3 h-3 text-orange-600" />
-                    )}
-                  </div>
-                </div>
-              ))}
-              {(!recentInteractions || recentInteractions.length === 0) && (
-                <p className="text-sm text-gray-500">Keine Interaktionen</p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <TopQuestions questions={analytics.top_questions} />
+        <RecentInteractions interactions={recentInteractions} />
       </div>
     </div>
   );
