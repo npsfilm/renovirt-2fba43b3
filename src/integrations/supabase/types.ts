@@ -441,6 +441,8 @@ export type Database = {
       referrals: {
         Row: {
           created_at: string
+          credits_approved_at: string | null
+          first_order_id: string | null
           id: string
           referral_code: string
           referred_user_id: string
@@ -451,6 +453,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          credits_approved_at?: string | null
+          first_order_id?: string | null
           id?: string
           referral_code: string
           referred_user_id: string
@@ -461,6 +465,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          credits_approved_at?: string | null
+          first_order_id?: string | null
           id?: string
           referral_code?: string
           referred_user_id?: string
@@ -481,6 +487,7 @@ export type Database = {
           is_used: boolean
           source: string
           source_id: string | null
+          status: string
           used_at: string | null
           user_id: string
         }
@@ -493,6 +500,7 @@ export type Database = {
           is_used?: boolean
           source: string
           source_id?: string | null
+          status?: string
           used_at?: string | null
           user_id: string
         }
@@ -505,6 +513,7 @@ export type Database = {
           is_used?: boolean
           source?: string
           source_id?: string | null
+          status?: string
           used_at?: string | null
           user_id?: string
         }
@@ -515,6 +524,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_referral_credits: {
+        Args: { order_id_param: string; user_id_param: string }
+        Returns: Json
+      }
       cleanup_abandoned_draft_orders: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -556,6 +569,10 @@ export type Database = {
           p_admin_notes?: string
         }
         Returns: undefined
+      }
+      use_user_credits: {
+        Args: { user_uuid: string; amount_to_use: number }
+        Returns: Json
       }
     }
     Enums: {

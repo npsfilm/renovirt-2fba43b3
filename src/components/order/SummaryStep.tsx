@@ -9,6 +9,7 @@ import { useOrders } from '@/hooks/useOrders';
 import { usePayment } from '@/hooks/usePayment';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import type { OrderData } from '@/utils/orderValidation';
 
 interface SummaryStepProps {
@@ -20,45 +21,104 @@ interface SummaryStepProps {
 
 const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepProps) => {
   const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'invoice'>('stripe');
+  const [creditsToUse, setCreditsToUse] = useState(0);
+  const [isProcessingCredits, setIsProcessingCredits] = useState(false);
+  
   const { createOrder, isCreatingOrder, calculateTotalPrice } = useOrders();
   const { processPayment, isProcessingPayment } = usePayment();
   const { user } = useAuth();
   const { toast } = useToast();
 
   const canProceed = orderData.acceptedTerms && orderData.email && user;
-  const totalPrice = calculateTotalPrice(orderData);
+  const basePrice = calculateTotalPrice(orderData);
+  const creditDiscount = creditsToUse * 1;
+  const finalPrice = Math.max(0, basePrice - creditDiscount);
 
   const handleSubmitOrder = async () => {
     if (!canProceed) return;
 
     try {
-      // Create order with payment method
-      const order = await createOrder(orderData, paymentMethod);
+      setIsProcessingCredits(true);
+
+      // Use credits if applicable
+      if (creditsToUse > 0) {
+        const { data: creditResult, error: creditError } = await supabase.rpc('use_user_credits', {
+          user_uuid: user.id,
+          amount_to_use: creditsToUse
+        });
+
+        if (creditError) throw creditError;
+
+        const result = creditResult as { success?: boolean; error?: string };
+        if (!result?.success) {
+          throw new Error(result?.error || 'Failed to use credits');
+        }
+
+        toast({
+          title: "Credits verwendet",
+          description: `${creditsToUse} Credits wurden erfolgreich angewendet.`,
+        });
+      }
+
+      // Create order with updated price
+      const orderDataWithCredits = {
+        ...orderData,
+        creditsUsed: creditsToUse,
+        originalPrice: basePrice,
+        finalPrice: finalPrice
+      };
+
+      const order = await createOrder(orderDataWithCredits, paymentMethod);
       
-      if (paymentMethod === 'stripe') {
-        // Process Stripe payment - order is created as draft
+      if (paymentMethod === 'stripe' && finalPrice > 0) {
+        // Process Stripe payment for remaining amount
         await processPayment({
           orderId: order.id,
-          amount: totalPrice,
+          amount: finalPrice,
           currency: 'eur'
         });
         
         toast({
           title: "Weiterleitung zur Zahlung",
-          description: "Sie werden zur sicheren Stripe-Zahlungsseite weitergeleitet.",
+          description: finalPrice > 0 ? 
+            "Sie werden zur sicheren Stripe-Zahlungsseite weitergeleitet." :
+            "Ihre Bestellung wird verarbeitet.",
         });
+      } else if (paymentMethod === 'stripe' && finalPrice === 0) {
+        // Order fully paid with credits - mark as paid
+        const { error: updateError } = await supabase.rpc('update_order_payment_status', {
+          p_order_id: order.id,
+          p_payment_status: 'paid'
+        });
+
+        if (updateError) throw updateError;
+
+        toast({
+          title: "Bestellung erfolgreich erstellt!",
+          description: "Ihre Bestellung wurde vollständig mit Credits bezahlt.",
+        });
+        onNext();
       } else {
-        // Invoice payment - order is immediately visible
+        // Invoice payment
         toast({
           title: "Bestellung erfolgreich erstellt!",
           description: "Sie erhalten in Kürze eine Rechnung per E-Mail.",
         });
-        onNext(); // Move to confirmation step
+        onNext();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Order submission failed:', error);
+      toast({
+        title: "Fehler",
+        description: error.message || "Ein Fehler ist bei der Bestellung aufgetreten.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessingCredits(false);
     }
   };
+
+  const isProcessing = isCreatingOrder || isProcessingPayment || isProcessingCredits;
 
   return (
     <div className="space-y-6">
@@ -87,7 +147,11 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
         </div>
 
         <div>
-          <PriceSummary orderData={orderData} />
+          <PriceSummary 
+            orderData={orderData} 
+            creditsToUse={creditsToUse}
+            onCreditsChange={setCreditsToUse}
+          />
         </div>
       </div>
 
@@ -97,11 +161,12 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
         </Button>
         <Button 
           onClick={handleSubmitOrder}
-          disabled={!canProceed || isCreatingOrder || isProcessingPayment}
+          disabled={!canProceed || isProcessing}
           className="min-w-[200px] bg-green-600 hover:bg-green-700"
         >
-          {isCreatingOrder || isProcessingPayment ? "Wird erstellt..." : 
-           paymentMethod === 'stripe' ? "Zur Zahlung →" : "Kostenpflichtig bestellen →"}
+          {isProcessing ? "Wird erstellt..." : 
+           finalPrice > 0 ? (paymentMethod === 'stripe' ? "Zur Zahlung →" : "Kostenpflichtig bestellen →") :
+           "Kostenlos bestellen →"}
         </Button>
       </div>
     </div>

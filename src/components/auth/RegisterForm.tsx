@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -108,12 +107,12 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
       if (error) throw error;
 
       // Type assertion for the RPC response
-      const result = data as { success?: boolean };
+      const result = data as { success?: boolean; message?: string };
       
       if (result?.success) {
         toast({
           title: 'Empfehlung erfolgreich!',
-          description: 'Sie haben 10 kostenfreie Bilder erhalten.',
+          description: 'Sie sind jetzt registriert. Credits werden nach Ihrer ersten Bestellung gutgeschrieben.',
         });
       }
     } catch (error: any) {

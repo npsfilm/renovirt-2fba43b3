@@ -1,4 +1,3 @@
-
 import { Calendar, Home, Inbox, Search, Settings, ShoppingCart, Sparkles, User, Shield, LogOut, CreditCard, HelpCircle } from "lucide-react"
 
 import {
@@ -17,6 +16,7 @@ import { useNavigate, useLocation } from "react-router-dom"
 import { useAdminRole } from "@/hooks/useAdminRole"
 import { useAuth } from "@/hooks/useAuth"
 import { Button } from "@/components/ui/button"
+import CreditsWidget from "./CreditsWidget"
 
 // Main navigation items
 const mainItems = [
@@ -92,6 +92,9 @@ export default function AppSidebar() {
             alt="Renovirt Logo" 
             className="h-8 w-auto"
           />
+        </div>
+        <div className="mt-3">
+          <CreditsWidget />
         </div>
       </SidebarHeader>
       

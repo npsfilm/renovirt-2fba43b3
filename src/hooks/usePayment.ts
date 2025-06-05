@@ -1,100 +1,87 @@
 
-import { useMutation } from '@tanstack/react-query';
+import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from './use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
+import { useReferralCredits } from '@/hooks/useReferralCredits';
 
-interface CreatePaymentParams {
+interface PaymentData {
   orderId: string;
   amount: number;
-  currency?: string;
-}
-
-interface VerifyPaymentParams {
-  sessionId: string;
+  currency: string;
 }
 
 export const usePayment = () => {
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const { user } = useAuth();
   const { toast } = useToast();
+  const { approveReferralCredits } = useReferralCredits();
 
-  const createPaymentMutation = useMutation({
-    mutationFn: async ({ orderId, amount, currency = "eur" }: CreatePaymentParams) => {
-      const { data, error } = await supabase.functions.invoke('create-payment', {
-        body: { orderId, amount, currency }
-      });
+  const processPayment = async (paymentData: PaymentData) => {
+    if (!user) {
+      throw new Error('User must be authenticated');
+    }
 
-      if (error) throw error;
-      return data;
-    },
-    onError: (error: any) => {
-      console.error('Payment error:', error);
-      
-      if (error.message?.includes('Stripe is not configured')) {
-        toast({
-          title: "Zahlungsanbieter nicht verfügbar",
-          description: "Die Stripe-Integration ist nicht konfiguriert. Bitte kontaktieren Sie den Support.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Zahlungsfehler",
-          description: "Bei der Zahlung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
-          variant: "destructive",
-        });
-      }
-    },
-  });
+    setIsProcessingPayment(true);
 
-  const verifyPaymentMutation = useMutation({
-    mutationFn: async ({ sessionId }: VerifyPaymentParams) => {
-      const { data, error } = await supabase.functions.invoke('verify-payment', {
-        body: { sessionId }
-      });
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: (data) => {
-      if (data.paymentStatus === 'paid') {
-        toast({
-          title: "Zahlung erfolgreich!",
-          description: "Ihre Zahlung wurde verarbeitet. Die Bearbeitung beginnt nun.",
-        });
-      }
-    },
-    onError: (error: any) => {
-      console.error('Payment verification error:', error);
-      toast({
-        title: "Zahlungsverifizierung fehlgeschlagen",
-        description: "Die Zahlung konnte nicht verifiziert werden. Bitte kontaktieren Sie den Support.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const processPayment = async (params: CreatePaymentParams) => {
     try {
-      const result = await createPaymentMutation.mutateAsync(params);
-      
-      if (result.url) {
-        // Redirect to Stripe checkout in the same window for better UX
-        window.location.href = result.url;
+      console.log('Processing payment for order:', paymentData.orderId);
+
+      const { data, error } = await supabase.functions.invoke('create-payment', {
+        body: {
+          orderId: paymentData.orderId,
+          amount: paymentData.amount,
+          currency: paymentData.currency,
+          userId: user.id,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        // Redirect to Stripe checkout
+        window.location.href = data.url;
+      } else {
+        throw new Error('No payment URL received');
       }
-      
-      return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Payment processing failed:', error);
+      toast({
+        title: 'Zahlungsfehler',
+        description: error.message || 'Die Zahlung konnte nicht verarbeitet werden.',
+        variant: 'destructive',
+      });
       throw error;
+    } finally {
+      setIsProcessingPayment(false);
     }
   };
 
-  const verifyPayment = async (params: VerifyPaymentParams) => {
-    return await verifyPaymentMutation.mutateAsync(params);
+  const handlePaymentSuccess = async (orderId: string, userId: string) => {
+    try {
+      // Update payment status
+      const { error: updateError } = await supabase.rpc('update_order_payment_status', {
+        p_order_id: orderId,
+        p_payment_status: 'paid'
+      });
+
+      if (updateError) throw updateError;
+
+      // Try to approve referral credits for this order
+      await approveReferralCredits(orderId, userId);
+
+      toast({
+        title: 'Zahlung erfolgreich!',
+        description: 'Ihre Bestellung wurde erfolgreich bezahlt.',
+      });
+    } catch (error) {
+      console.error('Failed to handle payment success:', error);
+    }
   };
 
   return {
     processPayment,
-    verifyPayment,
-    isProcessingPayment: createPaymentMutation.isPending,
-    isVerifyingPayment: verifyPaymentMutation.isPending,
+    handlePaymentSuccess,
+    isProcessingPayment,
   };
 };
