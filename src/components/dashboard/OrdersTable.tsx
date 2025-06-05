@@ -2,7 +2,9 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Download } from 'lucide-react';
+import { Eye, Download, Package } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { downloadFile } from '@/utils/fileDownloadService';
 
 interface Order {
   id: string;
@@ -20,6 +22,8 @@ interface Order {
     id: string;
     file_name: string;
     file_size: number;
+    file_type: string;
+    storage_path: string;
   }>;
 }
 
@@ -29,6 +33,8 @@ interface OrdersTableProps {
 }
 
 const OrdersTable = ({ orders, onOrderSelect }: OrdersTableProps) => {
+  const { toast } = useToast();
+
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       pending: { label: 'Ausstehend', variant: 'secondary' as const },
@@ -44,6 +50,35 @@ const OrdersTable = ({ orders, onOrderSelect }: OrdersTableProps) => {
     };
 
     return <Badge variant={config.variant}>{config.label}</Badge>;
+  };
+
+  const handleDownloadAll = async (order: Order) => {
+    if (!order.order_images || order.order_images.length === 0) {
+      toast({
+        title: "Keine Dateien",
+        description: "Diese Bestellung enthält keine Dateien zum Herunterladen.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      for (const image of order.order_images) {
+        const bucket = image.storage_path.includes('order-deliverables') ? 'order-deliverables' : 'order-images';
+        await downloadFile(bucket, image.storage_path, image.file_name);
+      }
+      
+      toast({
+        title: "Downloads gestartet",
+        description: `${order.order_images.length} Datei(en) werden heruntergeladen...`,
+      });
+    } catch (error) {
+      toast({
+        title: "Download-Fehler",
+        description: "Einige Dateien konnten nicht heruntergeladen werden.",
+        variant: "destructive",
+      });
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -110,14 +145,17 @@ const OrdersTable = ({ orders, onOrderSelect }: OrdersTableProps) => {
                     size="sm"
                     onClick={() => onOrderSelect(order.id)}
                     className="h-8 w-8 p-0"
+                    title="Details anzeigen"
                   >
                     <Eye className="h-4 w-4" />
                   </Button>
-                  {order.status === 'completed' && (
+                  {(order.status === 'completed' || order.status === 'ready') && order.order_images && order.order_images.length > 0 && (
                     <Button
                       variant="ghost"
                       size="sm"
                       className="h-8 w-8 p-0"
+                      onClick={() => handleDownloadAll(order)}
+                      title="Alle Dateien herunterladen"
                     >
                       <Download className="h-4 w-4" />
                     </Button>

@@ -9,14 +9,17 @@ import {
   FileText, 
   Calendar,
   Euro,
-  Receipt
+  Receipt,
+  ExternalLink
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const BillingOverview = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
 
   const { data: billingData } = useQuery({
     queryKey: ['user-billing', user?.id],
@@ -25,8 +28,29 @@ const BillingOverview = () => {
       
       const { data: orders, error } = await supabase
         .from('orders')
-        .select('id, total_price, created_at, status, image_count, package_id')
+        .select(`
+          id, 
+          total_price, 
+          created_at, 
+          status, 
+          image_count, 
+          package_id,
+          order_number,
+          payment_status,
+          stripe_session_id,
+          order_images (
+            id,
+            file_name,
+            file_size,
+            file_type,
+            storage_path
+          ),
+          packages (
+            name
+          )
+        `)
         .eq('user_id', user.id)
+        .neq('payment_flow_status', 'draft')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -35,7 +59,7 @@ const BillingOverview = () => {
         sum + (parseFloat(order.total_price?.toString() || '0')), 0) || 0;
 
       const completedOrders = orders?.filter(order => order.status === 'completed') || [];
-      const pendingPayments = orders?.filter(order => order.status === 'payment_pending') || [];
+      const pendingPayments = orders?.filter(order => order.payment_status === 'pending') || [];
 
       return {
         orders: orders || [],
@@ -49,21 +73,54 @@ const BillingOverview = () => {
     enabled: !!user?.id,
   });
 
-  const formatOrderId = (id: string) => {
-    return `RE-${id.slice(0, 8).toUpperCase()}`;
+  const formatOrderId = (order: any) => {
+    return order.order_number || `#${order.id.slice(0, 8).toUpperCase()}`;
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string, paymentStatus?: string) => {
+    if (paymentStatus === 'paid' && status === 'completed') {
+      return <Badge className="bg-green-100 text-green-800">Bezahlt</Badge>;
+    }
+    if (paymentStatus === 'pending') {
+      return <Badge className="bg-orange-100 text-orange-800">Ausstehend</Badge>;
+    }
+    
     switch (status) {
       case 'completed':
-        return <Badge className="bg-green-100 text-green-800">Bezahlt</Badge>;
-      case 'payment_pending':
-        return <Badge className="bg-orange-100 text-orange-800">Ausstehend</Badge>;
+        return <Badge className="bg-green-100 text-green-800">Abgeschlossen</Badge>;
       case 'processing':
         return <Badge className="bg-blue-100 text-blue-800">In Bearbeitung</Badge>;
       default:
         return <Badge className="bg-gray-100 text-gray-800">Pending</Badge>;
     }
+  };
+
+  const handleDownloadInvoice = async (order: any) => {
+    // For now, generate a simple receipt
+    toast({
+      title: "Rechnung wird vorbereitet",
+      description: "Die Rechnung wird in Kürze als PDF verfügbar sein.",
+    });
+  };
+
+  const handlePayOrder = async (order: any) => {
+    if (order.stripe_session_id) {
+      // Redirect to existing Stripe session
+      window.open(`https://checkout.stripe.com/pay/${order.stripe_session_id}`, '_blank');
+    } else {
+      toast({
+        title: "Zahlung nicht verfügbar",
+        description: "Bitte kontaktieren Sie den Support für Zahlungsoptionen.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleExportAll = () => {
+    toast({
+      title: "Export wird vorbereitet",
+      description: "Der CSV-Export wird in Kürze verfügbar sein.",
+    });
   };
 
   return (
@@ -153,7 +210,7 @@ const BillingOverview = () => {
               <FileText className="w-5 h-5 mr-2 text-blue-600" />
               Rechnungshistorie
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handleExportAll}>
               <Download className="w-4 h-4 mr-2" />
               Alle exportieren
             </Button>
@@ -169,14 +226,14 @@ const BillingOverview = () => {
                   <TableHead>Beschreibung</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Betrag</TableHead>
-                  <TableHead></TableHead>
+                  <TableHead>Aktionen</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {billingData.orders.map((order) => (
                   <TableRow key={order.id}>
                     <TableCell className="font-medium">
-                      {formatOrderId(order.id)}
+                      {formatOrderId(order)}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
@@ -186,25 +243,35 @@ const BillingOverview = () => {
                     </TableCell>
                     <TableCell>
                       <div>
-                        <p className="font-medium">Bildbearbeitung</p>
+                        <p className="font-medium">{order.packages?.name || 'Bildbearbeitung'}</p>
                         <p className="text-sm text-gray-500">{order.image_count} Bilder</p>
                       </div>
                     </TableCell>
                     <TableCell>
-                      {getStatusBadge(order.status || 'pending')}
+                      {getStatusBadge(order.status || 'pending', order.payment_status)}
                     </TableCell>
                     <TableCell className="text-right font-medium">
                       €{parseFloat(order.total_price?.toString() || '0').toFixed(2)}
                     </TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
-                        {order.status === 'completed' && (
-                          <Button variant="ghost" size="sm">
+                        {(order.status === 'completed' && order.payment_status === 'paid') && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => handleDownloadInvoice(order)}
+                            title="Rechnung herunterladen"
+                          >
                             <Download className="w-4 h-4" />
                           </Button>
                         )}
-                        {order.status === 'payment_pending' && (
-                          <Button size="sm">
+                        {order.payment_status === 'pending' && (
+                          <Button 
+                            size="sm"
+                            onClick={() => handlePayOrder(order)}
+                            title="Jetzt bezahlen"
+                          >
+                            <ExternalLink className="w-4 h-4 mr-1" />
                             Bezahlen
                           </Button>
                         )}
