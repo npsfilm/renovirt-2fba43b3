@@ -128,10 +128,17 @@ const HelpAnalytics = () => {
               <YAxis />
               <Tooltip 
                 labelFormatter={(value) => new Date(value).toLocaleDateString('de-DE')}
-                formatter={(value: any, name: string) => [
-                  name === 'questions' ? value : `${(value * 100).toFixed(0)}%`,
-                  name === 'questions' ? 'Fragen' : 'Zufriedenheit'
-                ]}
+                formatter={(value: any, name: string) => {
+                  // Add type checking for the value parameter
+                  if (typeof value === 'number') {
+                    return [
+                      name === 'questions' ? value : `${(value * 100).toFixed(0)}%`,
+                      name === 'questions' ? 'Fragen' : 'Zufriedenheit'
+                    ];
+                  }
+                  // Fallback for non-numeric values
+                  return [value, name === 'questions' ? 'Fragen' : 'Zufriedenheit'];
+                }}
               />
               <Line type="monotone" dataKey="questions" stroke="#8884d8" name="questions" />
               <Line type="monotone" dataKey="satisfaction" stroke="#82ca9d" name="satisfaction" />
