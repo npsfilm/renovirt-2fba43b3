@@ -11,13 +11,19 @@ interface PaymentData {
   currency: string;
 }
 
+interface PaymentIntentResponse {
+  client_secret: string;
+  payment_intent_id: string;
+}
+
 export const usePayment = () => {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
   const { approveReferralCredits } = useReferralCredits();
 
-  const processPayment = async (paymentData: PaymentData) => {
+  const createPaymentIntent = async (paymentData: PaymentData): Promise<PaymentIntentResponse> => {
     if (!user) {
       throw new Error('User must be authenticated');
     }
@@ -25,7 +31,7 @@ export const usePayment = () => {
     setIsProcessingPayment(true);
 
     try {
-      console.log('Processing payment for order:', paymentData.orderId);
+      console.log('Creating payment intent for order:', paymentData.orderId);
 
       const { data, error } = await supabase.functions.invoke('create-payment', {
         body: {
@@ -38,17 +44,17 @@ export const usePayment = () => {
 
       if (error) throw error;
 
-      if (data?.url) {
-        // Redirect to Stripe checkout
-        window.location.href = data.url;
+      if (data?.client_secret) {
+        setClientSecret(data.client_secret);
+        return data;
       } else {
-        throw new Error('No payment URL received');
+        throw new Error('No client secret received');
       }
     } catch (error: any) {
-      console.error('Payment processing failed:', error);
+      console.error('Payment intent creation failed:', error);
       toast({
         title: 'Zahlungsfehler',
-        description: error.message || 'Die Zahlung konnte nicht verarbeitet werden.',
+        description: error.message || 'Die Zahlung konnte nicht vorbereitet werden.',
         variant: 'destructive',
       });
       throw error;
@@ -57,12 +63,13 @@ export const usePayment = () => {
     }
   };
 
-  const handlePaymentSuccess = async (orderId: string, userId: string) => {
+  const handlePaymentSuccess = async (orderId: string, userId: string, paymentIntentId?: string) => {
     try {
       // Update payment status
       const { error: updateError } = await supabase.rpc('update_order_payment_status', {
         p_order_id: orderId,
-        p_payment_status: 'paid'
+        p_payment_status: 'paid',
+        p_stripe_session_id: paymentIntentId
       });
 
       if (updateError) throw updateError;
@@ -79,9 +86,16 @@ export const usePayment = () => {
     }
   };
 
+  const resetPaymentState = () => {
+    setClientSecret(null);
+    setIsProcessingPayment(false);
+  };
+
   return {
-    processPayment,
+    createPaymentIntent,
     handlePaymentSuccess,
+    resetPaymentState,
     isProcessingPayment,
+    clientSecret,
   };
 };

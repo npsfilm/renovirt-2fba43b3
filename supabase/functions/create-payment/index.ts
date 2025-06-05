@@ -61,35 +61,32 @@ serve(async (req) => {
     let customerId;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
+    } else {
+      // Create customer if doesn't exist
+      const customer = await stripe.customers.create({
+        email: user.email!,
+        metadata: {
+          user_id: user.id,
+        },
+      });
+      customerId = customer.id;
     }
 
-    // Create checkout session
-    const session = await stripe.checkout.sessions.create({
+    // Create Payment Intent instead of Checkout Session
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100), // Convert to cents
+      currency: currency,
       customer: customerId,
-      customer_email: customerId ? undefined : user.email!,
-      line_items: [
-        {
-          price_data: {
-            currency: currency,
-            product_data: {
-              name: `Order ${orderId.slice(0, 8)}`,
-              description: "Professional image editing service",
-            },
-            unit_amount: Math.round(amount * 100), // Convert to cents
-          },
-          quantity: 1,
-        },
-      ],
-      mode: "payment",
-      success_url: `${req.headers.get("origin")}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get("origin")}/orders?payment=cancelled`,
       metadata: {
         orderId: orderId,
         userId: user.id,
       },
+      automatic_payment_methods: {
+        enabled: true,
+      },
     });
 
-    // Update order with Stripe session ID and payment method
+    // Update order with Payment Intent ID and payment method
     const supabaseService = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
@@ -98,7 +95,7 @@ serve(async (req) => {
     const { error: updateError } = await supabaseService
       .from("orders")
       .update({
-        stripe_session_id: session.id,
+        stripe_session_id: paymentIntent.id, // Store PI ID in session_id field
         payment_method: "stripe",
         payment_status: "pending",
         updated_at: new Date().toISOString(),
@@ -106,11 +103,14 @@ serve(async (req) => {
       .eq("id", orderId);
 
     if (updateError) {
-      console.error("Failed to update order with session ID:", updateError);
+      console.error("Failed to update order with payment intent ID:", updateError);
     }
 
     return new Response(
-      JSON.stringify({ url: session.url }),
+      JSON.stringify({ 
+        client_secret: paymentIntent.client_secret,
+        payment_intent_id: paymentIntent.id 
+      }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
@@ -118,7 +118,7 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error("Payment creation error:", error);
+    console.error("Payment intent creation error:", error);
     
     return new Response(
       JSON.stringify({ error: error.message }),

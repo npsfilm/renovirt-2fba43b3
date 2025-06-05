@@ -5,6 +5,7 @@ import OrderSummaryDetails from './summary/OrderSummaryDetails';
 import PaymentMethodSelector from './summary/PaymentMethodSelector';
 import TermsAcceptance from './summary/TermsAcceptance';
 import PriceSummary from './summary/PriceSummary';
+import PaymentModal from '@/components/payment/PaymentModal';
 import { useOrders } from '@/hooks/useOrders';
 import { usePayment } from '@/hooks/usePayment';
 import { useAuth } from '@/hooks/useAuth';
@@ -23,9 +24,11 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
   const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'invoice'>('stripe');
   const [creditsToUse, setCreditsToUse] = useState(0);
   const [isProcessingCredits, setIsProcessingCredits] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
   
   const { createOrder, isCreatingOrder, calculateTotalPrice } = useOrders();
-  const { processPayment, isProcessingPayment } = usePayment();
+  const { createPaymentIntent, handlePaymentSuccess, isProcessingPayment, clientSecret } = usePayment();
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -60,7 +63,7 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
         });
       }
 
-      // Create order with updated price - create object directly without schema parsing
+      // Create order with updated price
       const orderDataWithCredits: OrderData = {
         email: orderData.email,
         contactPerson: orderData.contactPerson,
@@ -68,7 +71,7 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
         photoType: orderData.photoType,
         package: orderData.package,
         imageCount: orderData.imageCount,
-        files: orderData.files || [], // Provide default if undefined
+        files: orderData.files || [],
         extras: orderData.extras,
         specialRequests: orderData.specialRequests,
         acceptedTerms: orderData.acceptedTerms,
@@ -80,21 +83,16 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
       };
 
       const order = await createOrder(orderDataWithCredits, paymentMethod);
+      setCurrentOrderId(order.id);
       
       if (paymentMethod === 'stripe' && finalPrice > 0) {
-        // Process Stripe payment for remaining amount
-        await processPayment({
+        // Create payment intent and show payment modal
+        await createPaymentIntent({
           orderId: order.id,
           amount: finalPrice,
           currency: 'eur'
         });
-        
-        toast({
-          title: "Weiterleitung zur Zahlung",
-          description: finalPrice > 0 ? 
-            "Sie werden zur sicheren Stripe-Zahlungsseite weitergeleitet." :
-            "Ihre Bestellung wird verarbeitet.",
-        });
+        setShowPaymentModal(true);
       } else if (paymentMethod === 'stripe' && finalPrice === 0) {
         // Order fully paid with credits - mark as paid
         const { error: updateError } = await supabase.rpc('update_order_payment_status', {
@@ -127,6 +125,19 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
     } finally {
       setIsProcessingCredits(false);
     }
+  };
+
+  const handlePaymentModalSuccess = async (paymentIntentId: string) => {
+    if (currentOrderId && user) {
+      await handlePaymentSuccess(currentOrderId, user.id, paymentIntentId);
+      setShowPaymentModal(false);
+      onNext();
+    }
+  };
+
+  const handlePaymentModalError = (error: string) => {
+    console.error('Payment modal error:', error);
+    setShowPaymentModal(false);
   };
 
   const isProcessing = isCreatingOrder || isProcessingPayment || isProcessingCredits;
@@ -180,6 +191,18 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
            "Kostenlos bestellen →"}
         </Button>
       </div>
+
+      {/* In-App Payment Modal */}
+      {showPaymentModal && clientSecret && (
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          onSuccess={handlePaymentModalSuccess}
+          onError={handlePaymentModalError}
+          clientSecret={clientSecret}
+          amount={finalPrice}
+        />
+      )}
     </div>
   );
 };

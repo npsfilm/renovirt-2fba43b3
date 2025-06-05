@@ -26,6 +26,7 @@ const AITools = lazy(() => import('@/pages/AITools'));
 const Billing = lazy(() => import('@/pages/Billing'));
 const Settings = lazy(() => import('@/pages/Settings'));
 const Referrals = lazy(() => import('@/pages/Referrals'));
+const PaymentSuccess = lazy(() => import('@/components/order/PaymentSuccess'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -109,6 +110,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Referrals />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/payment/success"
+                element={
+                  <ProtectedRoute>
+                    <PaymentSuccess />
                   </ProtectedRoute>
                 }
               />
