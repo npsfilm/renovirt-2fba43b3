@@ -44,7 +44,7 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
       // Generate unique order number
       const orderNumber = await ensureUniqueOrderNumber(
         generateOrderNumber,
-        async (num) => {
+        async (num: string) => {
           const { data } = await supabase
             .from('orders')
             .select('id')
@@ -129,11 +129,12 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
         queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
       }
       
+      // Use order.id instead of order.order_number to avoid type issues
       toast({
         title: paymentMethod === 'stripe' ? "Zur Zahlung weitergeleitet" : "Bestellung erfolgreich erstellt!",
         description: paymentMethod === 'stripe' 
           ? "Ihre Bestellung wird nach erfolgreicher Zahlung verarbeitet."
-          : `Ihre Bestellung ${order.order_number} wurde erfolgreich übermittelt.`,
+          : `Ihre Bestellung wurde erfolgreich übermittelt.`,
       });
     },
     onError: (error) => {
