@@ -3,7 +3,6 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { CreditCard } from 'lucide-react';
 import { PaymentIcons, InvoiceIcon } from '@/components/payment/PaymentIcons';
 
 interface PaymentMethodSelectorProps {
@@ -25,7 +24,11 @@ const PaymentMethodSelector = ({ paymentMethod, onPaymentMethodChange }: Payment
                 <RadioGroupItem value="stripe" id="stripe" />
                 <div className="flex-1">
                   <div className="flex items-center space-x-3">
-                    <CreditCard className="w-5 h-5 text-blue-600" />
+                    <img 
+                      src="/lovable-uploads/9ec7c3ad-34b9-4fea-a9e9-0d4a0a5532e9.png" 
+                      alt="Visa" 
+                      className="w-8 h-5 object-contain"
+                    />
                     <span className="font-medium">Kreditkarte / Online-Zahlung</span>
                   </div>
                   <p className="text-sm text-gray-600 mt-1">
