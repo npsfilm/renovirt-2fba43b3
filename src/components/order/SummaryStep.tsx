@@ -68,7 +68,7 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
         photoType: orderData.photoType,
         package: orderData.package,
         imageCount: orderData.imageCount,
-        files: orderData.files,
+        files: orderData.files || [], // Provide default empty array
         extras: orderData.extras,
         specialRequests: orderData.specialRequests,
         acceptedTerms: orderData.acceptedTerms,
