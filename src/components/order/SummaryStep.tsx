@@ -10,7 +10,7 @@ import { usePayment } from '@/hooks/usePayment';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { OrderDataSchema, type OrderData } from '@/utils/orderValidation';
+import type { OrderData } from '@/utils/orderValidation';
 
 interface SummaryStepProps {
   orderData: OrderData;
@@ -60,15 +60,15 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
         });
       }
 
-      // Create order with updated price - parse through schema to ensure proper defaults
-      const orderDataWithCredits = OrderDataSchema.parse({
+      // Create order with updated price - create object directly without schema parsing
+      const orderDataWithCredits: OrderData = {
         email: orderData.email,
         contactPerson: orderData.contactPerson,
         company: orderData.company,
         photoType: orderData.photoType,
         package: orderData.package,
         imageCount: orderData.imageCount,
-        files: orderData.files, // Schema will provide default if undefined
+        files: orderData.files || [], // Provide default if undefined
         extras: orderData.extras,
         specialRequests: orderData.specialRequests,
         acceptedTerms: orderData.acceptedTerms,
@@ -77,7 +77,7 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
         finalPrice: finalPrice,
         watermarkFile: orderData.watermarkFile,
         couponCode: orderData.couponCode
-      });
+      };
 
       const order = await createOrder(orderDataWithCredits, paymentMethod);
       
