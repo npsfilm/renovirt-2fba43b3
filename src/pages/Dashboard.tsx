@@ -6,6 +6,7 @@ import ImprovedWelcomeSection from '@/components/dashboard/ImprovedWelcomeSectio
 import EnhancedQuickStats from '@/components/dashboard/EnhancedQuickStats';
 import ImprovedOrdersTable from '@/components/dashboard/ImprovedOrdersTable';
 import ReferralBox from '@/components/dashboard/ReferralBox';
+import CreditsDisplay from '@/components/dashboard/CreditsDisplay';
 import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications';
 import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
 import { useOrderCleanup } from '@/hooks/useOrderCleanup';
@@ -25,6 +26,7 @@ const Dashboard = () => {
         <SidebarInset>
           <main className="flex-1 space-y-8 p-6">
             <ImprovedWelcomeSection />
+            <CreditsDisplay />
             <EnhancedQuickStats />
             <ImprovedOrdersTable />
             <ReferralBox />

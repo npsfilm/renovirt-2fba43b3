@@ -56,6 +56,7 @@ export type Database = {
           salutation: string | null
           sms_notifications: boolean | null
           updated_at: string
+          used_referral_code: string | null
           user_id: string
           vat_id: string | null
         }
@@ -78,6 +79,7 @@ export type Database = {
           salutation?: string | null
           sms_notifications?: boolean | null
           updated_at?: string
+          used_referral_code?: string | null
           user_id: string
           vat_id?: string | null
         }
@@ -100,6 +102,7 @@ export type Database = {
           salutation?: string | null
           sms_notifications?: boolean | null
           updated_at?: string
+          used_referral_code?: string | null
           user_id?: string
           vat_id?: string | null
         }
@@ -468,6 +471,45 @@ export type Database = {
         }
         Relationships: []
       }
+      user_credits: {
+        Row: {
+          amount: number
+          created_at: string
+          credit_type: string
+          expires_at: string | null
+          id: string
+          is_used: boolean
+          source: string
+          source_id: string | null
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          credit_type?: string
+          expires_at?: string | null
+          id?: string
+          is_used?: boolean
+          source: string
+          source_id?: string | null
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          credit_type?: string
+          expires_at?: string | null
+          id?: string
+          is_used?: boolean
+          source?: string
+          source_id?: string | null
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -485,9 +527,17 @@ export type Database = {
         Args: { user_uuid: string }
         Returns: string
       }
+      get_user_credits: {
+        Args: { user_uuid: string }
+        Returns: number
+      }
       has_admin_role: {
         Args: { user_uuid: string }
         Returns: boolean
+      }
+      process_referral: {
+        Args: { referral_code_param: string; new_user_id: string }
+        Returns: Json
       }
       update_order_payment_status: {
         Args: {

@@ -1,10 +1,13 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import PasswordValidation from './PasswordValidation';
+import ReferralCodeInput from './ReferralCodeInput';
 
 interface RegisterFormProps {
   onSuccess: () => void;
@@ -18,6 +21,8 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
     firstName: '',
     lastName: '',
   });
+  const [referralCode, setReferralCode] = useState('');
+  const [isReferralValid, setIsReferralValid] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPasswordValidation, setShowPasswordValidation] = useState(false);
 
@@ -34,6 +39,11 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
     if (name === 'password') {
       setShowPasswordValidation(value.length > 0);
     }
+  };
+
+  const handleReferralCodeChange = (code: string, isValid: boolean) => {
+    setReferralCode(code);
+    setIsReferralValid(isValid);
   };
 
   const validatePassword = (password: string) => {
@@ -73,7 +83,40 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
       return false;
     }
 
+    // Validate referral code if provided
+    if (referralCode && !isReferralValid) {
+      toast({
+        title: 'Fehler',
+        description: 'Der eingegebene Empfehlungscode ist ungültig.',
+        variant: 'destructive',
+      });
+      return false;
+    }
+
     return true;
+  };
+
+  const processReferralReward = async (userId: string) => {
+    if (!referralCode || !isReferralValid) return;
+
+    try {
+      const { data, error } = await supabase.rpc('process_referral', {
+        referral_code_param: referralCode,
+        new_user_id: userId
+      });
+
+      if (error) throw error;
+
+      if (data?.success) {
+        toast({
+          title: 'Empfehlung erfolgreich!',
+          description: 'Sie haben 10 kostenfreie Bilder erhalten.',
+        });
+      }
+    } catch (error: any) {
+      console.error('Referral processing error:', error);
+      // Don't show error to user as registration was successful
+    }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -89,7 +132,8 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
       console.log('Attempting registration with:', { 
         email: formData.email, 
         firstName: formData.firstName, 
-        lastName: formData.lastName 
+        lastName: formData.lastName,
+        hasReferralCode: !!referralCode
       });
       
       const { data, error } = await signUp(formData.email, formData.password, {
@@ -118,9 +162,17 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
         });
       } else if (data?.user) {
         console.log('Registration successful for user:', data.user.email);
+        
+        // Process referral reward if applicable
+        if (referralCode && isReferralValid) {
+          await processReferralReward(data.user.id);
+        }
+        
         toast({
           title: 'Registrierung erfolgreich',
-          description: 'Bitte überprüfen Sie Ihre E-Mail für die Bestätigung.',
+          description: referralCode ? 
+            'Bitte überprüfen Sie Ihre E-Mail für die Bestätigung. Ihre kostenlosen Bilder wurden gutgeschrieben!' :
+            'Bitte überprüfen Sie Ihre E-Mail für die Bestätigung.',
         });
         onSuccess();
       }
@@ -260,6 +312,8 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
             <PasswordValidation password={formData.password} />
           )}
         </div>
+
+        <ReferralCodeInput onReferralCodeChange={handleReferralCodeChange} />
         
         <Button type="submit" className="w-full bg-white text-black hover:bg-gray-100 h-12 font-medium" disabled={loading}>
           {loading ? 'Wird erstellt...' : 'Konto erstellen'}
@@ -279,6 +333,34 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
       </div>
     </div>
   );
+};
+
+const handleGoogleAuth = async () => {
+  setLoading(true);
+  try {
+    console.log('Attempting Google registration');
+    const { data, error } = await signInWithGoogle();
+    
+    if (error) {
+      console.error('Google registration error:', error);
+      toast({
+        title: 'Google-Registrierung fehlgeschlagen',
+        description: error.message || 'Fehler bei der Google-Registrierung.',
+        variant: 'destructive',
+      });
+    } else {
+      console.log('Google registration initiated successfully');
+    }
+  } catch (error: any) {
+    console.error('Google registration error:', error);
+    toast({
+      title: 'Fehler',
+      description: 'Ein unerwarteter Fehler ist aufgetreten.',
+      variant: 'destructive',
+    });
+  } finally {
+    setLoading(false);
+  }
 };
 
 export default RegisterForm;
