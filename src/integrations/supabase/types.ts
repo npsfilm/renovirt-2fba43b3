@@ -408,6 +408,66 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          referral_code: string
+          referred_user_id: string
+          referrer_id: string
+          reward_amount: number
+          reward_claimed: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          referral_code: string
+          referred_user_id: string
+          referrer_id: string
+          reward_amount?: number
+          reward_claimed?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          referral_code?: string
+          referred_user_id?: string
+          referrer_id?: string
+          reward_amount?: number
+          reward_claimed?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -416,6 +476,14 @@ export type Database = {
       cleanup_abandoned_draft_orders: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      create_user_referral_code: {
+        Args: { user_uuid: string }
+        Returns: string
+      }
+      generate_referral_code: {
+        Args: { user_uuid: string }
+        Returns: string
       }
       has_admin_role: {
         Args: { user_uuid: string }
