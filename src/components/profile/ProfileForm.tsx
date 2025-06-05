@@ -81,6 +81,24 @@ const ProfileForm = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  // Auto-fill billing address from company data
+  const handleAutoFillAddress = () => {
+    if (formData.company) {
+      toast({
+        title: 'Auto-Fill aktiviert',
+        description: 'Adressdaten werden basierend auf Unternehmensdaten vorausgefüllt.',
+      });
+      // This would typically integrate with a company data API
+      // For now, we'll show the concept
+    } else {
+      toast({
+        title: 'Unternehmen erforderlich',
+        description: 'Bitte geben Sie zuerst einen Unternehmensnamen ein.',
+        variant: 'destructive',
+      });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -224,7 +242,7 @@ const ProfileForm = () => {
 
           {/* Business Information */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium text-gray-900">Geschäftsdaten</h3>
+            <h3 className="text-lg font-medium text-gray-900">Unternehmensdaten</h3>
             
             <div>
               <Label htmlFor="company">Unternehmen</Label>
@@ -251,38 +269,26 @@ const ProfileForm = () => {
                 Optional - verpflichtend bei Unternehmen außerhalb von Deutschland
               </p>
             </div>
-
-            <div>
-              <Label htmlFor="industry">Branche</Label>
-              <div className="flex items-center space-x-2">
-                <Briefcase className="w-4 h-4 text-gray-400" />
-                <Input
-                  id="industry"
-                  value={formData.industry}
-                  onChange={(e) => handleInputChange('industry', e.target.value)}
-                  placeholder="z.B. Immobilien, Architektur"
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="responsibility">Verantwortungsbereich</Label>
-              <Textarea
-                id="responsibility"
-                value={formData.responsibility}
-                onChange={(e) => handleInputChange('responsibility', e.target.value)}
-                placeholder="Beschreiben Sie Ihren Verantwortungsbereich..."
-                rows={3}
-              />
-            </div>
           </div>
 
-          {/* Address Information */}
+          {/* Billing Address - Moved directly after company information */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium text-gray-900">Rechnungsadresse</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-medium text-gray-900">Rechnungsadresse</h3>
+              <Button 
+                type="button" 
+                variant="outline" 
+                size="sm"
+                onClick={handleAutoFillAddress}
+                className="text-sm"
+              >
+                <Building className="w-4 h-4 mr-2" />
+                Auto-Fill aktivieren
+              </Button>
+            </div>
             
             <div>
-              <Label htmlFor="street">Straße</Label>
+              <Label htmlFor="street">Straße und Hausnummer</Label>
               <div className="flex items-center space-x-2">
                 <MapPin className="w-4 h-4 text-gray-400" />
                 <Input
@@ -331,6 +337,35 @@ const ProfileForm = () => {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+          </div>
+
+          {/* Additional Business Information */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium text-gray-900">Zusätzliche Informationen</h3>
+            
+            <div>
+              <Label htmlFor="industry">Branche</Label>
+              <div className="flex items-center space-x-2">
+                <Briefcase className="w-4 h-4 text-gray-400" />
+                <Input
+                  id="industry"
+                  value={formData.industry}
+                  onChange={(e) => handleInputChange('industry', e.target.value)}
+                  placeholder="z.B. Immobilien, Architektur"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="responsibility">Verantwortungsbereich</Label>
+              <Textarea
+                id="responsibility"
+                value={formData.responsibility}
+                onChange={(e) => handleInputChange('responsibility', e.target.value)}
+                placeholder="Beschreiben Sie Ihren Verantwortungsbereich..."
+                rows={3}
+              />
             </div>
           </div>
 

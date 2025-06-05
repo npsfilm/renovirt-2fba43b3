@@ -25,6 +25,7 @@ const NotFound = lazy(() => import('@/pages/NotFound'));
 const AITools = lazy(() => import('@/pages/AITools'));
 const Billing = lazy(() => import('@/pages/Billing'));
 const Settings = lazy(() => import('@/pages/Settings'));
+const Referrals = lazy(() => import('@/pages/Referrals'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -100,6 +101,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Settings />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/referrals"
+                element={
+                  <ProtectedRoute>
+                    <Referrals />
                   </ProtectedRoute>
                 }
               />

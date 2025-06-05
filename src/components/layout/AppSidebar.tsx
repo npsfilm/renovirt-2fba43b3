@@ -1,4 +1,5 @@
-import { Calendar, Home, Inbox, Search, Settings, ShoppingCart, Sparkles, User, Shield, LogOut, CreditCard, HelpCircle } from "lucide-react"
+
+import { Calendar, Home, Inbox, Search, Settings, ShoppingCart, Sparkles, User, Shield, LogOut, CreditCard, HelpCircle, Gift } from "lucide-react"
 
 import {
   Sidebar,
@@ -34,6 +35,11 @@ const mainItems = [
     title: "AI Tools",
     url: "/ai-tools",
     icon: Sparkles,
+  },
+  {
+    title: "Empfehlungen",
+    url: "/referrals",
+    icon: Gift,
   },
 ]
 
