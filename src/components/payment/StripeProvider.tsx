@@ -4,7 +4,7 @@ import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 
 // Initialize Stripe with your publishable key
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder');
+const stripePromise = loadStripe('pk_live_51RVC15GBJSdVtvnbWNXeloDmabSIjTKHk1E3m6TmAgEhSptSbSorOSqxqFlZf0hERNpMJ18fx3EYhBXoGdwgtkSU00tora2LR4');
 
 interface StripeProviderProps {
   children: React.ReactNode;

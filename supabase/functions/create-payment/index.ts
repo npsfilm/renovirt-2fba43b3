@@ -42,13 +42,8 @@ serve(async (req) => {
       throw new Error("Missing required parameters: orderId and amount");
     }
 
-    // Initialize Stripe
-    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
-    if (!stripeKey) {
-      throw new Error("Stripe is not configured. Please contact support.");
-    }
-
-    const stripe = new Stripe(stripeKey, {
+    // Initialize Stripe with your secret key
+    const stripe = new Stripe('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', {
       apiVersion: "2023-10-16",
     });
 
