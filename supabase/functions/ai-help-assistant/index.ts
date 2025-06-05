@@ -53,39 +53,46 @@ serve(async (req) => {
       }
     }
 
-    // Get FAQ context
+    // Get FAQ context from help_documents
     const { data: faqDocs } = await supabase
       .from('help_documents')
       .select('title, content')
-      .eq('is_active', true);
+      .eq('is_active', true)
+      .order('created_at', { ascending: true });
 
     let faqContext = '';
     if (faqDocs && faqDocs.length > 0) {
-      faqContext = 'FAQ-Wissen:\n' + faqDocs.map(doc => `${doc.title}: ${doc.content}`).join('\n\n');
+      faqContext = 'RENOVIRT FAQ-WISSENSDATENBANK:\n\n';
+      faqDocs.forEach(doc => {
+        faqContext += `FRAGE: ${doc.title}\nANTWORT: ${doc.content}\n\n`;
+      });
     }
 
-    // Prepare system prompt
-    const systemPrompt = `Du bist ein hilfreicher AI-Assistent für RenoviRT, ein Unternehmen für professionelle Bildbearbeitung von Immobilienfotos. 
+    // Enhanced system prompt in German
+    const systemPrompt = `Du bist der offizielle AI-Assistent für RenoviRT, einen professionellen Bildbearbeitungsservice für Immobilienfotos.
 
 WICHTIGE REGELN:
-- Antworte immer auf Deutsch
-- Sei freundlich und professionell
-- Gib spezifische, hilfreiche Antworten
-- Wenn du die Antwort nicht kennst, sage es ehrlich und empfehle den Support zu kontaktieren
-- Nutze die verfügbaren Informationen über den Kunden und die FAQ
+- Antworte IMMER auf Deutsch in einem freundlichen, professionellen Ton
+- Nutze die verfügbare FAQ-Wissensdatenbank als primäre Informationsquelle
+- Gib präzise, hilfreiche Antworten basierend auf den verfügbaren Informationen
+- Wenn eine Information nicht in der FAQ verfügbar ist, sage es ehrlich und empfiehl den direkten Support-Kontakt
+- Verwende die spezifischen Details aus der Wissensdatenbank (Preise, Lieferzeiten, etc.)
+- Sei besonders hilfreich bei Fragen zu Paketen, Preisen, Lieferzeiten und technischen Anforderungen
 
-VERFÜGBARE INFORMATIONEN:
+VERFÜGBARE KUNDENINFORMATIONEN:
 ${userContext}
 
 ${faqContext}
 
-SERVICES:
-- Immobilienfotos bearbeiten (HDR, Belichtungskorrektur, Farboptimierung)
-- Verschiedene Pakete verfügbar
-- Schnelle Bearbeitungszeiten
-- Professionelle Qualität
+RENOVIRT SERVICES:
+- Professionelle Bildbearbeitung für Immobilienfotos von Maklern und Architekten
+- Basic-Paket: Farb-/Belichtungskorrektur, Perspektivkorrektur (48h Lieferzeit)
+- Premium-Paket: Alle Basic-Features + Objektentfernung, Retusche (24h Lieferzeit)
+- Staffelrabatte: 5% ab 10 Bildern, 10% ab 20 Bildern, 15% ab 30 Bildern, 25% ab 40 Bildern
+- Menschliche Fotoeditoren in Deutschland, keine reinen KI-Tools
+- DSGVO-konforme Verarbeitung auf deutschen Servern
 
-Beantworte die Frage des Kunden basierend auf diesen Informationen.`;
+Beantworte die Kundenfrage präzise und hilfreich basierend auf diesen Informationen.`;
 
     // Call OpenAI API
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -101,7 +108,7 @@ Beantworte die Frage des Kunden basierend auf diesen Informationen.`;
           { role: 'user', content: question }
         ],
         max_tokens: 1000,
-        temperature: 0.7,
+        temperature: 0.3, // Lower temperature for more consistent, factual responses
       }),
     });
 
@@ -136,7 +143,7 @@ Beantworte die Frage des Kunden basierend auf diesen Informationen.`;
   } catch (error) {
     console.error('Error in ai-help-assistant function:', error);
     return new Response(JSON.stringify({ 
-      error: 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.',
+      error: 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support unter support@renovirt.de',
       details: error.message 
     }), {
       status: 500,

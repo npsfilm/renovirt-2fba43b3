@@ -58,7 +58,7 @@ const AIChatWidget = () => {
         type: 'ai',
         content: response,
         timestamp: new Date(),
-        interactionId: crypto.randomUUID() // In einer echten App würde dies von der API zurückgegeben
+        interactionId: crypto.randomUUID()
       };
 
       setMessages(prev => [...prev, aiMessage]);
@@ -66,7 +66,7 @@ const AIChatWidget = () => {
       const errorMessage: Message = {
         id: crypto.randomUUID(),
         type: 'ai',
-        content: 'Entschuldigung, ich konnte Ihre Frage nicht bearbeiten. Bitte versuchen Sie es erneut oder kontaktieren Sie unseren Support.',
+        content: 'Entschuldigung, ich konnte Ihre Frage nicht bearbeiten. Bitte versuchen Sie es erneut oder kontaktieren Sie unseren Support unter support@renovirt.de',
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMessage]);
@@ -86,7 +86,6 @@ const AIChatWidget = () => {
 
   const handleContactSupport = async (interactionId: string) => {
     await contactSupport(interactionId);
-    // Hier könnte eine Weiterleitung zum Support-Formular erfolgen
   };
 
   if (!isOpen) {
@@ -110,7 +109,7 @@ const AIChatWidget = () => {
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-lg">
               <Bot className="w-5 h-5 text-blue-600" />
-              AI-Hilfe Assistent
+              RenoviRT AI-Assistent
             </CardTitle>
             <Button
               variant="ghost"
@@ -128,10 +127,19 @@ const AIChatWidget = () => {
             {messages.length === 0 && (
               <div className="text-center text-gray-500 mt-8">
                 <Bot className="w-12 h-12 mx-auto mb-4 text-blue-600" />
-                <p className="text-sm">
-                  Hallo! Ich bin Ihr AI-Assistent für RenoviRT. 
-                  Wie kann ich Ihnen heute helfen?
+                <p className="text-sm mb-4">
+                  Hallo! Ich bin Ihr RenoviRT AI-Assistent und kenne alle Details zu unserem Service.
                 </p>
+                <p className="text-xs text-gray-400 mb-3">
+                  Ich kann Ihnen helfen bei Fragen zu:
+                </p>
+                <ul className="text-xs text-gray-400 text-left space-y-1">
+                  <li>• Paketen und Preisen</li>
+                  <li>• Lieferzeiten und Bearbeitung</li>
+                  <li>• Dateiformaten und Upload</li>
+                  <li>• Zahlungsmethoden</li>
+                  <li>• Datenschutz und Sicherheit</li>
+                </ul>
               </div>
             )}
             
