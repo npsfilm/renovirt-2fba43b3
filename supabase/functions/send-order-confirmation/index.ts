@@ -1,4 +1,5 @@
 
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 
@@ -53,9 +54,9 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    // Use your verified domain renovirt.de instead of npsfilm.de
+    // Use info@renovirt.de as sender
     const emailResponse = await resend.emails.send({
-      from: "HDR Service <hello@renovirt.de>",
+      from: "HDR Service <info@renovirt.de>",
       to: [customerEmail],
       subject: `Bestellbestätigung - Bestellung ${orderNumber}`,
       html: `

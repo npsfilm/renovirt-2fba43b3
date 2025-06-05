@@ -7,7 +7,7 @@ import { uploadOrderFiles } from '@/utils/fileUploadService';
 import { calculateOrderTotal } from '@/utils/orderPricing';
 import { calculateEffectiveImageCount } from '@/utils/orderValidation';
 import { secureLog, logSecurityEvent } from '@/utils/secureLogging';
-import { generateOrderNumber, ensureUniqueOrderNumber } from '@/utils/orderNumberGenerator';
+import { generateOrderNumber } from '@/utils/orderNumberGenerator';
 import type { OrderData } from '@/utils/orderValidation';
 
 export const useOrderCreation = (packages: any[], addOns: any[]) => {
@@ -41,18 +41,26 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
         bracketingExposures = 5;
       }
 
-      // Generate unique order number
-      const orderNumber = await ensureUniqueOrderNumber(
-        generateOrderNumber,
-        async (orderNum: string): Promise<boolean> => {
-          const { data } = await supabase
-            .from('orders')
-            .select('id')
-            .eq('order_number', orderNum)
-            .maybeSingle();
-          return !data;
-        }
-      );
+      // Generate unique order number with simplified approach
+      let orderNumber: string;
+      let attempts = 0;
+      const maxAttempts = 10;
+      
+      do {
+        orderNumber = generateOrderNumber();
+        const { data } = await supabase
+          .from('orders')
+          .select('id')
+          .eq('order_number', orderNumber)
+          .maybeSingle();
+        
+        if (!data) break;
+        attempts++;
+      } while (attempts < maxAttempts);
+      
+      if (attempts >= maxAttempts) {
+        throw new Error('Failed to generate unique order number');
+      }
 
       // Determine payment flow status based on payment method
       const paymentFlowStatus = paymentMethod === 'stripe' ? 'draft' : 'payment_completed';
