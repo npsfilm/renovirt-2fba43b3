@@ -35,11 +35,27 @@ const HelpAnalytics = () => {
 
   const dailyData = analytics?.daily_stats || [];
   
-  // Properly handle the Json type for top_questions
-  let topQuestions: string[] = [];
-  if (analytics?.top_questions && Array.isArray(analytics.top_questions)) {
-    topQuestions = analytics.top_questions as string[];
-  }
+  // Type guard function to safely handle top_questions
+  const getTopQuestions = (data: any): string[] => {
+    if (!data?.top_questions) return [];
+    
+    // If it's already an array, filter to ensure all items are strings
+    if (Array.isArray(data.top_questions)) {
+      return data.top_questions.filter((item: any): item is string => 
+        typeof item === 'string'
+      );
+    }
+    
+    // If it's a single string, wrap it in an array
+    if (typeof data.top_questions === 'string') {
+      return [data.top_questions];
+    }
+    
+    // For any other type, return empty array
+    return [];
+  };
+
+  const topQuestions = getTopQuestions(analytics);
 
   return (
     <div className="space-y-6">
@@ -132,7 +148,7 @@ const HelpAnalytics = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {topQuestions.slice(0, 5).map((question: string, index: number) => (
+              {topQuestions.slice(0, 5).map((question, index) => (
                 <div key={index} className="flex items-start gap-3">
                   <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                     {index + 1}
