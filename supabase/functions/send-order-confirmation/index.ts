@@ -53,19 +53,16 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    // For development, use the verified email address
-    const toEmail = customerEmail === "hello@npsfilm.de" ? customerEmail : "hello@npsfilm.de";
-    
+    // Use your verified domain renovirt.de instead of npsfilm.de
     const emailResponse = await resend.emails.send({
-      from: "HDR Service <hello@npsfilm.de>",
-      to: [toEmail],
+      from: "HDR Service <hello@renovirt.de>",
+      to: [customerEmail],
       subject: `Bestellbestätigung - Bestellung ${orderNumber}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="text-align: center; margin-bottom: 30px;">
             <h1 style="color: #333; margin-bottom: 10px;">Vielen Dank für Ihre Bestellung!</h1>
             <p style="color: #666; font-size: 16px;">Wir haben Ihre Zahlung erhalten und starten sofort mit der Bearbeitung.</p>
-            ${customerEmail !== "hello@npsfilm.de" ? `<p style="color: #888; font-size: 14px;"><em>Hinweis: Diese E-Mail wurde an ${customerEmail} gesendet (Entwicklungsmodus)</em></p>` : ''}
           </div>
 
           <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">

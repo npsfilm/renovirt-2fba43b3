@@ -44,11 +44,11 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
       // Generate unique order number
       const orderNumber = await ensureUniqueOrderNumber(
         generateOrderNumber,
-        async (num: string) => {
+        async (orderNum: string): Promise<boolean> => {
           const { data } = await supabase
             .from('orders')
             .select('id')
-            .eq('order_number', num)
+            .eq('order_number', orderNum)
             .maybeSingle();
           return !data;
         }
@@ -129,7 +129,6 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
         queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
       }
       
-      // Use order.id instead of order.order_number to avoid type issues
       toast({
         title: paymentMethod === 'stripe' ? "Zur Zahlung weitergeleitet" : "Bestellung erfolgreich erstellt!",
         description: paymentMethod === 'stripe' 
