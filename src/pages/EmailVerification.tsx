@@ -14,15 +14,15 @@ const EmailVerification = () => {
     if (!user?.email) return;
     
     try {
-      // Note: In a real implementation, you'd call supabase.auth.resend()
+      // Hinweis: In einer echten Implementierung würden Sie supabase.auth.resend() aufrufen
       toast({
-        title: "Email gesendet",
+        title: "E-Mail gesendet",
         description: "Wir haben Ihnen eine neue Bestätigungs-E-Mail gesendet.",
       });
     } catch (error) {
       toast({
         title: "Fehler",
-        description: "E-Mail konnte nicht erneut gesendet werden. Bitte versuchen Sie es später erneut.",
+        description: "Die E-Mail konnte nicht erneut gesendet werden. Bitte versuchen Sie es später erneut.",
         variant: "destructive",
       });
     }
@@ -36,7 +36,7 @@ const EmailVerification = () => {
             <Mail className="w-8 h-8 text-blue-600" />
           </div>
           <CardTitle className="text-2xl font-bold text-gray-900">
-            E-Mail bestätigen
+            E-Mail-Adresse bestätigen
           </CardTitle>
         </CardHeader>
         

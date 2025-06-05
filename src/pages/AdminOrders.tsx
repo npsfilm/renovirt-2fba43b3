@@ -14,7 +14,7 @@ const AdminOrders = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
-  // Enable real-time updates
+  // Echtzeit-Updates aktivieren
   useRealtimeOrders();
 
   const { data: orders, isLoading, refetch } = useQuery({
@@ -39,7 +39,7 @@ const AdminOrders = () => {
             created_at
           )
         `)
-        .neq('payment_flow_status', 'draft') // Exclude draft orders
+        .neq('payment_flow_status', 'draft') // Entwurfsbestellungen ausschließen
         .order('created_at', { ascending: false });
 
       if (statusFilter !== 'all') {
@@ -67,12 +67,12 @@ const AdminOrders = () => {
 
   const handleCloseModal = () => {
     setSelectedOrderId(null);
-    refetch(); // Refresh orders after modal closes
+    refetch(); // Bestellungen nach Schließen des Modals aktualisieren
   };
 
   return (
     <AdminLayout>
-      {/* Header */}
+      {/* Kopfzeile */}
       <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-white px-4">
         <SidebarTrigger className="-ml-1" />
         <div className="flex flex-1 items-center justify-between">
@@ -85,7 +85,7 @@ const AdminOrders = () => {
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* Hauptinhalt */}
       <main className="flex-1 p-6 space-y-6">
         <OrdersFilters
           searchTerm={searchTerm}

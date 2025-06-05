@@ -8,17 +8,17 @@ import { BarChart3, TrendingUp, Users, ShoppingCart } from 'lucide-react';
 import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
 
 const AdminAnalytics = () => {
-  // Enable real-time updates
+  // Echtzeit-Updates aktivieren
   useRealtimeOrders();
 
   return (
     <AdminLayout>
-      {/* Header */}
+      {/* Kopfzeile */}
       <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-white px-4">
         <SidebarTrigger className="-ml-1" />
         <div className="flex flex-1 items-center justify-between">
           <div>
-            <h1 className="text-xl font-semibold text-gray-900">Analytics</h1>
+            <h1 className="text-xl font-semibold text-gray-900">Analytik</h1>
             <p className="text-sm text-gray-600">
               Detaillierte Einblicke in Geschäftsdaten und Trends
             </p>
@@ -26,9 +26,9 @@ const AdminAnalytics = () => {
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* Hauptinhalt */}
       <main className="flex-1 p-6 space-y-6">
-        {/* Key Metrics */}
+        {/* Wichtige Kennzahlen */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -36,8 +36,8 @@ const AdminAnalytics = () => {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">€12,450</div>
-              <p className="text-xs text-muted-foreground">+20.1% zum Vormonat</p>
+              <div className="text-2xl font-bold">€12.450</div>
+              <p className="text-xs text-muted-foreground">+20,1% zum Vormonat</p>
             </CardContent>
           </Card>
 
@@ -75,7 +75,7 @@ const AdminAnalytics = () => {
           </Card>
         </div>
 
-        {/* Charts Section */}
+        {/* Diagramm-Bereich */}
         <OrderAnalytics />
       </main>
     </AdminLayout>

@@ -14,31 +14,31 @@ const Auth = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Get the page the user was trying to access before being redirected to login
+  // Die Seite abrufen, die der Benutzer vor der Weiterleitung zur Anmeldung besuchen wollte
   const from = location.state?.from?.pathname || '/dashboard';
 
-  // Redirect if already authenticated
+  // Weiterleitung wenn bereits angemeldet
   useEffect(() => {
     const checkUserProfileAndRedirect = async () => {
       if (user) {
-        // If user is confirmed (email verified), check for profile completion
+        // Wenn Benutzer bestätigt ist (E-Mail verifiziert), Profilvollständigkeit prüfen
         if (user.email_confirmed_at) {
           try {
             const profile = await getCustomerProfile();
             
-            // If profile exists and has required fields, go to originally requested page or dashboard
+            // Wenn Profil existiert und erforderliche Felder hat, zur ursprünglich angeforderten Seite oder Dashboard gehen
             if (profile && profile.first_name && profile.last_name && profile.role) {
               navigate(from, { replace: true });
             } else {
-              // If profile doesn't exist or is incomplete, go to onboarding
+              // Wenn Profil nicht existiert oder unvollständig ist, zum Onboarding gehen
               navigate('/onboarding');
             }
           } catch (error) {
-            // If there's an error fetching profile, assume it doesn't exist
+            // Bei Fehler beim Abrufen des Profils, annehmen dass es nicht existiert
             navigate('/onboarding');
           }
         } else {
-          // If user is not confirmed, show email verification screen
+          // Wenn Benutzer nicht bestätigt ist, E-Mail-Verifizierungsbildschirm anzeigen
           navigate('/email-verification');
         }
       }
@@ -49,11 +49,11 @@ const Auth = () => {
 
   const handleAuthSuccess = (isRegistration = false) => {
     if (isRegistration) {
-      // After registration, redirect to email verification
+      // Nach Registrierung zur E-Mail-Verifizierung weiterleiten
       navigate('/email-verification');
     } else {
-      // After login, redirect based on email confirmation status and profile completion
-      // This will be handled by the useEffect above
+      // Nach Anmeldung basierend auf E-Mail-Bestätigungsstatus und Profilvollständigkeit weiterleiten
+      // Dies wird durch den useEffect oben gehandhabt
     }
   };
 
@@ -67,7 +67,7 @@ const Auth = () => {
 
   return (
     <AuthLayout>
-      {/* Custom Tab Navigation */}
+      {/* Benutzerdefinierte Tab-Navigation */}
       <div className="w-full mb-8">
         <div className="inline-flex h-10 items-center justify-center rounded-lg bg-gray-800 p-1 text-gray-300 w-full">
           <button
@@ -93,7 +93,7 @@ const Auth = () => {
         </div>
       </div>
 
-      {/* Forms */}
+      {/* Formulare */}
       {activeTab === 'login' && (
         <LoginForm 
           onSuccess={() => handleAuthSuccess(false)} 

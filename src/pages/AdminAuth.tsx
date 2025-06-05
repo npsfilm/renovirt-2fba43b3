@@ -11,18 +11,18 @@ const AdminAuth = () => {
   const { isAdmin } = useAdminRole();
   const navigate = useNavigate();
 
-  // Redirect if already authenticated as admin
+  // Weiterleitung wenn bereits als Administrator angemeldet
   useEffect(() => {
     if (user && isAdmin) {
       navigate('/management');
     } else if (user && !isAdmin) {
-      // If user is authenticated but not admin, redirect to regular dashboard
+      // Wenn Benutzer angemeldet aber kein Administrator ist, zum normalen Dashboard weiterleiten
       navigate('/dashboard');
     }
   }, [user, isAdmin, navigate]);
 
   const handleAuthSuccess = () => {
-    // After successful auth, the useEffect above will handle redirection
+    // Nach erfolgreicher Anmeldung wird die Weiterleitung durch den useEffect oben gehandhabt
   };
 
   return (

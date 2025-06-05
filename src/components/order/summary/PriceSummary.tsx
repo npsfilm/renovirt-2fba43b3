@@ -27,7 +27,7 @@ const PriceSummary = ({ orderData }: PriceSummaryProps) => {
 
   const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
   
-  // Calculate effective image count for bracketing
+  // Effektive Bildanzahl für Bracketing berechnen
   let imageCount = orderData.files.length;
   if (orderData.photoType === 'bracketing-3') {
     imageCount = Math.floor(orderData.files.length / 3);
@@ -38,7 +38,7 @@ const PriceSummary = ({ orderData }: PriceSummaryProps) => {
   const basePrice = selectedPackage ? selectedPackage.base_price * imageCount : 0;
   const totalPrice = calculateTotalPrice(orderData);
 
-  // Calculate extras cost
+  // Extras-Kosten berechnen
   const extrasTotal = addOns.reduce((total, addon) => {
     if (orderData.extras[addon.name as keyof typeof orderData.extras] && !addon.is_free) {
       return total + (addon.price * imageCount);
@@ -68,7 +68,7 @@ const PriceSummary = ({ orderData }: PriceSummaryProps) => {
               </div>
             )}
 
-            {/* Show individual extras */}
+            {/* Einzelne Extras anzeigen */}
             {addOns.map(addon => {
               const isSelected = orderData.extras[addon.name as keyof typeof orderData.extras];
               if (!isSelected) return null;

@@ -17,15 +17,15 @@ const QuickActions = () => {
         </Button>
         <Button size="sm" variant="outline" className="w-full justify-start">
           <Plus className="w-4 h-4 mr-2" />
-          Neue Bestellung
+          Neue Bestellung erstellen
         </Button>
         <Button size="sm" variant="outline" className="w-full justify-start">
           <Sparkles className="w-4 h-4 mr-2" />
-          AI-Tools nutzen
+          KI-Tools nutzen
         </Button>
         <Button size="sm" variant="outline" className="w-full justify-start">
           <FileText className="w-4 h-4 mr-2" />
-          Alle Bestellungen
+          Alle Bestellungen anzeigen
         </Button>
       </CardContent>
     </Card>
