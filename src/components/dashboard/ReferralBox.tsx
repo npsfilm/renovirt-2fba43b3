@@ -96,7 +96,7 @@ const ReferralBox = () => {
   };
 
   const shareReferralCode = async () => {
-    const shareText = `Schau dir Renovirt an! Mit meinem Code "${referralCode}" bekommst du 10% Rabatt auf deine erste Bestellung. Jetzt professionelle Bildbearbeitung ausprobieren!`;
+    const shareText = `Schau dir Renovirt an! Mit meinem Code "${referralCode}" kannst du sofort professionelle Bildbearbeitung ausprobieren!`;
     
     if (navigator.share) {
       try {

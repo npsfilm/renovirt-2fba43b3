@@ -88,7 +88,7 @@ const ReferralCodeInput = ({ onReferralCodeChange }: ReferralCodeInputProps) => 
       {validationResult === 'valid' && (
         <p className="text-sm text-green-400 flex items-center">
           <Gift className="w-4 h-4 mr-2" />
-          Gültiger Code! Sie erhalten 10 kostenfreie Bilder
+          Gültiger Code! Der Empfehler erhält kostenfreie Bilder
         </p>
       )}
       
@@ -100,7 +100,7 @@ const ReferralCodeInput = ({ onReferralCodeChange }: ReferralCodeInputProps) => 
       
       {!referralCode && (
         <p className="text-xs text-gray-500">
-          Mit einem Empfehlungscode erhalten Sie 10 kostenfreie Bilder
+          Mit einem Empfehlungscode helfen Sie einem Freund kostenfreie Bilder zu erhalten
         </p>
       )}
     </div>

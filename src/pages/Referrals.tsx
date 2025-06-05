@@ -10,9 +10,11 @@ import ReferralBox from '@/components/dashboard/ReferralBox';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useUserCredits } from '@/hooks/useUserCredits';
 
 const Referrals = () => {
   const { user } = useAuth();
+  const { credits } = useUserCredits();
 
   const { data: referralStats } = useQuery({
     queryKey: ['detailed-referral-stats', user?.id],
@@ -65,6 +67,21 @@ const Referrals = () => {
           />
 
           <main className="flex-1 space-y-6 p-6">
+            {/* Current Credits Display */}
+            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <Gift className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-blue-900">{credits || 0}</p>
+                    <p className="text-sm text-blue-600">Verfügbare kostenfreie Bilder</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Referral Box */}
             <ReferralBox />
 
@@ -145,7 +162,7 @@ const Referrals = () => {
                     </div>
                     <h3 className="font-semibold mb-2">Freund registriert sich</h3>
                     <p className="text-sm text-gray-600">
-                      Ihr Freund registriert sich mit Ihrem Code und erhält 10% Rabatt
+                      Ihr Freund registriert sich mit Ihrem Code und kann sofort loslegen
                     </p>
                   </div>
                   
