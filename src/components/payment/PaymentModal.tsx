@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Lock } from 'lucide-react';
 import StripeProvider from './StripeProvider';
 import StripePaymentForm from './StripePaymentForm';
 
@@ -25,7 +26,13 @@ const PaymentModal = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Sichere Zahlung</DialogTitle>
+          <DialogTitle className="flex items-center space-x-2">
+            <Lock className="w-5 h-5 text-green-600" />
+            <span>Sichere Zahlung</span>
+          </DialogTitle>
+          <p className="text-sm text-gray-600">
+            Alle Transaktionen sind sicher und verschlüsselt
+          </p>
         </DialogHeader>
         <StripeProvider clientSecret={clientSecret}>
           <StripePaymentForm

@@ -4,7 +4,8 @@ import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js'
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Lock } from 'lucide-react';
+import { PaymentIcons } from '@/components/payment/PaymentIcons';
 
 interface StripePaymentFormProps {
   onSuccess: (paymentIntentId: string) => void;
@@ -80,6 +81,10 @@ const StripePaymentForm = ({ onSuccess, onError, amount, isLoading = false }: St
         </p>
       </CardHeader>
       <CardContent>
+        <div className="mb-4">
+          <PaymentIcons />
+        </div>
+        
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="min-h-[200px]">
             <PaymentElement 
@@ -87,6 +92,15 @@ const StripePaymentForm = ({ onSuccess, onError, amount, isLoading = false }: St
                 layout: 'tabs',
               }}
             />
+          </div>
+          
+          <div className="flex items-center justify-center text-xs text-gray-500 space-x-4">
+            <div className="flex items-center">
+              <Lock className="w-3 h-3 mr-1" />
+              <span>SSL verschlüsselt</span>
+            </div>
+            <span>•</span>
+            <span>Powered by Stripe</span>
           </div>
           
           <Button
