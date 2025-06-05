@@ -6,8 +6,71 @@ import { supabase } from '@/integrations/supabase/client';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { Bot, MessageCircle, ThumbsUp, Phone } from 'lucide-react';
 
+// Define proper TypeScript interfaces for chart data
+interface ChartDataPoint {
+  date: string;
+  questions: number;
+  satisfaction: number;
+}
+
+interface AnalyticsData {
+  total_questions: number;
+  avg_satisfaction: number | null;
+  support_contact_rate: number | null;
+  top_questions: string[];
+  daily_stats: ChartDataPoint[];
+}
+
+// Transform raw database data into properly typed chart data
+const transformAnalyticsData = (rawData: any): AnalyticsData | null => {
+  if (!rawData) return null;
+
+  // Transform daily_stats from JSONB to proper chart data
+  const transformedDailyStats: ChartDataPoint[] = [];
+  
+  if (rawData.daily_stats && Array.isArray(rawData.daily_stats)) {
+    rawData.daily_stats.forEach((item: any) => {
+      if (item && typeof item === 'object') {
+        transformedDailyStats.push({
+          date: item.date || new Date().toISOString(),
+          questions: Number(item.questions) || 0,
+          satisfaction: Number(item.satisfaction) || 0
+        });
+      }
+    });
+  }
+
+  return {
+    total_questions: Number(rawData.total_questions) || 0,
+    avg_satisfaction: rawData.avg_satisfaction ? Number(rawData.avg_satisfaction) : null,
+    support_contact_rate: rawData.support_contact_rate ? Number(rawData.support_contact_rate) : null,
+    top_questions: getTopQuestions(rawData),
+    daily_stats: transformedDailyStats
+  };
+};
+
+// Type guard function to safely handle top_questions
+const getTopQuestions = (data: any): string[] => {
+  if (!data?.top_questions) return [];
+  
+  // If it's already an array, filter to ensure all items are strings
+  if (Array.isArray(data.top_questions)) {
+    return data.top_questions.filter((item: any): item is string => 
+      typeof item === 'string'
+    );
+  }
+  
+  // If it's a single string, wrap it in an array
+  if (typeof data.top_questions === 'string') {
+    return [data.top_questions];
+  }
+  
+  // For any other type, return empty array
+  return [];
+};
+
 const HelpAnalytics = () => {
-  const { data: analytics, isLoading } = useQuery({
+  const { data: rawAnalytics, isLoading } = useQuery({
     queryKey: ['help-analytics'],
     queryFn: async () => {
       const { data, error } = await supabase.rpc('get_help_analytics');
@@ -33,29 +96,12 @@ const HelpAnalytics = () => {
     return <div className="p-6">Lade Analytics...</div>;
   }
 
-  const dailyData = analytics?.daily_stats || [];
-  
-  // Type guard function to safely handle top_questions
-  const getTopQuestions = (data: any): string[] => {
-    if (!data?.top_questions) return [];
-    
-    // If it's already an array, filter to ensure all items are strings
-    if (Array.isArray(data.top_questions)) {
-      return data.top_questions.filter((item: any): item is string => 
-        typeof item === 'string'
-      );
-    }
-    
-    // If it's a single string, wrap it in an array
-    if (typeof data.top_questions === 'string') {
-      return [data.top_questions];
-    }
-    
-    // For any other type, return empty array
-    return [];
-  };
+  // Transform the raw data into properly typed chart data
+  const analytics = transformAnalyticsData(rawAnalytics);
 
-  const topQuestions = getTopQuestions(analytics);
+  if (!analytics) {
+    return <div className="p-6">Keine Analytics-Daten verfügbar</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -67,7 +113,7 @@ const HelpAnalytics = () => {
             <MessageCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics?.total_questions || 0}</div>
+            <div className="text-2xl font-bold">{analytics.total_questions}</div>
             <p className="text-xs text-muted-foreground">Letzten 30 Tage</p>
           </CardContent>
         </Card>
@@ -79,7 +125,7 @@ const HelpAnalytics = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {analytics?.avg_satisfaction ? `${(analytics.avg_satisfaction * 100).toFixed(0)}%` : 'N/A'}
+              {analytics.avg_satisfaction ? `${(analytics.avg_satisfaction * 100).toFixed(0)}%` : 'N/A'}
             </div>
             <p className="text-xs text-muted-foreground">Durchschnittliche Bewertung</p>
           </CardContent>
@@ -92,7 +138,7 @@ const HelpAnalytics = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {analytics?.support_contact_rate ? `${analytics.support_contact_rate.toFixed(1)}%` : '0%'}
+              {analytics.support_contact_rate ? `${analytics.support_contact_rate.toFixed(1)}%` : '0%'}
             </div>
             <p className="text-xs text-muted-foreground">Weiterleitungsrate</p>
           </CardContent>
@@ -105,7 +151,7 @@ const HelpAnalytics = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {analytics?.support_contact_rate ? `${(100 - analytics.support_contact_rate).toFixed(1)}%` : '100%'}
+              {analytics.support_contact_rate ? `${(100 - analytics.support_contact_rate).toFixed(1)}%` : '100%'}
             </div>
             <p className="text-xs text-muted-foreground">Selbst gelöste Fragen</p>
           </CardContent>
@@ -119,7 +165,7 @@ const HelpAnalytics = () => {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={dailyData}>
+            <LineChart data={analytics.daily_stats}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
                 dataKey="date" 
@@ -128,17 +174,10 @@ const HelpAnalytics = () => {
               <YAxis />
               <Tooltip 
                 labelFormatter={(value) => new Date(value).toLocaleDateString('de-DE')}
-                formatter={(value: any, name: string) => {
-                  // Add type checking for the value parameter
-                  if (typeof value === 'number') {
-                    return [
-                      name === 'questions' ? value : `${(value * 100).toFixed(0)}%`,
-                      name === 'questions' ? 'Fragen' : 'Zufriedenheit'
-                    ];
-                  }
-                  // Fallback for non-numeric values
-                  return [value, name === 'questions' ? 'Fragen' : 'Zufriedenheit'];
-                }}
+                formatter={(value: number, name: string) => [
+                  name === 'questions' ? value : `${(value * 100).toFixed(0)}%`,
+                  name === 'questions' ? 'Fragen' : 'Zufriedenheit'
+                ]}
               />
               <Line type="monotone" dataKey="questions" stroke="#8884d8" name="questions" />
               <Line type="monotone" dataKey="satisfaction" stroke="#82ca9d" name="satisfaction" />
@@ -155,7 +194,7 @@ const HelpAnalytics = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {topQuestions.slice(0, 5).map((question, index) => (
+              {analytics.top_questions.slice(0, 5).map((question, index) => (
                 <div key={index} className="flex items-start gap-3">
                   <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                     {index + 1}
@@ -163,7 +202,7 @@ const HelpAnalytics = () => {
                   <p className="text-sm text-gray-600 flex-1">{question}</p>
                 </div>
               ))}
-              {topQuestions.length === 0 && (
+              {analytics.top_questions.length === 0 && (
                 <p className="text-sm text-gray-500">Keine Daten verfügbar</p>
               )}
             </div>
