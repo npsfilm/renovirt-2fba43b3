@@ -34,10 +34,12 @@ const HelpAnalytics = () => {
   }
 
   const dailyData = analytics?.daily_stats || [];
-  // Safely cast top_questions from Json to string array
-  const topQuestions = Array.isArray(analytics?.top_questions) 
-    ? (analytics.top_questions as string[])
-    : [];
+  
+  // Properly handle the Json type for top_questions
+  let topQuestions: string[] = [];
+  if (analytics?.top_questions && Array.isArray(analytics.top_questions)) {
+    topQuestions = analytics.top_questions as string[];
+  }
 
   return (
     <div className="space-y-6">
