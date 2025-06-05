@@ -15,8 +15,6 @@ export interface CustomerProfileData {
   vatId?: string;
   address: string;
   phone: string;
-  industry: string;
-  responsibility: string;
   dataSource: string;
 }
 
@@ -66,8 +64,6 @@ export const useCustomerProfile = () => {
       vatId: data.vatId ? sanitizeInput(data.vatId) : undefined,
       address: sanitizeInput(data.address),
       phone: sanitizeInput(data.phone),
-      industry: sanitizeInput(data.industry),
-      responsibility: sanitizeInput(data.responsibility),
       dataSource: sanitizeInput(data.dataSource),
     };
   };
@@ -111,8 +107,6 @@ export const useCustomerProfile = () => {
           vat_id: sanitizedData.vatId,
           address: sanitizedData.address,
           phone: sanitizedData.phone,
-          industry: sanitizedData.industry,
-          responsibility: sanitizedData.responsibility,
           data_source: sanitizedData.dataSource,
           app_role: 'client',
           updated_at: new Date().toISOString(),
