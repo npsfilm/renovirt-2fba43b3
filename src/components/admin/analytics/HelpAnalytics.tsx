@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
@@ -33,7 +34,10 @@ const HelpAnalytics = () => {
   }
 
   const dailyData = analytics?.daily_stats || [];
-  const topQuestions = Array.isArray(analytics?.top_questions) ? analytics.top_questions : [];
+  // Safely cast top_questions from Json to string array
+  const topQuestions = Array.isArray(analytics?.top_questions) 
+    ? (analytics.top_questions as string[])
+    : [];
 
   return (
     <div className="space-y-6">
@@ -133,7 +137,10 @@ const HelpAnalytics = () => {
                   </span>
                   <p className="text-sm text-gray-600 flex-1">{question}</p>
                 </div>
-              )) || <p className="text-sm text-gray-500">Keine Daten verfügbar</p>}
+              ))}
+              {topQuestions.length === 0 && (
+                <p className="text-sm text-gray-500">Keine Daten verfügbar</p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -159,7 +166,10 @@ const HelpAnalytics = () => {
                     )}
                   </div>
                 </div>
-              )) || <p className="text-sm text-gray-500">Keine Interaktionen</p>}
+              ))}
+              {(!recentInteractions || recentInteractions.length === 0) && (
+                <p className="text-sm text-gray-500">Keine Interaktionen</p>
+              )}
             </div>
           </CardContent>
         </Card>
