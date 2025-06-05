@@ -107,7 +107,10 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
 
       if (error) throw error;
 
-      if (data?.success) {
+      // Type assertion for the RPC response
+      const result = data as { success?: boolean };
+      
+      if (result?.success) {
         toast({
           title: 'Empfehlung erfolgreich!',
           description: 'Sie haben 10 kostenfreie Bilder erhalten.',
@@ -333,34 +336,6 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
       </div>
     </div>
   );
-};
-
-const handleGoogleAuth = async () => {
-  setLoading(true);
-  try {
-    console.log('Attempting Google registration');
-    const { data, error } = await signInWithGoogle();
-    
-    if (error) {
-      console.error('Google registration error:', error);
-      toast({
-        title: 'Google-Registrierung fehlgeschlagen',
-        description: error.message || 'Fehler bei der Google-Registrierung.',
-        variant: 'destructive',
-      });
-    } else {
-      console.log('Google registration initiated successfully');
-    }
-  } catch (error: any) {
-    console.error('Google registration error:', error);
-    toast({
-      title: 'Fehler',
-      description: 'Ein unerwarteter Fehler ist aufgetreten.',
-      variant: 'destructive',
-    });
-  } finally {
-    setLoading(false);
-  }
 };
 
 export default RegisterForm;
