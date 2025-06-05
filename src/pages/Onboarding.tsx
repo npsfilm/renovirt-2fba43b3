@@ -168,8 +168,6 @@ const Onboarding = () => {
         phone: onboardingData.phone,
         address: onboardingData.address,
         vatId: onboardingData.vatId,
-        industry: '',
-        responsibility: '',
         dataSource: onboardingData.source,
       });
 
