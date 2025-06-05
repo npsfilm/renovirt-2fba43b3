@@ -12,13 +12,33 @@ export const PaymentIcons = ({ showSecurity = true, className = "" }: PaymentIco
     <div className={`space-y-3 ${className}`}>
       <div className="flex items-center justify-center flex-wrap gap-3">
         <img 
-          src="/lovable-uploads/9ec7c3ad-34b9-4fea-a9e9-0d4a0a5532e9.png" 
+          src="/lovable-uploads/819e5e7a-f577-4df0-bb54-2358e513d5bc.png" 
           alt="Visa" 
           className="h-8 object-contain"
         />
         <img 
-          src="/lovable-uploads/d6ac9ba9-7ad2-408b-a2b0-5f31c269dd53.png" 
+          src="/lovable-uploads/77777e02-5a5e-4d6b-a181-95ebade8bf9e.png" 
           alt="Mastercard" 
+          className="h-8 object-contain"
+        />
+        <img 
+          src="/lovable-uploads/d2f87edb-2e0b-43b8-b23a-9672cbd709a5.png" 
+          alt="Apple Pay" 
+          className="h-8 object-contain"
+        />
+        <img 
+          src="/lovable-uploads/16638ecb-4c78-4658-8ef3-b071e022292f.png" 
+          alt="Google Pay" 
+          className="h-8 object-contain"
+        />
+        <img 
+          src="/lovable-uploads/a9107e55-f9c2-4c64-84ca-2bc5931e76ca.png" 
+          alt="PayPal" 
+          className="h-8 object-contain"
+        />
+        <img 
+          src="/lovable-uploads/c0a174f6-b11b-4637-a8dd-1e03fe663449.png" 
+          alt="Klarna" 
           className="h-8 object-contain"
         />
       </div>
@@ -35,9 +55,11 @@ export const PaymentIcons = ({ showSecurity = true, className = "" }: PaymentIco
 
 export const InvoiceIcon = ({ className = "w-5 h-5" }: { className?: string }) => {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
-    </svg>
+    <img 
+      src="/lovable-uploads/09b9d373-9bc2-4876-906e-235ccf1b3d30.png" 
+      alt="Rechnung" 
+      className={className}
+    />
   );
 };
 

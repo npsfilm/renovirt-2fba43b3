@@ -25,7 +25,7 @@ const PaymentMethodSelector = ({ paymentMethod, onPaymentMethodChange }: Payment
                 <div className="flex-1">
                   <div className="flex items-center space-x-3">
                     <img 
-                      src="/lovable-uploads/9ec7c3ad-34b9-4fea-a9e9-0d4a0a5532e9.png" 
+                      src="/lovable-uploads/819e5e7a-f577-4df0-bb54-2358e513d5bc.png" 
                       alt="Visa" 
                       className="w-8 h-5 object-contain"
                     />
@@ -46,7 +46,7 @@ const PaymentMethodSelector = ({ paymentMethod, onPaymentMethodChange }: Payment
                 <RadioGroupItem value="invoice" id="invoice" />
                 <div className="flex-1">
                   <div className="flex items-center space-x-3">
-                    <InvoiceIcon className="w-5 h-5 text-green-600" />
+                    <InvoiceIcon className="w-5 h-5" />
                     <span className="font-medium">Rechnung</span>
                   </div>
                   <p className="text-sm text-gray-600 mt-1">
