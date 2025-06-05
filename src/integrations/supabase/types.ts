@@ -188,6 +188,50 @@ export type Database = {
           },
         ]
       }
+      order_invoices: {
+        Row: {
+          created_at: string
+          file_name: string
+          file_size: number
+          file_type: string
+          id: string
+          order_id: string
+          storage_path: string
+          uploaded_by: string
+          uploaded_by_name: string
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          file_size: number
+          file_type: string
+          id?: string
+          order_id: string
+          storage_path: string
+          uploaded_by: string
+          uploaded_by_name: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          file_size?: number
+          file_type?: string
+          id?: string
+          order_id?: string
+          storage_path?: string
+          uploaded_by?: string
+          uploaded_by_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_invoices_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_notifications: {
         Row: {
           created_at: string
@@ -225,6 +269,41 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "order_notifications_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_remarks: {
+        Row: {
+          admin_name: string
+          admin_user_id: string
+          created_at: string
+          id: string
+          order_id: string
+          remark: string
+        }
+        Insert: {
+          admin_name: string
+          admin_user_id: string
+          created_at?: string
+          id?: string
+          order_id: string
+          remark: string
+        }
+        Update: {
+          admin_name?: string
+          admin_user_id?: string
+          created_at?: string
+          id?: string
+          order_id?: string
+          remark?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_remarks_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: false
             referencedRelation: "orders"
@@ -281,6 +360,7 @@ export type Database = {
           estimated_completion: string | null
           id: string
           image_count: number
+          order_number: string | null
           package_id: string | null
           payment_flow_status: string | null
           payment_method: string | null
@@ -303,6 +383,7 @@ export type Database = {
           estimated_completion?: string | null
           id?: string
           image_count?: number
+          order_number?: string | null
           package_id?: string | null
           payment_flow_status?: string | null
           payment_method?: string | null
@@ -325,6 +406,7 @@ export type Database = {
           estimated_completion?: string | null
           id?: string
           image_count?: number
+          order_number?: string | null
           package_id?: string | null
           payment_flow_status?: string | null
           payment_method?: string | null

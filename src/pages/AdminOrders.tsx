@@ -4,7 +4,7 @@ import AdminLayout from '@/components/admin/AdminLayout';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import OrdersFilters from '@/components/admin/orders/OrdersFilters';
+import EnhancedOrdersFilters from '@/components/admin/orders/EnhancedOrdersFilters';
 import OrdersTable from '@/components/admin/orders/OrdersTable';
 import OrderDetailsModal from '@/components/admin/orders/OrderDetailsModal';
 import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
@@ -12,13 +12,17 @@ import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
 const AdminOrders = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState('all');
+  const [dateFromFilter, setDateFromFilter] = useState<Date | undefined>(undefined);
+  const [dateToFilter, setDateToFilter] = useState<Date | undefined>(undefined);
+  const [packageFilter, setPackageFilter] = useState('all');
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
   // Echtzeit-Updates aktivieren
   useRealtimeOrders();
 
   const { data: orders, isLoading, refetch } = useQuery({
-    queryKey: ['admin-orders', searchTerm, statusFilter],
+    queryKey: ['admin-orders', searchTerm, statusFilter, paymentStatusFilter, dateFromFilter, dateToFilter, packageFilter],
     queryFn: async () => {
       let query = supabase
         .from('orders')
@@ -37,6 +41,9 @@ const AdminOrders = () => {
             file_type,
             storage_path,
             created_at
+          ),
+          packages (
+            name
           )
         `)
         .neq('payment_flow_status', 'draft') // Entwurfsbestellungen ausschließen
@@ -46,12 +53,27 @@ const AdminOrders = () => {
         query = query.eq('status', statusFilter);
       }
 
+      if (paymentStatusFilter !== 'all') {
+        query = query.eq('payment_status', paymentStatusFilter);
+      }
+
+      if (dateFromFilter) {
+        query = query.gte('created_at', dateFromFilter.toISOString());
+      }
+
+      if (dateToFilter) {
+        const endDate = new Date(dateToFilter);
+        endDate.setHours(23, 59, 59, 999);
+        query = query.lte('created_at', endDate.toISOString());
+      }
+
       if (searchTerm) {
         query = query.or(`
           customer_profiles.first_name.ilike.%${searchTerm}%,
           customer_profiles.last_name.ilike.%${searchTerm}%,
           customer_profiles.company.ilike.%${searchTerm}%,
-          customer_email.ilike.%${searchTerm}%
+          customer_email.ilike.%${searchTerm}%,
+          order_number.ilike.%${searchTerm}%
         `);
       }
 
@@ -68,6 +90,15 @@ const AdminOrders = () => {
   const handleCloseModal = () => {
     setSelectedOrderId(null);
     refetch(); // Bestellungen nach Schließen des Modals aktualisieren
+  };
+
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setStatusFilter('all');
+    setPaymentStatusFilter('all');
+    setDateFromFilter(undefined);
+    setDateToFilter(undefined);
+    setPackageFilter('all');
   };
 
   return (
@@ -87,11 +118,20 @@ const AdminOrders = () => {
 
       {/* Hauptinhalt */}
       <main className="flex-1 p-6 space-y-6">
-        <OrdersFilters
+        <EnhancedOrdersFilters
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
+          paymentStatusFilter={paymentStatusFilter}
+          setPaymentStatusFilter={setPaymentStatusFilter}
+          dateFromFilter={dateFromFilter}
+          setDateFromFilter={setDateFromFilter}
+          dateToFilter={dateToFilter}
+          setDateToFilter={setDateToFilter}
+          packageFilter={packageFilter}
+          setPackageFilter={setPackageFilter}
+          onClearFilters={handleClearFilters}
         />
         
         <OrdersTable 

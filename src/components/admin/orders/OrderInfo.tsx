@@ -16,6 +16,13 @@ const OrderInfo = ({ order }: OrderInfoProps) => {
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
+          <Label className="text-sm font-medium">Bestellnummer</Label>
+          <p className="text-sm font-mono">
+            {order?.order_number || `#${order?.id.slice(0, 8)}`}
+          </p>
+        </div>
+
+        <div>
           <Label className="text-sm font-medium">Kunde</Label>
           <p className="text-sm">
             {order?.customer_profiles?.first_name} {order?.customer_profiles?.last_name}
@@ -49,6 +56,13 @@ const OrderInfo = ({ order }: OrderInfoProps) => {
           <Label className="text-sm font-medium">Erstellt am</Label>
           <p className="text-sm">{new Date(order?.created_at || '').toLocaleDateString('de-DE')}</p>
         </div>
+
+        {order?.payment_status && (
+          <div>
+            <Label className="text-sm font-medium">Zahlungsstatus</Label>
+            <p className="text-sm capitalize">{order.payment_status}</p>
+          </div>
+        )}
 
         {order?.admin_notes && (
           <div>

@@ -6,6 +6,7 @@ import { Eye, Download } from 'lucide-react';
 
 interface Order {
   id: string;
+  order_number?: string;
   customer_email: string;
   image_count: number;
   total_price: number;
@@ -70,6 +71,7 @@ const OrdersTable = ({ orders, onOrderSelect }: OrdersTableProps) => {
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b">
+            <th className="text-left py-3 px-2 font-medium">Bestellnummer</th>
             <th className="text-left py-3 px-2 font-medium">Datum</th>
             <th className="text-left py-3 px-2 font-medium">Paket</th>
             <th className="text-left py-3 px-2 font-medium">Bilder</th>
@@ -81,6 +83,11 @@ const OrdersTable = ({ orders, onOrderSelect }: OrdersTableProps) => {
         <tbody>
           {orders.map((order) => (
             <tr key={order.id} className="border-b hover:bg-gray-50">
+              <td className="py-3 px-2">
+                <span className="font-mono text-sm">
+                  {order.order_number || `#${order.id.slice(0, 8)}`}
+                </span>
+              </td>
               <td className="py-3 px-2">
                 {formatDate(order.created_at)}
               </td>
