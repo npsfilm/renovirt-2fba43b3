@@ -8,7 +8,7 @@ export const OrderDataSchema = z.object({
   photoType: z.enum(['handy', 'kamera', 'bracketing-3', 'bracketing-5']).optional(),
   package: z.enum(['basic', 'premium']).optional(),
   imageCount: z.number().min(1).optional(),
-  files: z.array(z.instanceof(File)).optional().default([]), // Make files optional with empty array default
+  files: z.array(z.instanceof(File)).default([]), // Remove optional, just use default
   extras: z.object({
     express: z.boolean(),
     upscale: z.boolean(),

@@ -60,15 +60,15 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
         });
       }
 
-      // Create order with updated price - ensure all required properties are present
-      const orderDataWithCredits: OrderData = {
+      // Create order with updated price - parse through schema to ensure proper defaults
+      const orderDataWithCredits = OrderDataSchema.parse({
         email: orderData.email,
         contactPerson: orderData.contactPerson,
         company: orderData.company,
         photoType: orderData.photoType,
         package: orderData.package,
         imageCount: orderData.imageCount,
-        files: orderData.files || [], // Provide default empty array
+        files: orderData.files, // Schema will provide default if undefined
         extras: orderData.extras,
         specialRequests: orderData.specialRequests,
         acceptedTerms: orderData.acceptedTerms,
@@ -77,7 +77,7 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
         finalPrice: finalPrice,
         watermarkFile: orderData.watermarkFile,
         couponCode: orderData.couponCode
-      };
+      });
 
       const order = await createOrder(orderDataWithCredits, paymentMethod);
       
