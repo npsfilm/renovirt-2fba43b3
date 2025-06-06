@@ -1,187 +1,150 @@
 
-import { Calendar, Home, Inbox, Search, Settings, ShoppingCart, Sparkles, User, Shield, LogOut, CreditCard, HelpCircle, Gift } from "lucide-react"
-
+import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarHeader,
-  SidebarFooter,
-} from "@/components/ui/sidebar"
-import { useNavigate, useLocation } from "react-router-dom"
-import { useAdminRole } from "@/hooks/useAdminRole"
-import { useAuth } from "@/hooks/useAuth"
-import { Button } from "@/components/ui/button"
-import CreditsWidget from "./CreditsWidget"
+} from '@/components/ui/sidebar';
+import { Button } from '@/components/ui/button';
+import { 
+  Home, 
+  Upload, 
+  FileText, 
+  CreditCard, 
+  User, 
+  Settings, 
+  HelpCircle, 
+  LogOut,
+  Users
+} from 'lucide-react';
+import CreditsWidget from './CreditsWidget';
 
-// Main navigation items
-const mainItems = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: Home,
-  },
-  {
-    title: "Bestellungen",
-    url: "/orders",
-    icon: ShoppingCart,
-  },
-  {
-    title: "AI Tools",
-    url: "/ai-tools",
-    icon: Sparkles,
-  },
-  {
-    title: "Empfehlungen",
-    url: "/referrals",
-    icon: Gift,
-  },
-]
+const AppSidebar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { signOut } = useAuth();
 
-// Account & settings items
-const accountItems = [
-  {
-    title: "Profil",
-    url: "/profile",
-    icon: User,
-  },
-  {
-    title: "Abrechnung",
-    url: "/billing",
-    icon: CreditCard,
-  },
-  {
-    title: "Einstellungen",
-    url: "/settings",
-    icon: Settings,
-  },
-  {
-    title: "Hilfe",
-    url: "/help",
-    icon: HelpCircle,
-  },
-]
+  const menuItems = [
+    {
+      title: 'Dashboard',
+      icon: Home,
+      url: '/dashboard',
+    },
+    {
+      title: 'Neue Bestellung',
+      icon: Upload,
+      url: '/order',
+    },
+    {
+      title: 'Meine Bestellungen',
+      icon: FileText,
+      url: '/orders',
+    },
+    {
+      title: 'Rechnungen',
+      icon: CreditCard,
+      url: '/billing',
+    },
+    {
+      title: 'Profil',
+      icon: User,
+      url: '/profile',
+    },
+    {
+      title: 'Weiterempfehlungen',
+      icon: Users,
+      url: '/referrals',
+    },
+    {
+      title: 'Einstellungen',
+      icon: Settings,
+      url: '/settings',
+    },
+    {
+      title: 'Hilfe & Support',
+      icon: HelpCircle,
+      url: '/help',
+    },
+  ];
 
-export default function AppSidebar() {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const { isAdmin } = useAdminRole()
-  const { signOut } = useAuth()
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/auth');
+  };
 
   const isActivePath = (path: string) => {
     if (path === '/dashboard') {
-      return location.pathname === '/dashboard'
+      return location.pathname === '/dashboard';
     }
-    return location.pathname.startsWith(path)
-  }
-
-  const handleLogout = async () => {
-    try {
-      await signOut()
-      navigate('/auth')
-    } catch (error) {
-      console.error('Logout error:', error)
-    }
-  }
+    return location.pathname.startsWith(path);
+  };
 
   return (
-    <Sidebar>
-      <SidebarHeader className="p-4">
+    <Sidebar className="border-r border-gray-200 bg-white">
+      <SidebarHeader className="border-b border-gray-200 p-4">
         <div className="flex items-center gap-2">
           <img 
             src="/lovable-uploads/d6ac9ba9-7ad2-408b-a2b0-5f31c269dd53.png" 
             alt="Renovirt Logo" 
             className="h-8 w-auto"
           />
-        </div>
-        <div className="mt-3">
-          <CreditsWidget />
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">Renovirt</h2>
+            <p className="text-xs text-gray-500">Professionelle Bildbearbeitung</p>
+          </div>
         </div>
       </SidebarHeader>
-      
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {mainItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    asChild
-                    isActive={isActivePath(item.url)}
-                  >
-                    <button 
-                      onClick={() => navigate(item.url)}
-                      className="w-full flex items-center gap-2"
-                    >
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </button>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
 
+      <SidebarContent className="p-2">
         <SidebarGroup>
-          <SidebarGroupLabel>Konto</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {accountItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    asChild
+              {menuItems.map((item) => (
+                <SidebarMenuItem key={item.url}>
+                  <SidebarMenuButton
+                    onClick={() => navigate(item.url)}
                     isActive={isActivePath(item.url)}
+                    className={`w-full justify-start ${
+                      isActivePath(item.url)
+                        ? 'bg-red-50 text-red-700 border-red-200'
+                        : 'hover:bg-gray-50'
+                    }`}
                   >
-                    <button 
-                      onClick={() => navigate(item.url)}
-                      className="w-full flex items-center gap-2"
-                    >
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </button>
+                    <item.icon className="w-4 h-4" />
+                    <span>{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
-              
-              {/* Admin Panel Access - Only show to admins */}
-              {isAdmin && (
-                <SidebarMenuItem>
-                  <SidebarMenuButton 
-                    asChild
-                    isActive={location.pathname.startsWith('/management')}
-                  >
-                    <button 
-                      onClick={() => navigate('/management')}
-                      className="w-full flex items-center gap-2 text-red-600 hover:text-red-700"
-                    >
-                      <Shield />
-                      <span>Admin Panel</span>
-                    </button>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      
-      <SidebarFooter className="p-4">
-        <Button 
-          variant="ghost" 
-          onClick={handleLogout}
-          className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
-        >
-          <LogOut className="w-4 h-4 mr-2" />
-          Abmelden
-        </Button>
+
+      <SidebarFooter className="border-t border-gray-200 p-4">
+        <div className="space-y-4">
+          <CreditsWidget />
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSignOut}
+            className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Abmelden
+          </Button>
+        </div>
       </SidebarFooter>
     </Sidebar>
-  )
-}
+  );
+};
+
+export default AppSidebar;

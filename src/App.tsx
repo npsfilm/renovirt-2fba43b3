@@ -13,7 +13,6 @@ import OrderFlow from "./pages/OrderFlow";
 import Billing from "./pages/Billing";
 import Settings from "./pages/Settings";
 import Help from "./pages/Help";
-import AITools from "./pages/AITools";
 import Referrals from "./pages/Referrals";
 import Onboarding from "./pages/Onboarding";
 import EmailVerification from "./pages/EmailVerification";
@@ -91,11 +90,6 @@ function App() {
                   <Route path="/help" element={
                     <ProtectedRoute>
                       <Help />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/ai-tools" element={
-                    <ProtectedRoute>
-                      <AITools />
                     </ProtectedRoute>
                   } />
                   <Route path="/referrals" element={
