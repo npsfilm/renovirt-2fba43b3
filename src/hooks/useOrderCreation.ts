@@ -102,6 +102,34 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
           throw addOnsError;
         }
       }
+      
+      // Send confirmation email only if payment is completed or invoice method was used
+      if (paymentMethod === 'invoice' || (paymentMethod === 'stripe' && order.payment_status === 'paid')) {
+        try {
+          // Format extras for email
+          const selectedExtras = addOns
+            .filter(addon => orderData.extras[addon.name as keyof typeof orderData.extras])
+            .map(addon => addon.description);
+
+          // Send order confirmation email
+          await supabase.functions.invoke('send-order-confirmation', {
+            body: {
+              orderNumber: orderNumber,
+              customerEmail: orderData.email,
+              orderDetails: {
+                packageName: selectedPackage.description,
+                photoType: orderData.photoType || 'Standard',
+                imageCount,
+                totalPrice,
+                extras: selectedExtras,
+              },
+            },
+          });
+        } catch (emailError) {
+          // Log error but don't fail the order creation
+          console.error('Failed to send confirmation email:', emailError);
+        }
+      }
 
       logSecurityEvent('order_created_successfully', { 
         orderId: order.id, 

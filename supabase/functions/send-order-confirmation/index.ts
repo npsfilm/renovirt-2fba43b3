@@ -1,5 +1,4 @@
 
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 
@@ -31,7 +30,7 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { orderNumber, customerEmail, orderDetails }: OrderConfirmationRequest = await req.json();
 
-    const estimatedDelivery = orderDetails.extras.includes('Express Processing') ? '24h' : '24–48h';
+    const estimatedDelivery = orderDetails.extras.includes('Express Bearbeitung') ? '24h' : '24–48h';
     
     const extrasHtml = orderDetails.extras.length > 0 
       ? `<p><strong>Gewählte Extras:</strong> ${orderDetails.extras.join(', ')}</p>`
@@ -40,7 +39,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Check if RESEND_API_KEY is configured
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     if (!resendApiKey) {
-      console.log("RESEND_API_KEY not configured. Order details:", { orderNumber, customerEmail, orderDetails });
+      console.log("RESEND_API_KEY nicht konfiguriert. Bestelldetails:", { orderNumber, customerEmail, orderDetails });
       return new Response(JSON.stringify({ 
         message: "E-Mail-Service nicht konfiguriert",
         orderNumber,
@@ -56,7 +55,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Use info@renovirt.de as sender
     const emailResponse = await resend.emails.send({
-      from: "HDR Service <info@renovirt.de>",
+      from: "Renovirt <info@renovirt.de>",
       to: [customerEmail],
       subject: `Bestellbestätigung - Bestellung ${orderNumber}`,
       html: `
@@ -108,13 +107,14 @@ const handler = async (req: Request): Promise<Response> => {
 
           <div style="text-align: center; color: #666; font-size: 14px; border-top: 1px solid #ddd; padding-top: 20px;">
             <p>Bei Fragen stehen wir Ihnen gerne zur Verfügung.</p>
-            <p><strong>Ihr HDR Service Team</strong></p>
+            <p><strong>Ihr Renovirt Team</strong></p>
+            <p style="color: #999; font-size: 12px;">Renovirt - Eine Marke der NPS Media GmbH</p>
           </div>
         </div>
       `,
     });
 
-    console.log("Order confirmation email sent successfully:", emailResponse);
+    console.log("Bestellbestätigung E-Mail erfolgreich gesendet:", emailResponse);
 
     return new Response(JSON.stringify(emailResponse), {
       status: 200,
@@ -124,7 +124,7 @@ const handler = async (req: Request): Promise<Response> => {
       },
     });
   } catch (error: any) {
-    console.error("Error in send-order-confirmation function:", error);
+    console.error("Fehler in der send-order-confirmation Funktion:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
       {

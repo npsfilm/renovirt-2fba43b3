@@ -20,6 +20,8 @@ interface MessageListProps {
   onContactSupport: (interactionId: string) => void;
   onSendChatHistory?: () => void;
   onOpenContactForm?: () => void;
+  onSendTranscript?: () => void;
+  onProblemSolved?: () => void;
 }
 
 const MessageList = ({ 
@@ -28,7 +30,9 @@ const MessageList = ({
   onFeedback, 
   onContactSupport,
   onSendChatHistory,
-  onOpenContactForm 
+  onOpenContactForm,
+  onSendTranscript,
+  onProblemSolved
 }: MessageListProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -73,6 +77,8 @@ const MessageList = ({
             onContactSupport={onContactSupport}
             onSendChatHistory={onSendChatHistory}
             onOpenContactForm={onOpenContactForm}
+            onSendTranscript={onSendTranscript}
+            onProblemSolved={onProblemSolved}
           />
         ))}
         

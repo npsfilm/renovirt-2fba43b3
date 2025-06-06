@@ -29,7 +29,7 @@ const AIChatWidget = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const { sessionId, saveMessages, loadMessages, clearMessages } = useChatPersistence();
-  const { startFollowUp, markProblemSolved, offerTranscript } = useFollowUpSystem();
+  const { startFollowUp, clearFollowUps, markProblemSolved, offerTranscript } = useFollowUpSystem();
 
   // Load messages on component mount
   useEffect(() => {
