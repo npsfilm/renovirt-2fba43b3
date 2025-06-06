@@ -1,6 +1,8 @@
+
 import { z } from 'zod';
 
 export const OrderDataSchema = z.object({
+  id: z.string().optional(),
   email: z.string().email().optional(),
   contactPerson: z.string().optional(),
   company: z.string().optional(),
@@ -24,6 +26,7 @@ export const OrderDataSchema = z.object({
 
 // Manually define the type to properly reflect the schema after parsing
 export type OrderData = {
+  id?: string;
   email?: string;
   contactPerson?: string;
   company?: string;

@@ -1,6 +1,7 @@
 
 import { sanitizeInput, validateEmail } from './inputValidation';
 import { secureLog, logSecurityEvent } from './secureLogging';
+import { checkRateLimit } from './enhancedInputValidation';
 
 // Enhanced referral code validation
 export const validateReferralCode = (code: string): { valid: boolean; error?: string } => {
@@ -159,5 +160,5 @@ export const validatePasswordStrength = (password: string): {
   };
 };
 
-// Import from existing file to avoid duplication
-export { checkRateLimit, cleanupRateLimitStore } from './enhancedInputValidation';
+// Export from existing file to avoid duplication
+export { cleanupRateLimitStore } from './enhancedInputValidation';

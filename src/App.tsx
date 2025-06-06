@@ -30,7 +30,7 @@ import AdminRoute from "./components/admin/AdminRoute";
 import SecurityHeaders from "./components/security/SecurityHeaders";
 import SecurityMonitor from "./components/security/SecurityMonitor";
 import AdminSecurityProvider from "./components/security/AdminSecurityProvider";
-import { StripeProvider } from "./components/payment/StripeProvider";
+import StripeProvider from "./components/payment/StripeProvider";
 
 const queryClient = new QueryClient();
 

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { usePayment } from '@/hooks/usePayment';
@@ -11,7 +12,7 @@ import { secureLog, logSecurityEvent } from '@/utils/secureLogging';
 import type { OrderData } from '@/utils/orderValidation';
 
 export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) => {
-  const [paymentMethod, setPaymentMethod] = useState<'credits' | 'stripe'>('credits');
+  const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'invoice'>('stripe');
   const [creditsToUse, setCreditsToUse] = useState(0);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [canProceed, setCanProceed] = useState(false);
@@ -22,11 +23,11 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
   const { user } = useAuth();
   const { createPaymentIntent, handlePaymentSuccess } = usePayment();
   const { createOrder } = useOrderCreation();
-  const { credits, refreshCredits } = useUserCredits();
+  const { credits, refetch: refreshCredits } = useUserCredits();
   const { toast } = useToast();
 
   useEffect(() => {
-    const { calculatedPrice, creditsDiscount } = calculateOrderPricing(orderData, credits);
+    const { calculatedPrice, creditsDiscount } = calculateOrderPricing(orderData, credits || 0);
     setFinalPrice(calculatedPrice);
 
     // Automatically use all available credits if possible
@@ -45,7 +46,7 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
   const handlePaymentModalSuccess = async (paymentIntentId: string) => {
     setShowPaymentModal(false);
     if (user) {
-      await handlePaymentSuccess(orderData.id!, user.id, paymentIntentId);
+      await handlePaymentSuccess('temp-order-id', user.id, paymentIntentId);
       toast({
         title: 'Zahlung erfolgreich!',
         description: 'Ihre Bestellung wurde erfolgreich bezahlt.',
@@ -98,7 +99,6 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
         ...orderData,
         creditsUsed: creditsToUse,
         finalPrice,
-        paymentMethod,
       });
 
       secureLog('Creating order with secure data', {
@@ -108,16 +108,12 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
       });
 
       // Create the order
-      const createdOrder = await createOrder(secureOrderData);
+      const createdOrder = await createOrder({
+        orderData: secureOrderData,
+        paymentMethod: paymentMethod as 'stripe' | 'invoice'
+      });
 
-      if (paymentMethod === 'credits') {
-        // For credit payments, no additional payment processing needed
-        toast({
-          title: 'Bestellung erfolgreich!',
-          description: 'Ihre Bestellung wurde mit Guthaben bezahlt.',
-        });
-        onNext();
-      } else if (paymentMethod === 'stripe' && finalPrice > 0) {
+      if (paymentMethod === 'stripe' && finalPrice > 0) {
         // Create payment intent for Stripe payments
         const paymentData = await createPaymentIntent({
           orderId: createdOrder.id,
@@ -128,10 +124,12 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
         setClientSecret(paymentData.client_secret);
         setShowPaymentModal(true);
       } else {
-        // Free order or zero amount
+        // Invoice payment or zero amount
         toast({
           title: 'Bestellung erfolgreich!',
-          description: 'Ihre kostenlose Bestellung wurde aufgegeben.',
+          description: paymentMethod === 'invoice' 
+            ? 'Ihre Bestellung wurde aufgegeben. Sie erhalten eine Rechnung per E-Mail.' 
+            : 'Ihre kostenlose Bestellung wurde aufgegeben.',
         });
         onNext();
       }
