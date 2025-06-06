@@ -6,7 +6,7 @@ import ImprovedWelcomeSection from '@/components/dashboard/ImprovedWelcomeSectio
 import EnhancedQuickStats from '@/components/dashboard/EnhancedQuickStats';
 import ImprovedOrdersTable from '@/components/dashboard/ImprovedOrdersTable';
 import RecentActivity from '@/components/dashboard/RecentActivity';
-import ReferralBox from '@/components/dashboard/ReferralBox';
+import ModernReferralBox from '@/components/dashboard/ModernReferralBox';
 import GlobalAIWidget from '@/components/layout/GlobalAIWidget';
 
 const Dashboard = () => {
@@ -30,9 +30,10 @@ const Dashboard = () => {
               
               <div className="space-y-6">
                 <RecentActivity />
-                <ReferralBox />
               </div>
             </div>
+
+            <ModernReferralBox />
           </main>
         </SidebarInset>
         <GlobalAIWidget />

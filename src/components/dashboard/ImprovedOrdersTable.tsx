@@ -126,7 +126,7 @@ const ImprovedOrdersTable = () => {
                             onClick={() => handleViewOrder(order.id)}
                           >
                             <Eye className="w-4 h-4 mr-1" />
-                            👁️ Ansehen
+                            Ansehen
                           </Button>
                           {order.status === 'completed' && (
                             <Button
@@ -135,7 +135,7 @@ const ImprovedOrdersTable = () => {
                               onClick={() => handleDownload(order.id)}
                             >
                               <Download className="w-4 h-4 mr-1" />
-                              ⬇️ Download
+                              Download
                             </Button>
                           )}
                         </div>
@@ -156,7 +156,7 @@ const ImprovedOrdersTable = () => {
         ) : (
           <div className="text-center py-8">
             <p className="text-gray-500 mb-4">Noch keine Bestellungen vorhanden</p>
-            <Button onClick={() => navigate('/order-flow')}>
+            <Button onClick={() => navigate('/order')}>
               Erste Bestellung erstellen
             </Button>
           </div>
