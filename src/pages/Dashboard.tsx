@@ -12,14 +12,14 @@ import GlobalAIWidget from '@/components/layout/GlobalAIWidget';
 const Dashboard = () => {
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
+      <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
         <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border bg-card px-4">
             <SidebarTrigger className="-ml-1" />
-            <h1 className="text-xl font-semibold">Dashboard</h1>
+            <h1 className="text-xl font-semibold text-foreground">Dashboard</h1>
           </header>
-          <main className="flex-1 p-6 space-y-6">
+          <main className="flex-1 p-6 space-y-6 bg-background">
             <ImprovedWelcomeSection />
             <EnhancedQuickStats />
             

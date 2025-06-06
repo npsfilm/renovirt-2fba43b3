@@ -14,12 +14,12 @@ const AdminAnalytics = () => {
   return (
     <AdminLayout>
       {/* Kopfzeile */}
-      <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-white px-4">
+      <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border bg-card px-4">
         <SidebarTrigger className="-ml-1" />
         <div className="flex flex-1 items-center justify-between">
           <div>
-            <h1 className="text-xl font-semibold text-gray-900">Analytik</h1>
-            <p className="text-sm text-gray-600">
+            <h1 className="text-xl font-semibold text-foreground">Analytik</h1>
+            <p className="text-sm text-muted-foreground">
               Detaillierte Einblicke in Geschäftsdaten und Trends
             </p>
           </div>
@@ -27,7 +27,7 @@ const AdminAnalytics = () => {
       </header>
 
       {/* Hauptinhalt */}
-      <main className="flex-1 p-6 space-y-6">
+      <main className="flex-1 p-6 space-y-6 bg-background">
         {/* Wichtige Kennzahlen */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>

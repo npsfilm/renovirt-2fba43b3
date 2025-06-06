@@ -88,8 +88,8 @@ const AppSidebar = () => {
   };
 
   return (
-    <Sidebar className="border-r border-border bg-card">
-      <SidebarHeader className="border-b border-border p-4">
+    <Sidebar className="border-r border-sidebar-border bg-sidebar">
+      <SidebarHeader className="border-b border-sidebar-border p-4">
         <div className="flex items-center gap-2">
           <img 
             src="/lovable-uploads/d6ac9ba9-7ad2-408b-a2b0-5f31c269dd53.png" 
@@ -97,7 +97,7 @@ const AppSidebar = () => {
             className="h-8 w-auto"
           />
           <div>
-            <h2 className="text-lg font-bold text-foreground">Renovirt</h2>
+            <h2 className="text-lg font-bold text-sidebar-foreground">Renovirt</h2>
             <p className="text-xs text-muted-foreground">Professionelle Bildbearbeitung</p>
           </div>
         </div>
@@ -115,7 +115,7 @@ const AppSidebar = () => {
                     className={`w-full justify-start ${
                       isActivePath(item.url)
                         ? 'bg-primary/10 text-primary border-primary/20'
-                        : 'hover:bg-muted'
+                        : 'hover:bg-sidebar-accent'
                     }`}
                   >
                     <item.icon className="w-4 h-4" />
@@ -128,7 +128,7 @@ const AppSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-border p-4">
+      <SidebarFooter className="border-t border-sidebar-border p-4">
         <div className="space-y-4">
           <CreditsWidget />
           

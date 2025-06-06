@@ -5,132 +5,130 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 135 22% 15%;
+    /* Base Colors */
+    --background: 0 0% 100%; /* #ffffff */
+    --foreground: 145 14% 15%; /* #1E2B20 */
 
-    --card: 0 0% 100%;
-    --card-foreground: 135 22% 15%;
+    /* Card & Surfaces */
+    --card: 60 20% 98%; /* #FAFAF7 */
+    --card-foreground: 145 14% 15%; /* #1E2B20 */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 135 22% 15%;
+    --popover: 0 0% 100%; /* #ffffff */
+    --popover-foreground: 145 14% 15%; /* #1E2B20 */
 
-    --primary: 78 26% 54%;
-    --primary-foreground: 0 0% 100%;
+    /* Primary Brand (Renovirt Green) */
+    --primary: 78 26% 50%; /* #91A56E */
+    --primary-foreground: 0 0% 100%; /* #ffffff */
 
-    --secondary: 39 43% 91%;
-    --secondary-foreground: 0 0% 18%;
+    /* Secondary (Folder Beige) */
+    --secondary: 39 43% 91%; /* #F3EBD8 */
+    --secondary-foreground: 0 0% 18%; /* #2F2F2F */
 
-    --muted: 60 25% 97%;
-    --muted-foreground: 78 15% 38%;
+    /* Muted */
+    --muted: 60 25% 97%; /* #F3F3F0 */
+    --muted-foreground: 120 15% 38%; /* #607160 */
 
-    --accent: 45 52% 62%;
-    --accent-foreground: 135 22% 15%;
+    /* Accent (Gold Brush Color) */
+    --accent: 45 52% 59%; /* #D1A760 */
+    --accent-foreground: 145 14% 15%; /* #1E2B20 */
 
-    --destructive: 4 78% 57%;
-    --destructive-foreground: 0 0% 100%;
+    /* Destructive */
+    --destructive: 4 78% 57%; /* #E74C3C */
+    --destructive-foreground: 0 0% 100%; /* #ffffff */
 
-    --border: 78 33% 85%;
-    --input: 78 38% 93%;
-    --ring: 78 26% 54%;
+    /* Border & Input */
+    --border: 78 33% 85%; /* #DDE4D4 */
+    --input: 78 38% 93%; /* #EDF3E9 */
+    --ring: 78 26% 50%; /* #91A56E */
 
     --radius: 0.5rem;
 
-    --sidebar-background: 60 25% 98%;
-    --sidebar-foreground: 135 15% 21%;
-    --sidebar-primary: 78 26% 54%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 78 38% 93%;
-    --sidebar-accent-foreground: 135 22% 15%;
-    --sidebar-border: 78 28% 88%;
-    --sidebar-ring: 78 26% 54%;
+    /* Sidebar colors using the same palette */
+    --sidebar-background: 60 20% 98%; /* #FAFAF7 */
+    --sidebar-foreground: 145 14% 15%; /* #1E2B20 */
+    --sidebar-primary: 78 26% 50%; /* #91A56E */
+    --sidebar-primary-foreground: 0 0% 100%; /* #ffffff */
+    --sidebar-accent: 78 38% 93%; /* #EDF3E9 */
+    --sidebar-accent-foreground: 145 14% 15%; /* #1E2B20 */
+    --sidebar-border: 78 33% 85%; /* #DDE4D4 */
+    --sidebar-ring: 78 26% 50%; /* #91A56E */
 
-    /* New semantic colors for compressed palette */
-    --success: 120 60% 45%;
-    --success-foreground: 0 0% 100%;
-    --warning: 45 85% 55%;
-    --warning-foreground: 135 22% 15%;
-    --info: 210 80% 56%;
-    --info-foreground: 0 0% 100%;
+    /* Status colors using your palette */
+    --success: 157 42% 53%; /* #5BB98C */
+    --success-foreground: 0 0% 100%; /* #ffffff */
+    --warning: 46 85% 69%; /* #F4C76C */
+    --warning-foreground: 145 14% 15%; /* #1E2B20 */
+    --info: 210 80% 56%; /* keeping existing for contrast */
+    --info-foreground: 0 0% 100%; /* #ffffff */
     
-    /* Chart colors - compressed to 6 main colors */
-    --chart-1: 78 26% 54%;    /* Primary green */
-    --chart-2: 45 52% 62%;    /* Accent yellow */
-    --chart-3: 210 80% 56%;   /* Info blue */
-    --chart-4: 4 78% 57%;     /* Destructive red */
-    --chart-5: 120 60% 45%;   /* Success green */
-    --chart-6: 280 60% 60%;   /* Purple */
+    /* Chart colors using your palette variations */
+    --chart-1: 78 26% 50%; /* Primary green */
+    --chart-2: 45 52% 59%; /* Accent gold */
+    --chart-3: 157 42% 53%; /* Success green */
+    --chart-4: 4 78% 57%; /* Error red */
+    --chart-5: 46 85% 69%; /* Warning yellow */
+    --chart-6: 280 60% 60%; /* Purple for variety */
     
-    /* Status colors */
-    --status-pending: 45 85% 55%;      /* Warning yellow */
-    --status-processing: 210 80% 56%;  /* Info blue */
-    --status-completed: 120 60% 45%;   /* Success green */
-    --status-cancelled: 4 78% 57%;     /* Destructive red */
+    /* Status colors for orders */
+    --status-pending: 46 85% 69%; /* Warning yellow */
+    --status-processing: 210 80% 56%; /* Info blue */
+    --status-completed: 157 42% 53%; /* Success green */
+    --status-cancelled: 4 78% 57%; /* Error red */
     --status-quality-check: 280 60% 60%; /* Purple */
-    
-    /* Gray scale - beige tinted */
-    --gray-50: 60 25% 98%;
-    --gray-100: 60 20% 95%;
-    --gray-200: 60 15% 88%;
-    --gray-300: 60 10% 80%;
-    --gray-400: 60 8% 65%;
-    --gray-500: 60 6% 50%;
-    --gray-600: 60 8% 40%;
-    --gray-700: 60 10% 30%;
-    --gray-800: 60 12% 20%;
-    --gray-900: 60 15% 15%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 145 20% 8%; /* Dark version of your foreground */
+    --foreground: 60 20% 95%; /* Light version of your background */
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 145 20% 8%;
+    --card-foreground: 60 20% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 145 20% 8%;
+    --popover-foreground: 60 20% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 78 26% 60%; /* Lighter version for dark mode */
+    --primary-foreground: 145 20% 8%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 39 20% 15%; /* Darker version of beige */
+    --secondary-foreground: 60 20% 95%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 145 15% 12%;
+    --muted-foreground: 120 15% 60%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 45 52% 65%; /* Lighter gold for dark mode */
+    --accent-foreground: 145 20% 8%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 4 78% 65%;
+    --destructive-foreground: 0 0% 0%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 145 15% 20%;
+    --input: 145 15% 20%;
+    --ring: 78 26% 60%;
+
+    --sidebar-background: 145 20% 10%;
+    --sidebar-foreground: 60 20% 90%;
+    --sidebar-primary: 78 26% 60%;
+    --sidebar-primary-foreground: 145 20% 8%;
+    --sidebar-accent: 145 15% 20%;
+    --sidebar-accent-foreground: 60 20% 90%;
+    --sidebar-border: 145 15% 20%;
+    --sidebar-ring: 78 26% 60%;
     
-    /* Dark mode semantic colors */
-    --success: 120 60% 50%;
+    /* Dark mode status colors */
+    --success: 157 42% 60%;
     --success-foreground: 0 0% 0%;
-    --warning: 45 85% 60%;
+    --warning: 46 85% 75%;
     --warning-foreground: 0 0% 0%;
-    --info: 210 80% 60%;
+    --info: 210 80% 65%;
     --info-foreground: 0 0% 0%;
     
     /* Dark chart colors */
     --chart-1: 78 26% 60%;
-    --chart-2: 45 52% 70%;
-    --chart-3: 210 80% 65%;
+    --chart-2: 45 52% 65%;
+    --chart-3: 157 42% 60%;
     --chart-4: 4 78% 65%;
-    --chart-5: 120 60% 55%;
+    --chart-5: 46 85% 75%;
     --chart-6: 280 60% 70%;
   }
 }
@@ -145,7 +143,7 @@
   }
 }
 
-/* Utility classes for new colors */
+/* Utility classes for status colors */
 @layer utilities {
   .bg-success { background-color: hsl(var(--success)); }
   .text-success { color: hsl(var(--success)); }
