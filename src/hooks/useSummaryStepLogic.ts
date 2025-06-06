@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { usePayment } from '@/hooks/usePayment';
 import { useOrderCreation } from '@/hooks/useOrderCreation';
+import { useOrderData } from '@/hooks/useOrderData';
 import { useUserCredits } from '@/hooks/useUserCredits';
 import { useToast } from '@/hooks/use-toast';
 import { calculateOrderPricing } from '@/utils/orderPricing';
@@ -22,7 +23,8 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
 
   const { user } = useAuth();
   const { createPaymentIntent, handlePaymentSuccess } = usePayment();
-  const { createOrder } = useOrderCreation();
+  const { packages, addOns } = useOrderData();
+  const { createOrder } = useOrderCreation(packages, addOns);
   const userCreditsResult = useUserCredits();
   const { credits, isLoading: creditsLoading } = userCreditsResult;
   const { toast } = useToast();
