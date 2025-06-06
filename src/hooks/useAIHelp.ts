@@ -15,7 +15,7 @@ export const useAIHelp = () => {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const askQuestion = async (question: string): Promise<string> => {
+  const askQuestion = async (question: string, hasExistingMessages: boolean = false): Promise<string> => {
     if (!question.trim()) {
       throw new Error('Bitte geben Sie eine Frage ein.');
     }
@@ -26,7 +26,8 @@ export const useAIHelp = () => {
         body: {
           question: question.trim(),
           userId: user?.id || null,
-          sessionId: sessionId
+          sessionId: sessionId,
+          hasExistingMessages
         }
       });
 

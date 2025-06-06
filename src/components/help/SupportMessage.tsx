@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Mail, MessageCircle, Phone } from 'lucide-react';
+import { Mail, MessageCircle } from 'lucide-react';
 
 interface SupportMessageProps {
   onSendChatHistory: () => void;
@@ -12,7 +12,6 @@ const SupportMessage = ({ onSendChatHistory, onOpenContactForm }: SupportMessage
   return (
     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
       <div className="flex items-center gap-2 mb-3">
-        <Phone className="w-5 h-5 text-blue-600" />
         <span className="font-medium text-blue-900">Direkter Support gewünscht</span>
       </div>
       

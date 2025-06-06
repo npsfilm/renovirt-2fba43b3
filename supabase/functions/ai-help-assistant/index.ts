@@ -15,7 +15,7 @@ serve(async (req) => {
   }
 
   try {
-    const { question, userId, sessionId } = await req.json();
+    const { question, userId, sessionId, hasExistingMessages } = await req.json();
     const startTime = Date.now();
 
     // Initialize Supabase client
@@ -29,25 +29,54 @@ serve(async (req) => {
     const needsSupport = supportKeywords.some(keyword => questionLower.includes(keyword));
 
     if (needsSupport) {
-      // Log interaction for support request
-      await supabase
-        .from('help_interactions')
-        .insert({
-          user_id: userId || null,
-          session_id: sessionId,
-          question: question,
-          ai_response: 'SUPPORT_REQUEST',
-          response_time_ms: Date.now() - startTime,
-          ip_address: req.headers.get('x-forwarded-for') || 'unknown',
-          user_agent: req.headers.get('user-agent') || 'unknown'
-        });
+      // If no existing messages, ask for more context first
+      if (!hasExistingMessages) {
+        const contextResponse = `Ich verstehe, dass Sie gerne mit einem Mitarbeiter sprechen möchten. Um Ihnen bestmöglich zu helfen, können Sie mir zunächst sagen, worum es geht? 
 
-      return new Response(JSON.stringify({
-        response: 'SUPPORT_REQUEST',
-        responseTime: Date.now() - startTime
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+Möglicherweise kann ich Ihnen bereits eine schnelle Lösung anbieten. Falls nicht, leite ich Sie gerne an unseren persönlichen Support weiter.
+
+Beschreiben Sie gerne Ihr Anliegen - ich bin hier, um zu helfen!`;
+
+        // Log interaction
+        await supabase
+          .from('help_interactions')
+          .insert({
+            user_id: userId || null,
+            session_id: sessionId,
+            question: question,
+            ai_response: contextResponse,
+            response_time_ms: Date.now() - startTime,
+            ip_address: req.headers.get('x-forwarded-for') || 'unknown',
+            user_agent: req.headers.get('user-agent') || 'unknown'
+          });
+
+        return new Response(JSON.stringify({
+          response: contextResponse,
+          responseTime: Date.now() - startTime
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } else {
+        // If there are existing messages, offer support options
+        await supabase
+          .from('help_interactions')
+          .insert({
+            user_id: userId || null,
+            session_id: sessionId,
+            question: question,
+            ai_response: 'SUPPORT_REQUEST',
+            response_time_ms: Date.now() - startTime,
+            ip_address: req.headers.get('x-forwarded-for') || 'unknown',
+            user_agent: req.headers.get('user-agent') || 'unknown'
+          });
+
+        return new Response(JSON.stringify({
+          response: 'SUPPORT_REQUEST',
+          responseTime: Date.now() - startTime
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
     }
 
     // Get user context if logged in
@@ -105,6 +134,7 @@ WICHTIGE REGELN:
 - Wenn eine Information nicht in der FAQ verfügbar ist, sage es ehrlich und empfiehl den direkten Support-Kontakt
 - Verwende die spezifischen Details aus der Wissensdatenbank (Preise, Lieferzeiten, etc.)
 - Sei besonders hilfreich bei Fragen zu Paketen, Preisen, Lieferzeiten und technischen Anforderungen
+- Wenn du eine Lösung vorschlägst, frage am Ende, ob das Problem gelöst wurde oder ob der Kunde weiteren Support benötigt
 
 VERFÜGBARE KUNDENINFORMATIONEN:
 ${userContext}
