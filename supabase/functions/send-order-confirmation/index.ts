@@ -35,10 +35,10 @@ const handler = async (req: Request): Promise<Response> => {
     const extrasHtml = orderDetails.extras.length > 0 
       ? `
         <tr>
-          <td style="padding: 12px 0; border-bottom: 1px solid #e8f5e8;">
-            <span style="color: #2d5016; font-weight: 500;">Gewählte Extras:</span>
+          <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: 500; color: #374151;">
+            Gewählte Extras:
           </td>
-          <td style="padding: 12px 0; border-bottom: 1px solid #e8f5e8; text-align: right; color: #1a1a1a;">
+          <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; text-align: right; color: #111827;">
             ${orderDetails.extras.join(', ')}
           </td>
         </tr>
@@ -74,44 +74,35 @@ const handler = async (req: Request): Promise<Response> => {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Bestellbestätigung Renovirt</title>
         </head>
-        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: linear-gradient(135deg, #a7c957 0%, #8fb339 100%); line-height: 1.6;">
-          <table width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #a7c957 0%, #8fb339 100%); padding: 40px 20px;">
+        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f9fafb; line-height: 1.6; color: #111827;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9fafb; padding: 40px 20px;">
             <tr>
               <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 24px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); overflow: hidden;">
+                <table width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 16px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); overflow: hidden;">
                   
                   <!-- Header Image Section -->
                   <tr>
                     <td style="padding: 0;">
-                      <img src="https://ycslzlguhswgdpafqhab.supabase.co/storage/v1/object/public/renovirt-images/324e26b6-39d0-4343-8c60-c527cb277b11.png" alt="Ihre Bestellung ist eingegangen" style="width: 100%; height: auto; display: block; border-radius: 24px 24px 0 0;">
+                      <img src="https://ycslzlguhswgdpafqhab.supabase.co/storage/v1/object/public/renovirt-images/324e26b6-39d0-4343-8c60-c527cb277b11.png" alt="Bestellbestätigung" style="width: 100%; height: auto; display: block; max-height: 200px; object-fit: cover;">
                     </td>
                   </tr>
 
-                  <!-- Welcome Section -->
+                  <!-- Header Section -->
                   <tr>
                     <td style="padding: 40px 40px 20px; text-align: center; background-color: #ffffff;">
                       <div style="margin-bottom: 24px;">
-                        <div style="display: inline-block; background: linear-gradient(135deg, #a7c957 0%, #8fb339 100%); padding: 16px 32px; border-radius: 50px; margin-bottom: 20px;">
-                          <h1 style="color: #ffffff; font-size: 24px; font-weight: 700; margin: 0; letter-spacing: -0.025em;">RENOVIRT</h1>
-                        </div>
+                        <h1 style="color: #a7c957; font-size: 32px; font-weight: 700; margin: 0 0 16px; letter-spacing: -0.5px;">RENOVIRT</h1>
+                        <p style="color: #6b7280; font-size: 16px; margin: 0; font-weight: 500;">Professionelle Bildbearbeitung für Immobilienfotos</p>
                       </div>
                       
-                      <div style="display: inline-block; background: linear-gradient(135deg, #f0f8ff 0%, #e8f4fd 100%); padding: 24px; border-radius: 20px; border: 2px solid #a7c957; margin-bottom: 20px;">
-                        <div style="font-size: 48px; margin-bottom: 12px;">😊</div>
-                        <h2 style="color: #2d5016; font-size: 28px; font-weight: 700; margin: 0 0 12px; line-height: 1.2;">Vielen Dank!</h2>
-                        <p style="color: #4a5a2a; font-size: 18px; margin: 0; font-weight: 500;">Ihre Bestellung ist eingegangen</p>
+                      <div style="background: linear-gradient(135deg, #a7c957 0%, #8fb339 100%); color: white; padding: 32px; border-radius: 12px; margin-bottom: 20px;">
+                        <h2 style="color: #ffffff; font-size: 24px; font-weight: 700; margin: 0 0 8px;">Vielen Dank für Ihre Bestellung!</h2>
+                        <p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; margin: 0;">Ihre Bestellung wurde erfolgreich eingegangen</p>
                       </div>
                       
-                      <p style="color: #6b7280; font-size: 16px; margin: 0; line-height: 1.5;">In 48h erhalten Sie Ihre professionell bearbeiteten Bilder.</p>
-                    </td>
-                  </tr>
-
-                  <!-- Order Number Highlight -->
-                  <tr>
-                    <td style="padding: 0 40px 30px; text-align: center;">
-                      <div style="background: linear-gradient(135deg, #a7c957 0%, #8fb339 100%); border-radius: 20px; padding: 20px; display: inline-block;">
-                        <p style="margin: 0; color: #ffffff; font-size: 14px; font-weight: 500; opacity: 0.9;">Auftragsnummer</p>
-                        <p style="margin: 4px 0 0; color: #ffffff; font-size: 20px; font-weight: 700; letter-spacing: 1px;">${orderNumber}</p>
+                      <div style="background-color: #f3f4f6; border: 2px solid #a7c957; border-radius: 12px; padding: 20px; display: inline-block;">
+                        <p style="margin: 0; color: #6b7280; font-size: 14px; font-weight: 500;">Auftragsnummer</p>
+                        <p style="margin: 4px 0 0; color: #111827; font-size: 24px; font-weight: 700; letter-spacing: 1px;">${orderNumber}</p>
                       </div>
                     </td>
                   </tr>
@@ -119,69 +110,43 @@ const handler = async (req: Request): Promise<Response> => {
                   <!-- Order Details Section -->
                   <tr>
                     <td style="padding: 0 40px 30px;">
-                      <div style="background: linear-gradient(135deg, #f8fdf4 0%, #f0f8e8 100%); border-radius: 20px; border: 2px solid #e8f5e8; overflow: hidden;">
-                        <div style="background: linear-gradient(135deg, #a7c957 0%, #8fb339 100%); padding: 20px; text-align: center;">
-                          <h3 style="color: #ffffff; font-size: 20px; font-weight: 700; margin: 0;">Ihre Bestelldetails</h3>
-                        </div>
-                        <div style="padding: 30px;">
-                          <table width="100%" cellpadding="0" cellspacing="0">
-                            <tr>
-                              <td style="padding: 16px 0; border-bottom: 2px solid #e8f5e8;">
-                                <div style="display: flex; align-items: center;">
-                                  <div style="font-size: 24px; margin-right: 12px;">📦</div>
-                                  <div>
-                                    <span style="color: #2d5016; font-weight: 600; font-size: 16px;">Paket</span>
-                                  </div>
-                                </div>
-                              </td>
-                              <td style="padding: 16px 0; border-bottom: 2px solid #e8f5e8; text-align: right;">
-                                <span style="color: #1a1a1a; font-weight: 700; font-size: 16px;">${orderDetails.packageName}</span>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td style="padding: 16px 0; border-bottom: 2px solid #e8f5e8;">
-                                <div style="display: flex; align-items: center;">
-                                  <div style="font-size: 24px; margin-right: 12px;">📸</div>
-                                  <div>
-                                    <span style="color: #2d5016; font-weight: 600; font-size: 16px;">Foto-Typ</span>
-                                  </div>
-                                </div>
-                              </td>
-                              <td style="padding: 16px 0; border-bottom: 2px solid #e8f5e8; text-align: right;">
-                                <span style="color: #1a1a1a; font-weight: 600; font-size: 16px;">${orderDetails.photoType}</span>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td style="padding: 16px 0; border-bottom: 2px solid #e8f5e8;">
-                                <div style="display: flex; align-items: center;">
-                                  <div style="font-size: 24px; margin-right: 12px;">🔢</div>
-                                  <div>
-                                    <span style="color: #2d5016; font-weight: 600; font-size: 16px;">Anzahl Bilder</span>
-                                  </div>
-                                </div>
-                              </td>
-                              <td style="padding: 16px 0; border-bottom: 2px solid #e8f5e8; text-align: right;">
-                                <span style="color: #1a1a1a; font-weight: 600; font-size: 16px;">${orderDetails.imageCount}</span>
-                              </td>
-                            </tr>
-                            ${extrasHtml}
-                            <tr>
-                              <td style="padding: 20px 0 0;">
-                                <div style="display: flex; align-items: center;">
-                                  <div style="font-size: 24px; margin-right: 12px;">💰</div>
-                                  <div>
-                                    <span style="color: #2d5016; font-weight: 700; font-size: 18px;">Gesamtpreis</span>
-                                  </div>
-                                </div>
-                              </td>
-                              <td style="padding: 20px 0 0; text-align: right;">
-                                <div style="background: linear-gradient(135deg, #a7c957 0%, #8fb339 100%); color: white; padding: 12px 20px; border-radius: 50px; display: inline-block;">
-                                  <span style="font-weight: 700; font-size: 20px;">€${orderDetails.totalPrice.toFixed(2)}</span>
-                                </div>
-                              </td>
-                            </tr>
-                          </table>
-                        </div>
+                      <div style="background-color: #f9fafb; border-radius: 12px; padding: 30px; border: 1px solid #e5e7eb;">
+                        <h3 style="color: #111827; font-size: 20px; font-weight: 700; margin: 0 0 24px; text-align: center; padding-bottom: 16px; border-bottom: 2px solid #a7c957;">Ihre Bestelldetails</h3>
+                        <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 16px;">
+                          <tr>
+                            <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600; color: #374151;">
+                              Paket:
+                            </td>
+                            <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb; text-align: right; color: #111827; font-weight: 700;">
+                              ${orderDetails.packageName}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600; color: #374151;">
+                              Foto-Typ:
+                            </td>
+                            <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb; text-align: right; color: #111827;">
+                              ${orderDetails.photoType}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600; color: #374151;">
+                              Anzahl Bilder:
+                            </td>
+                            <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb; text-align: right; color: #111827;">
+                              ${orderDetails.imageCount}
+                            </td>
+                          </tr>
+                          ${extrasHtml}
+                          <tr>
+                            <td style="padding: 20px 0 0; font-weight: 700; color: #111827; font-size: 18px;">
+                              Gesamtpreis:
+                            </td>
+                            <td style="padding: 20px 0 0; text-align: right;">
+                              <span style="background: linear-gradient(135deg, #a7c957 0%, #8fb339 100%); color: white; padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: 20px;">€${orderDetails.totalPrice.toFixed(2)}</span>
+                            </td>
+                          </tr>
+                        </table>
                       </div>
                     </td>
                   </tr>
@@ -189,29 +154,25 @@ const handler = async (req: Request): Promise<Response> => {
                   <!-- Process Timeline Section -->
                   <tr>
                     <td style="padding: 0 40px 30px;">
-                      <div style="background: linear-gradient(135deg, #fff8e1 0%, #fffbf0 100%); border-radius: 20px; padding: 30px; border: 2px solid #f0d000;">
-                        <div style="text-align: center; margin-bottom: 24px;">
-                          <div style="font-size: 32px; margin-bottom: 12px;">⏱️</div>
-                          <h3 style="color: #8b6914; font-size: 22px; font-weight: 700; margin: 0;">Ihre Bestellung wird bearbeitet</h3>
-                        </div>
+                      <div style="background: linear-gradient(135deg, #fff8e1 0%, #fffbf0 100%); border-radius: 12px; padding: 30px; border: 1px solid #f59e0b;">
+                        <h3 style="color: #92400e; font-size: 20px; font-weight: 700; margin: 0 0 24px; text-align: center;">Bearbeitungsstatus</h3>
                         
-                        <div style="margin-bottom: 20px;">
-                          <div style="display: flex; align-items: center; margin-bottom: 16px; padding: 12px; background-color: rgba(167, 201, 87, 0.1); border-radius: 12px;">
-                            <span style="display: inline-block; width: 16px; height: 16px; background-color: #a7c957; border-radius: 50%; margin-right: 16px;"></span>
-                            <span style="color: #2d5016; font-weight: 600; font-size: 16px;">Zahlung eingegangen ✓</span>
+                        <div style="margin-bottom: 24px;">
+                          <div style="display: flex; align-items: center; margin-bottom: 16px; padding: 16px; background-color: rgba(167, 201, 87, 0.1); border-radius: 8px; border-left: 4px solid #a7c957;">
+                            <div style="width: 16px; height: 16px; background-color: #a7c957; border-radius: 50%; margin-right: 16px;"></div>
+                            <span style="color: #2d5016; font-weight: 600;">✓ Zahlung eingegangen</span>
                           </div>
-                          <div style="display: flex; align-items: center; margin-bottom: 16px; padding: 12px; background-color: rgba(255, 193, 7, 0.1); border-radius: 12px;">
-                            <span style="display: inline-block; width: 16px; height: 16px; background-color: #ffc107; border-radius: 50%; margin-right: 16px;"></span>
-                            <span style="color: #8b6914; font-weight: 600; font-size: 16px;">Professionelle Bearbeitung läuft 🎨</span>
+                          <div style="display: flex; align-items: center; margin-bottom: 16px; padding: 16px; background-color: rgba(245, 158, 11, 0.1); border-radius: 8px; border-left: 4px solid #f59e0b;">
+                            <div style="width: 16px; height: 16px; background-color: #f59e0b; border-radius: 50%; margin-right: 16px;"></div>
+                            <span style="color: #92400e; font-weight: 600;">⏳ Professionelle Bearbeitung läuft</span>
                           </div>
-                          <div style="display: flex; align-items: center; padding: 12px; background-color: rgba(156, 163, 175, 0.1); border-radius: 12px;">
-                            <span style="display: inline-block; width: 16px; height: 16px; background-color: #9ca3af; border-radius: 50%; margin-right: 16px;"></span>
-                            <span style="color: #6b7280; font-weight: 600; font-size: 16px;">Download-Link folgt per E-Mail 📧</span>
+                          <div style="display: flex; align-items: center; padding: 16px; background-color: rgba(156, 163, 175, 0.1); border-radius: 8px; border-left: 4px solid #9ca3af;">
+                            <div style="width: 16px; height: 16px; background-color: #9ca3af; border-radius: 50%; margin-right: 16px;"></div>
+                            <span style="color: #6b7280; font-weight: 600;">📧 Download-Link folgt per E-Mail</span>
                           </div>
                         </div>
 
-                        <div style="background: linear-gradient(135deg, #a7c957 0%, #8fb339 100%); border-radius: 16px; padding: 24px; text-align: center;">
-                          <div style="font-size: 24px; margin-bottom: 8px;">⏰</div>
+                        <div style="background: linear-gradient(135deg, #a7c957 0%, #8fb339 100%); border-radius: 12px; padding: 24px; text-align: center;">
                           <p style="margin: 0; color: #ffffff; font-weight: 700; font-size: 18px;">
                             Voraussichtliche Fertigstellung: ${estimatedDelivery}
                           </p>
@@ -226,22 +187,22 @@ const handler = async (req: Request): Promise<Response> => {
                   <!-- Features Section -->
                   <tr>
                     <td style="padding: 0 40px 30px;">
-                      <h3 style="color: #2d5016; font-size: 20px; font-weight: 700; margin: 0 0 20px; text-align: center;">Das erwartet Sie</h3>
-                      <div style="display: flex; justify-content: space-between; gap: 16px;">
-                        <div style="flex: 1; text-align: center; background: linear-gradient(135deg, #f8fdf4 0%, #f0f8e8 100%); padding: 24px; border-radius: 16px; border: 2px solid #e8f5e8;">
-                          <div style="font-size: 32px; margin-bottom: 12px;">🎨</div>
-                          <h4 style="color: #2d5016; font-size: 16px; font-weight: 700; margin: 0 0 8px;">Professionelle Bearbeitung</h4>
-                          <p style="color: #4a5a2a; font-size: 13px; margin: 0;">Von erfahrenen Foto-Editoren</p>
+                      <h3 style="color: #111827; font-size: 20px; font-weight: 700; margin: 0 0 20px; text-align: center;">Das erwartet Sie</h3>
+                      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                        <div style="text-align: center; background-color: #f9fafb; padding: 24px; border-radius: 12px; border: 1px solid #e5e7eb;">
+                          <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #a7c957 0%, #8fb339 100%); border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: bold;">✓</div>
+                          <h4 style="color: #111827; font-size: 16px; font-weight: 700; margin: 0 0 8px;">Professionelle Bearbeitung</h4>
+                          <p style="color: #6b7280; font-size: 14px; margin: 0;">Von erfahrenen Foto-Editoren</p>
                         </div>
-                        <div style="flex: 1; text-align: center; background: linear-gradient(135deg, #f8fdf4 0%, #f0f8e8 100%); padding: 24px; border-radius: 16px; border: 2px solid #e8f5e8;">
-                          <div style="font-size: 32px; margin-bottom: 12px;">🏠</div>
-                          <h4 style="color: #2d5016; font-size: 16px; font-weight: 700; margin: 0 0 8px;">Immobilien-Spezialist</h4>
-                          <p style="color: #4a5a2a; font-size: 13px; margin: 0;">Optimiert für Makler & Architekten</p>
+                        <div style="text-align: center; background-color: #f9fafb; padding: 24px; border-radius: 12px; border: 1px solid #e5e7eb;">
+                          <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #a7c957 0%, #8fb339 100%); border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: bold;">🏠</div>
+                          <h4 style="color: #111827; font-size: 16px; font-weight: 700; margin: 0 0 8px;">Immobilien-Spezialist</h4>
+                          <p style="color: #6b7280; font-size: 14px; margin: 0;">Optimiert für Makler & Architekten</p>
                         </div>
-                        <div style="flex: 1; text-align: center; background: linear-gradient(135deg, #f8fdf4 0%, #f0f8e8 100%); padding: 24px; border-radius: 16px; border: 2px solid #e8f5e8;">
-                          <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
-                          <h4 style="color: #2d5016; font-size: 16px; font-weight: 700; margin: 0 0 8px;">DSGVO-konform</h4>
-                          <p style="color: #4a5a2a; font-size: 13px; margin: 0;">Sichere Verarbeitung in Deutschland</p>
+                        <div style="text-align: center; background-color: #f9fafb; padding: 24px; border-radius: 12px; border: 1px solid #e5e7eb;">
+                          <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #a7c957 0%, #8fb339 100%); border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: bold;">🔒</div>
+                          <h4 style="color: #111827; font-size: 16px; font-weight: 700; margin: 0 0 8px;">DSGVO-konform</h4>
+                          <p style="color: #6b7280; font-size: 14px; margin: 0;">Sichere Verarbeitung in Deutschland</p>
                         </div>
                       </div>
                     </td>
@@ -249,33 +210,30 @@ const handler = async (req: Request): Promise<Response> => {
 
                   <!-- Support Section -->
                   <tr>
-                    <td style="padding: 0 40px 40px;">
-                      <div style="background: linear-gradient(135deg, #f1f8ff 0%, #e6f2ff 100%); border-radius: 20px; padding: 30px; text-align: center; border: 2px solid #bdd7f7;">
-                        <div style="font-size: 28px; margin-bottom: 16px;">💬</div>
-                        <h3 style="color: #1e3a8a; font-size: 20px; font-weight: 700; margin: 0 0 12px;">Fragen zu Ihrer Bestellung?</h3>
-                        <p style="color: #1e40af; font-size: 16px; margin: 0 0 20px; font-weight: 500;">Unser Support-Team steht Ihnen gerne zur Verfügung.</p>
-                        <div style="display: inline-block; background: linear-gradient(135deg, #a7c957 0%, #8fb339 100%); color: white; padding: 16px 32px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 16px;">
-                          <a href="mailto:support@renovirt.de" style="color: white; text-decoration: none;">support@renovirt.de</a>
-                        </div>
+                    <td style="padding: 0 40px 30px;">
+                      <div style="background-color: #f0f9ff; border-radius: 12px; padding: 30px; text-align: center; border: 1px solid #0ea5e9;">
+                        <h3 style="color: #0c4a6e; font-size: 20px; font-weight: 700; margin: 0 0 12px;">Fragen zu Ihrer Bestellung?</h3>
+                        <p style="color: #0369a1; font-size: 16px; margin: 0 0 20px;">Unser Support-Team steht Ihnen gerne zur Verfügung.</p>
+                        <a href="mailto:support@renovirt.de" style="display: inline-block; background: linear-gradient(135deg, #a7c957 0%, #8fb339 100%); color: white; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px;">
+                          support@renovirt.de
+                        </a>
                       </div>
                     </td>
                   </tr>
 
                   <!-- Footer -->
                   <tr>
-                    <td style="background: linear-gradient(135deg, #f8fdf4 0%, #f0f8e8 100%); padding: 30px 40px; text-align: center; border-top: 2px solid #e8f5e8;">
+                    <td style="background-color: #f9fafb; padding: 30px 40px; text-align: center; border-top: 1px solid #e5e7eb;">
                       <div style="margin-bottom: 20px;">
-                        <div style="display: inline-block; background: linear-gradient(135deg, #a7c957 0%, #8fb339 100%); padding: 12px 24px; border-radius: 50px; margin-bottom: 12px;">
-                          <h4 style="color: #ffffff; font-size: 18px; font-weight: 700; margin: 0;">RENOVIRT</h4>
-                        </div>
-                        <p style="color: #2d5016; font-size: 16px; margin: 0; font-weight: 600;">Professionelle Bildbearbeitung für Immobilienfotos</p>
+                        <h4 style="color: #a7c957; font-size: 24px; font-weight: 700; margin: 0 0 8px;">RENOVIRT</h4>
+                        <p style="color: #6b7280; font-size: 16px; margin: 0; font-weight: 500;">Professionelle Bildbearbeitung für Immobilienfotos</p>
                       </div>
                       
-                      <div style="border-top: 1px solid #d1fae5; padding-top: 20px;">
-                        <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px;">
+                      <div style="border-top: 1px solid #e5e7eb; padding-top: 20px;">
+                        <p style="color: #9ca3af; font-size: 12px; margin: 0 0 8px;">
                           © 2024 Renovirt – Eine Marke der NPS Media GmbH
                         </p>
-                        <p style="color: #6b7280; font-size: 12px; margin: 0;">
+                        <p style="color: #9ca3af; font-size: 12px; margin: 0;">
                           Diese E-Mail wurde automatisch generiert. Bitte antworten Sie nicht direkt auf diese Nachricht.
                         </p>
                       </div>
