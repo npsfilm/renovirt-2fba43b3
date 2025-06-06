@@ -22,12 +22,12 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
   const { user } = useAuth();
   const { createPaymentIntent, handlePaymentSuccess } = usePayment();
   const { createOrder } = useOrderCreation();
-  const { credits, isLoading } = useUserCredits();
+  const { credits, isLoading: creditsLoading } = useUserCredits();
   const { toast } = useToast();
 
   useEffect(() => {
     // Guard condition: only calculate pricing if orderData has required fields and credits are loaded
-    if (!orderData || !orderData.extras || !orderData.files || isLoading) {
+    if (!orderData || !orderData.extras || !orderData.files || creditsLoading) {
       return;
     }
 
@@ -40,7 +40,7 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
     } else {
       setCreditsToUse(0);
     }
-  }, [orderData, credits, isLoading]);
+  }, [orderData, credits, creditsLoading]);
 
   useEffect(() => {
     // Check if the order can proceed based on the acceptance of terms
