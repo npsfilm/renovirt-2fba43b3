@@ -12,31 +12,41 @@ interface ChatInputProps {
 }
 
 const ChatInput = ({ inputValue, setInputValue, onSendMessage, isLoading }: ChatInputProps) => {
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (inputValue.trim() && !isLoading) {
+        onSendMessage();
+      }
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (inputValue.trim() && !isLoading) {
       onSendMessage();
     }
   };
 
   return (
     <div className="p-4 border-t">
-      <div className="flex gap-2">
+      <form onSubmit={handleSubmit} className="flex gap-2">
         <Input
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="Stellen Sie Ihre Frage..."
-          onKeyPress={handleKeyPress}
+          onKeyDown={handleKeyDown}
           disabled={isLoading}
           className="flex-1"
         />
         <Button
-          onClick={onSendMessage}
+          type="submit"
           disabled={isLoading || !inputValue.trim()}
           size="sm"
         >
           <Send className="w-4 h-4" />
         </Button>
-      </div>
+      </form>
     </div>
   );
 };

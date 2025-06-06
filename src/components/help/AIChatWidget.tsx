@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAIHelp } from '@/hooks/useAIHelp';
+import { useToast } from '@/hooks/use-toast';
 import FloatingButton from './FloatingButton';
 import ChatHeader from './ChatHeader';
 import MessageList from './MessageList';
@@ -21,6 +22,7 @@ const AIChatWidget = () => {
   const [inputValue, setInputValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const { askQuestion, submitFeedback, contactSupport, isLoading } = useAIHelp();
+  const { toast } = useToast();
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
@@ -48,6 +50,7 @@ const AIChatWidget = () => {
 
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
+      console.error('Error in chat:', error);
       const errorMessage: Message = {
         id: crypto.randomUUID(),
         type: 'ai',
@@ -59,18 +62,45 @@ const AIChatWidget = () => {
   };
 
   const handleFeedback = async (messageId: string, interactionId: string, rating: number) => {
-    await submitFeedback(interactionId, rating);
-    setMessages(prev => 
-      prev.map(msg => 
-        msg.id === messageId 
-          ? { ...msg, feedbackGiven: true }
-          : msg
-      )
-    );
+    try {
+      await submitFeedback(interactionId, rating);
+      setMessages(prev => 
+        prev.map(msg => 
+          msg.id === messageId 
+            ? { ...msg, feedbackGiven: true }
+            : msg
+        )
+      );
+      
+      toast({
+        title: "Feedback erhalten",
+        description: "Vielen Dank für Ihr Feedback!",
+      });
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+      toast({
+        title: "Fehler",
+        description: "Feedback konnte nicht gesendet werden.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleContactSupport = async (interactionId: string) => {
-    await contactSupport(interactionId);
+    try {
+      await contactSupport(interactionId);
+      toast({
+        title: "Support kontaktiert",
+        description: "Wir haben Ihre Anfrage an unser Support-Team weitergeleitet.",
+      });
+    } catch (error) {
+      console.error('Error contacting support:', error);
+      toast({
+        title: "Fehler", 
+        description: "Support-Kontakt konnte nicht hergestellt werden.",
+        variant: "destructive",
+      });
+    }
   };
 
   if (!isOpen) {
