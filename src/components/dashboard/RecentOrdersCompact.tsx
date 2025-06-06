@@ -34,15 +34,15 @@ const RecentOrdersCompact = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'bg-green-100 text-green-800';
+        return 'bg-success/10 text-success';
       case 'processing':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-primary/10 text-primary';
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-warning/10 text-warning';
       case 'payment_pending':
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-accent/10 text-accent';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted/10 text-muted';
     }
   };
 
@@ -79,8 +79,8 @@ const RecentOrdersCompact = () => {
           </Button>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-6 text-gray-500">
-            <FileText className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+          <div className="text-center py-6 text-muted">
+            <FileText className="w-8 h-8 mx-auto mb-2 text-muted" />
             <p className="text-sm">Noch keine Bestellungen</p>
             <Button variant="link" size="sm" className="mt-2" onClick={() => navigate('/order-flow')}>
               Erste Bestellung erstellen →
@@ -101,17 +101,17 @@ const RecentOrdersCompact = () => {
       </CardHeader>
       <CardContent className="space-y-3">
         {recentOrders.map((order) => (
-          <div key={order.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
+          <div key={order.id} className="flex items-center justify-between py-2 border-b border-border last:border-b-0">
             <div className="flex items-center space-x-3">
-              <FileText className="w-4 h-4 text-gray-400" />
+              <FileText className="w-4 h-4 text-muted" />
               <div>
                 <button 
                   onClick={() => handleOrderClick(order.id)}
-                  className="text-sm font-medium text-blue-600 hover:text-blue-800 cursor-pointer"
+                  className="text-sm font-medium text-primary hover:text-primary/80 cursor-pointer"
                 >
                   {formatOrderId(order.id)}
                 </button>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted">
                   {order.image_count} Bilder • {new Date(order.created_at).toLocaleDateString('de-DE')}
                 </p>
               </div>

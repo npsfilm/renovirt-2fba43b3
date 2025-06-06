@@ -54,10 +54,10 @@ const ImprovedWelcomeSection = () => {
   };
 
   return (
-    <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+    <Card className="bg-gradient-to-r from-surface-muted to-surface border-border">
       <CardContent className="p-8">
         <div className="text-center">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+          <h2 className="text-2xl font-semibold text-foreground mb-2">
             {getTimeBasedGreeting()}, {getGreetingName()} – bereit für Ihre nächsten Fotos? 👋
           </h2>
           

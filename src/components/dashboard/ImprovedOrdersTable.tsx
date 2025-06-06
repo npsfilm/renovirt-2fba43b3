@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -38,11 +39,11 @@ const ImprovedOrdersTable = () => {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      pending: { label: 'Warteschlange', className: 'bg-status-pending text-foreground' },
-      processing: { label: 'In Bearbeitung', className: 'bg-status-processing text-white' },
-      quality_check: { label: 'Qualitätsprüfung', className: 'bg-status-quality-check text-white' },
-      completed: { label: 'Abgeschlossen', className: 'bg-status-completed text-white' },
-      delivered: { label: 'Geliefert', className: 'bg-status-completed text-white' }
+      pending: { label: 'Warteschlange', className: 'bg-warning text-warning-foreground' },
+      processing: { label: 'In Bearbeitung', className: 'bg-primary text-primary-foreground' },
+      quality_check: { label: 'Qualitätsprüfung', className: 'bg-accent text-accent-foreground' },
+      completed: { label: 'Abgeschlossen', className: 'bg-success text-success-foreground' },
+      delivered: { label: 'Geliefert', className: 'bg-success text-success-foreground' }
     };
     
     const config = statusConfig[status as keyof typeof statusConfig] || 
@@ -76,7 +77,7 @@ const ImprovedOrdersTable = () => {
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         </CardContent>
       </Card>
@@ -95,20 +96,20 @@ const ImprovedOrdersTable = () => {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-border">
-                    <th className="text-left py-3 px-2 font-medium text-muted-foreground">Bestellnummer</th>
-                    <th className="text-left py-3 px-2 font-medium text-muted-foreground">Datum</th>
-                    <th className="text-left py-3 px-2 font-medium text-muted-foreground">Bilderanzahl</th>
-                    <th className="text-left py-3 px-2 font-medium text-muted-foreground">Status</th>
-                    <th className="text-right py-3 px-2 font-medium text-muted-foreground">Aktionen</th>
+                    <th className="text-left py-3 px-2 font-medium text-muted">Bestellnummer</th>
+                    <th className="text-left py-3 px-2 font-medium text-muted">Datum</th>
+                    <th className="text-left py-3 px-2 font-medium text-muted">Bilderanzahl</th>
+                    <th className="text-left py-3 px-2 font-medium text-muted">Status</th>
+                    <th className="text-right py-3 px-2 font-medium text-muted">Aktionen</th>
                   </tr>
                 </thead>
                 <tbody>
                   {orders.map((order) => (
-                    <tr key={order.id} className="border-b border-border hover:bg-muted">
+                    <tr key={order.id} className="border-b border-border hover:bg-surface-muted">
                       <td className="py-3 px-2 font-mono text-sm">
                         {formatOrderId(order.id)}
                       </td>
-                      <td className="py-3 px-2 text-sm text-muted-foreground">
+                      <td className="py-3 px-2 text-sm text-muted">
                         {new Date(order.created_at).toLocaleDateString('de-DE')}
                       </td>
                       <td className="py-3 px-2 text-sm">
@@ -154,7 +155,7 @@ const ImprovedOrdersTable = () => {
           </>
         ) : (
           <div className="text-center py-8">
-            <p className="text-muted-foreground mb-4">Noch keine Bestellungen vorhanden</p>
+            <p className="text-muted mb-4">Noch keine Bestellungen vorhanden</p>
             <Button onClick={() => navigate('/order')}>
               Erste Bestellung erstellen
             </Button>

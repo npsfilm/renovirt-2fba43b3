@@ -51,14 +51,14 @@ const WelcomeSection = () => {
   };
 
   return (
-    <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+    <Card className="bg-gradient-to-r from-surface-muted to-surface border-border">
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-1">
+            <h2 className="text-xl font-semibold text-foreground mb-1">
               Willkommen zurück, {getGreetingName()}! 👋
             </h2>
-            <p className="text-gray-600 text-sm">
+            <p className="text-muted text-sm">
               Laden Sie hier Ihre neuen Fotos hoch und lassen Sie sie professionell bearbeiten.
             </p>
           </div>
@@ -75,8 +75,8 @@ const WelcomeSection = () => {
         </div>
         
         {/* Empty State Message */}
-        <div className="mt-4 text-center py-4 bg-white rounded-lg border border-gray-100">
-          <p className="text-gray-500 text-sm">
+        <div className="mt-4 text-center py-4 bg-surface rounded-lg border border-border">
+          <p className="text-muted text-sm">
             Noch keine Bestellung? Testen Sie jetzt Ihre 3 kostenlosen Bilder.
           </p>
           <Button variant="link" size="sm" className="mt-1" onClick={handleLearnMore}>

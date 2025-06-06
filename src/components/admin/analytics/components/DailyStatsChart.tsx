@@ -21,9 +21,9 @@ const DailyStatsChart = ({ data }: DailyStatsChartProps) => {
             <XAxis 
               dataKey="date" 
               tickFormatter={(value) => new Date(value).toLocaleDateString('de-DE')}
-              stroke="hsl(var(--muted-foreground))"
+              stroke="hsl(var(--muted))"
             />
-            <YAxis stroke="hsl(var(--muted-foreground))" />
+            <YAxis stroke="hsl(var(--muted))" />
             <Tooltip 
               labelFormatter={(value) => new Date(value).toLocaleDateString('de-DE')}
               formatter={(value: number, name: string) => [
@@ -31,13 +31,13 @@ const DailyStatsChart = ({ data }: DailyStatsChartProps) => {
                 name === 'questions' ? 'Fragen' : 'Zufriedenheit'
               ]}
               contentStyle={{
-                backgroundColor: 'hsl(var(--card))',
+                backgroundColor: 'hsl(var(--surface))',
                 border: '1px solid hsl(var(--border))',
                 borderRadius: 'var(--radius)'
               }}
             />
-            <Line type="monotone" dataKey="questions" stroke="hsl(var(--chart-1))" name="questions" />
-            <Line type="monotone" dataKey="satisfaction" stroke="hsl(var(--chart-5))" name="satisfaction" />
+            <Line type="monotone" dataKey="questions" stroke="hsl(var(--primary))" name="questions" />
+            <Line type="monotone" dataKey="satisfaction" stroke="hsl(var(--accent))" name="satisfaction" />
           </LineChart>
         </ResponsiveContainer>
       </CardContent>

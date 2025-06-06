@@ -57,29 +57,29 @@ const EnhancedQuickStats = () => {
       title: "Aktive Bestellungen",
       value: orderStats?.activeOrders?.toString() || "0",
       icon: Clock,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50"
+      color: "text-warning",
+      bgColor: "bg-warning/10"
     },
     {
       title: "Abgeschlossen",
       value: orderStats?.completedOrders?.toString() || "0",
       icon: CheckCircle,
-      color: "text-green-600",
-      bgColor: "bg-green-50"
+      color: "text-success",
+      bgColor: "bg-success/10"
     },
     {
       title: "Gesamtbestellungen",
       value: orderStats?.totalOrders?.toString() || "0",
       icon: FileText,
-      color: "text-gray-600",
-      bgColor: "bg-gray-50"
+      color: "text-muted",
+      bgColor: "bg-muted-background"
     },
     {
       title: "Bilder diesen Monat",
       value: orderStats?.imagesThisMonth?.toString() || "0",
       icon: Image,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50"
+      color: "text-accent",
+      bgColor: "bg-accent/10"
     }
   ];
 
@@ -95,8 +95,8 @@ const EnhancedQuickStats = () => {
                   <IconComponent className={`w-6 h-6 ${stat.color}`} />
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
-                  <p className="text-sm text-gray-600">{stat.title}</p>
+                  <p className="text-3xl font-bold text-foreground">{stat.value}</p>
+                  <p className="text-sm text-muted">{stat.title}</p>
                 </div>
               </div>
             </CardContent>

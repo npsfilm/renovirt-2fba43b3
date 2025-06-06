@@ -33,15 +33,15 @@ const RecentActivity = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'bg-green-100 text-green-800';
+        return 'bg-success text-success-foreground';
       case 'processing':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-primary text-primary-foreground';
       case 'payment_pending':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-warning text-warning-foreground';
       case 'pending':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -84,13 +84,13 @@ const RecentActivity = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
-            <Image className="w-5 h-5 mr-2 text-blue-600" />
+            <Image className="w-5 h-5 mr-2 text-primary" />
             Letzte Aktivitäten
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-6 text-gray-500">
-            <Image className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+          <div className="text-center py-6 text-muted">
+            <Image className="w-8 h-8 mx-auto mb-2 text-muted" />
             <p className="text-sm">Noch keine Aktivitäten</p>
           </div>
         </CardContent>
@@ -102,23 +102,23 @@ const RecentActivity = () => {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center">
-          <Image className="w-5 h-5 mr-2 text-blue-600" />
+          <Image className="w-5 h-5 mr-2 text-primary" />
           Letzte Aktivitäten
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {recentOrders.map((order) => (
-          <div key={order.id} className="border rounded-lg p-4 space-y-3">
+          <div key={order.id} className="border border-border rounded-lg p-4 space-y-3">
             <div className="flex items-start justify-between">
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <Image className="w-6 h-6 text-gray-400" />
+                <div className="w-12 h-12 bg-surface-muted rounded-lg flex items-center justify-center">
+                  <Image className="w-6 h-6 text-muted" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">
+                  <p className="font-medium text-foreground">
                     Bestellung #{formatOrderId(order.id)}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted">
                     {order.image_count} Bilder
                   </p>
                 </div>
@@ -131,11 +131,11 @@ const RecentActivity = () => {
             {order.status === 'processing' && (
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Fortschritt</span>
-                  <span className="text-gray-900">{getProgress(order.status)}%</span>
+                  <span className="text-muted">Fortschritt</span>
+                  <span className="text-foreground">{getProgress(order.status)}%</span>
                 </div>
                 <Progress value={getProgress(order.status)} className="h-2" />
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted">
                   Wird bearbeitet...
                 </p>
               </div>
