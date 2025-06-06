@@ -22,7 +22,7 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
   const { user } = useAuth();
   const { createPaymentIntent, handlePaymentSuccess } = usePayment();
   const { createOrder } = useOrderCreation();
-  const { credits, refetch: refreshCredits } = useUserCredits();
+  const { credits, refetch } = useUserCredits();
   const { toast } = useToast();
 
   useEffect(() => {
