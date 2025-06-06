@@ -1,131 +1,162 @@
-
-import { useState } from 'react';
-import { useOrders } from '@/hooks/useOrders';
-import { usePayment } from '@/hooks/usePayment';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { usePayment } from '@/hooks/usePayment';
+import { useOrderCreation } from '@/hooks/useOrderCreation';
+import { useUserCredits } from '@/hooks/useUserCredits';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { calculateOrderPricing } from '@/utils/orderPricing';
+import { withCSRFProtection } from '@/utils/csrfProtection';
+import { validateAdminOperation } from '@/utils/enhancedSecurityValidation';
+import { secureLog, logSecurityEvent } from '@/utils/secureLogging';
 import type { OrderData } from '@/utils/orderValidation';
 
 export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) => {
-  const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'invoice'>('stripe');
+  const [paymentMethod, setPaymentMethod] = useState<'credits' | 'stripe'>('credits');
   const [creditsToUse, setCreditsToUse] = useState(0);
-  const [isProcessingCredits, setIsProcessingCredits] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
-  
-  const { createOrder, isCreatingOrder, calculateTotalPrice } = useOrders();
-  const { createPaymentIntent, handlePaymentSuccess, isProcessingPayment, clientSecret } = usePayment();
+  const [canProceed, setCanProceed] = useState(false);
+  const [finalPrice, setFinalPrice] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+
   const { user } = useAuth();
+  const { createPaymentIntent, handlePaymentSuccess } = usePayment();
+  const { createOrder } = useOrderCreation();
+  const { credits, refreshCredits } = useUserCredits();
   const { toast } = useToast();
 
-  const canProceed = orderData.acceptedTerms && orderData.email && !!user;
-  const basePrice = calculateTotalPrice(orderData);
-  const creditDiscount = creditsToUse * 1;
-  const finalPrice = Math.max(0, basePrice - creditDiscount);
-  const isProcessing = isCreatingOrder || isProcessingPayment || isProcessingCredits;
+  useEffect(() => {
+    const { calculatedPrice, creditsDiscount } = calculateOrderPricing(orderData, credits);
+    setFinalPrice(calculatedPrice);
 
-  const handleSubmitOrder = async () => {
-    if (!canProceed) return;
-
-    try {
-      setIsProcessingCredits(true);
-
-      // Use credits if applicable
-      if (creditsToUse > 0) {
-        const { data: creditResult, error: creditError } = await supabase.rpc('use_user_credits', {
-          user_uuid: user.id,
-          amount_to_use: creditsToUse
-        });
-
-        if (creditError) throw creditError;
-
-        const result = creditResult as { success?: boolean; error?: string };
-        if (!result?.success) {
-          throw new Error(result?.error || 'Failed to use credits');
-        }
-
-        toast({
-          title: "Credits verwendet",
-          description: `${creditsToUse} Credits wurden erfolgreich angewendet.`,
-        });
-      }
-
-      // Create order with updated price
-      const orderDataWithCredits: OrderData = {
-        email: orderData.email,
-        contactPerson: orderData.contactPerson,
-        company: orderData.company,
-        photoType: orderData.photoType,
-        package: orderData.package,
-        imageCount: orderData.imageCount,
-        files: orderData.files || [],
-        extras: orderData.extras,
-        specialRequests: orderData.specialRequests,
-        acceptedTerms: orderData.acceptedTerms,
-        creditsUsed: creditsToUse,
-        originalPrice: basePrice,
-        finalPrice: finalPrice,
-        watermarkFile: orderData.watermarkFile,
-        couponCode: orderData.couponCode
-      };
-
-      const order = await createOrder(orderDataWithCredits, paymentMethod);
-      setCurrentOrderId(order.id);
-      
-      if (paymentMethod === 'stripe' && finalPrice > 0) {
-        // Create payment intent and show payment modal
-        await createPaymentIntent({
-          orderId: order.id,
-          amount: finalPrice,
-          currency: 'eur'
-        });
-        setShowPaymentModal(true);
-      } else if (paymentMethod === 'stripe' && finalPrice === 0) {
-        // Order fully paid with credits - mark as paid
-        const { error: updateError } = await supabase.rpc('update_order_payment_status', {
-          p_order_id: order.id,
-          p_payment_status: 'paid'
-        });
-
-        if (updateError) throw updateError;
-
-        toast({
-          title: "Bestellung erfolgreich erstellt!",
-          description: "Ihre Bestellung wurde vollständig mit Credits bezahlt.",
-        });
-        onNext();
-      } else {
-        // Invoice payment
-        toast({
-          title: "Bestellung erfolgreich erstellt!",
-          description: "Sie erhalten in Kürze eine Rechnung per E-Mail.",
-        });
-        onNext();
-      }
-    } catch (error: any) {
-      console.error('Order submission failed:', error);
-      toast({
-        title: "Fehler",
-        description: error.message || "Ein Fehler ist bei der Bestellung aufgetreten.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessingCredits(false);
+    // Automatically use all available credits if possible
+    if (credits && calculatedPrice > 0) {
+      setCreditsToUse(Math.min(credits, creditsDiscount));
+    } else {
+      setCreditsToUse(0);
     }
-  };
+  }, [orderData, credits]);
+
+  useEffect(() => {
+    // Check if the order can proceed based on the acceptance of terms
+    setCanProceed(orderData.acceptedTerms);
+  }, [orderData.acceptedTerms]);
 
   const handlePaymentModalSuccess = async (paymentIntentId: string) => {
-    if (currentOrderId && user) {
-      await handlePaymentSuccess(currentOrderId, user.id, paymentIntentId);
-      setShowPaymentModal(false);
+    setShowPaymentModal(false);
+    if (user) {
+      await handlePaymentSuccess(orderData.id!, user.id, paymentIntentId);
+      toast({
+        title: 'Zahlung erfolgreich!',
+        description: 'Ihre Bestellung wurde erfolgreich bezahlt.',
+      });
       onNext();
     }
   };
 
   const handlePaymentModalError = (error: string) => {
-    console.error('Payment modal error:', error);
     setShowPaymentModal(false);
+    toast({
+      title: 'Zahlungsfehler',
+      description: error || 'Die Zahlung konnte nicht verarbeitet werden.',
+      variant: 'destructive',
+    });
+  };
+
+  const handleSubmitOrder = async () => {
+    if (!user) {
+      toast({
+        title: 'Anmeldung erforderlich',
+        description: 'Sie müssen angemeldet sein, um eine Bestellung aufzugeben.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (!canProceed) {
+      toast({
+        title: 'Unvollständige Angaben',
+        description: 'Bitte überprüfen Sie Ihre Angaben und akzeptieren Sie die AGB.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      // Enhanced security validation for order creation
+      logSecurityEvent('order_creation_attempt', { 
+        userId: user.id,
+        paymentMethod,
+        creditsUsed: creditsToUse,
+        finalPrice
+      });
+
+      // Prepare secure order data with CSRF protection
+      const secureOrderData = withCSRFProtection({
+        ...orderData,
+        creditsUsed: creditsToUse,
+        finalPrice,
+        paymentMethod,
+      });
+
+      secureLog('Creating order with secure data', {
+        hasFiles: orderData.files.length > 0,
+        creditsUsed: creditsToUse,
+        paymentMethod
+      });
+
+      // Create the order
+      const createdOrder = await createOrder(secureOrderData);
+
+      if (paymentMethod === 'credits') {
+        // For credit payments, no additional payment processing needed
+        toast({
+          title: 'Bestellung erfolgreich!',
+          description: 'Ihre Bestellung wurde mit Guthaben bezahlt.',
+        });
+        onNext();
+      } else if (paymentMethod === 'stripe' && finalPrice > 0) {
+        // Create payment intent for Stripe payments
+        const paymentData = await createPaymentIntent({
+          orderId: createdOrder.id,
+          amount: finalPrice,
+          currency: 'eur',
+        });
+
+        setClientSecret(paymentData.client_secret);
+        setShowPaymentModal(true);
+      } else {
+        // Free order or zero amount
+        toast({
+          title: 'Bestellung erfolgreich!',
+          description: 'Ihre kostenlose Bestellung wurde aufgegeben.',
+        });
+        onNext();
+      }
+
+      logSecurityEvent('order_creation_success', { 
+        orderId: createdOrder.id,
+        userId: user.id 
+      });
+
+    } catch (error: any) {
+      console.error('Order creation failed:', error);
+      
+      logSecurityEvent('order_creation_failed', { 
+        userId: user.id,
+        error: error.message 
+      });
+
+      toast({
+        title: 'Fehler bei der Bestellung',
+        description: error.message || 'Die Bestellung konnte nicht aufgegeben werden.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return {
@@ -135,9 +166,7 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
     setCreditsToUse,
     showPaymentModal,
     setShowPaymentModal,
-    currentOrderId,
     canProceed,
-    basePrice,
     finalPrice,
     isProcessing,
     clientSecret,

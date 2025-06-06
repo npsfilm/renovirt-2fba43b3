@@ -1,9 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Gift, Check, X } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { CheckCircle, XCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { validateReferralCode } from '@/utils/enhancedSecurityValidation';
+import { secureLog } from '@/utils/secureLogging';
 
 interface ReferralCodeInputProps {
   onReferralCodeChange: (code: string, isValid: boolean) => void;
@@ -12,95 +14,125 @@ interface ReferralCodeInputProps {
 const ReferralCodeInput = ({ onReferralCodeChange }: ReferralCodeInputProps) => {
   const [referralCode, setReferralCode] = useState('');
   const [isValidating, setIsValidating] = useState(false);
-  const [validationResult, setValidationResult] = useState<'valid' | 'invalid' | null>(null);
+  const [validationState, setValidationState] = useState<'idle' | 'valid' | 'invalid'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const validateReferralCode = async (code: string) => {
-    if (!code || code.length < 6) {
-      setValidationResult(null);
+  const validateCode = async (code: string) => {
+    if (!code.trim()) {
+      setValidationState('idle');
+      setErrorMessage('');
       onReferralCodeChange('', false);
       return;
     }
 
+    // Client-side format validation
+    const formatValidation = validateReferralCode(code);
+    if (!formatValidation.valid) {
+      setValidationState('invalid');
+      setErrorMessage(formatValidation.error || 'Ungültiges Format');
+      onReferralCodeChange(code, false);
+      return;
+    }
+
     setIsValidating(true);
+    
     try {
+      const cleanCode = code.trim().toUpperCase();
+      
       const { data, error } = await supabase
         .from('referral_codes')
-        .select('code, user_id')
-        .eq('code', code.toUpperCase())
+        .select('id, user_id, is_active')
+        .eq('code', cleanCode)
         .eq('is_active', true)
         .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        secureLog('Referral code validation error:', error);
+        setValidationState('invalid');
+        setErrorMessage('Fehler bei der Validierung');
+        onReferralCodeChange(code, false);
+        return;
+      }
 
       if (data) {
-        setValidationResult('valid');
-        onReferralCodeChange(code.toUpperCase(), true);
+        setValidationState('valid');
+        setErrorMessage('');
+        onReferralCodeChange(cleanCode, true);
+        secureLog('Valid referral code found', { codeId: data.id });
       } else {
-        setValidationResult('invalid');
-        onReferralCodeChange('', false);
+        setValidationState('invalid');
+        setErrorMessage('Empfehlungscode nicht gefunden oder inaktiv');
+        onReferralCodeChange(code, false);
       }
     } catch (error) {
-      setValidationResult('invalid');
-      onReferralCodeChange('', false);
+      secureLog('Referral code validation error:', error);
+      setValidationState('invalid');
+      setErrorMessage('Validierungsfehler');
+      onReferralCodeChange(code, false);
     } finally {
       setIsValidating(false);
     }
   };
 
-  const handleCodeChange = (value: string) => {
-    const upperValue = value.toUpperCase();
-    setReferralCode(upperValue);
-    
-    // Debounce validation
-    setTimeout(() => validateReferralCode(upperValue), 500);
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      validateCode(referralCode);
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [referralCode]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+    setReferralCode(value);
   };
 
-  const getInputIcon = () => {
+  const getValidationIcon = () => {
     if (isValidating) {
-      return <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />;
+      return <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>;
     }
-    if (validationResult === 'valid') {
-      return <Check className="w-4 h-4 text-green-500" />;
+    
+    switch (validationState) {
+      case 'valid':
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'invalid':
+        return <XCircle className="h-4 w-4 text-red-500" />;
+      default:
+        return null;
     }
-    if (validationResult === 'invalid') {
-      return <X className="w-4 h-4 text-red-500" />;
-    }
-    return <Gift className="w-4 h-4 text-gray-400" />;
   };
 
   return (
     <div className="space-y-2">
+      <Label htmlFor="referralCode" className="text-sm text-gray-300">
+        Empfehlungscode (optional)
+      </Label>
       <div className="relative">
         <Input
           id="referralCode"
-          name="referralCode"
-          placeholder="Empfehlungscode (optional)"
+          type="text"
+          placeholder="z.B. ABC12345"
           value={referralCode}
-          onChange={(e) => handleCodeChange(e.target.value)}
-          className="bg-gray-800 border-gray-700 text-white placeholder-gray-500 h-12 pr-10"
-          maxLength={12}
+          onChange={handleInputChange}
+          maxLength={8}
+          className={`bg-gray-800 border-gray-700 text-white placeholder-gray-500 h-12 pr-10 ${
+            validationState === 'valid' 
+              ? 'border-green-500' 
+              : validationState === 'invalid' 
+              ? 'border-red-500' 
+              : ''
+          }`}
         />
         <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-          {getInputIcon()}
+          {getValidationIcon()}
         </div>
       </div>
-      
-      {validationResult === 'valid' && (
-        <p className="text-sm text-green-400 flex items-center">
-          <Gift className="w-4 h-4 mr-2" />
-          Gültiger Code! Der Empfehler erhält kostenfreie Bilder
-        </p>
+      {errorMessage && (
+        <p className="text-sm text-red-400">{errorMessage}</p>
       )}
-      
-      {validationResult === 'invalid' && (
-        <p className="text-sm text-red-400">
-          Ungültiger Empfehlungscode
-        </p>
-      )}
-      
-      {!referralCode && (
-        <p className="text-xs text-gray-500">
-          Mit einem Empfehlungscode helfen Sie einem Freund kostenfreie Bilder zu erhalten
+      {validationState === 'valid' && (
+        <p className="text-sm text-green-400">
+          ✓ Gültiger Empfehlungscode - Sie erhalten 10 kostenlose Bilder!
         </p>
       )}
     </div>
