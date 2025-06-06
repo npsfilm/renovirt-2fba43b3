@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Lock } from 'lucide-react';
 import { PaymentIcons } from '@/components/payment/PaymentIcons';
+import { supabase } from '@/integrations/supabase/client';
 
 interface StripePaymentFormProps {
   onSuccess: (paymentIntentId: string) => void;
@@ -31,6 +32,8 @@ const StripePaymentForm = ({ onSuccess, onError, amount, isLoading = false }: St
     setIsProcessing(true);
 
     try {
+      console.log('Confirming payment...');
+      
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
@@ -40,6 +43,7 @@ const StripePaymentForm = ({ onSuccess, onError, amount, isLoading = false }: St
       });
 
       if (error) {
+        console.error('Payment error:', error);
         onError(error.message || 'Payment failed');
         toast({
           title: 'Zahlungsfehler',
@@ -47,6 +51,22 @@ const StripePaymentForm = ({ onSuccess, onError, amount, isLoading = false }: St
           variant: 'destructive',
         });
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        console.log('Payment succeeded:', paymentIntent.id);
+        
+        // Verify payment with our backend
+        try {
+          const { error: verifyError } = await supabase.functions.invoke('verify-payment', {
+            body: { paymentIntentId: paymentIntent.id }
+          });
+
+          if (verifyError) {
+            console.error('Payment verification error:', verifyError);
+          }
+        } catch (verifyError) {
+          console.error('Failed to verify payment:', verifyError);
+          // Don't fail the whole process if verification fails
+        }
+
         onSuccess(paymentIntent.id);
         toast({
           title: 'Zahlung erfolgreich!',
@@ -54,6 +74,7 @@ const StripePaymentForm = ({ onSuccess, onError, amount, isLoading = false }: St
         });
       }
     } catch (error: any) {
+      console.error('Unexpected payment error:', error);
       onError(error.message || 'An unexpected error occurred');
       toast({
         title: 'Fehler',

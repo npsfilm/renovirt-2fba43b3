@@ -15,6 +15,8 @@ serve(async (req) => {
   }
 
   try {
+    console.log("Payment creation request received");
+
     // Create Supabase client for user authentication
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
@@ -24,6 +26,7 @@ serve(async (req) => {
     // Get the authorization header
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
+      console.error("No authorization header");
       throw new Error("No authorization header");
     }
 
@@ -32,20 +35,34 @@ serve(async (req) => {
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
     
     if (userError || !user) {
+      console.error("User authentication failed:", userError);
       throw new Error("User not authenticated");
     }
+
+    console.log("User authenticated:", user.id);
 
     // Parse request body
     const { orderId, amount, currency = "eur" } = await req.json();
 
     if (!orderId || !amount) {
+      console.error("Missing required parameters");
       throw new Error("Missing required parameters: orderId and amount");
     }
 
-    // Initialize Stripe with your secret key
-    const stripe = new Stripe('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', {
+    console.log("Payment request:", { orderId, amount, currency });
+
+    // Initialize Stripe with environment variable (not hardcoded)
+    const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeSecretKey) {
+      console.error("Stripe secret key not configured");
+      throw new Error("Stripe secret key not configured");
+    }
+
+    const stripe = new Stripe(stripeSecretKey, {
       apiVersion: "2023-10-16",
     });
+
+    console.log("Stripe initialized successfully");
 
     // Check if a Stripe customer exists for this user
     const customers = await stripe.customers.list({ 
@@ -56,6 +73,7 @@ serve(async (req) => {
     let customerId;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
+      console.log("Existing customer found:", customerId);
     } else {
       // Create customer if doesn't exist
       const customer = await stripe.customers.create({
@@ -65,9 +83,10 @@ serve(async (req) => {
         },
       });
       customerId = customer.id;
+      console.log("New customer created:", customerId);
     }
 
-    // Create Payment Intent instead of Checkout Session
+    // Create Payment Intent
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100), // Convert to cents
       currency: currency,
@@ -80,6 +99,8 @@ serve(async (req) => {
         enabled: true,
       },
     });
+
+    console.log("Payment Intent created:", paymentIntent.id);
 
     // Update order with Payment Intent ID and payment method
     const supabaseService = createClient(
@@ -99,6 +120,9 @@ serve(async (req) => {
 
     if (updateError) {
       console.error("Failed to update order with payment intent ID:", updateError);
+      // Don't throw here as payment intent was created successfully
+    } else {
+      console.log("Order updated successfully");
     }
 
     return new Response(

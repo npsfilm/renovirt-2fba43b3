@@ -42,10 +42,14 @@ export const usePayment = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Payment intent creation failed:', error);
+        throw error;
+      }
 
       if (data?.client_secret) {
         setClientSecret(data.client_secret);
+        console.log('Payment intent created successfully');
         return data;
       } else {
         throw new Error('No client secret received');
@@ -65,14 +69,19 @@ export const usePayment = () => {
 
   const handlePaymentSuccess = async (orderId: string, userId: string, paymentIntentId?: string) => {
     try {
-      // Update payment status
+      console.log('Handling payment success for order:', orderId);
+
+      // Update payment status using Payment Intent ID
       const { error: updateError } = await supabase.rpc('update_order_payment_status', {
         p_order_id: orderId,
         p_payment_status: 'paid',
         p_stripe_session_id: paymentIntentId
       });
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error('Failed to update order payment status:', updateError);
+        throw updateError;
+      }
 
       // Try to approve referral credits for this order
       await approveReferralCredits(orderId, userId);
@@ -81,6 +90,8 @@ export const usePayment = () => {
         title: 'Zahlung erfolgreich!',
         description: 'Ihre Bestellung wurde erfolgreich bezahlt.',
       });
+
+      console.log('Payment success handled successfully');
     } catch (error) {
       console.error('Failed to handle payment success:', error);
     }

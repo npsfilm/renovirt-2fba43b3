@@ -14,15 +14,21 @@ serve(async (req) => {
   }
 
   try {
-    const { sessionId } = await req.json();
+    console.log("Payment verification request received");
 
-    if (!sessionId) {
-      throw new Error("Session ID is required");
+    const { paymentIntentId } = await req.json();
+
+    if (!paymentIntentId) {
+      console.error("Payment Intent ID is required");
+      throw new Error("Payment Intent ID is required");
     }
 
-    // Initialize Stripe
+    console.log("Verifying payment intent:", paymentIntentId);
+
+    // Initialize Stripe with environment variable
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) {
+      console.error("Stripe is not configured");
       throw new Error("Stripe is not configured");
     }
 
@@ -30,12 +36,15 @@ serve(async (req) => {
       apiVersion: "2023-10-16",
     });
 
-    // Retrieve the session
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    // Retrieve the payment intent
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
 
-    if (!session) {
-      throw new Error("Session not found");
+    if (!paymentIntent) {
+      console.error("Payment Intent not found");
+      throw new Error("Payment Intent not found");
     }
+
+    console.log("Payment Intent status:", paymentIntent.status);
 
     // Create Supabase service client
     const supabase = createClient(
@@ -43,23 +52,25 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Update payment status based on session status
+    // Update payment status based on payment intent status
     let paymentStatus = "pending";
     let paymentFlowStatus = "payment_pending";
 
-    if (session.payment_status === "paid") {
+    if (paymentIntent.status === "succeeded") {
       paymentStatus = "paid";
       paymentFlowStatus = "payment_completed";
-    } else if (session.payment_status === "unpaid") {
+    } else if (paymentIntent.status === "payment_failed") {
       paymentStatus = "failed";
       paymentFlowStatus = "payment_failed";
     }
 
+    console.log("Updating order payment status:", { paymentStatus, paymentFlowStatus });
+
     // Update the order using our enhanced function
     const { error: updateError } = await supabase.rpc('update_order_payment_status', {
-      p_order_id: session.metadata?.orderId,
+      p_order_id: paymentIntent.metadata?.orderId,
       p_payment_status: paymentStatus,
-      p_stripe_session_id: sessionId
+      p_stripe_session_id: paymentIntentId
     });
 
     if (updateError) {
@@ -69,11 +80,12 @@ serve(async (req) => {
 
     // Create notification for successful payment
     if (paymentStatus === "paid") {
+      console.log("Creating success notification");
       const { error: notificationError } = await supabase
         .from("order_notifications")
         .insert({
-          order_id: session.metadata?.orderId,
-          user_id: session.metadata?.userId,
+          order_id: paymentIntent.metadata?.orderId,
+          user_id: paymentIntent.metadata?.userId,
           title: "Zahlung erfolgreich",
           message: "Ihre Zahlung wurde erfolgreich verarbeitet. Die Bearbeitung Ihrer Bilder beginnt nun.",
           type: "success",
@@ -84,6 +96,8 @@ serve(async (req) => {
         console.error("Failed to create notification:", notificationError);
       }
     }
+
+    console.log("Payment verification completed successfully");
 
     return new Response(
       JSON.stringify({ 
