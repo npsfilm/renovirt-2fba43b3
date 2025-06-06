@@ -2,10 +2,11 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ThumbsUp, ThumbsDown, Mail, Bot, User } from 'lucide-react';
+import SupportMessage from './SupportMessage';
 
 interface Message {
   id: string;
-  type: 'user' | 'ai';
+  type: 'user' | 'ai' | 'support';
   content: string;
   timestamp: Date;
   interactionId?: string;
@@ -16,9 +17,29 @@ interface ChatMessageProps {
   message: Message;
   onFeedback: (messageId: string, interactionId: string, rating: number) => void;
   onContactSupport: (interactionId: string) => void;
+  onSendChatHistory?: () => void;
+  onOpenContactForm?: () => void;
 }
 
-const ChatMessage = ({ message, onFeedback, onContactSupport }: ChatMessageProps) => {
+const ChatMessage = ({ 
+  message, 
+  onFeedback, 
+  onContactSupport, 
+  onSendChatHistory,
+  onOpenContactForm 
+}: ChatMessageProps) => {
+  // Handle support request messages
+  if (message.type === 'support') {
+    return (
+      <div className="mb-4">
+        <SupportMessage 
+          onSendChatHistory={onSendChatHistory || (() => {})}
+          onOpenContactForm={onOpenContactForm || (() => {})}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className={`mb-4 ${message.type === 'user' ? 'text-right' : 'text-left'}`}>
       <div className={`inline-flex items-start gap-2 max-w-[80%] ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>

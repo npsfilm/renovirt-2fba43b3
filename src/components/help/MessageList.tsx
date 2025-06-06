@@ -6,7 +6,7 @@ import ChatMessage from './ChatMessage';
 
 interface Message {
   id: string;
-  type: 'user' | 'ai';
+  type: 'user' | 'ai' | 'support';
   content: string;
   timestamp: Date;
   interactionId?: string;
@@ -18,9 +18,18 @@ interface MessageListProps {
   isLoading: boolean;
   onFeedback: (messageId: string, interactionId: string, rating: number) => void;
   onContactSupport: (interactionId: string) => void;
+  onSendChatHistory?: () => void;
+  onOpenContactForm?: () => void;
 }
 
-const MessageList = ({ messages, isLoading, onFeedback, onContactSupport }: MessageListProps) => {
+const MessageList = ({ 
+  messages, 
+  isLoading, 
+  onFeedback, 
+  onContactSupport,
+  onSendChatHistory,
+  onOpenContactForm 
+}: MessageListProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -50,6 +59,9 @@ const MessageList = ({ messages, isLoading, onFeedback, onContactSupport }: Mess
               <li>• Zahlungsmethoden</li>
               <li>• Datenschutz und Sicherheit</li>
             </ul>
+            <p className="text-xs text-gray-400 mt-4">
+              Wenn Sie mit einem Mitarbeiter sprechen möchten, sagen Sie es einfach!
+            </p>
           </div>
         )}
         
@@ -59,6 +71,8 @@ const MessageList = ({ messages, isLoading, onFeedback, onContactSupport }: Mess
             message={message}
             onFeedback={onFeedback}
             onContactSupport={onContactSupport}
+            onSendChatHistory={onSendChatHistory}
+            onOpenContactForm={onOpenContactForm}
           />
         ))}
         

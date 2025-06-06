@@ -2,7 +2,9 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAIHelp } from '@/hooks/useAIHelp';
+import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import FloatingButton from './FloatingButton';
 import ChatHeader from './ChatHeader';
 import MessageList from './MessageList';
@@ -10,7 +12,7 @@ import ChatInput from './ChatInput';
 
 interface Message {
   id: string;
-  type: 'user' | 'ai';
+  type: 'user' | 'ai' | 'support';
   content: string;
   timestamp: Date;
   interactionId?: string;
@@ -22,6 +24,7 @@ const AIChatWidget = () => {
   const [inputValue, setInputValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const { askQuestion, submitFeedback, contactSupport, isLoading } = useAIHelp();
+  const { user } = useAuth();
   const { toast } = useToast();
 
   const handleSendMessage = async () => {
@@ -39,6 +42,18 @@ const AIChatWidget = () => {
 
     try {
       const response = await askQuestion(inputValue);
+      
+      // Check if this is a support request
+      if (response === 'SUPPORT_REQUEST') {
+        const supportMessage: Message = {
+          id: crypto.randomUUID(),
+          type: 'support',
+          content: '',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, supportMessage]);
+        return;
+      }
       
       const aiMessage: Message = {
         id: crypto.randomUUID(),
@@ -59,6 +74,52 @@ const AIChatWidget = () => {
       };
       setMessages(prev => [...prev, errorMessage]);
     }
+  };
+
+  const handleSendChatHistory = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('send-chat-history', {
+        body: {
+          messages: messages.filter(m => m.type !== 'support'),
+          userId: user?.id || null,
+          sessionId: crypto.randomUUID(),
+          userEmail: user?.email || null
+        }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Chat-Verlauf gesendet",
+        description: "Ihr Chat-Verlauf wurde an support@renovirt.de gesendet. Sie erhalten in Kürze eine Antwort per E-Mail.",
+      });
+
+      // Add confirmation message
+      const confirmationMessage: Message = {
+        id: crypto.randomUUID(),
+        type: 'ai',
+        content: 'Ihr Chat-Verlauf wurde erfolgreich an unser Support-Team gesendet. Sie erhalten in Kürze eine Antwort per E-Mail an Ihre registrierte E-Mail-Adresse.',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, confirmationMessage]);
+
+    } catch (error) {
+      console.error('Error sending chat history:', error);
+      toast({
+        title: "Fehler",
+        description: "Chat-Verlauf konnte nicht gesendet werden.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleOpenContactForm = () => {
+    // Navigate to help page contact form
+    window.location.href = '/help';
+    toast({
+      title: "Weiterleitung",
+      description: "Sie werden zum Kontaktformular weitergeleitet.",
+    });
   };
 
   const handleFeedback = async (messageId: string, interactionId: string, rating: number) => {
@@ -118,6 +179,8 @@ const AIChatWidget = () => {
             isLoading={isLoading}
             onFeedback={handleFeedback}
             onContactSupport={handleContactSupport}
+            onSendChatHistory={handleSendChatHistory}
+            onOpenContactForm={handleOpenContactForm}
           />
           
           <ChatInput

@@ -23,6 +23,33 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Check for support keywords
+    const supportKeywords = ['mitarbeiter', 'mitarbeiter sprechen', 'support', 'menschliche hilfe', 'persönliche beratung', 'agent', 'berater'];
+    const questionLower = question.toLowerCase();
+    const needsSupport = supportKeywords.some(keyword => questionLower.includes(keyword));
+
+    if (needsSupport) {
+      // Log interaction for support request
+      await supabase
+        .from('help_interactions')
+        .insert({
+          user_id: userId || null,
+          session_id: sessionId,
+          question: question,
+          ai_response: 'SUPPORT_REQUEST',
+          response_time_ms: Date.now() - startTime,
+          ip_address: req.headers.get('x-forwarded-for') || 'unknown',
+          user_agent: req.headers.get('user-agent') || 'unknown'
+        });
+
+      return new Response(JSON.stringify({
+        response: 'SUPPORT_REQUEST',
+        responseTime: Date.now() - startTime
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     // Get user context if logged in
     let userContext = '';
     if (userId) {
