@@ -46,7 +46,7 @@ const ImprovedWelcomeSection = () => {
   };
 
   const handlePhotoUpload = () => {
-    navigate('/order-flow');
+    navigate('/order');
   };
 
   const handleViewOrders = () => {

@@ -168,7 +168,7 @@ const ConfirmationStep = ({ orderData, orderNumber = 'RV-' + Date.now().toString
           </Link>
         </Button>
         <Button variant="outline" asChild>
-          <Link to="/order-flow">
+          <Link to="/order">
             Weitere Bilder hochladen
           </Link>
         </Button>
