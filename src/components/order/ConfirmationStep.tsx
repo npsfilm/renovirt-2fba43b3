@@ -84,7 +84,8 @@ const ConfirmationStep = ({ orderData, orderNumber = 'RV-' + Date.now().toString
                 <div className="flex justify-between">
                   <span className="text-gray-600">Foto-Typ:</span>
                   <span className="font-medium">
-                    {orderData.photoType === 'standard' ? 'Standard' : 
+                    {orderData.photoType === 'handy' ? 'Smartphone' : 
+                     orderData.photoType === 'kamera' ? 'Kamera' :
                      orderData.photoType === 'bracketing-3' ? 'Bracketing (3 Bilder)' :
                      orderData.photoType === 'bracketing-5' ? 'Bracketing (5 Bilder)' : 
                      orderData.photoType}
