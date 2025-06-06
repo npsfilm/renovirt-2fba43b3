@@ -43,6 +43,41 @@
     --sidebar-accent-foreground: 135 22% 15%;
     --sidebar-border: 78 28% 88%;
     --sidebar-ring: 78 26% 54%;
+
+    /* New semantic colors for compressed palette */
+    --success: 120 60% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 45 85% 55%;
+    --warning-foreground: 135 22% 15%;
+    --info: 210 80% 56%;
+    --info-foreground: 0 0% 100%;
+    
+    /* Chart colors - compressed to 6 main colors */
+    --chart-1: 78 26% 54%;    /* Primary green */
+    --chart-2: 45 52% 62%;    /* Accent yellow */
+    --chart-3: 210 80% 56%;   /* Info blue */
+    --chart-4: 4 78% 57%;     /* Destructive red */
+    --chart-5: 120 60% 45%;   /* Success green */
+    --chart-6: 280 60% 60%;   /* Purple */
+    
+    /* Status colors */
+    --status-pending: 45 85% 55%;      /* Warning yellow */
+    --status-processing: 210 80% 56%;  /* Info blue */
+    --status-completed: 120 60% 45%;   /* Success green */
+    --status-cancelled: 4 78% 57%;     /* Destructive red */
+    --status-quality-check: 280 60% 60%; /* Purple */
+    
+    /* Gray scale - beige tinted */
+    --gray-50: 60 25% 98%;
+    --gray-100: 60 20% 95%;
+    --gray-200: 60 15% 88%;
+    --gray-300: 60 10% 80%;
+    --gray-400: 60 8% 65%;
+    --gray-500: 60 6% 50%;
+    --gray-600: 60 8% 40%;
+    --gray-700: 60 10% 30%;
+    --gray-800: 60 12% 20%;
+    --gray-900: 60 15% 15%;
   }
 
   .dark {
@@ -81,6 +116,22 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Dark mode semantic colors */
+    --success: 120 60% 50%;
+    --success-foreground: 0 0% 0%;
+    --warning: 45 85% 60%;
+    --warning-foreground: 0 0% 0%;
+    --info: 210 80% 60%;
+    --info-foreground: 0 0% 0%;
+    
+    /* Dark chart colors */
+    --chart-1: 78 26% 60%;
+    --chart-2: 45 52% 70%;
+    --chart-3: 210 80% 65%;
+    --chart-4: 4 78% 65%;
+    --chart-5: 120 60% 55%;
+    --chart-6: 280 60% 70%;
   }
 }
 
@@ -92,4 +143,26 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Utility classes for new colors */
+@layer utilities {
+  .bg-success { background-color: hsl(var(--success)); }
+  .text-success { color: hsl(var(--success)); }
+  .bg-warning { background-color: hsl(var(--warning)); }
+  .text-warning { color: hsl(var(--warning)); }
+  .bg-info { background-color: hsl(var(--info)); }
+  .text-info { color: hsl(var(--info)); }
+  
+  .bg-status-pending { background-color: hsl(var(--status-pending)); }
+  .bg-status-processing { background-color: hsl(var(--status-processing)); }
+  .bg-status-completed { background-color: hsl(var(--status-completed)); }
+  .bg-status-cancelled { background-color: hsl(var(--status-cancelled)); }
+  .bg-status-quality-check { background-color: hsl(var(--status-quality-check)); }
+  
+  .text-status-pending { color: hsl(var(--status-pending)); }
+  .text-status-processing { color: hsl(var(--status-processing)); }
+  .text-status-completed { color: hsl(var(--status-completed)); }
+  .text-status-cancelled { color: hsl(var(--status-cancelled)); }
+  .text-status-quality-check { color: hsl(var(--status-quality-check)); }
 }

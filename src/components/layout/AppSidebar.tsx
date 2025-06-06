@@ -88,8 +88,8 @@ const AppSidebar = () => {
   };
 
   return (
-    <Sidebar className="border-r border-gray-200 bg-white">
-      <SidebarHeader className="border-b border-gray-200 p-4">
+    <Sidebar className="border-r border-border bg-card">
+      <SidebarHeader className="border-b border-border p-4">
         <div className="flex items-center gap-2">
           <img 
             src="/lovable-uploads/d6ac9ba9-7ad2-408b-a2b0-5f31c269dd53.png" 
@@ -97,8 +97,8 @@ const AppSidebar = () => {
             className="h-8 w-auto"
           />
           <div>
-            <h2 className="text-lg font-bold text-gray-900">Renovirt</h2>
-            <p className="text-xs text-gray-500">Professionelle Bildbearbeitung</p>
+            <h2 className="text-lg font-bold text-foreground">Renovirt</h2>
+            <p className="text-xs text-muted-foreground">Professionelle Bildbearbeitung</p>
           </div>
         </div>
       </SidebarHeader>
@@ -114,8 +114,8 @@ const AppSidebar = () => {
                     isActive={isActivePath(item.url)}
                     className={`w-full justify-start ${
                       isActivePath(item.url)
-                        ? 'bg-red-50 text-red-700 border-red-200'
-                        : 'hover:bg-gray-50'
+                        ? 'bg-primary/10 text-primary border-primary/20'
+                        : 'hover:bg-muted'
                     }`}
                   >
                     <item.icon className="w-4 h-4" />
@@ -128,7 +128,7 @@ const AppSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-gray-200 p-4">
+      <SidebarFooter className="border-t border-border p-4">
         <div className="space-y-4">
           <CreditsWidget />
           
@@ -136,7 +136,7 @@ const AppSidebar = () => {
             variant="outline"
             size="sm"
             onClick={handleSignOut}
-            className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+            className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
           >
             <LogOut className="w-4 h-4 mr-2" />
             Abmelden

@@ -75,11 +75,11 @@ const OrderAnalytics = () => {
   });
 
   const statusColors = {
-    pending: '#f59e0b',
-    processing: '#3b82f6',
-    ready_for_review: '#8b5cf6',
-    completed: '#10b981',
-    cancelled: '#ef4444',
+    pending: 'hsl(var(--status-pending))',
+    processing: 'hsl(var(--status-processing))', 
+    ready_for_review: 'hsl(var(--status-quality-check))',
+    completed: 'hsl(var(--status-completed))',
+    cancelled: 'hsl(var(--status-cancelled))',
   };
 
   if (isLoading) {
@@ -109,10 +109,10 @@ const OrderAnalytics = () => {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center">
-              <Package className="h-8 w-8 text-blue-600" />
+              <Package className="h-8 w-8 text-info" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Gesamtbestellungen</p>
-                <p className="text-2xl font-bold text-gray-900">{stats?.totalOrders || 0}</p>
+                <p className="text-sm font-medium text-muted-foreground">Gesamtbestellungen</p>
+                <p className="text-2xl font-bold text-foreground">{stats?.totalOrders || 0}</p>
               </div>
             </div>
           </CardContent>
@@ -121,10 +121,10 @@ const OrderAnalytics = () => {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center">
-              <DollarSign className="h-8 w-8 text-green-600" />
+              <DollarSign className="h-8 w-8 text-success" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Gesamtumsatz</p>
-                <p className="text-2xl font-bold text-gray-900">€{stats?.totalRevenue.toFixed(2) || '0.00'}</p>
+                <p className="text-sm font-medium text-muted-foreground">Gesamtumsatz</p>
+                <p className="text-2xl font-bold text-foreground">€{stats?.totalRevenue.toFixed(2) || '0.00'}</p>
               </div>
             </div>
           </CardContent>
@@ -133,10 +133,10 @@ const OrderAnalytics = () => {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center">
-              <Users className="h-8 w-8 text-purple-600" />
+              <Users className="h-8 w-8 text-accent" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Kunden</p>
-                <p className="text-2xl font-bold text-gray-900">{stats?.customerCount || 0}</p>
+                <p className="text-sm font-medium text-muted-foreground">Kunden</p>
+                <p className="text-2xl font-bold text-foreground">{stats?.customerCount || 0}</p>
               </div>
             </div>
           </CardContent>
@@ -145,10 +145,10 @@ const OrderAnalytics = () => {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center">
-              <TrendingUp className="h-8 w-8 text-orange-600" />
+              <TrendingUp className="h-8 w-8 text-warning" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Ø Bestellwert</p>
-                <p className="text-2xl font-bold text-gray-900">€{stats?.avgOrderValue.toFixed(2) || '0.00'}</p>
+                <p className="text-sm font-medium text-muted-foreground">Ø Bestellwert</p>
+                <p className="text-2xl font-bold text-foreground">€{stats?.avgOrderValue.toFixed(2) || '0.00'}</p>
               </div>
             </div>
           </CardContent>
@@ -164,11 +164,17 @@ const OrderAnalytics = () => {
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={stats?.monthlyOrders || []}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="orders" fill="#3b82f6" />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" />
+                <YAxis stroke="hsl(var(--muted-foreground))" />
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: 'var(--radius)'
+                  }}
+                />
+                <Bar dataKey="orders" fill="hsl(var(--chart-1))" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -188,14 +194,20 @@ const OrderAnalytics = () => {
                   labelLine={false}
                   label={({ status, count }) => `${status}: ${count}`}
                   outerRadius={80}
-                  fill="#8884d8"
+                  fill="hsl(var(--chart-1))"
                   dataKey="count"
                 >
                   {stats?.statusDistribution?.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={statusColors[entry.status as keyof typeof statusColors] || '#8884d8'} />
+                    <Cell key={`cell-${index}`} fill={statusColors[entry.status as keyof typeof statusColors] || 'hsl(var(--chart-1))'} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: 'var(--radius)'
+                  }}
+                />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>

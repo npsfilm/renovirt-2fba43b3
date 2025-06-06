@@ -14,7 +14,7 @@ const AnalyticsMetrics = ({ analytics }: AnalyticsMetricsProps) => {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Gesamtfragen</CardTitle>
-          <MessageCircle className="h-4 w-4 text-muted-foreground" />
+          <MessageCircle className="h-4 w-4 text-info" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{analytics.total_questions}</div>
@@ -25,7 +25,7 @@ const AnalyticsMetrics = ({ analytics }: AnalyticsMetricsProps) => {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Zufriedenheit</CardTitle>
-          <ThumbsUp className="h-4 w-4 text-muted-foreground" />
+          <ThumbsUp className="h-4 w-4 text-success" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
@@ -38,7 +38,7 @@ const AnalyticsMetrics = ({ analytics }: AnalyticsMetricsProps) => {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Support-Kontakte</CardTitle>
-          <Phone className="h-4 w-4 text-muted-foreground" />
+          <Phone className="h-4 w-4 text-warning" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
@@ -51,7 +51,7 @@ const AnalyticsMetrics = ({ analytics }: AnalyticsMetricsProps) => {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">AI-Effizienz</CardTitle>
-          <Bot className="h-4 w-4 text-muted-foreground" />
+          <Bot className="h-4 w-4 text-accent" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">

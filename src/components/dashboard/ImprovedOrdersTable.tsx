@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -39,17 +38,17 @@ const ImprovedOrdersTable = () => {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      pending: { label: 'Warteschlange', variant: 'secondary' as const },
-      processing: { label: 'In Bearbeitung', variant: 'default' as const },
-      quality_check: { label: 'Qualitätsprüfung', variant: 'default' as const },
-      completed: { label: 'Abgeschlossen', variant: 'secondary' as const },
-      delivered: { label: 'Geliefert', variant: 'secondary' as const }
+      pending: { label: 'Warteschlange', className: 'bg-status-pending text-foreground' },
+      processing: { label: 'In Bearbeitung', className: 'bg-status-processing text-white' },
+      quality_check: { label: 'Qualitätsprüfung', className: 'bg-status-quality-check text-white' },
+      completed: { label: 'Abgeschlossen', className: 'bg-status-completed text-white' },
+      delivered: { label: 'Geliefert', className: 'bg-status-completed text-white' }
     };
     
     const config = statusConfig[status as keyof typeof statusConfig] || 
-                   { label: status, variant: 'secondary' as const };
+                   { label: status, className: 'bg-secondary text-secondary-foreground' };
     
-    return <Badge variant={config.variant}>{config.label}</Badge>;
+    return <Badge className={config.className}>{config.label}</Badge>;
   };
 
   const formatOrderId = (id: string) => {
@@ -95,21 +94,21 @@ const ImprovedOrdersTable = () => {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-3 px-2 font-medium text-gray-600">Bestellnummer</th>
-                    <th className="text-left py-3 px-2 font-medium text-gray-600">Datum</th>
-                    <th className="text-left py-3 px-2 font-medium text-gray-600">Bilderanzahl</th>
-                    <th className="text-left py-3 px-2 font-medium text-gray-600">Status</th>
-                    <th className="text-right py-3 px-2 font-medium text-gray-600">Aktionen</th>
+                  <tr className="border-b border-border">
+                    <th className="text-left py-3 px-2 font-medium text-muted-foreground">Bestellnummer</th>
+                    <th className="text-left py-3 px-2 font-medium text-muted-foreground">Datum</th>
+                    <th className="text-left py-3 px-2 font-medium text-muted-foreground">Bilderanzahl</th>
+                    <th className="text-left py-3 px-2 font-medium text-muted-foreground">Status</th>
+                    <th className="text-right py-3 px-2 font-medium text-muted-foreground">Aktionen</th>
                   </tr>
                 </thead>
                 <tbody>
                   {orders.map((order) => (
-                    <tr key={order.id} className="border-b border-gray-100 hover:bg-gray-50">
+                    <tr key={order.id} className="border-b border-border hover:bg-muted">
                       <td className="py-3 px-2 font-mono text-sm">
                         {formatOrderId(order.id)}
                       </td>
-                      <td className="py-3 px-2 text-sm text-gray-600">
+                      <td className="py-3 px-2 text-sm text-muted-foreground">
                         {new Date(order.created_at).toLocaleDateString('de-DE')}
                       </td>
                       <td className="py-3 px-2 text-sm">
@@ -155,7 +154,7 @@ const ImprovedOrdersTable = () => {
           </>
         ) : (
           <div className="text-center py-8">
-            <p className="text-gray-500 mb-4">Noch keine Bestellungen vorhanden</p>
+            <p className="text-muted-foreground mb-4">Noch keine Bestellungen vorhanden</p>
             <Button onClick={() => navigate('/order')}>
               Erste Bestellung erstellen
             </Button>
