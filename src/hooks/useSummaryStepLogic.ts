@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { usePayment } from '@/hooks/usePayment';
@@ -26,6 +27,11 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
   const { toast } = useToast();
 
   useEffect(() => {
+    // Guard condition: only calculate pricing if orderData has required fields
+    if (!orderData || !orderData.extras || !orderData.files) {
+      return;
+    }
+
     const { calculatedPrice, creditsDiscount } = calculateOrderPricing(orderData, credits || 0);
     setFinalPrice(calculatedPrice);
 
