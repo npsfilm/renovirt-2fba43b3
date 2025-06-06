@@ -33,16 +33,31 @@ export const sendOrderConfirmationEmail = async (
   }
 };
 
-export const prepareOrderEmailDetails = (
+export const prepareOrderEmailDetails = async (
   orderData: any,
   selectedPackage: any,
   imageCount: number,
   totalPrice: number,
-  selectedAddOns: any[]
-): EmailOrderDetails => {
+  selectedAddOns: any[],
+  userId: string
+): Promise<EmailOrderDetails> => {
   // Format extras for email
   const selectedExtras = selectedAddOns
     .map(addon => addon.description);
+
+  // Fetch customer profile data for personalization
+  let customerProfile = null;
+  try {
+    const { data } = await supabase
+      .from('customer_profiles')
+      .select('salutation, first_name, last_name')
+      .eq('user_id', userId)
+      .single();
+    
+    customerProfile = data;
+  } catch (error) {
+    console.log('Could not fetch customer profile for email personalization:', error);
+  }
 
   return {
     packageName: selectedPackage.description,
@@ -50,6 +65,10 @@ export const prepareOrderEmailDetails = (
     imageCount,
     totalPrice,
     extras: selectedExtras,
+    customerSalutation: customerProfile?.salutation,
+    customerFirstName: customerProfile?.first_name,
+    customerLastName: customerProfile?.last_name,
+    customerEmail: orderData.email || '',
   };
 };
 

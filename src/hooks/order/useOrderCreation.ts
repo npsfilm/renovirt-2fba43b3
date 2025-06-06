@@ -44,12 +44,13 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
       // Send confirmation email only if payment is completed or invoice method was used
       if (paymentMethod === 'invoice' || (paymentMethod === 'stripe' && order.payment_status === 'paid')) {
         try {
-          const orderDetails = prepareOrderEmailDetails(
+          const orderDetails = await prepareOrderEmailDetails(
             orderData,
             selectedPackage,
             imageCount,
             totalPrice,
-            selectedAddOns
+            selectedAddOns,
+            user.id
           );
 
           // Send order confirmation email

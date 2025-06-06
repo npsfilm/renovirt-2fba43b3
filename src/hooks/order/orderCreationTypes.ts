@@ -27,4 +27,8 @@ export interface EmailOrderDetails {
   imageCount: number;
   totalPrice: number;
   extras: string[];
+  customerSalutation?: string;
+  customerFirstName?: string;
+  customerLastName?: string;
+  customerEmail: string;
 }
