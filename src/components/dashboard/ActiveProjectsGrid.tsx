@@ -132,11 +132,12 @@ const ActiveProjectsGrid = () => {
       </Card>;
   }
 
-  return <>
+  return (
+    <>
       <Card className="border-0 bg-card/50 backdrop-blur-sm">
         <CardHeader className="flex flex-row items-center justify-between py-[12px]">
           <CardTitle className="text-xl font-light text-foreground">Aktive Projekte</CardTitle>
-          <Button variant="ghost" size="sm" onClick={() => navigate('/orders')} className="text-subtle hover:text-foreground">
+          <Button variant="ghost" size="sm" onClick={() => navigate('/orders')} className="text-subtle">
             Alle anzeigen
             <ArrowRight className="w-4 h-4 ml-1" />
           </Button>
@@ -144,9 +145,10 @@ const ActiveProjectsGrid = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {activeProjects.map(project => {
-            const statusConfig = getStatusConfig(project.status);
-            return <div key={project.id} className="group">
-                  <Card className="border border-border/50 hover:border-border transition-all duration-300 hover:shadow-sm">
+              const statusConfig = getStatusConfig(project.status);
+              return (
+                <div key={project.id}>
+                  <Card className="border border-border/50">
                     <CardContent className="p-4 space-y-4">
                       <div className="flex items-start justify-between">
                         <div className="space-y-1">
@@ -181,20 +183,24 @@ const ActiveProjectsGrid = () => {
                           <Eye className="w-3 h-3 mr-1" />
                           Details
                         </Button>
-                        {project.status === 'completed' && <Button size="sm" variant="ghost">
+                        {project.status === 'completed' && (
+                          <Button size="sm" variant="ghost">
                             <Download className="w-3 h-3" />
-                          </Button>}
+                          </Button>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
-                </div>;
-          })}
+                </div>
+              );
+            })}
           </div>
         </CardContent>
       </Card>
 
       <OrderDetailsModal isOpen={isModalOpen} onClose={handleCloseModal} order={selectedOrder} />
-    </>;
+    </>
+  );
 };
 
 export default ActiveProjectsGrid;
