@@ -94,7 +94,7 @@ const UploadStep = ({ files, photoType, onFilesChange, onNext, onPrev }: UploadS
       onFilesChange([...files, ...uniqueFiles]);
       toast({
         title: "Dateien hochgeladen",
-        description: `${uniqueFiles.length} Datei(en) erfolgreich hinzugefügt.`,
+        description: `${uniqueFiles.length} ${uniqueFiles.length === 1 ? 'Datei' : 'Dateien'} erfolgreich hinzugefügt.`,
       });
     }
   }, [files, onFilesChange, toast, validateFile]);
@@ -113,10 +113,12 @@ const UploadStep = ({ files, photoType, onFilesChange, onNext, onPrev }: UploadS
   const bracketingDivisor = getBracketingDivisor();
 
   return (
-    <div className="space-y-6">
-      <div className="text-center space-y-3">
-        <h1 className="text-3xl font-semibold text-foreground tracking-tight">Laden Sie Ihre Bilder hoch</h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+    <div className="space-y-8">
+      <div className="text-center space-y-4">
+        <h1 className="text-4xl font-light text-foreground tracking-tight">
+          Laden Sie Ihre Bilder hoch
+        </h1>
+        <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
           Wir holen das Beste aus Ihren Fotos – oft genügt schon ein Klick für beeindruckende Ergebnisse.
         </p>
       </div>
@@ -126,7 +128,7 @@ const UploadStep = ({ files, photoType, onFilesChange, onNext, onPrev }: UploadS
         bracketingDivisor={bracketingDivisor} 
       />
 
-      <Card>
+      <Card className="border-border/50 shadow-sm">
         <CardContent className="p-8">
           <UploadZone 
             onFiles={handleFiles}
@@ -151,6 +153,7 @@ const UploadStep = ({ files, photoType, onFilesChange, onNext, onPrev }: UploadS
         onPrev={onPrev}
         onNext={onNext}
         canProceed={canProceed}
+        fileCount={files.length}
       />
     </div>
   );

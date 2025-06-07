@@ -1,26 +1,44 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface UploadStepActionsProps {
   onPrev: () => void;
   onNext: () => void;
   canProceed: boolean;
+  fileCount: number;
 }
 
-const UploadStepActions = ({ onPrev, onNext, canProceed }: UploadStepActionsProps) => {
+const UploadStepActions = ({ onPrev, onNext, canProceed, fileCount }: UploadStepActionsProps) => {
   return (
-    <div className="flex justify-between">
-      <Button variant="outline" onClick={onPrev} className="shadow-sm">
-        ← Zurück zum Typ
-      </Button>
+    <div className="flex items-center justify-between pt-8 border-t border-border">
       <Button 
-        onClick={onNext} 
-        disabled={!canProceed}
-        className="min-w-[150px] shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02]"
+        variant="outline" 
+        onClick={onPrev} 
+        className="group bg-background hover:bg-muted shadow-sm transition-all duration-200"
       >
-        Weiter zum Paket →
+        <ChevronLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-200" />
+        Zurück zum Typ
       </Button>
+      
+      <div className="flex items-center gap-4">
+        {fileCount > 0 && (
+          <div className="text-sm text-muted-foreground">
+            {fileCount} {fileCount === 1 ? 'Datei' : 'Dateien'} hochgeladen
+          </div>
+        )}
+        
+        <Button 
+          onClick={onNext} 
+          disabled={!canProceed}
+          size="lg"
+          className="group min-w-[180px] shadow-sm hover:shadow-md transition-all duration-200 disabled:opacity-50"
+        >
+          Weiter zum Paket
+          <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
+        </Button>
+      </div>
     </div>
   );
 };
