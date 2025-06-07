@@ -19,28 +19,28 @@ const PhotoTypeStep = ({ selectedType, onTypeChange, onNext }: PhotoTypeStepProp
       title: 'Handy',
       description: 'Fotos von Smartphone oder Tablet',
       icon: Smartphone,
-      gradient: 'from-blue-50 to-blue-100'
+      gradient: 'from-info/10 to-info/20'
     },
     {
       id: 'kamera' as const,
       title: 'Kamera',
       description: 'Einzelaufnahmen von professioneller Kamera',
       icon: Camera,
-      gradient: 'from-purple-50 to-purple-100'
+      gradient: 'from-primary/10 to-primary/20'
     },
     {
       id: 'bracketing-3' as const,
       title: 'Bracketing (3 Bilder)',
       description: 'HDR-Serie mit 3 verschiedenen Belichtungen',
       icon: Layers,
-      gradient: 'from-emerald-50 to-emerald-100'
+      gradient: 'from-success/10 to-success/20'
     },
     {
       id: 'bracketing-5' as const,
       title: 'Bracketing (5 Bilder)',
       description: 'HDR-Serie mit 5 verschiedenen Belichtungen',
       icon: Layers,
-      gradient: 'from-orange-50 to-orange-100'
+      gradient: 'from-warning/10 to-warning/20'
     },
   ];
 

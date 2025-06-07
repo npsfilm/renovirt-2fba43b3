@@ -26,11 +26,11 @@ const ConfirmationStep = ({ orderData, orderNumber = 'RV-' + Date.now().toString
     <div className="space-y-6">
       {/* Header section with success icon */}
       <div className="text-center space-y-4 mb-6">
-        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-          <CheckCircle className="w-10 h-10 text-green-600" />
+        <div className="w-20 h-20 bg-success/10 rounded-full flex items-center justify-center mx-auto">
+          <CheckCircle className="w-10 h-10 text-success" />
         </div>
-        <h1 className="text-3xl font-bold text-gray-900">Vielen Dank für Ihre Bestellung!</h1>
-        <p className="text-gray-600 max-w-2xl mx-auto">
+        <h1 className="text-3xl font-bold text-foreground">Vielen Dank für Ihre Bestellung!</h1>
+        <p className="text-muted-foreground max-w-2xl mx-auto">
           Wir haben Ihre Bestellung erhalten und starten sofort mit der Bearbeitung. 
           Sie erhalten eine Bestätigungs-E-Mail mit den Details Ihrer Bestellung.
         </p>
@@ -40,33 +40,33 @@ const ConfirmationStep = ({ orderData, orderNumber = 'RV-' + Date.now().toString
       <div className="max-w-3xl mx-auto">
         <div className="flex justify-between mb-8">
           <div className="flex flex-col items-center">
-            <div className="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center text-white">1</div>
-            <span className="text-sm mt-2 text-green-600 font-medium">Bestätigt</span>
+            <div className="w-10 h-10 rounded-full bg-success flex items-center justify-center text-success-foreground">1</div>
+            <span className="text-sm mt-2 text-success font-medium">Bestätigt</span>
           </div>
-          <div className="flex-1 border-t-2 border-green-600 self-center"></div>
+          <div className="flex-1 border-t-2 border-success self-center"></div>
           <div className="flex flex-col items-center">
-            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">2</div>
-            <span className="text-sm mt-2 text-gray-600">In Bearbeitung</span>
+            <div className="w-10 h-10 rounded-full bg-info/10 flex items-center justify-center text-info">2</div>
+            <span className="text-sm mt-2 text-muted-foreground">In Bearbeitung</span>
           </div>
-          <div className="flex-1 border-t-2 border-gray-300 self-center"></div>
+          <div className="flex-1 border-t-2 border-border self-center"></div>
           <div className="flex flex-col items-center">
-            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">3</div>
-            <span className="text-sm mt-2 text-gray-600">Qualitätsprüfung</span>
+            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground">3</div>
+            <span className="text-sm mt-2 text-muted-foreground">Qualitätsprüfung</span>
           </div>
-          <div className="flex-1 border-t-2 border-gray-300 self-center"></div>
+          <div className="flex-1 border-t-2 border-border self-center"></div>
           <div className="flex flex-col items-center">
-            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">4</div>
-            <span className="text-sm mt-2 text-gray-600">Fertiggestellt</span>
+            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground">4</div>
+            <span className="text-sm mt-2 text-muted-foreground">Fertiggestellt</span>
           </div>
         </div>
       </div>
 
       {/* Order summary card */}
-      <Card className="max-w-3xl mx-auto border border-gray-200">
-        <CardHeader className="border-b bg-gray-50">
+      <Card className="max-w-3xl mx-auto">
+        <CardHeader className="border-b bg-muted/30">
           <CardTitle className="flex items-center justify-between">
             <span>Bestellnummer: {orderNumber}</span>
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+            <Badge variant="outline" className="bg-info/10 text-info border-info/30">
               In Bearbeitung
             </Badge>
           </CardTitle>
@@ -75,14 +75,14 @@ const ConfirmationStep = ({ orderData, orderNumber = 'RV-' + Date.now().toString
           {/* Main order details */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-3">Bestelldetails</h3>
+              <h3 className="text-lg font-medium text-foreground mb-3">Bestelldetails</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Paket:</span>
+                  <span className="text-muted-foreground">Paket:</span>
                   <span className="font-medium">{selectedPackage?.description || orderData.package}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Foto-Typ:</span>
+                  <span className="text-muted-foreground">Foto-Typ:</span>
                   <span className="font-medium">
                     {orderData.photoType === 'handy' ? 'Smartphone' : 
                      orderData.photoType === 'kamera' ? 'Kamera' :
@@ -92,31 +92,31 @@ const ConfirmationStep = ({ orderData, orderNumber = 'RV-' + Date.now().toString
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Bilder:</span>
+                  <span className="text-muted-foreground">Bilder:</span>
                   <span className="font-medium">{imageCount}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">E-Mail:</span>
+                  <span className="text-muted-foreground">E-Mail:</span>
                   <span className="font-medium">{orderData.email}</span>
                 </div>
               </div>
             </div>
 
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-3">Zeitplan</h3>
+              <h3 className="text-lg font-medium text-foreground mb-3">Zeitplan</h3>
               <div className="space-y-3">
                 <div className="flex items-start space-x-3">
-                  <Calendar className="w-5 h-5 text-blue-600 mt-0.5" />
+                  <Calendar className="w-5 h-5 text-info mt-0.5" />
                   <div>
                     <p className="font-medium">Voraussichtliche Fertigstellung</p>
-                    <p className="text-gray-600 text-sm">in {estimatedDelivery}</p>
+                    <p className="text-muted-foreground text-sm">in {estimatedDelivery}</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <Download className="w-5 h-5 text-blue-600 mt-0.5" />
+                  <Download className="w-5 h-5 text-info mt-0.5" />
                   <div>
                     <p className="font-medium">Download-Link</p>
-                    <p className="text-gray-600 text-sm">Sie erhalten den Link nach Fertigstellung per E-Mail</p>
+                    <p className="text-muted-foreground text-sm">Sie erhalten den Link nach Fertigstellung per E-Mail</p>
                   </div>
                 </div>
               </div>
@@ -126,20 +126,20 @@ const ConfirmationStep = ({ orderData, orderNumber = 'RV-' + Date.now().toString
           {/* Extras section - only show if extras were selected */}
           {Object.values(orderData.extras).some(Boolean) && (
             <div className="border-t pt-4">
-              <h3 className="font-medium text-gray-900 mb-2">Gewählte Extras</h3>
+              <h3 className="font-medium text-foreground mb-2">Gewählte Extras</h3>
               <div className="flex flex-wrap gap-2">
                 {orderData.extras.express && (
-                  <Badge variant="outline" className="border-amber-200 bg-amber-50 text-amber-700">
+                  <Badge variant="outline" className="border-warning/30 bg-warning/10 text-warning">
                     Express Bearbeitung
                   </Badge>
                 )}
                 {orderData.extras.upscale && (
-                  <Badge variant="outline" className="border-purple-200 bg-purple-50 text-purple-700">
+                  <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary">
                     KI Upscaling
                   </Badge>
                 )}
                 {orderData.extras.watermark && (
-                  <Badge variant="outline" className="border-blue-200 bg-blue-50 text-blue-700">
+                  <Badge variant="outline" className="border-info/30 bg-info/10 text-info">
                     Eigenes Wasserzeichen
                   </Badge>
                 )}
@@ -150,11 +150,11 @@ const ConfirmationStep = ({ orderData, orderNumber = 'RV-' + Date.now().toString
       </Card>
 
       {/* Social proof and next steps */}
-      <div className="bg-blue-50 rounded-lg p-6 max-w-3xl mx-auto">
-        <p className="text-center text-blue-800 mb-2 font-medium">
+      <div className="bg-info/5 border border-info/20 rounded-lg p-6 max-w-3xl mx-auto">
+        <p className="text-center text-info mb-2 font-medium">
           Wir halten Sie über alle Fortschritte Ihrer Bestellung auf dem Laufenden
         </p>
-        <p className="text-center text-blue-700 text-sm">
+        <p className="text-center text-info/80 text-sm">
           Über {Math.floor(Math.random() * 5000) + 5000} zufriedene Kunden vertrauen auf Renovirt für ihre Immobilienbilder
         </p>
       </div>

@@ -27,9 +27,9 @@ const PackageStep = ({ selectedPackage, onPackageChange, onNext, onPrev }: Packa
         { icon: Clock, text: 'Lieferung innerhalb 48h' },
       ],
       popular: false,
-      gradient: 'from-blue-50 to-blue-100',
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-600',
+      gradient: 'from-info/10 to-info/20',
+      iconBg: 'bg-info/10',
+      iconColor: 'text-info',
     },
     {
       id: 'premium' as const,
