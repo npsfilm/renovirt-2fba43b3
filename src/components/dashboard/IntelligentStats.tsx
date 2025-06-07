@@ -87,24 +87,24 @@ const IntelligentStats = () => {
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
       {stats.map((stat, index) => {
         const IconComponent = stat.icon;
         return (
           <Card key={index} className="border-0 bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-300 hover:shadow-md">
-            <CardContent className="p-4">
-              <div className="space-y-3">
+            <CardContent className="p-6">
+              <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <div className={`w-8 h-8 ${stat.bgColor} rounded-lg flex items-center justify-center`}>
-                    <IconComponent className={`w-4 h-4 ${stat.color}`} />
+                  <div className={`w-10 h-10 ${stat.bgColor} rounded-lg flex items-center justify-center`}>
+                    <IconComponent className={`w-5 h-5 ${stat.color}`} />
                   </div>
                 </div>
                 
-                <div className="space-y-1">
-                  <div className="text-2xl font-light text-foreground">
+                <div className="space-y-2">
+                  <div className="text-3xl font-bold text-foreground leading-none">
                     {stat.value}
                   </div>
-                  <div className="text-xs font-medium text-on-surface">
+                  <div className="text-sm font-medium text-on-surface">
                     {stat.label}
                   </div>
                   <div className="text-xs text-subtle">
@@ -113,7 +113,9 @@ const IntelligentStats = () => {
                 </div>
 
                 {stat.progress !== undefined && (
-                  <Progress value={stat.progress} className="h-1" />
+                  <div className="pt-2">
+                    <Progress value={stat.progress} className="h-2" />
+                  </div>
                 )}
               </div>
             </CardContent>

@@ -6,7 +6,6 @@ import ModernHeroSection from '@/components/dashboard/ModernHeroSection';
 import IntelligentStats from '@/components/dashboard/IntelligentStats';
 import ActiveProjectsGrid from '@/components/dashboard/ActiveProjectsGrid';
 import SmartInsights from '@/components/dashboard/SmartInsights';
-import RecentActivity from '@/components/dashboard/RecentActivity';
 import GlobalAIWidget from '@/components/layout/GlobalAIWidget';
 
 const Dashboard = () => {
@@ -26,18 +25,8 @@ const Dashboard = () => {
             {/* Intelligent Stats */}
             <IntelligentStats />
             
-            {/* Main Content Grid */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              {/* Active Projects - Takes 2 columns on large screens */}
-              <div className="xl:col-span-2">
-                <ActiveProjectsGrid />
-              </div>
-              
-              {/* Recent Activity - Takes 1 column */}
-              <div className="space-y-6">
-                <RecentActivity />
-              </div>
-            </div>
+            {/* Active Projects - Now full width */}
+            <ActiveProjectsGrid />
 
             {/* Smart Insights */}
             <SmartInsights />

@@ -1,18 +1,20 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Eye, Download, ArrowRight, Clock, Image, Plus } from 'lucide-react';
+import { Eye, Download, ArrowRight, Plus, Image } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import OrderDetailsModal from './OrderDetailsModal';
 
 const ActiveProjectsGrid = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data: activeProjects, isLoading } = useQuery({
     queryKey: ['active-projects', user?.id],
@@ -60,8 +62,14 @@ const ActiveProjectsGrid = () => {
 
   const formatOrderId = (id: string) => `#${id.slice(0, 8).toUpperCase()}`;
 
-  const handleViewProject = (orderId: string) => {
-    navigate(`/orders?order=${orderId}`);
+  const handleViewProject = (order: any) => {
+    setSelectedOrder(order);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedOrder(null);
   };
 
   if (isLoading) {
@@ -105,74 +113,82 @@ const ActiveProjectsGrid = () => {
   }
 
   return (
-    <Card className="border-0 bg-card/50 backdrop-blur-sm">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-xl font-light text-foreground">Aktive Projekte</CardTitle>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={() => navigate('/orders')}
-          className="text-subtle hover:text-foreground"
-        >
-          Alle anzeigen
-          <ArrowRight className="w-4 h-4 ml-1" />
-        </Button>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {activeProjects.map((project) => {
-            const statusConfig = getStatusConfig(project.status);
-            return (
-              <div key={project.id} className="group">
-                <Card className="border border-border/50 hover:border-border transition-all duration-300 hover:shadow-sm">
-                  <CardContent className="p-4 space-y-4">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1">
-                        <div className="font-mono text-sm text-foreground">
-                          {formatOrderId(project.id)}
+    <>
+      <Card className="border-0 bg-card/50 backdrop-blur-sm">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-xl font-light text-foreground">Aktive Projekte</CardTitle>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => navigate('/orders')}
+            className="text-subtle hover:text-foreground"
+          >
+            Alle anzeigen
+            <ArrowRight className="w-4 h-4 ml-1" />
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {activeProjects.map((project) => {
+              const statusConfig = getStatusConfig(project.status);
+              return (
+                <div key={project.id} className="group">
+                  <Card className="border border-border/50 hover:border-border transition-all duration-300 hover:shadow-sm">
+                    <CardContent className="p-4 space-y-4">
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-1">
+                          <div className="font-mono text-sm text-foreground">
+                            {formatOrderId(project.id)}
+                          </div>
+                          <div className="text-xs text-subtle">
+                            {project.image_count} Bilder
+                          </div>
                         </div>
-                        <div className="text-xs text-subtle">
-                          {project.image_count} Bilder
+                        <Badge className={statusConfig.color}>
+                          {statusConfig.label}
+                        </Badge>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-subtle">Fortschritt</span>
+                          <span className="text-foreground font-medium">{statusConfig.progress}%</span>
                         </div>
+                        <Progress value={statusConfig.progress} className="h-1" />
+                        <div className="text-xs text-subtle">{statusConfig.description}</div>
                       </div>
-                      <Badge className={statusConfig.color}>
-                        {statusConfig.label}
-                      </Badge>
-                    </div>
 
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-subtle">Fortschritt</span>
-                        <span className="text-foreground font-medium">{statusConfig.progress}%</span>
-                      </div>
-                      <Progress value={statusConfig.progress} className="h-1" />
-                      <div className="text-xs text-subtle">{statusConfig.description}</div>
-                    </div>
-
-                    <div className="flex items-center gap-2 pt-2">
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        onClick={() => handleViewProject(project.id)}
-                        className="flex-1 justify-center"
-                      >
-                        <Eye className="w-3 h-3 mr-1" />
-                        Details
-                      </Button>
-                      {project.status === 'completed' && (
-                        <Button size="sm" variant="ghost">
-                          <Download className="w-3 h-3" />
+                      <div className="flex items-center gap-2 pt-2">
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          onClick={() => handleViewProject(project)}
+                          className="flex-1 justify-center"
+                        >
+                          <Eye className="w-3 h-3 mr-1" />
+                          Details
                         </Button>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            );
-          })}
-        </div>
-      </CardContent>
-    </Card>
+                        {project.status === 'completed' && (
+                          <Button size="sm" variant="ghost">
+                            <Download className="w-3 h-3" />
+                          </Button>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      <OrderDetailsModal 
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        order={selectedOrder}
+      />
+    </>
   );
 };
 
