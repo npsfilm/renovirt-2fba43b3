@@ -8,11 +8,13 @@ interface OrderStatusBadgeProps {
 
 const OrderStatusBadge = ({ status }: OrderStatusBadgeProps) => {
   const statusConfig = {
-    pending: { label: 'Ausstehend', className: 'bg-warning text-warning-foreground' },
+    pending: { label: 'Warteschlange', className: 'bg-warning text-warning-foreground' },
     processing: { label: 'In Bearbeitung', className: 'bg-primary text-primary-foreground' },
+    quality_check: { label: 'Überprüfung', className: 'bg-accent text-accent-foreground' },
+    revision: { label: 'In Revision', className: 'bg-orange-100 text-orange-800' },
     completed: { label: 'Abgeschlossen', className: 'bg-success text-success-foreground' },
+    delivered: { label: 'Abgeschlossen & bezahlt', className: 'bg-green-100 text-green-800' },
     cancelled: { label: 'Storniert', className: 'bg-error text-error-foreground' },
-    quality_check: { label: 'Qualitätsprüfung', className: 'bg-accent text-accent-foreground' },
   };
 
   const config = statusConfig[status as keyof typeof statusConfig] || 

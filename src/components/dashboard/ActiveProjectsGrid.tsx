@@ -47,15 +47,33 @@ const ActiveProjectsGrid = () => {
       },
       processing: {
         label: 'In Bearbeitung',
-        progress: 60,
+        progress: 40,
         color: 'bg-primary text-primary-foreground',
         description: 'Aktive Bearbeitung'
       },
       quality_check: {
-        label: 'Qualitätsprüfung',
-        progress: 90,
+        label: 'Überprüfung',
+        progress: 80,
         color: 'bg-accent text-accent-foreground',
-        description: 'Fast fertig'
+        description: 'Qualitätsprüfung läuft'
+      },
+      revision: {
+        label: 'In Revision',
+        progress: 60,
+        color: 'bg-orange-100 text-orange-800',
+        description: 'Überarbeitung erforderlich'
+      },
+      completed: {
+        label: 'Abgeschlossen',
+        progress: 100,
+        color: 'bg-success text-success-foreground',
+        description: 'Bereit zum Download'
+      },
+      delivered: {
+        label: 'Abgeschlossen & bezahlt',
+        progress: 100,
+        color: 'bg-green-100 text-green-800',
+        description: 'Vollständig abgeschlossen'
       }
     };
     return configs[status as keyof typeof configs] || configs.pending;
@@ -183,7 +201,7 @@ const ActiveProjectsGrid = () => {
                           <Eye className="w-3 h-3 mr-1" />
                           Details
                         </Button>
-                        {project.status === 'completed' && (
+                        {(project.status === 'completed' || project.status === 'delivered') && (
                           <Button size="sm" variant="ghost">
                             <Download className="w-3 h-3" />
                           </Button>

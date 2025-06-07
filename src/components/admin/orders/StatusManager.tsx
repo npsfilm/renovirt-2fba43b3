@@ -44,10 +44,12 @@ const StatusManager = ({
               <SelectValue placeholder="Status auswählen" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="pending">Ausstehend</SelectItem>
+              <SelectItem value="pending">Warteschlange</SelectItem>
               <SelectItem value="processing">In Bearbeitung</SelectItem>
-              <SelectItem value="ready_for_review">Zur Überprüfung bereit</SelectItem>
+              <SelectItem value="quality_check">Überprüfung</SelectItem>
+              <SelectItem value="revision">In Revision</SelectItem>
               <SelectItem value="completed">Abgeschlossen</SelectItem>
+              <SelectItem value="delivered">Abgeschlossen & bezahlt</SelectItem>
               <SelectItem value="cancelled">Storniert</SelectItem>
             </SelectContent>
           </Select>
