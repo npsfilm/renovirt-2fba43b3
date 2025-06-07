@@ -31,7 +31,7 @@ Falls du auch manchmal Fotos professionell bearbeiten lassen musst - das könnte
 • Professionelle Bildbearbeitung für Immobilien
 • Himmel austauschen, Objekte entfernen, Farben optimieren
 • Super schnell - meist fertig in 1-2 Tagen
-• Preise starten schon ab 1,50€ pro Bild
+• Preise ab 9€ pro Bild (je nach Aufwand)
 
 🎁 Das Beste: Mit meinem Code "${referralCode}" bekommst du 10 kostenlose Bearbeitungen zum Ausprobieren!
 
