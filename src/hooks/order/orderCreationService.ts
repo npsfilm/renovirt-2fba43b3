@@ -1,97 +1,86 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { logSecurityEvent } from '@/utils/secureLogging';
 import { calculateOrderTotal } from '@/utils/orderPricing';
 import { calculateEffectiveImageCount } from '@/utils/orderValidation';
 import { generateOrderNumber } from '@/utils/orderNumberGenerator';
-import type { OrderCreationParams, OrderCreationResult } from './orderCreationTypes';
+import type { OrderData } from '@/utils/orderValidation';
+import type { OrderCreationParams, PaymentMethod } from './orderCreationTypes';
 
 export const createOrderInDatabase = async (
   { orderData, paymentMethod }: OrderCreationParams,
   packages: any[],
   addOns: any[],
-  userId: string
-): Promise<OrderCreationResult> => {
-  logSecurityEvent('order_creation_started', { userId, paymentMethod });
-  
+  userId: string,
+  stripePaymentIntentId?: string
+) => {
   const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
-  if (!selectedPackage) throw new Error('Package not found');
+  if (!selectedPackage) {
+    throw new Error('Selected package not found');
+  }
 
   const totalPrice = calculateOrderTotal(orderData, packages, addOns);
   const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
-  
-  let bracketingEnabled = false;
-  let bracketingExposures = 3;
-  
-  if (orderData.photoType === 'bracketing-3') {
-    bracketingEnabled = true;
-    bracketingExposures = 3;
-  } else if (orderData.photoType === 'bracketing-5') {
-    bracketingEnabled = true;
-    bracketingExposures = 5;
-  }
-
-  // Generate order number
   const orderNumber = generateOrderNumber();
 
-  // Determine payment flow status based on payment method
-  const paymentFlowStatus = paymentMethod === 'stripe' ? 'draft' : 'payment_completed';
-  const orderStatus = paymentMethod === 'stripe' ? 'pending' : 'pending';
+  // For Stripe payments, set payment status based on whether we have a payment intent ID
+  const paymentStatus = paymentMethod === 'stripe' 
+    ? (stripePaymentIntentId ? 'paid' : 'pending')
+    : 'pending';
+    
+  const paymentFlowStatus = paymentMethod === 'stripe' 
+    ? (stripePaymentIntentId ? 'payment_completed' : 'payment_pending')
+    : 'payment_pending';
 
-  // Create order with appropriate payment flow status and order number
+  const orderPayload = {
+    user_id: userId,
+    package_id: selectedPackage.id,
+    total_price: totalPrice,
+    customer_email: orderData.email,
+    photo_type: orderData.photoType,
+    image_count: imageCount,
+    payment_method: paymentMethod,
+    payment_status: paymentStatus,
+    payment_flow_status: paymentFlowStatus,
+    status: stripePaymentIntentId ? 'processing' : 'pending', // Start processing if payment is completed
+    order_number: orderNumber,
+    terms_accepted: orderData.acceptedTerms,
+    stripe_session_id: stripePaymentIntentId || null,
+    // Handle bracketing settings
+    bracketing_enabled: orderData.photoType === 'bracketing',
+    bracketing_exposures: orderData.photoType === 'bracketing' ? 3 : null,
+  };
+
   const { data: order, error: orderError } = await supabase
     .from('orders')
-    .insert({
-      user_id: userId,
-      order_number: orderNumber,
-      package_id: selectedPackage.id,
-      customer_email: orderData.email,
-      photo_type: orderData.photoType,
-      image_count: imageCount,
-      total_price: totalPrice,
-      bracketing_enabled: bracketingEnabled,
-      bracketing_exposures: bracketingExposures,
-      terms_accepted: orderData.acceptedTerms,
-      status: orderStatus,
-      payment_flow_status: paymentFlowStatus,
-      payment_status: paymentMethod === 'invoice' ? 'pending' : null,
-    })
+    .insert(orderPayload)
     .select()
     .single();
 
   if (orderError) {
-    logSecurityEvent('order_creation_failed', { userId, error: orderError.message });
-    throw orderError;
+    console.error('Failed to create order:', orderError);
+    throw new Error(`Failed to create order: ${orderError.message}`);
   }
 
-  // Add selected extras
-  const selectedAddOns = addOns.filter(addon => 
-    orderData.extras[addon.name as keyof typeof orderData.extras]
-  );
+  // Add selected add-ons to the order
+  const selectedAddOnIds = addOns
+    .filter(addon => orderData.extras[addon.name as keyof typeof orderData.extras])
+    .map(addon => addon.id);
 
-  if (selectedAddOns.length > 0) {
-    const { error: addOnsError } = await supabase
+  if (selectedAddOnIds.length > 0) {
+    const addOnInserts = selectedAddOnIds.map(addOnId => ({
+      order_id: order.id,
+      add_on_id: addOnId,
+    }));
+
+    const { error: addOnError } = await supabase
       .from('order_add_ons')
-      .insert(
-        selectedAddOns.map(addon => ({
-          order_id: order.id,
-          add_on_id: addon.id,
-        }))
-      );
+      .insert(addOnInserts);
 
-    if (addOnsError) {
-      logSecurityEvent('order_addons_failed', { orderId: order.id, error: addOnsError.message });
-      throw addOnsError;
+    if (addOnError) {
+      console.error('Failed to add order add-ons:', addOnError);
+      // Don't throw here as the order was created successfully
     }
   }
-
-  logSecurityEvent('order_created_successfully', { 
-    orderId: order.id, 
-    orderNumber: orderNumber,
-    userId, 
-    paymentMethod,
-    paymentFlowStatus 
-  });
 
   return order;
 };

@@ -23,17 +23,35 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
         throw new Error('User not authenticated');
       }
       
-      // Get package and calculate totals
+      // For Stripe payments, we only create a temporary order reference and return it
+      // The actual order will be created after successful payment
+      if (paymentMethod === 'stripe') {
+        const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
+        if (!selectedPackage) throw new Error('Package not found');
+
+        const totalPrice = calculateOrderTotal(orderData, packages, addOns);
+        
+        // Return order data for payment processing without creating in database
+        return {
+          id: 'temp-stripe-order', // Temporary ID for payment processing
+          orderData,
+          totalPrice,
+          selectedPackage,
+          isTemporary: true
+        };
+      }
+      
+      // For invoice payments, create the order immediately as before
       const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
       if (!selectedPackage) throw new Error('Package not found');
 
       const totalPrice = calculateOrderTotal(orderData, packages, addOns);
       const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
       
-      // Create order in database
+      // Create order in database for invoice payments
       const order = await createOrderInDatabase({ orderData, paymentMethod }, packages, addOns, user.id);
 
-      // Upload files
+      // Upload files for invoice orders
       await handleOrderFiles(orderData, order.id, user.id);
       
       // Get selected add-ons for email
@@ -41,24 +59,20 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
         orderData.extras[addon.name as keyof typeof orderData.extras]
       );
       
-      // Send confirmation email only if payment is completed or invoice method was used
-      if (paymentMethod === 'invoice' || (paymentMethod === 'stripe' && order.payment_status === 'paid')) {
-        try {
-          const orderDetails = await prepareOrderEmailDetails(
-            orderData,
-            selectedPackage,
-            imageCount,
-            totalPrice,
-            selectedAddOns,
-            user.id
-          );
+      // Send confirmation email for invoice orders
+      try {
+        const orderDetails = await prepareOrderEmailDetails(
+          orderData,
+          selectedPackage,
+          imageCount,
+          totalPrice,
+          selectedAddOns,
+          user.id
+        );
 
-          // Send order confirmation email
-          await sendOrderConfirmationEmail(order.order_number, orderData.email || '', orderDetails);
-        } catch (emailError) {
-          // Log error but don't fail the order creation
-          console.error('Failed to send confirmation email:', emailError);
-        }
+        await sendOrderConfirmationEmail(order.order_number, orderData.email || '', orderDetails);
+      } catch (emailError) {
+        console.error('Failed to send confirmation email:', emailError);
       }
 
       return order;
@@ -68,14 +82,16 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
       if (paymentMethod === 'invoice') {
         queryClient.invalidateQueries({ queryKey: ['orders'] });
         queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+        
+        toast({
+          title: "Bestellung erfolgreich erstellt!",
+          description: "Ihre Bestellung wurde erfolgreich übermittelt.",
+        });
+      } else if (paymentMethod === 'stripe' && !order.isTemporary) {
+        // This is for completed Stripe orders (called after payment success)
+        queryClient.invalidateQueries({ queryKey: ['orders'] });
+        queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
       }
-      
-      toast({
-        title: paymentMethod === 'stripe' ? "Zur Zahlung weitergeleitet" : "Bestellung erfolgreich erstellt!",
-        description: paymentMethod === 'stripe' 
-          ? "Ihre Bestellung wird nach erfolgreicher Zahlung verarbeitet."
-          : `Ihre Bestellung wurde erfolgreich übermittelt.`,
-      });
     },
     onError: (error: any) => {
       secureLog('Order creation error:', error);
@@ -87,8 +103,61 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
     },
   });
 
+  // New method to create order after successful Stripe payment
+  const createOrderAfterPayment = async (orderData: OrderData, paymentIntentId: string) => {
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
+    const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
+    if (!selectedPackage) throw new Error('Package not found');
+
+    const totalPrice = calculateOrderTotal(orderData, packages, addOns);
+    const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
+    
+    // Create order in database with payment already completed
+    const order = await createOrderInDatabase(
+      { orderData, paymentMethod: 'stripe' }, 
+      packages, 
+      addOns, 
+      user.id,
+      paymentIntentId
+    );
+
+    // Upload files
+    await handleOrderFiles(orderData, order.id, user.id);
+    
+    // Get selected add-ons for email
+    const selectedAddOns = addOns.filter(addon => 
+      orderData.extras[addon.name as keyof typeof orderData.extras]
+    );
+    
+    // Send confirmation email
+    try {
+      const orderDetails = await prepareOrderEmailDetails(
+        orderData,
+        selectedPackage,
+        imageCount,
+        totalPrice,
+        selectedAddOns,
+        user.id
+      );
+
+      await sendOrderConfirmationEmail(order.order_number, orderData.email || '', orderDetails);
+    } catch (emailError) {
+      console.error('Failed to send confirmation email:', emailError);
+    }
+
+    // Invalidate queries to refresh the UI
+    queryClient.invalidateQueries({ queryKey: ['orders'] });
+    queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+
+    return order;
+  };
+
   return {
     createOrder: createOrderMutation.mutateAsync,
+    createOrderAfterPayment,
     isCreatingOrder: createOrderMutation.isPending,
   };
 };

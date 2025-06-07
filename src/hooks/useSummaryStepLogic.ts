@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { usePayment } from '@/hooks/usePayment';
@@ -19,11 +20,12 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
   const [finalPrice, setFinalPrice] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [currentOrderData, setCurrentOrderData] = useState<OrderData | null>(null);
 
   const { user } = useAuth();
   const { createPaymentIntent, handlePaymentSuccess } = usePayment();
   const { packages, addOns } = useOrderData();
-  const { createOrder } = useOrderCreation(packages, addOns);
+  const { createOrder, createOrderAfterPayment } = useOrderCreation(packages, addOns);
   const { calculateTotalPrice } = useOrders();
   const userCreditsResult = useUserCredits();
   const { credits, isLoading: creditsLoading } = userCreditsResult;
@@ -57,18 +59,31 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
 
   const handlePaymentModalSuccess = async (paymentIntentId: string) => {
     setShowPaymentModal(false);
-    if (user) {
-      await handlePaymentSuccess('temp-order-id', user.id, paymentIntentId);
-      toast({
-        title: 'Zahlung erfolgreich!',
-        description: 'Ihre Bestellung wurde erfolgreich bezahlt.',
-      });
-      onNext();
+    
+    if (user && currentOrderData) {
+      try {
+        // Create the actual order in the database after successful payment
+        await createOrderAfterPayment(currentOrderData, paymentIntentId);
+        
+        toast({
+          title: 'Zahlung erfolgreich!',
+          description: 'Ihre Bestellung wurde erfolgreich bezahlt und wird nun bearbeitet.',
+        });
+        onNext();
+      } catch (error: any) {
+        console.error('Failed to create order after payment:', error);
+        toast({
+          title: 'Fehler nach Zahlung',
+          description: 'Die Zahlung war erfolgreich, aber es gab ein Problem beim Erstellen der Bestellung. Bitte kontaktieren Sie den Support.',
+          variant: 'destructive',
+        });
+      }
     }
   };
 
   const handlePaymentModalError = (error: string) => {
     setShowPaymentModal(false);
+    setCurrentOrderData(null); // Clear the order data
     toast({
       title: 'Zahlungsfehler',
       description: error || 'Die Zahlung konnte nicht verarbeitet werden.',
@@ -119,24 +134,26 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
         paymentMethod
       });
 
-      // Create the order
-      const createdOrder = await createOrder({
-        orderData: secureOrderData,
-        paymentMethod: paymentMethod as 'stripe' | 'invoice'
-      });
-
       if (paymentMethod === 'stripe' && finalPrice > 0) {
-        // Create payment intent for Stripe payments with the same final price
+        // For Stripe payments, prepare for payment but don't create order yet
+        setCurrentOrderData(secureOrderData);
+        
+        // Create payment intent with a temporary order ID
         const paymentData = await createPaymentIntent({
-          orderId: createdOrder.id,
-          amount: finalPrice, // This should now match the displayed price
+          orderId: 'temp-stripe-order',
+          amount: finalPrice,
           currency: 'eur',
         });
 
         setClientSecret(paymentData.client_secret);
         setShowPaymentModal(true);
       } else {
-        // Invoice payment or zero amount
+        // For invoice payment or zero amount, create the order immediately
+        const createdOrder = await createOrder({
+          orderData: secureOrderData,
+          paymentMethod: paymentMethod as 'stripe' | 'invoice'
+        });
+
         toast({
           title: 'Bestellung erfolgreich!',
           description: paymentMethod === 'invoice' 
@@ -147,8 +164,8 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
       }
 
       logSecurityEvent('order_creation_success', { 
-        orderId: createdOrder.id,
-        userId: user.id 
+        userId: user.id,
+        paymentMethod
       });
 
     } catch (error: any) {

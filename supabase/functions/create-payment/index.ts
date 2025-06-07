@@ -44,14 +44,14 @@ serve(async (req) => {
     // Parse request body
     const { orderId, amount, currency = "eur" } = await req.json();
 
-    if (!orderId || !amount) {
+    if (!amount) {
       console.error("Missing required parameters");
-      throw new Error("Missing required parameters: orderId and amount");
+      throw new Error("Missing required parameters: amount");
     }
 
     console.log("Payment request:", { orderId, amount, currency });
 
-    // Initialize Stripe with environment variable (not hardcoded)
+    // Initialize Stripe with environment variable
     const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeSecretKey) {
       console.error("Stripe secret key not configured");
@@ -86,13 +86,13 @@ serve(async (req) => {
       console.log("New customer created:", customerId);
     }
 
-    // Create Payment Intent
+    // Create Payment Intent without storing order in database yet
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100), // Convert to cents
       currency: currency,
       customer: customerId,
       metadata: {
-        orderId: orderId,
+        orderId: orderId || 'temp-order',
         userId: user.id,
       },
       automatic_payment_methods: {
@@ -102,28 +102,8 @@ serve(async (req) => {
 
     console.log("Payment Intent created:", paymentIntent.id);
 
-    // Update order with Payment Intent ID and payment method
-    const supabaseService = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
-
-    const { error: updateError } = await supabaseService
-      .from("orders")
-      .update({
-        stripe_session_id: paymentIntent.id, // Store PI ID in session_id field
-        payment_method: "stripe",
-        payment_status: "pending",
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", orderId);
-
-    if (updateError) {
-      console.error("Failed to update order with payment intent ID:", updateError);
-      // Don't throw here as payment intent was created successfully
-    } else {
-      console.log("Order updated successfully");
-    }
+    // DO NOT create or update any order in the database here
+    // The order will be created only after successful payment
 
     return new Response(
       JSON.stringify({ 
@@ -144,7 +124,6 @@ serve(async (req) => {
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 500,
-      }
     );
   }
 });
