@@ -159,7 +159,7 @@ const ActiveProjectsGrid = () => {
                             {getImageText(project.image_count)}
                           </div>
                         </div>
-                        <Badge className={statusConfig.color}>
+                        <Badge className={`${statusConfig.color} pointer-events-none`}>
                           {statusConfig.label}
                         </Badge>
                       </div>
