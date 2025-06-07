@@ -25,40 +25,90 @@ const ConfirmationStep = ({
     addOns
   } = useOrders();
   
-  // Calculate delivery date and time considering business hours (10:00-18:00)
+  // Business hours constants
+  const BUS_START_HOUR = 10;
+  const BUS_END_HOUR = 18;
+  const EXPRESS_HOURS = 24;
+  const STANDARD_HOURS = 48;
+
+  // Helper function: Get next business day at 10:00
+  const nextBusinessDay = (dt: Date): Date => {
+    const d = new Date(dt);
+    d.setDate(d.getDate() + 1);
+    
+    // Skip weekends (5=Saturday, 6=Sunday in JavaScript weekday)
+    while (d.getDay() === 0 || d.getDay() === 6) {
+      d.setDate(d.getDate() + 1);
+    }
+    
+    d.setHours(BUS_START_HOUR, 0, 0, 0);
+    return d;
+  };
+
+  // Helper function: Calculate processing start time
+  const processingStart = (order: Date): Date => {
+    const orderHour = order.getHours();
+    
+    // Weekend orders
+    if (order.getDay() === 0 || order.getDay() === 6) {
+      return nextBusinessDay(order);
+    }
+    
+    // Before 10:00
+    if (orderHour < BUS_START_HOUR) {
+      const result = new Date(order);
+      result.setHours(BUS_START_HOUR, 0, 0, 0);
+      return result;
+    }
+    
+    // After 18:00
+    if (orderHour >= BUS_END_HOUR) {
+      return nextBusinessDay(order);
+    }
+    
+    // Within business hours (10:00-18:00)
+    return order;
+  };
+
+  // Helper function: Move datetime into valid delivery window
+  const intoDeliveryWindow = (dt: Date): Date => {
+    let result = new Date(dt);
+    
+    // If weekend, move to next business day
+    if (result.getDay() === 0 || result.getDay() === 6) {
+      result = nextBusinessDay(result);
+    }
+    
+    const hour = result.getHours();
+    
+    // Before business hours
+    if (hour < BUS_START_HOUR) {
+      result.setHours(BUS_START_HOUR, 0, 0, 0);
+    }
+    // After business hours
+    else if (hour >= BUS_END_HOUR) {
+      result = nextBusinessDay(result);
+    }
+    
+    return result;
+  };
+
+  // Main ETA calculation function
+  const calculateETA = (order: Date, express: boolean): Date => {
+    const start = processingStart(order);
+    const hours = express ? EXPRESS_HOURS : STANDARD_HOURS;
+    
+    // Add processing hours
+    const target = new Date(start);
+    target.setTime(target.getTime() + (hours * 60 * 60 * 1000));
+    
+    // Move into valid delivery window
+    return intoDeliveryWindow(target);
+  };
+
+  // Calculate delivery date and time
   const orderDate = new Date();
-  const deliveryDate = new Date(orderDate);
-  
-  // Check if order is within business hours
-  const orderHour = orderDate.getHours();
-  const isWithinBusinessHours = orderHour >= 10 && orderHour < 18;
-  
-  // If order is outside business hours, move to next business day at 10:00
-  if (!isWithinBusinessHours) {
-    // Move to next day at 10:00
-    deliveryDate.setDate(deliveryDate.getDate() + 1);
-    deliveryDate.setHours(10, 0, 0, 0);
-    
-    // Skip weekends for the start date
-    while (deliveryDate.getDay() === 0 || deliveryDate.getDay() === 6) {
-      deliveryDate.setDate(deliveryDate.getDate() + 1);
-    }
-  }
-  
-  // Add business days based on service type
-  const businessDaysToAdd = orderData.extras.express ? 1 : 2;
-  
-  for (let i = 0; i < businessDaysToAdd; i++) {
-    deliveryDate.setDate(deliveryDate.getDate() + 1);
-    
-    // Skip weekends
-    while (deliveryDate.getDay() === 0 || deliveryDate.getDay() === 6) {
-      deliveryDate.setDate(deliveryDate.getDate() + 1);
-    }
-  }
-  
-  // Set delivery time to 17:00 (end of business day)
-  deliveryDate.setHours(17, 0, 0, 0);
+  const deliveryDate = calculateETA(orderDate, orderData.extras.express);
   
   const formatDateTime = (date: Date) => {
     return new Intl.DateTimeFormat('de-DE', {
