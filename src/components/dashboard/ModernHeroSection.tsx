@@ -2,13 +2,36 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, Upload, Sparkles } from 'lucide-react';
+import { Upload, Sparkles } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const ModernHeroSection = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  // Fetch customer profile data
+  const { data: customerProfile } = useQuery({
+    queryKey: ['customer-profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      const { data, error } = await supabase
+        .from('customer_profiles')
+        .select('salutation, last_name')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) {
+        console.log('Profile not found, using fallback');
+        return null;
+      }
+      return data;
+    },
+    enabled: !!user?.id,
+  });
 
   const getTimeOfDay = () => {
     const hour = new Date().getHours();
@@ -17,7 +40,24 @@ const ModernHeroSection = () => {
     return 'Guten Abend';
   };
 
-  const firstName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'dort';
+  const formatSalutation = (salutation: string) => {
+    if (!salutation) return '';
+    return salutation.charAt(0).toUpperCase() + salutation.slice(1).toLowerCase();
+  };
+
+  const getGreeting = () => {
+    const timeGreeting = getTimeOfDay();
+    
+    if (customerProfile?.salutation && customerProfile?.last_name) {
+      const formattedSalutation = formatSalutation(customerProfile.salutation);
+      const uppercaseLastName = customerProfile.last_name.toUpperCase();
+      return `${timeGreeting}, ${formattedSalutation} ${uppercaseLastName}`;
+    }
+    
+    // Fallback to current behavior
+    const firstName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'dort';
+    return `${timeGreeting}, ${firstName}`;
+  };
 
   return (
     <div className="relative overflow-hidden">
@@ -30,7 +70,7 @@ const ModernHeroSection = () => {
             <div className="space-y-4">
               <div className="space-y-2">
                 <h1 className="text-3xl font-light text-foreground tracking-tight">
-                  {getTimeOfDay()}, {firstName}
+                  {getGreeting()}
                 </h1>
                 <p className="text-lg text-subtle font-light">
                   Bereit für perfekte Bildbearbeitung?
@@ -42,23 +82,15 @@ const ModernHeroSection = () => {
                   onClick={() => navigate('/order')}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105"
                 >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Neue Bestellung
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => navigate('/order')}
-                  className="border-border bg-background/50 hover:bg-accent/10 transition-all duration-300"
-                >
                   <Upload className="w-4 h-4 mr-2" />
                   Bilder hochladen
                 </Button>
                 <Button 
-                  variant="ghost" 
-                  className="text-subtle hover:text-foreground hover:bg-accent/10 transition-all duration-300"
+                  variant="outline" 
+                  onClick={() => navigate('/orders')}
+                  className="border-border bg-background/50 hover:bg-accent/10 transition-all duration-300"
                 >
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  KI-Tools
+                  Aktuelle Bestellungen ansehen
                 </Button>
               </div>
             </div>
