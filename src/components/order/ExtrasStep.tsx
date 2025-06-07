@@ -17,6 +17,10 @@ interface ExtrasStepProps {
   onPrev: () => void;
 }
 
+// Net prices per image for extras (result in 2.00€ gross with 19% VAT)
+const EXTRA_NET_PRICE = 1.68;
+const EXTRA_GROSS_PRICE = 2.00;
+
 const ExtrasStep = ({ 
   orderData, 
   onExtrasChange, 
@@ -28,8 +32,12 @@ const ExtrasStep = ({
   
   const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
   
-  const calculateExtraPrice = (pricePerImage: number) => {
-    return (pricePerImage * imageCount).toFixed(2);
+  const calculateExtraPrice = () => {
+    return (EXTRA_GROSS_PRICE * imageCount).toFixed(2);
+  };
+
+  const calculateExtraNetPrice = () => {
+    return (EXTRA_NET_PRICE * imageCount).toFixed(2);
   };
 
   const handleExtraChange = (extraName: keyof OrderData['extras'], checked: boolean) => {
@@ -97,7 +105,10 @@ const ExtrasStep = ({
                   Hochauflösende 4K-Qualität für gestochen scharfe Bilder
                 </p>
                 <p className="text-sm font-medium">
-                  2,00 € pro Bild (Gesamt: {calculateExtraPrice(2)} € netto)
+                  {EXTRA_GROSS_PRICE.toFixed(2)}€ pro Bild (Gesamt: {calculateExtraPrice()}€ inkl. MwSt.)
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Netto: {EXTRA_NET_PRICE.toFixed(2)}€ pro Bild (Gesamt: {calculateExtraNetPrice()}€ netto)
                 </p>
               </div>
             </div>
@@ -124,7 +135,10 @@ const ExtrasStep = ({
                   Ihre bearbeiteten Bilder in nur 24 Stunden
                 </p>
                 <p className="text-sm font-medium">
-                  2,00 € pro Bild (Gesamt: {calculateExtraPrice(2)} € netto)
+                  {EXTRA_GROSS_PRICE.toFixed(2)}€ pro Bild (Gesamt: {calculateExtraPrice()}€ inkl. MwSt.)
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Netto: {EXTRA_NET_PRICE.toFixed(2)}€ pro Bild (Gesamt: {calculateExtraNetPrice()}€ netto)
                 </p>
               </div>
             </div>
@@ -151,7 +165,10 @@ const ExtrasStep = ({
                   Fügen Sie Ihr eigenes Logo oder Wasserzeichen hinzu
                 </p>
                 <p className="text-sm font-medium">
-                  2,00 € pro Bild (Gesamt: {calculateExtraPrice(2)} € netto)
+                  {EXTRA_GROSS_PRICE.toFixed(2)}€ pro Bild (Gesamt: {calculateExtraPrice()}€ inkl. MwSt.)
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Netto: {EXTRA_NET_PRICE.toFixed(2)}€ pro Bild (Gesamt: {calculateExtraNetPrice()}€ netto)
                 </p>
                 
                 {/* Watermark Upload Field */}

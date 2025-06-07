@@ -19,11 +19,17 @@ interface AddOn {
 
 const VAT_RATE = 0.19; // 19% VAT
 
+// Net prices per image for packages (these are the actual net prices)
+const PACKAGE_NET_PRICES = {
+  Basic: 7.56,    // Net price that results in 9.00 gross (7.56 * 1.19 = 9.00)
+  Premium: 10.92, // Net price that results in 13.00 gross (10.92 * 1.19 = 13.00)
+};
+
 // Net prices per image for extras
 const EXTRAS_NET_PRICES = {
-  express: 2.00,    // 24h delivery
-  upscale: 2.00,    // 4K upscale  
-  watermark: 2.00,  // Custom watermark
+  express: 1.68,    // Net price that results in 2.00 gross (1.68 * 1.19 = 2.00)
+  upscale: 1.68,    // Net price that results in 2.00 gross
+  watermark: 1.68,  // Net price that results in 2.00 gross
 };
 
 export const calculateOrderTotal = (
@@ -31,43 +37,26 @@ export const calculateOrderTotal = (
   packages: Package[],
   addOns: AddOn[]
 ): number => {
-  const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
-  if (!selectedPackage) {
-    // Fallback to hardcoded values if package not found
-    const fallbackPrice = orderData.package === 'Basic' ? 9 : 13;
-    let netTotal = fallbackPrice;
-    const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
-    netTotal *= imageCount;
-    
-    // Add new extras with fixed net prices
-    Object.entries(orderData.extras).forEach(([extraName, isSelected]) => {
-      if (isSelected && extraName in EXTRAS_NET_PRICES) {
-        const pricePerImage = EXTRAS_NET_PRICES[extraName as keyof typeof EXTRAS_NET_PRICES];
-        netTotal += pricePerImage * imageCount;
-      }
-    });
-    
-    return netTotal * (1 + VAT_RATE);
-  }
-
-  let netTotal = selectedPackage.base_price;
+  // Get net price per image for the selected package
+  const packageNetPrice = PACKAGE_NET_PRICES[orderData.package as keyof typeof PACKAGE_NET_PRICES];
   const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
 
-  // Multiply base package by image count
-  netTotal *= imageCount;
+  let netTotal = packageNetPrice * imageCount;
 
-  // Add database add-ons (legacy support)
-  addOns.forEach(addon => {
-    if (orderData.extras[addon.name as keyof typeof orderData.extras] && !addon.is_free) {
-      netTotal += addon.price * imageCount;
-    }
-  });
-
-  // Add new extras with fixed net prices
+  // Add extras with net prices
   Object.entries(orderData.extras).forEach(([extraName, isSelected]) => {
     if (isSelected && extraName in EXTRAS_NET_PRICES) {
       const pricePerImage = EXTRAS_NET_PRICES[extraName as keyof typeof EXTRAS_NET_PRICES];
       netTotal += pricePerImage * imageCount;
+    }
+  });
+
+  // Add legacy database add-ons support (convert to net if needed)
+  addOns.forEach(addon => {
+    if (orderData.extras[addon.name as keyof typeof orderData.extras] && !addon.is_free) {
+      // Assume addon.price is gross, convert to net
+      const netPrice = addon.price / (1 + VAT_RATE);
+      netTotal += netPrice * imageCount;
     }
   });
 
@@ -76,13 +65,13 @@ export const calculateOrderTotal = (
 };
 
 export const calculateOrderPricing = (orderData: OrderData, availableCredits: number = 0) => {
-  // Get package price - fallback to hardcoded values
-  const packagePrice = orderData.package === 'Basic' ? 9 : 13; // Net price per image
+  // Get net price per image for the selected package
+  const packageNetPrice = PACKAGE_NET_PRICES[orderData.package as keyof typeof PACKAGE_NET_PRICES];
   const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
   
-  let calculatedNetPrice = packagePrice * imageCount;
+  let calculatedNetPrice = packageNetPrice * imageCount;
   
-  // Add extras pricing (net) with new fixed prices
+  // Add extras pricing (net)
   Object.entries(orderData.extras).forEach(([extraName, isSelected]) => {
     if (isSelected && extraName in EXTRAS_NET_PRICES) {
       const pricePerImage = EXTRAS_NET_PRICES[extraName as keyof typeof EXTRAS_NET_PRICES];

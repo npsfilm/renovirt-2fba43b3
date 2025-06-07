@@ -17,8 +17,9 @@ const PackageStep = ({ selectedPackage, onPackageChange, onNext, onPrev }: Packa
     {
       id: 'Basic' as const,
       name: 'Basic',
-      price: '9.00€',
+      price: '9,00€',
       priceUnit: 'pro Bild',
+      netPrice: '7,56€ netto',
       description: 'Grundlegende HDR-Entwicklung & Korrekturen.',
       features: [
         { icon: Palette, text: 'Farb- & Belichtungskorrektur' },
@@ -34,8 +35,9 @@ const PackageStep = ({ selectedPackage, onPackageChange, onNext, onPrev }: Packa
     {
       id: 'Premium' as const,
       name: 'Premium',
-      price: '13.00€',
+      price: '13,00€',
       priceUnit: 'pro Bild',
+      netPrice: '10,92€ netto',
       description: 'Professionelle HDR-Bearbeitung & Detailretusche.',
       features: [
         { icon: Sparkles, text: 'Alle Basic-Features enthalten' },
@@ -100,6 +102,7 @@ const PackageStep = ({ selectedPackage, onPackageChange, onNext, onPrev }: Packa
                   {pkg.price}
                   <span className="text-sm font-normal text-muted-foreground ml-1">{pkg.priceUnit}</span>
                 </div>
+                <div className="text-xs text-muted-foreground">{pkg.netPrice}</div>
                 <p className="text-muted-foreground text-sm leading-relaxed">{pkg.description}</p>
               </CardHeader>
 

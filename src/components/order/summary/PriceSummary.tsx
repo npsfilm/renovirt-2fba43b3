@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useOrders } from '@/hooks/useOrders';
@@ -11,8 +12,20 @@ interface PriceSummaryProps {
   onCreditsChange?: (credits: number) => void;
 }
 
+// Net prices per image (these result in the displayed gross prices with 19% VAT)
+const PACKAGE_NET_PRICES = {
+  Basic: 7.56,    // Results in 9.00 € gross
+  Premium: 10.92, // Results in 13.00 € gross
+};
+
+const EXTRAS_NET_PRICES = {
+  express: 1.68,  // Results in 2.00 € gross
+  upscale: 1.68,  // Results in 2.00 € gross
+  watermark: 1.68, // Results in 2.00 € gross
+};
+
 const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSummaryProps) => {
-  const { calculateTotalPrice, packages } = useOrders();
+  const { calculateTotalPrice } = useOrders();
   const grossPrice = calculateTotalPrice(orderData);
   const creditDiscount = creditsToUse * 1; // 1 Euro per credit
   const finalPrice = Math.max(0, grossPrice - creditDiscount);
@@ -20,27 +33,15 @@ const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSum
   // Calculate effective image count
   const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
   
-  // Get package price from database or fallback to hardcoded values
-  const getPackagePrice = () => {
-    if (packages && packages.length > 0) {
-      const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
-      if (selectedPackage) {
-        return selectedPackage.base_price;
-      }
-    }
-    
-    // Fallback to hardcoded values if packages not loaded
-    return orderData.package === 'Basic' ? 9 : 13;
-  };
+  // Get net price per image for the selected package
+  const packageNetPrice = PACKAGE_NET_PRICES[orderData.package as keyof typeof PACKAGE_NET_PRICES];
+  const baseNetPrice = packageNetPrice * imageCount;
   
-  const packagePricePerImage = getPackagePrice();
-  const baseNetPrice = packagePricePerImage * imageCount;
-  
-  // Calculate extras prices
+  // Calculate extras net prices
   const extrasNetPrices = {
-    express: orderData.extras.express ? 2 * imageCount : 0,
-    upscale: orderData.extras.upscale ? 2 * imageCount : 0,
-    watermark: orderData.extras.watermark ? 2 * imageCount : 0,
+    express: orderData.extras.express ? EXTRAS_NET_PRICES.express * imageCount : 0,
+    upscale: orderData.extras.upscale ? EXTRAS_NET_PRICES.upscale * imageCount : 0,
+    watermark: orderData.extras.watermark ? EXTRAS_NET_PRICES.watermark * imageCount : 0,
   };
   
   const totalExtrasNet = Object.values(extrasNetPrices).reduce((sum, price) => sum + price, 0);
@@ -61,7 +62,7 @@ const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSum
               <span>{baseNetPrice.toFixed(2)} €</span>
             </div>
             <div className="text-xs text-muted-foreground pl-2">
-              {packagePricePerImage.toFixed(2)} € pro Bild (netto)
+              {packageNetPrice.toFixed(2)} € pro Bild (netto)
             </div>
           </div>
           
