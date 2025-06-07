@@ -91,18 +91,6 @@ const BillingOverview = () => {
     // TODO: Implement actual invoice download logic
     // This could involve calling an edge function to generate a PDF invoice
   };
-  const handlePayOrder = async (order: any) => {
-    if (order.stripe_session_id) {
-      // Redirect to existing Stripe session
-      window.open(`https://checkout.stripe.com/pay/${order.stripe_session_id}`, '_blank');
-    } else {
-      toast({
-        title: "Zahlung nicht verfügbar",
-        description: "Bitte kontaktieren Sie den Support für Zahlungsoptionen.",
-        variant: "destructive"
-      });
-    }
-  };
   const handleExportAll = () => {
     toast({
       title: "Export wird vorbereitet",
@@ -191,21 +179,15 @@ const BillingOverview = () => {
                       €{parseFloat(order.total_price?.toString() || '0').toFixed(2)}
                     </TableCell>
                     <TableCell>
-                      <div className="flex space-x-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={() => handleDownloadInvoice(order)} 
-                          title="Rechnung herunterladen"
-                        >
-                          <Download className="w-4 h-4 mr-1" />
-                          Rechnung
-                        </Button>
-                        {order.payment_status === 'pending' && <Button size="sm" onClick={() => handlePayOrder(order)} title="Jetzt bezahlen">
-                            <ExternalLink className="w-4 h-4 mr-1" />
-                            Bezahlen
-                          </Button>}
-                      </div>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => handleDownloadInvoice(order)} 
+                        title="Rechnung herunterladen"
+                      >
+                        <Download className="w-4 h-4 mr-1" />
+                        Rechnung
+                      </Button>
                     </TableCell>
                   </TableRow>)}
               </TableBody>
