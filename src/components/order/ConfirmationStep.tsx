@@ -25,22 +25,40 @@ const ConfirmationStep = ({
     addOns
   } = useOrders();
   
-  // Calculate delivery date and time considering weekends
+  // Calculate delivery date and time considering business hours (10:00-18:00)
   const orderDate = new Date();
   const deliveryDate = new Date(orderDate);
   
-  if (orderData.extras.express) {
-    // Express: 24 hours
-    deliveryDate.setHours(deliveryDate.getHours() + 24);
-  } else {
-    // Standard: 48 hours
-    deliveryDate.setHours(deliveryDate.getHours() + 48);
+  // Check if order is within business hours
+  const orderHour = orderDate.getHours();
+  const isWithinBusinessHours = orderHour >= 10 && orderHour < 18;
+  
+  // If order is outside business hours, move to next business day at 10:00
+  if (!isWithinBusinessHours) {
+    // Move to next day at 10:00
+    deliveryDate.setDate(deliveryDate.getDate() + 1);
+    deliveryDate.setHours(10, 0, 0, 0);
+    
+    // Skip weekends for the start date
+    while (deliveryDate.getDay() === 0 || deliveryDate.getDay() === 6) {
+      deliveryDate.setDate(deliveryDate.getDate() + 1);
+    }
   }
   
-  // Skip weekends - if delivery falls on Saturday (6) or Sunday (0), move to Monday
-  while (deliveryDate.getDay() === 0 || deliveryDate.getDay() === 6) {
+  // Add business days based on service type
+  const businessDaysToAdd = orderData.extras.express ? 1 : 2;
+  
+  for (let i = 0; i < businessDaysToAdd; i++) {
     deliveryDate.setDate(deliveryDate.getDate() + 1);
+    
+    // Skip weekends
+    while (deliveryDate.getDay() === 0 || deliveryDate.getDay() === 6) {
+      deliveryDate.setDate(deliveryDate.getDate() + 1);
+    }
   }
+  
+  // Set delivery time to 17:00 (end of business day)
+  deliveryDate.setHours(17, 0, 0, 0);
   
   const formatDateTime = (date: Date) => {
     return new Intl.DateTimeFormat('de-DE', {
