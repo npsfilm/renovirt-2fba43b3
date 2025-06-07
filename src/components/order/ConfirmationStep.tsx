@@ -25,7 +25,7 @@ const ConfirmationStep = ({
     addOns
   } = useOrders();
   
-  // Calculate delivery date and time
+  // Calculate delivery date and time considering weekends
   const orderDate = new Date();
   const deliveryDate = new Date(orderDate);
   
@@ -35,6 +35,11 @@ const ConfirmationStep = ({
   } else {
     // Standard: 48 hours
     deliveryDate.setHours(deliveryDate.getHours() + 48);
+  }
+  
+  // Skip weekends - if delivery falls on Saturday (6) or Sunday (0), move to Monday
+  while (deliveryDate.getDay() === 0 || deliveryDate.getDay() === 6) {
+    deliveryDate.setDate(deliveryDate.getDate() + 1);
   }
   
   const formatDateTime = (date: Date) => {
