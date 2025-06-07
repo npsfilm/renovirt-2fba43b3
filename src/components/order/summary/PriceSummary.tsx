@@ -1,139 +1,153 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
 import { useOrders } from '@/hooks/useOrders';
-import { useUserCredits } from '@/hooks/useUserCredits';
-import { calculateEffectiveImageCount } from '@/utils/orderValidation';
 import CreditsApplication from './CreditsApplication';
+import { calculateEffectiveImageCount } from '@/utils/orderValidation';
 import type { OrderData } from '@/utils/orderValidation';
 
 interface PriceSummaryProps {
   orderData: OrderData;
-  creditsToUse: number;
-  onCreditsChange: (credits: number) => void;
+  creditsToUse?: number;
+  onCreditsChange?: (credits: number) => void;
 }
 
-const PriceSummary = ({ orderData, creditsToUse, onCreditsChange }: PriceSummaryProps) => {
-  const { calculateTotalPrice } = useOrders();
-  const { credits, isLoading: creditsLoading } = useUserCredits();
-
+const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSummaryProps) => {
+  const { calculateTotalPrice, packages } = useOrders();
   const grossPrice = calculateTotalPrice(orderData);
-  const creditsDiscount = Math.min(creditsToUse, grossPrice);
-  const finalPrice = Math.max(0, grossPrice - creditsDiscount);
+  const creditDiscount = creditsToUse * 1; // 1 Euro per credit
+  const finalPrice = Math.max(0, grossPrice - creditDiscount);
+  
+  // Calculate effective image count
   const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
-
-  // Get proper package display name
-  const getPackageDisplayName = (packageName?: string) => {
-    switch (packageName) {
-      case 'basic':
-        return 'Basic HDR';
-      case 'premium':
-        return 'Premium HDR & Retusche';
-      default:
-        return packageName || '';
+  
+  // Get package price from database or fallback to hardcoded values
+  const getPackagePrice = () => {
+    if (packages && packages.length > 0) {
+      const selectedPackage = packages.find(pkg => pkg.name.toLowerCase() === orderData.package);
+      if (selectedPackage) {
+        return selectedPackage.base_price;
+      }
     }
+    
+    // Fallback to hardcoded values if packages not loaded
+    return orderData.package === 'basic' ? 9 : 13;
   };
-
-  const getPackagePrice = (packageName?: string) => {
-    return packageName === 'basic' ? 9 : 13;
+  
+  const packagePricePerImage = getPackagePrice();
+  const baseNetPrice = packagePricePerImage * imageCount;
+  
+  // Calculate extras prices
+  const extrasNetPrices = {
+    express: orderData.extras.express ? 2 * imageCount : 0,
+    upscale: orderData.extras.upscale ? 2 * imageCount : 0,
+    watermark: orderData.extras.watermark ? 2 * imageCount : 0,
   };
+  
+  const totalExtrasNet = Object.values(extrasNetPrices).reduce((sum, price) => sum + price, 0);
+  const totalNetPrice = baseNetPrice + totalExtrasNet;
+  const vatAmount = totalNetPrice * 0.19;
 
   return (
-    <Card className="sticky top-6">
-      <CardHeader>
-        <CardTitle className="text-lg">Bestellübersicht</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Package */}
-        <div className="flex justify-between items-center">
-          <div>
-            <p className="font-medium">{getPackageDisplayName(orderData.package)}</p>
-            <p className="text-sm text-muted-foreground">
-              {imageCount} {imageCount === 1 ? 'Bild' : 'Bilder'} × {getPackagePrice(orderData.package)}€
-            </p>
-          </div>
-          <span className="font-medium">
-            {(getPackagePrice(orderData.package) * imageCount).toFixed(2)}€
-          </span>
-        </div>
-
-        {/* Extras */}
-        {Object.entries(orderData.extras).some(([_, selected]) => selected) && (
-          <>
-            <Separator />
-            <div className="space-y-2">
-              <p className="font-medium text-sm">Extras</p>
-              {orderData.extras.express && (
-                <div className="flex justify-between items-center text-sm">
-                  <div className="flex items-center gap-2">
-                    <span>Express Bearbeitung</span>
-                    <Badge variant="outline" className="text-xs">24h</Badge>
-                  </div>
-                  <span>{(2 * imageCount).toFixed(2)}€</span>
-                </div>
-              )}
-              {orderData.extras.upscale && (
-                <div className="flex justify-between items-center text-sm">
-                  <span>KI Upscaling</span>
-                  <span>{(2 * imageCount).toFixed(2)}€</span>
-                </div>
-              )}
-              {orderData.extras.watermark && (
-                <div className="flex justify-between items-center text-sm">
-                  <span>Eigenes Wasserzeichen</span>
-                  <span>{(2 * imageCount).toFixed(2)}€</span>
-                </div>
-              )}
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Preisübersicht</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {/* Base Package */}
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="font-medium">{orderData.package === 'basic' ? 'Basic' : 'Premium'} Paket ({imageCount} Bilder)</span>
+              <span>{baseNetPrice.toFixed(2)} €</span>
             </div>
-          </>
-        )}
-
-        <Separator />
-
-        {/* Subtotal */}
-        <div className="flex justify-between items-center">
-          <span className="font-medium">Zwischensumme</span>
-          <span className="font-medium">{grossPrice.toFixed(2)}€</span>
-        </div>
-
-        {/* Credits */}
-        {!creditsLoading && credits && credits > 0 && (
-          <CreditsApplication
-            availableCredits={credits}
-            maxUsableCredits={grossPrice}
-            creditsToUse={creditsToUse}
-            onCreditsChange={onCreditsChange}
-          />
-        )}
-
-        {creditsDiscount > 0 && (
-          <div className="flex justify-between items-center text-success">
-            <span>Guthaben angewendet</span>
-            <span>-{creditsDiscount.toFixed(2)}€</span>
+            <div className="text-xs text-muted-foreground pl-2">
+              {packagePricePerImage.toFixed(2)} € pro Bild (netto)
+            </div>
           </div>
-        )}
-
-        <Separator />
-
-        {/* Total */}
-        <div className="flex justify-between items-center text-lg font-bold">
-          <span>Gesamtpreis</span>
-          <span>{finalPrice.toFixed(2)}€</span>
-        </div>
-
-        {finalPrice === 0 && (
-          <div className="text-center p-3 bg-success/10 rounded-lg">
-            <p className="text-success font-medium">Kostenlos mit Ihrem Guthaben!</p>
+          
+          {/* Extras Section */}
+          {totalExtrasNet > 0 && (
+            <div className="space-y-2 border-t pt-2">
+              <div className="text-sm font-medium text-muted-foreground">Extras:</div>
+              
+              {orderData.extras.express && (
+                <div className="flex justify-between text-sm pl-2">
+                  <span>24h Express-Lieferung</span>
+                  <span>{extrasNetPrices.express.toFixed(2)} €</span>
+                </div>
+              )}
+              
+              {orderData.extras.upscale && (
+                <div className="flex justify-between text-sm pl-2">
+                  <span>4K Upscale</span>
+                  <span>{extrasNetPrices.upscale.toFixed(2)} €</span>
+                </div>
+              )}
+              
+              {orderData.extras.watermark && (
+                <div className="flex justify-between text-sm pl-2">
+                  <span>Eigenes Wasserzeichen</span>
+                  <span>{extrasNetPrices.watermark.toFixed(2)} €</span>
+                </div>
+              )}
+              
+              <div className="flex justify-between text-sm font-medium border-t pt-2">
+                <span>Extras gesamt</span>
+                <span>{totalExtrasNet.toFixed(2)} €</span>
+              </div>
+            </div>
+          )}
+          
+          {/* Net Total */}
+          <div className="flex justify-between border-t pt-2">
+            <span>Netto gesamt</span>
+            <span>{totalNetPrice.toFixed(2)} €</span>
           </div>
-        )}
+          
+          {/* VAT */}
+          <div className="flex justify-between text-sm text-muted-foreground">
+            <span>MwSt. (19%)</span>
+            <span>{vatAmount.toFixed(2)} €</span>
+          </div>
+          
+          {/* Gross Total */}
+          <div className="flex justify-between border-t pt-2">
+            <span>Brutto gesamt</span>
+            <span>{grossPrice.toFixed(2)} €</span>
+          </div>
+          
+          {/* Credits Discount */}
+          {creditsToUse > 0 && (
+            <div className="flex justify-between text-green-600">
+              <span>Credits-Rabatt ({creditsToUse} Credits)</span>
+              <span>-{creditDiscount.toFixed(2)} €</span>
+            </div>
+          )}
+          
+          {/* Final Price */}
+          <div className="border-t pt-3">
+            <div className="flex justify-between text-lg font-semibold">
+              <span>Gesamtpreis</span>
+              <span>{finalPrice.toFixed(2)} €</span>
+            </div>
+          </div>
+          
+          <div className="text-xs text-muted-foreground">
+            Alle Preise inklusive 19% MwSt.
+          </div>
+        </CardContent>
+      </Card>
 
-        <div className="text-xs text-muted-foreground text-center">
-          Alle Preise inkl. 19% MwSt.
-        </div>
-      </CardContent>
-    </Card>
+      {onCreditsChange && (
+        <CreditsApplication
+          totalPrice={grossPrice}
+          creditsToUse={creditsToUse}
+          onCreditsChange={onCreditsChange}
+          imageCount={imageCount}
+        />
+      )}
+    </div>
   );
 };
 

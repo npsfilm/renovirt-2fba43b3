@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { usePayment } from '@/hooks/usePayment';
@@ -7,10 +8,11 @@ import { useUserCredits } from '@/hooks/useUserCredits';
 import { useToast } from '@/hooks/use-toast';
 import { useOrders } from '@/hooks/useOrders';
 import { withCSRFProtection } from '@/utils/csrfProtection';
+import { validateAdminOperation } from '@/utils/enhancedSecurityValidation';
 import { secureLog, logSecurityEvent } from '@/utils/secureLogging';
 import type { OrderData } from '@/utils/orderValidation';
 
-export const useSummaryStepLogic = (orderData: OrderData, onNext: (createdOrder?: any) => void) => {
+export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) => {
   const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'invoice'>('stripe');
   const [creditsToUse, setCreditsToUse] = useState(0);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -21,7 +23,7 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: (createdOrder?
   const [currentOrderData, setCurrentOrderData] = useState<OrderData | null>(null);
 
   const { user } = useAuth();
-  const { createPaymentIntent } = usePayment();
+  const { createPaymentIntent, handlePaymentSuccess } = usePayment();
   const { packages, addOns } = useOrderData();
   const { createOrder, createOrderAfterPayment } = useOrderCreation(packages, addOns);
   const { calculateTotalPrice } = useOrders();
@@ -30,16 +32,19 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: (createdOrder?
   const { toast } = useToast();
 
   useEffect(() => {
+    // Guard condition: only calculate pricing if orderData has required fields and credits are loaded
     if (!orderData || !orderData.extras || !orderData.files || creditsLoading) {
       return;
     }
 
+    // Use the same calculation as in PriceSummary
     const grossPrice = calculateTotalPrice(orderData);
     const creditsDiscount = Math.min(credits || 0, grossPrice);
     const calculatedFinalPrice = Math.max(0, grossPrice - creditsDiscount);
     
     setFinalPrice(calculatedFinalPrice);
 
+    // Automatically use all available credits if possible
     if (credits && grossPrice > 0) {
       setCreditsToUse(Math.min(credits, creditsDiscount));
     } else {
@@ -48,6 +53,7 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: (createdOrder?
   }, [orderData, credits, creditsLoading, calculateTotalPrice]);
 
   useEffect(() => {
+    // Check if the order can proceed based on the acceptance of terms
     setCanProceed(orderData.acceptedTerms);
   }, [orderData.acceptedTerms]);
 
@@ -56,13 +62,14 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: (createdOrder?
     
     if (user && currentOrderData) {
       try {
-        const createdOrder = await createOrderAfterPayment(currentOrderData, paymentIntentId);
+        // Create the actual order in the database after successful payment
+        await createOrderAfterPayment(currentOrderData, paymentIntentId);
         
         toast({
           title: 'Zahlung erfolgreich!',
           description: 'Ihre Bestellung wurde erfolgreich bezahlt und wird nun bearbeitet.',
         });
-        onNext(createdOrder);
+        onNext();
       } catch (error: any) {
         console.error('Failed to create order after payment:', error);
         toast({
@@ -76,7 +83,7 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: (createdOrder?
 
   const handlePaymentModalError = (error: string) => {
     setShowPaymentModal(false);
-    setCurrentOrderData(null);
+    setCurrentOrderData(null); // Clear the order data
     toast({
       title: 'Zahlungsfehler',
       description: error || 'Die Zahlung konnte nicht verarbeitet werden.',
@@ -106,6 +113,7 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: (createdOrder?
     setIsProcessing(true);
 
     try {
+      // Enhanced security validation for order creation
       logSecurityEvent('order_creation_attempt', { 
         userId: user.id,
         paymentMethod,
@@ -113,6 +121,7 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: (createdOrder?
         finalPrice
       });
 
+      // Prepare secure order data with CSRF protection
       const secureOrderData = withCSRFProtection({
         ...orderData,
         creditsUsed: creditsToUse,
@@ -126,8 +135,10 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: (createdOrder?
       });
 
       if (paymentMethod === 'stripe' && finalPrice > 0) {
+        // For Stripe payments, prepare for payment but don't create order yet
         setCurrentOrderData(secureOrderData);
         
+        // Create payment intent with a temporary order ID
         const paymentData = await createPaymentIntent({
           orderId: 'temp-stripe-order',
           amount: finalPrice,
@@ -137,6 +148,7 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: (createdOrder?
         setClientSecret(paymentData.client_secret);
         setShowPaymentModal(true);
       } else {
+        // For invoice payment or zero amount, create the order immediately
         const createdOrder = await createOrder({
           orderData: secureOrderData,
           paymentMethod: paymentMethod as 'stripe' | 'invoice'
@@ -148,7 +160,7 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: (createdOrder?
             ? 'Ihre Bestellung wurde aufgegeben. Sie erhalten eine Rechnung per E-Mail.' 
             : 'Ihre kostenlose Bestellung wurde aufgegeben.',
         });
-        onNext(createdOrder);
+        onNext();
       }
 
       logSecurityEvent('order_creation_success', { 

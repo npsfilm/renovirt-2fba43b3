@@ -4,32 +4,35 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Gift, Plus, Minus } from 'lucide-react';
+import { useUserCredits } from '@/hooks/useUserCredits';
 
 interface CreditsApplicationProps {
-  availableCredits: number;
-  maxUsableCredits: number;
+  totalPrice: number;
   creditsToUse: number;
   onCreditsChange: (credits: number) => void;
+  imageCount: number;
 }
 
 const CreditsApplication = ({ 
-  availableCredits, 
-  maxUsableCredits, 
+  totalPrice, 
   creditsToUse, 
-  onCreditsChange 
+  onCreditsChange, 
+  imageCount 
 }: CreditsApplicationProps) => {
+  const { credits: availableCredits, isLoading } = useUserCredits();
   const [inputValue, setInputValue] = useState(creditsToUse.toString());
 
-  if (availableCredits <= 0) {
+  if (isLoading || availableCredits <= 0) {
     return null;
   }
 
-  // Maximum credits that can be used (limited by available credits and max usable)
-  const maxCredits = Math.min(availableCredits, maxUsableCredits);
+  // Maximum credits that can be used (limited by available credits and image count)
+  const maxCreditsUsable = Math.min(availableCredits, imageCount);
   const creditValue = creditsToUse * 1; // 1 Euro per credit
+  const discountedPrice = Math.max(0, totalPrice - creditValue);
 
   const handleCreditsChange = (newCredits: number) => {
-    const validCredits = Math.max(0, Math.min(newCredits, maxCredits));
+    const validCredits = Math.max(0, Math.min(newCredits, maxCreditsUsable));
     setInputValue(validCredits.toString());
     onCreditsChange(validCredits);
   };
@@ -71,7 +74,7 @@ const CreditsApplication = ({
             value={inputValue}
             onChange={(e) => handleInputChange(e.target.value)}
             min="0"
-            max={maxCredits}
+            max={maxCreditsUsable}
             className="text-center h-8 bg-white border-blue-300"
           />
           
@@ -80,7 +83,7 @@ const CreditsApplication = ({
             variant="outline"
             size="sm"
             onClick={() => handleCreditsChange(creditsToUse + 1)}
-            disabled={creditsToUse >= maxCredits}
+            disabled={creditsToUse >= maxCreditsUsable}
             className="h-8 w-8 p-0"
           >
             <Plus className="w-4 h-4" />
@@ -101,7 +104,7 @@ const CreditsApplication = ({
             type="button"
             variant="ghost"
             size="sm"
-            onClick={() => handleCreditsChange(maxCredits)}
+            onClick={() => handleCreditsChange(maxCreditsUsable)}
             className="text-blue-600 hover:text-blue-700"
           >
             Maximum verwenden
@@ -117,6 +120,10 @@ const CreditsApplication = ({
             <div className="flex justify-between text-sm mb-1">
               <span className="text-blue-700">Ersparnis:</span>
               <span className="font-medium text-green-600">-{creditValue.toFixed(2)} €</span>
+            </div>
+            <div className="flex justify-between text-base font-semibold">
+              <span className="text-blue-900">Neuer Preis:</span>
+              <span className="text-blue-900">{discountedPrice.toFixed(2)} €</span>
             </div>
           </div>
         )}

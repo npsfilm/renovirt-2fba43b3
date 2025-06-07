@@ -1,25 +1,44 @@
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import OrderProgress from '@/components/order/OrderProgress';
-import PackageStep from '@/components/order/PackageStep';
+import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import AppSidebar from '@/components/layout/AppSidebar';
 import PhotoTypeStep from '@/components/order/PhotoTypeStep';
 import UploadStep from '@/components/order/UploadStep';
+import PackageStep from '@/components/order/PackageStep';
 import ExtrasStep from '@/components/order/ExtrasStep';
 import SummaryStep from '@/components/order/SummaryStep';
 import ConfirmationStep from '@/components/order/ConfirmationStep';
-import { validateOrderData, type OrderData } from '@/utils/orderValidation';
-import { useToast } from '@/hooks/use-toast';
+import OrderProgress from '@/components/order/OrderProgress';
+import { useAuth } from '@/hooks/useAuth';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import type { OrderData } from '@/utils/orderValidation';
 
 const OrderFlow = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [createdOrder, setCreatedOrder] = useState<any>(null);
-  const { toast } = useToast();
+  const { user } = useAuth();
+  
+  // Fetch customer profile data
+  const { data: profile } = useQuery({
+    queryKey: ['customer-profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      const { data, error } = await supabase
+        .from('customer_profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
+      if (error && error.code !== 'PGRST116') throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+  
   const [orderData, setOrderData] = useState<OrderData>({
-    package: undefined,
-    photoType: undefined,
     files: [],
+    package: 'premium', // Pre-select premium package
     extras: {
       express: false,
       upscale: false,
@@ -28,56 +47,61 @@ const OrderFlow = () => {
     acceptedTerms: false,
   });
 
+  // Auto-fill email when user or profile data is available
+  useEffect(() => {
+    if (user?.email && !orderData.email) {
+      setOrderData(prev => ({ ...prev, email: user.email }));
+    } else if (profile?.billing_email && !orderData.email) {
+      setOrderData(prev => ({ ...prev, email: profile.billing_email }));
+    }
+  }, [user, profile, orderData.email]);
+
   const steps = [
-    { number: 1, title: 'Paket wählen', status: !!orderData.package ? 'completed' : currentStep === 1 ? 'current' : 'upcoming' },
-    { number: 2, title: 'Foto-Typ', status: !!orderData.photoType ? 'completed' : currentStep === 2 ? 'current' : 'upcoming' },
-    { number: 3, title: 'Bilder hochladen', status: orderData.files.length > 0 ? 'completed' : currentStep === 3 ? 'current' : 'upcoming' },
-    { number: 4, title: 'Extras', status: currentStep > 4 ? 'completed' : currentStep === 4 ? 'current' : 'upcoming' },
-    { number: 5, title: 'Zusammenfassung', status: orderData.acceptedTerms ? 'completed' : currentStep === 5 ? 'current' : 'upcoming' },
-    { number: 6, title: 'Bestätigung', status: currentStep === 6 ? 'current' : 'upcoming' },
-  ].map(step => ({
-    ...step,
-    status: step.status as 'completed' | 'current' | 'upcoming'
-  }));
+    { 
+      number: 1, 
+      title: 'Typ wählen', 
+      status: (currentStep > 1 ? 'completed' : currentStep === 1 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
+    },
+    { 
+      number: 2, 
+      title: 'Upload', 
+      status: (currentStep > 2 ? 'completed' : currentStep === 2 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
+    },
+    { 
+      number: 3, 
+      title: 'Paket', 
+      status: (currentStep > 3 ? 'completed' : currentStep === 3 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
+    },
+    { 
+      number: 4, 
+      title: 'Extras', 
+      status: (currentStep > 4 ? 'completed' : currentStep === 4 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
+    },
+    { 
+      number: 5, 
+      title: 'Übersicht', 
+      status: (currentStep > 5 ? 'completed' : currentStep === 5 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
+    },
+    { 
+      number: 6, 
+      title: 'Bestätigung', 
+      status: (currentStep === 6 ? 'completed' : 'upcoming') as 'completed' | 'current' | 'upcoming'
+    },
+  ];
 
   const updateOrderData = (updates: Partial<OrderData>) => {
     setOrderData(prev => ({ ...prev, ...updates }));
   };
 
-  const goToNext = (createdOrderData?: any) => {
-    if (createdOrderData) {
-      setCreatedOrder(createdOrderData);
+  const nextStep = () => {
+    if (currentStep < 6) {
+      setCurrentStep(prev => prev + 1);
     }
-    setCurrentStep(prev => Math.min(prev + 1, steps.length));
   };
 
-  const goToPrev = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 1));
-  };
-
-  const validateCurrentStep = () => {
-    switch (currentStep) {
-      case 1:
-        return !!orderData.package;
-      case 2:
-        return !!orderData.photoType;
-      case 3:
-        return orderData.files.length > 0;
-      case 4:
-        return true;
-      case 5:
-        const validation = validateOrderData(orderData);
-        if (!validation.isValid) {
-          toast({
-            title: "Unvollständige Angaben",
-            description: validation.errors[0],
-            variant: "destructive",
-          });
-          return false;
-        }
-        return orderData.acceptedTerms;
-      default:
-        return true;
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(prev => prev - 1);
     }
   };
 
@@ -85,29 +109,29 @@ const OrderFlow = () => {
     switch (currentStep) {
       case 1:
         return (
-          <PackageStep
-            selectedPackage={orderData.package}
-            onPackageChange={(pkg) => updateOrderData({ package: pkg })}
-            onNext={goToNext}
-            onPrev={goToPrev}
-          />
-        );
-      case 2:
-        return (
           <PhotoTypeStep
             selectedType={orderData.photoType}
             onTypeChange={(type) => updateOrderData({ photoType: type })}
-            onNext={goToNext}
+            onNext={nextStep}
           />
         );
-      case 3:
+      case 2:
         return (
           <UploadStep
             files={orderData.files}
             photoType={orderData.photoType}
             onFilesChange={(files) => updateOrderData({ files })}
-            onNext={goToNext}
-            onPrev={goToPrev}
+            onNext={nextStep}
+            onPrev={prevStep}
+          />
+        );
+      case 3:
+        return (
+          <PackageStep
+            selectedPackage={orderData.package}
+            onPackageChange={(pkg) => updateOrderData({ package: pkg })}
+            onNext={nextStep}
+            onPrev={prevStep}
           />
         );
       case 4:
@@ -116,8 +140,8 @@ const OrderFlow = () => {
             orderData={orderData}
             onExtrasChange={(extras) => updateOrderData({ extras })}
             onWatermarkFileChange={(file) => updateOrderData({ watermarkFile: file })}
-            onNext={goToNext}
-            onPrev={goToPrev}
+            onNext={nextStep}
+            onPrev={prevStep}
           />
         );
       case 5:
@@ -125,46 +149,37 @@ const OrderFlow = () => {
           <SummaryStep
             orderData={orderData}
             onUpdateData={updateOrderData}
-            onNext={goToNext}
-            onPrev={goToPrev}
+            onNext={nextStep}
+            onPrev={prevStep}
           />
         );
       case 6:
-        return (
-          <ConfirmationStep
-            orderData={orderData}
-            createdOrder={createdOrder}
-            orderNumber={createdOrder?.order_number}
-          />
-        );
+        return <ConfirmationStep orderData={orderData} />;
       default:
         return null;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background py-8">
-      <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              Ihre Immobilienbilder perfekt bearbeitet
-            </h1>
-            <p className="text-muted-foreground">
-              In wenigen Schritten zu professionellen HDR-Bildern
-            </p>
-          </div>
-
-          <OrderProgress steps={steps} />
-
-          <Card className="mt-8">
-            <CardContent className="p-8">
-              {renderStep()}
-            </CardContent>
-          </Card>
-        </div>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-gradient-to-br from-background via-background to-muted/20">
+        <AppSidebar />
+        <SidebarInset>
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border px-4 bg-background/80 backdrop-blur-sm">
+            <SidebarTrigger className="-ml-1" />
+            <h1 className="text-xl font-semibold text-foreground">Bestellflow</h1>
+          </header>
+          <main className="flex-1 p-6">
+            <div className="max-w-5xl mx-auto space-y-8">
+              <OrderProgress steps={steps} />
+              <div className="bg-card border rounded-lg p-8 shadow-sm">
+                {renderStep()}
+              </div>
+            </div>
+          </main>
+        </SidebarInset>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
