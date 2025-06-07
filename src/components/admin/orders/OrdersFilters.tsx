@@ -36,12 +36,15 @@ const OrdersFilters = ({
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-background"
           >
             <option value="all">Alle Status</option>
-            <option value="pending">Ausstehend</option>
+            <option value="pending">Warteschlange</option>
             <option value="processing">In Bearbeitung</option>
+            <option value="quality_check">Überprüfung</option>
+            <option value="revision">In Revision</option>
             <option value="completed">Abgeschlossen</option>
+            <option value="delivered">Abgeschlossen & bezahlt</option>
             <option value="cancelled">Storniert</option>
           </select>
         </div>
