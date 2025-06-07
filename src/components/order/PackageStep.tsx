@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,7 +15,7 @@ const PackageStep = ({ selectedPackage, onPackageChange, onNext, onPrev }: Packa
   const packages = [
     {
       id: 'basic' as const,
-      name: 'Basic HDR',
+      name: 'Basic',
       price: '9.00€',
       priceUnit: 'pro Bild',
       description: 'Grundlegende HDR-Entwicklung & Korrekturen.',
@@ -33,7 +32,7 @@ const PackageStep = ({ selectedPackage, onPackageChange, onNext, onPrev }: Packa
     },
     {
       id: 'premium' as const,
-      name: 'Premium HDR & Retusche',
+      name: 'Premium',
       price: '13.00€',
       priceUnit: 'pro Bild',
       description: 'Professionelle HDR-Bearbeitung & Detailretusche.',
