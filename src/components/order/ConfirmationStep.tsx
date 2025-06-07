@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,9 +24,33 @@ const ConfirmationStep = ({
     packages,
     addOns
   } = useOrders();
-  const estimatedDelivery = orderData.extras.express ? '24 Stunden' : '24–48 Stunden';
+  
+  // Calculate delivery date and time
+  const orderDate = new Date();
+  const deliveryDate = new Date(orderDate);
+  
+  if (orderData.extras.express) {
+    // Express: 24 hours
+    deliveryDate.setHours(deliveryDate.getHours() + 24);
+  } else {
+    // Standard: 48 hours
+    deliveryDate.setHours(deliveryDate.getHours() + 48);
+  }
+  
+  const formatDateTime = (date: Date) => {
+    return new Intl.DateTimeFormat('de-DE', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'Europe/Berlin'
+    }).format(date);
+  };
+  
   const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
   const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
+  
   return <div className="space-y-6">
       {/* Header section with success icon */}
       <div className="text-center space-y-4 mb-6">
@@ -76,6 +101,10 @@ const ConfirmationStep = ({
                   <span className="text-muted-foreground">E-Mail:</span>
                   <span className="font-medium">{orderData.email}</span>
                 </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Bestellzeit:</span>
+                  <span className="font-medium">{formatDateTime(orderDate)}</span>
+                </div>
               </div>
             </div>
 
@@ -86,7 +115,7 @@ const ConfirmationStep = ({
                   <Calendar className="w-5 h-5 text-info mt-0.5" />
                   <div>
                     <p className="font-medium">Voraussichtliche Fertigstellung</p>
-                    <p className="text-muted-foreground text-sm">in {estimatedDelivery}</p>
+                    <p className="text-muted-foreground text-sm">{formatDateTime(deliveryDate)}</p>
                   </div>
                 </div>
                 
