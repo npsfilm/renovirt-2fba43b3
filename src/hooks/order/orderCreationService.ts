@@ -31,6 +31,11 @@ export const createOrderInDatabase = async (
     ? (stripePaymentIntentId ? 'payment_completed' : 'payment_pending')
     : 'payment_pending';
 
+  // Check if photo type is bracketing (either bracketing-3 or bracketing-5)
+  const isBracketing = orderData.photoType === 'bracketing-3' || orderData.photoType === 'bracketing-5';
+  const bracketingExposures = orderData.photoType === 'bracketing-3' ? 3 : 
+                             orderData.photoType === 'bracketing-5' ? 5 : null;
+
   const orderPayload = {
     user_id: userId,
     package_id: selectedPackage.id,
@@ -46,8 +51,8 @@ export const createOrderInDatabase = async (
     terms_accepted: orderData.acceptedTerms,
     stripe_session_id: stripePaymentIntentId || null,
     // Handle bracketing settings
-    bracketing_enabled: orderData.photoType === 'bracketing',
-    bracketing_exposures: orderData.photoType === 'bracketing' ? 3 : null,
+    bracketing_enabled: isBracketing,
+    bracketing_exposures: bracketingExposures,
   };
 
   const { data: order, error: orderError } = await supabase

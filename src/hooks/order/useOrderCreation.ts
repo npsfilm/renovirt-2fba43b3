@@ -37,7 +37,7 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
           orderData,
           totalPrice,
           selectedPackage,
-          isTemporary: true
+          isTemporaryOrder: true // Changed property name to avoid conflicts
         };
       }
       
@@ -87,7 +87,7 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
           title: "Bestellung erfolgreich erstellt!",
           description: "Ihre Bestellung wurde erfolgreich übermittelt.",
         });
-      } else if (paymentMethod === 'stripe' && !order.isTemporary) {
+      } else if (paymentMethod === 'stripe' && !order.isTemporaryOrder) {
         // This is for completed Stripe orders (called after payment success)
         queryClient.invalidateQueries({ queryKey: ['orders'] });
         queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
