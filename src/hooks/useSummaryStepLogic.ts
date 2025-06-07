@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { usePayment } from '@/hooks/usePayment';
@@ -36,6 +35,7 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
     }
 
     const { calculatedPrice, creditsDiscount } = calculateOrderPricing(orderData, credits || 0);
+    // calculatedPrice is already the gross price (including VAT)
     setFinalPrice(calculatedPrice);
 
     // Automatically use all available credits if possible
@@ -122,10 +122,10 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
       });
 
       if (paymentMethod === 'stripe' && finalPrice > 0) {
-        // Create payment intent for Stripe payments
+        // Create payment intent for Stripe payments with gross price (including VAT)
         const paymentData = await createPaymentIntent({
           orderId: createdOrder.id,
-          amount: finalPrice,
+          amount: finalPrice, // This is already the gross price including VAT
           currency: 'eur',
         });
 

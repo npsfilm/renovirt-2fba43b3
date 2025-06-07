@@ -14,9 +14,11 @@ interface PriceSummaryProps {
 
 const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSummaryProps) => {
   const { calculateTotalPrice } = useOrders();
-  const basePrice = calculateTotalPrice(orderData);
+  const grossPrice = calculateTotalPrice(orderData);
+  const netPrice = grossPrice / 1.19; // Calculate net price from gross
+  const vatAmount = grossPrice - netPrice;
   const creditDiscount = creditsToUse * 1; // 1 Euro per credit
-  const finalPrice = Math.max(0, basePrice - creditDiscount);
+  const finalPrice = Math.max(0, grossPrice - creditDiscount);
   
   // Calculate effective image count
   const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
@@ -28,9 +30,19 @@ const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSum
           <CardTitle>Preisübersicht</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="flex justify-between">
-            <span>Basispreis</span>
-            <span>{basePrice.toFixed(2)} €</span>
+          <div className="flex justify-between text-sm text-muted-foreground">
+            <span>Netto</span>
+            <span>{netPrice.toFixed(2)} €</span>
+          </div>
+          
+          <div className="flex justify-between text-sm text-muted-foreground">
+            <span>MwSt. (19%)</span>
+            <span>{vatAmount.toFixed(2)} €</span>
+          </div>
+          
+          <div className="flex justify-between border-t pt-2">
+            <span>Brutto</span>
+            <span>{grossPrice.toFixed(2)} €</span>
           </div>
           
           {creditsToUse > 0 && (
@@ -47,15 +59,15 @@ const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSum
             </div>
           </div>
           
-          <div className="text-xs text-gray-600">
-            Alle Preise inkl. 19% MwSt.
+          <div className="text-xs text-muted-foreground">
+            Preise zzgl. 19% MwSt.
           </div>
         </CardContent>
       </Card>
 
       {onCreditsChange && (
         <CreditsApplication
-          totalPrice={basePrice}
+          totalPrice={grossPrice}
           creditsToUse={creditsToUse}
           onCreditsChange={onCreditsChange}
           imageCount={imageCount}
