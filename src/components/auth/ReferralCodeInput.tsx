@@ -39,44 +39,74 @@ const ReferralCodeInput = ({ onReferralCodeChange }: ReferralCodeInputProps) => 
     
     try {
       const cleanCode = code.trim().toUpperCase();
-      console.log('Validating referral code:', cleanCode);
+      console.log('🔍 Validating referral code:', cleanCode);
       
+      // First, let's check what referral codes exist in the database
+      const { data: allCodes, error: allCodesError } = await supabase
+        .from('referral_codes')
+        .select('code, is_active, user_id')
+        .limit(10);
+
+      console.log('📋 Available referral codes sample:', allCodes);
+      console.log('❌ All codes error:', allCodesError);
+
       const { data, error } = await supabase
         .from('referral_codes')
-        .select('id, user_id, is_active')
+        .select('id, user_id, is_active, code')
         .eq('code', cleanCode)
         .eq('is_active', true)
         .maybeSingle();
 
-      console.log('Referral code validation result:', { data, error, cleanCode });
+      console.log('🎯 Specific code query result:', { 
+        searchedCode: cleanCode,
+        data, 
+        error,
+        hasData: !!data,
+        dataKeys: data ? Object.keys(data) : null
+      });
 
       if (error) {
-        console.error('Referral code validation error:', error);
-        secureLog('Referral code validation error:', error);
+        console.error('❌ Database error during validation:', error);
+        secureLog('Referral code validation database error:', error);
         setValidationState('error');
-        setErrorMessage('Validierung fehlgeschlagen. Bitte versuchen Sie es erneut.');
+        setErrorMessage('Datenbankfehler. Bitte versuchen Sie es erneut.');
         onReferralCodeChange(code, false);
         return;
       }
 
       if (data) {
-        console.log('Valid referral code found:', data);
+        console.log('✅ Valid referral code found:', data);
         setValidationState('valid');
         setErrorMessage('');
         setRetryCount(0);
         onReferralCodeChange(cleanCode, true);
         secureLog('Valid referral code found', { codeId: data.id });
       } else {
-        console.log('Referral code not found:', cleanCode);
-        setValidationState('invalid');
-        setErrorMessage('Empfehlungscode nicht gefunden oder inaktiv');
+        console.log('❌ Referral code not found or inactive:', cleanCode);
+        
+        // Let's also check if the code exists but is inactive
+        const { data: inactiveCheck } = await supabase
+          .from('referral_codes')
+          .select('code, is_active')
+          .eq('code', cleanCode)
+          .maybeSingle();
+
+        console.log('🔍 Inactive code check:', inactiveCheck);
+
+        if (inactiveCheck && !inactiveCheck.is_active) {
+          setValidationState('invalid');
+          setErrorMessage('Empfehlungscode ist deaktiviert');
+        } else {
+          setValidationState('invalid');
+          setErrorMessage('Empfehlungscode nicht gefunden');
+        }
         onReferralCodeChange(code, false);
       }
     } catch (error) {
-      console.error('Referral code validation error:', error);
-      secureLog('Referral code validation error:', error);
+      console.error('💥 Unexpected error during referral code validation:', error);
+      secureLog('Referral code validation unexpected error:', error);
       setValidationState('error');
-      setErrorMessage('Netzwerkfehler. Bitte versuchen Sie es erneut.');
+      setErrorMessage('Unerwarteter Fehler. Bitte versuchen Sie es erneut.');
       onReferralCodeChange(code, false);
     } finally {
       setIsValidating(false);
@@ -93,15 +123,17 @@ const ReferralCodeInput = ({ onReferralCodeChange }: ReferralCodeInputProps) => 
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      validateCode(referralCode);
+      if (referralCode.trim()) {
+        validateCode(referralCode);
+      }
     }, 500);
 
     return () => clearTimeout(timeoutId);
   }, [referralCode]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // More flexible input handling - allow more characters initially
-    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
+    // Allow more flexible input handling - accept the input as-is and clean it up during validation
+    const value = e.target.value.toUpperCase().slice(0, 12);
     setReferralCode(value);
     
     // Reset validation state when user types

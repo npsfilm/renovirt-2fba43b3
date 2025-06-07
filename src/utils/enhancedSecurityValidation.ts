@@ -1,8 +1,9 @@
+
 import { sanitizeInput, validateEmail } from './inputValidation';
 import { secureLog, logSecurityEvent } from './secureLogging';
 import { checkRateLimit } from './enhancedInputValidation';
 
-// Enhanced referral code validation - made more flexible
+// Enhanced referral code validation - made much more flexible
 export const validateReferralCode = (code: string): { valid: boolean; error?: string } => {
   if (!code || typeof code !== 'string') {
     return { valid: false, error: 'Referral code is required' };
@@ -11,25 +12,24 @@ export const validateReferralCode = (code: string): { valid: boolean; error?: st
   // Remove any whitespace and convert to uppercase
   const cleanCode = code.trim().toUpperCase();
 
-  // Check minimum length (at least 4 characters)
-  if (cleanCode.length < 4) {
-    return { valid: false, error: 'Empfehlungscode muss mindestens 4 Zeichen lang sein' };
+  // Check minimum length (at least 3 characters to be very flexible)
+  if (cleanCode.length < 3) {
+    return { valid: false, error: 'Empfehlungscode muss mindestens 3 Zeichen lang sein' };
   }
 
-  // Check maximum length (max 12 characters to be flexible)
-  if (cleanCode.length > 12) {
-    return { valid: false, error: 'Empfehlungscode darf maximal 12 Zeichen lang sein' };
+  // Check maximum length (max 15 characters to be very flexible)
+  if (cleanCode.length > 15) {
+    return { valid: false, error: 'Empfehlungscode darf maximal 15 Zeichen lang sein' };
   }
 
-  // Check format: only alphanumeric characters allowed
+  // Very permissive format check: allow alphanumeric characters
+  // This is just basic sanity checking - the real validation happens in the database
   const codePattern = /^[A-Z0-9]+$/;
   if (!codePattern.test(cleanCode)) {
     return { valid: false, error: 'Empfehlungscode darf nur Buchstaben und Zahlen enthalten' };
   }
 
-  // Remove the overly strict consecutive character check
-  // This was too restrictive for real referral codes
-
+  // Don't do any other client-side validation - let the database be the source of truth
   return { valid: true };
 };
 
