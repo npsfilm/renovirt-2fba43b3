@@ -45,10 +45,11 @@ export const useFormValidation = () => {
       return false;
     }
 
-    if (referralCode && !isReferralValid) {
+    // Only validate referral code if one was entered
+    if (referralCode && referralCode.trim() && !isReferralValid) {
       toast({
         title: 'Fehler',
-        description: 'Der eingegebene Empfehlungscode ist ungültig.',
+        description: 'Der eingegebene Empfehlungscode ist ungültig. Lassen Sie das Feld leer oder geben Sie einen gültigen Code ein.',
         variant: 'destructive',
       });
       return false;

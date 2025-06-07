@@ -1,9 +1,8 @@
-
 import { sanitizeInput, validateEmail } from './inputValidation';
 import { secureLog, logSecurityEvent } from './secureLogging';
 import { checkRateLimit } from './enhancedInputValidation';
 
-// Enhanced referral code validation
+// Enhanced referral code validation - made more flexible
 export const validateReferralCode = (code: string): { valid: boolean; error?: string } => {
   if (!code || typeof code !== 'string') {
     return { valid: false, error: 'Referral code is required' };
@@ -12,19 +11,24 @@ export const validateReferralCode = (code: string): { valid: boolean; error?: st
   // Remove any whitespace and convert to uppercase
   const cleanCode = code.trim().toUpperCase();
 
-  // Check format: exactly 8 alphanumeric characters
-  const codePattern = /^[A-Z0-9]{8}$/;
-  if (!codePattern.test(cleanCode)) {
-    logSecurityEvent('invalid_referral_code_format', { code: code.substring(0, 3) + '***' });
-    return { valid: false, error: 'Ungültiges Empfehlungscode-Format (8 Zeichen erforderlich)' };
+  // Check minimum length (at least 4 characters)
+  if (cleanCode.length < 4) {
+    return { valid: false, error: 'Empfehlungscode muss mindestens 4 Zeichen lang sein' };
   }
 
-  // Check for suspicious patterns (consecutive identical characters)
-  const consecutivePattern = /(.)\1{3,}/;
-  if (consecutivePattern.test(cleanCode)) {
-    logSecurityEvent('suspicious_referral_code_pattern', { code: cleanCode.substring(0, 3) + '***' });
-    return { valid: false, error: 'Ungültiges Empfehlungscode-Format' };
+  // Check maximum length (max 12 characters to be flexible)
+  if (cleanCode.length > 12) {
+    return { valid: false, error: 'Empfehlungscode darf maximal 12 Zeichen lang sein' };
   }
+
+  // Check format: only alphanumeric characters allowed
+  const codePattern = /^[A-Z0-9]+$/;
+  if (!codePattern.test(cleanCode)) {
+    return { valid: false, error: 'Empfehlungscode darf nur Buchstaben und Zahlen enthalten' };
+  }
+
+  // Remove the overly strict consecutive character check
+  // This was too restrictive for real referral codes
 
   return { valid: true };
 };

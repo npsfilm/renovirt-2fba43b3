@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { validateReferralCode } from '@/utils/enhancedSecurityValidation';
 import { secureLog } from '@/utils/secureLogging';
@@ -14,8 +14,9 @@ interface ReferralCodeInputProps {
 const ReferralCodeInput = ({ onReferralCodeChange }: ReferralCodeInputProps) => {
   const [referralCode, setReferralCode] = useState('');
   const [isValidating, setIsValidating] = useState(false);
-  const [validationState, setValidationState] = useState<'idle' | 'valid' | 'invalid'>('idle');
+  const [validationState, setValidationState] = useState<'idle' | 'valid' | 'invalid' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [retryCount, setRetryCount] = useState(0);
 
   const validateCode = async (code: string) => {
     if (!code.trim()) {
@@ -25,7 +26,7 @@ const ReferralCodeInput = ({ onReferralCodeChange }: ReferralCodeInputProps) => 
       return;
     }
 
-    // Client-side format validation
+    // Client-side format validation with improved logic
     const formatValidation = validateReferralCode(code);
     if (!formatValidation.valid) {
       setValidationState('invalid');
@@ -38,6 +39,7 @@ const ReferralCodeInput = ({ onReferralCodeChange }: ReferralCodeInputProps) => 
     
     try {
       const cleanCode = code.trim().toUpperCase();
+      console.log('Validating referral code:', cleanCode);
       
       const { data, error } = await supabase
         .from('referral_codes')
@@ -46,31 +48,46 @@ const ReferralCodeInput = ({ onReferralCodeChange }: ReferralCodeInputProps) => 
         .eq('is_active', true)
         .maybeSingle();
 
+      console.log('Referral code validation result:', { data, error, cleanCode });
+
       if (error) {
+        console.error('Referral code validation error:', error);
         secureLog('Referral code validation error:', error);
-        setValidationState('invalid');
-        setErrorMessage('Fehler bei der Validierung');
+        setValidationState('error');
+        setErrorMessage('Validierung fehlgeschlagen. Bitte versuchen Sie es erneut.');
         onReferralCodeChange(code, false);
         return;
       }
 
       if (data) {
+        console.log('Valid referral code found:', data);
         setValidationState('valid');
         setErrorMessage('');
+        setRetryCount(0);
         onReferralCodeChange(cleanCode, true);
         secureLog('Valid referral code found', { codeId: data.id });
       } else {
+        console.log('Referral code not found:', cleanCode);
         setValidationState('invalid');
         setErrorMessage('Empfehlungscode nicht gefunden oder inaktiv');
         onReferralCodeChange(code, false);
       }
     } catch (error) {
+      console.error('Referral code validation error:', error);
       secureLog('Referral code validation error:', error);
-      setValidationState('invalid');
-      setErrorMessage('Validierungsfehler');
+      setValidationState('error');
+      setErrorMessage('Netzwerkfehler. Bitte versuchen Sie es erneut.');
       onReferralCodeChange(code, false);
     } finally {
       setIsValidating(false);
+    }
+  };
+
+  // Retry logic for failed validations
+  const handleRetry = () => {
+    if (retryCount < 3) {
+      setRetryCount(prev => prev + 1);
+      validateCode(referralCode);
     }
   };
 
@@ -83,8 +100,15 @@ const ReferralCodeInput = ({ onReferralCodeChange }: ReferralCodeInputProps) => 
   }, [referralCode]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+    // More flexible input handling - allow more characters initially
+    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
     setReferralCode(value);
+    
+    // Reset validation state when user types
+    if (validationState === 'error') {
+      setValidationState('idle');
+      setErrorMessage('');
+    }
   };
 
   const getValidationIcon = () => {
@@ -97,6 +121,8 @@ const ReferralCodeInput = ({ onReferralCodeChange }: ReferralCodeInputProps) => 
         return <CheckCircle className="h-4 w-4 text-green-500" />;
       case 'invalid':
         return <XCircle className="h-4 w-4 text-red-500" />;
+      case 'error':
+        return <AlertCircle className="h-4 w-4 text-yellow-500" />;
       default:
         return null;
     }
@@ -114,12 +140,14 @@ const ReferralCodeInput = ({ onReferralCodeChange }: ReferralCodeInputProps) => 
           placeholder="z.B. ABC12345"
           value={referralCode}
           onChange={handleInputChange}
-          maxLength={8}
+          maxLength={12}
           className={`bg-gray-800 border-gray-700 text-white placeholder-gray-500 h-12 pr-10 ${
             validationState === 'valid' 
               ? 'border-green-500' 
               : validationState === 'invalid' 
               ? 'border-red-500' 
+              : validationState === 'error'
+              ? 'border-yellow-500'
               : ''
           }`}
         />
@@ -127,9 +155,25 @@ const ReferralCodeInput = ({ onReferralCodeChange }: ReferralCodeInputProps) => 
           {getValidationIcon()}
         </div>
       </div>
+      
       {errorMessage && (
-        <p className="text-sm text-red-400">{errorMessage}</p>
+        <div className="space-y-2">
+          <p className={`text-sm ${
+            validationState === 'error' ? 'text-yellow-400' : 'text-red-400'
+          }`}>
+            {errorMessage}
+          </p>
+          {validationState === 'error' && retryCount < 3 && (
+            <button
+              onClick={handleRetry}
+              className="text-sm text-blue-400 hover:text-blue-300 underline"
+            >
+              Erneut versuchen
+            </button>
+          )}
+        </div>
       )}
+      
       {validationState === 'valid' && (
         <p className="text-sm text-green-400">
           ✓ Gültiger Empfehlungscode - Sie erhalten 10 kostenlose Bilder!
