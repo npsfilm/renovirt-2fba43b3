@@ -5,6 +5,7 @@ import AppSidebar from '@/components/layout/AppSidebar';
 import PhotoTypeStep from '@/components/order/PhotoTypeStep';
 import UploadStep from '@/components/order/UploadStep';
 import PackageStep from '@/components/order/PackageStep';
+import ExtrasStep from '@/components/order/ExtrasStep';
 import SummaryStep from '@/components/order/SummaryStep';
 import ConfirmationStep from '@/components/order/ConfirmationStep';
 import OrderProgress from '@/components/order/OrderProgress';
@@ -73,13 +74,18 @@ const OrderFlow = () => {
     },
     { 
       number: 4, 
-      title: 'Übersicht', 
+      title: 'Extras', 
       status: (currentStep > 4 ? 'completed' : currentStep === 4 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
     },
     { 
       number: 5, 
+      title: 'Übersicht', 
+      status: (currentStep > 5 ? 'completed' : currentStep === 5 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
+    },
+    { 
+      number: 6, 
       title: 'Bestätigung', 
-      status: (currentStep === 5 ? 'completed' : 'upcoming') as 'completed' | 'current' | 'upcoming'
+      status: (currentStep === 6 ? 'completed' : 'upcoming') as 'completed' | 'current' | 'upcoming'
     },
   ];
 
@@ -88,7 +94,7 @@ const OrderFlow = () => {
   };
 
   const nextStep = () => {
-    if (currentStep < 5) {
+    if (currentStep < 6) {
       setCurrentStep(prev => prev + 1);
     }
   };
@@ -130,6 +136,16 @@ const OrderFlow = () => {
         );
       case 4:
         return (
+          <ExtrasStep
+            orderData={orderData}
+            onExtrasChange={(extras) => updateOrderData({ extras })}
+            onWatermarkFileChange={(file) => updateOrderData({ watermarkFile: file })}
+            onNext={nextStep}
+            onPrev={prevStep}
+          />
+        );
+      case 5:
+        return (
           <SummaryStep
             orderData={orderData}
             onUpdateData={updateOrderData}
@@ -137,7 +153,7 @@ const OrderFlow = () => {
             onPrev={prevStep}
           />
         );
-      case 5:
+      case 6:
         return <ConfirmationStep orderData={orderData} />;
       default:
         return null;
