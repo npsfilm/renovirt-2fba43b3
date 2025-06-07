@@ -12,16 +12,16 @@ interface PriceSummaryProps {
   onCreditsChange?: (credits: number) => void;
 }
 
-// Net prices per image (these result in the displayed gross prices with 19% VAT)
+// Net prices per image (these are the displayed base prices)
 const PACKAGE_NET_PRICES = {
-  Basic: 7.56,    // Results in 9.00 € gross
-  Premium: 10.92, // Results in 13.00 € gross
+  Basic: 9.00,    // Net price shown to user
+  Premium: 13.00, // Net price shown to user
 };
 
 const EXTRAS_NET_PRICES = {
-  express: 1.68,  // Results in 2.00 € gross
-  upscale: 1.68,  // Results in 2.00 € gross
-  watermark: 1.68, // Results in 2.00 € gross
+  express: 2.00,  // Net price shown to user
+  upscale: 2.00,  // Net price shown to user
+  watermark: 2.00, // Net price shown to user
 };
 
 const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSummaryProps) => {

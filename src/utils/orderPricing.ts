@@ -19,17 +19,17 @@ interface AddOn {
 
 const VAT_RATE = 0.19; // 19% VAT
 
-// Net prices per image for packages (these are the actual net prices)
+// Net prices per image for packages (these are the displayed prices)
 const PACKAGE_NET_PRICES = {
-  Basic: 7.56,    // Net price that results in 9.00 gross (7.56 * 1.19 = 9.00)
-  Premium: 10.92, // Net price that results in 13.00 gross (10.92 * 1.19 = 13.00)
+  Basic: 9.00,    // Net price shown to user
+  Premium: 13.00, // Net price shown to user
 };
 
-// Net prices per image for extras
+// Net prices per image for extras (these are the displayed prices)
 const EXTRAS_NET_PRICES = {
-  express: 1.68,    // Net price that results in 2.00 gross (1.68 * 1.19 = 2.00)
-  upscale: 1.68,    // Net price that results in 2.00 gross
-  watermark: 1.68,  // Net price that results in 2.00 gross
+  express: 2.00,    // Net price shown to user
+  upscale: 2.00,    // Net price shown to user
+  watermark: 2.00,  // Net price shown to user
 };
 
 export const calculateOrderTotal = (
@@ -51,12 +51,11 @@ export const calculateOrderTotal = (
     }
   });
 
-  // Add legacy database add-ons support (convert to net if needed)
+  // Add legacy database add-ons support (assume they are net prices)
   addOns.forEach(addon => {
     if (orderData.extras[addon.name as keyof typeof orderData.extras] && !addon.is_free) {
-      // Assume addon.price is gross, convert to net
-      const netPrice = addon.price / (1 + VAT_RATE);
-      netTotal += netPrice * imageCount;
+      // Assume addon.price is net
+      netTotal += addon.price * imageCount;
     }
   });
 

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,9 +16,8 @@ interface ExtrasStepProps {
   onPrev: () => void;
 }
 
-// Net prices per image for extras (result in 2.00€ gross with 19% VAT)
-const EXTRA_NET_PRICE = 1.68;
-const EXTRA_GROSS_PRICE = 2.00;
+// Net prices per image for extras (these are the displayed prices)
+const EXTRA_NET_PRICE = 2.00;
 
 const ExtrasStep = ({ 
   orderData, 
@@ -33,10 +31,6 @@ const ExtrasStep = ({
   const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
   
   const calculateExtraPrice = () => {
-    return (EXTRA_GROSS_PRICE * imageCount).toFixed(2);
-  };
-
-  const calculateExtraNetPrice = () => {
     return (EXTRA_NET_PRICE * imageCount).toFixed(2);
   };
 
@@ -105,10 +99,7 @@ const ExtrasStep = ({
                   Hochauflösende 4K-Qualität für gestochen scharfe Bilder
                 </p>
                 <p className="text-sm font-medium">
-                  {EXTRA_GROSS_PRICE.toFixed(2)}€ pro Bild (Gesamt: {calculateExtraPrice()}€ inkl. MwSt.)
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Netto: {EXTRA_NET_PRICE.toFixed(2)}€ pro Bild (Gesamt: {calculateExtraNetPrice()}€ netto)
+                  {EXTRA_NET_PRICE.toFixed(2)}€ pro Bild (Gesamt: {calculateExtraPrice()}€ netto)
                 </p>
               </div>
             </div>
@@ -135,10 +126,7 @@ const ExtrasStep = ({
                   Ihre bearbeiteten Bilder in nur 24 Stunden
                 </p>
                 <p className="text-sm font-medium">
-                  {EXTRA_GROSS_PRICE.toFixed(2)}€ pro Bild (Gesamt: {calculateExtraPrice()}€ inkl. MwSt.)
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Netto: {EXTRA_NET_PRICE.toFixed(2)}€ pro Bild (Gesamt: {calculateExtraNetPrice()}€ netto)
+                  {EXTRA_NET_PRICE.toFixed(2)}€ pro Bild (Gesamt: {calculateExtraPrice()}€ netto)
                 </p>
               </div>
             </div>
@@ -165,10 +153,7 @@ const ExtrasStep = ({
                   Fügen Sie Ihr eigenes Logo oder Wasserzeichen hinzu
                 </p>
                 <p className="text-sm font-medium">
-                  {EXTRA_GROSS_PRICE.toFixed(2)}€ pro Bild (Gesamt: {calculateExtraPrice()}€ inkl. MwSt.)
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Netto: {EXTRA_NET_PRICE.toFixed(2)}€ pro Bild (Gesamt: {calculateExtraNetPrice()}€ netto)
+                  {EXTRA_NET_PRICE.toFixed(2)}€ pro Bild (Gesamt: {calculateExtraPrice()}€ netto)
                 </p>
                 
                 {/* Watermark Upload Field */}

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,7 +18,7 @@ const PackageStep = ({ selectedPackage, onPackageChange, onNext, onPrev }: Packa
       name: 'Basic',
       price: '9,00€',
       priceUnit: 'pro Bild',
-      netPrice: '7,56€ netto',
+      netPrice: 'netto',
       description: 'Grundlegende HDR-Entwicklung & Korrekturen.',
       features: [
         { icon: Palette, text: 'Farb- & Belichtungskorrektur' },
@@ -37,7 +36,7 @@ const PackageStep = ({ selectedPackage, onPackageChange, onNext, onPrev }: Packa
       name: 'Premium',
       price: '13,00€',
       priceUnit: 'pro Bild',
-      netPrice: '10,92€ netto',
+      netPrice: 'netto',
       description: 'Professionelle HDR-Bearbeitung & Detailretusche.',
       features: [
         { icon: Sparkles, text: 'Alle Basic-Features enthalten' },
