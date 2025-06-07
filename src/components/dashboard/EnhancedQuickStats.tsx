@@ -71,8 +71,8 @@ const EnhancedQuickStats = () => {
       title: "Gesamtbestellungen",
       value: orderStats?.totalOrders?.toString() || "0",
       icon: FileText,
-      color: "text-muted",
-      bgColor: "bg-muted-background"
+      color: "text-primary",
+      bgColor: "bg-primary/10"
     },
     {
       title: "Bilder diesen Monat",
@@ -88,15 +88,17 @@ const EnhancedQuickStats = () => {
       {stats.map((stat, index) => {
         const IconComponent = stat.icon;
         return (
-          <Card key={index}>
+          <Card key={index} className="border border-border bg-card">
             <CardContent className="p-6">
-              <div className="flex items-center space-x-4">
-                <div className={`w-12 h-12 ${stat.bgColor} rounded-lg flex items-center justify-center`}>
-                  <IconComponent className={`w-6 h-6 ${stat.color}`} />
+              <div className="flex flex-col space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className={`w-10 h-10 ${stat.bgColor} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                    <IconComponent className={`w-5 h-5 ${stat.color}`} />
+                  </div>
                 </div>
-                <div>
-                  <p className="text-3xl font-bold text-foreground">{stat.value}</p>
-                  <p className="text-sm text-muted">{stat.title}</p>
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-foreground leading-none">{stat.value}</p>
+                  <p className="text-sm font-medium text-on-surface leading-tight">{stat.title}</p>
                 </div>
               </div>
             </CardContent>
