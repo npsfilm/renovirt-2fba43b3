@@ -79,6 +79,9 @@ export default {
 				// Surface colors
 				surface: 'hsl(var(--card))', // Using card as surface
 				'surface-muted': 'hsl(var(--muted))',
+				// Better text colors
+				subtle: 'hsl(var(--text-subtle))',
+				'on-surface': 'hsl(var(--text-on-surface))',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

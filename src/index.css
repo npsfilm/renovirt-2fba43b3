@@ -24,9 +24,9 @@
     --secondary: 39 43% 91%; /* #F3EBD8 */
     --secondary-foreground: 0 0% 18%; /* #2F2F2F */
 
-    /* Muted */
+    /* Muted - Improved for better contrast */
     --muted: 60 25% 97%; /* #F3F3F0 */
-    --muted-foreground: 120 15% 38%; /* #607160 */
+    --muted-foreground: 145 20% 25%; /* #3A4A3C - Darker for better contrast */
 
     /* Accent (Gold Brush Color) */
     --accent: 45 52% 59%; /* #D1A760 */
@@ -75,6 +75,10 @@
     --status-completed: 157 42% 53%; /* Success green */
     --status-cancelled: 4 78% 57%; /* Error red */
     --status-quality-check: 280 60% 60%; /* Purple */
+
+    /* Additional text colors for better visibility */
+    --text-subtle: 145 15% 35%; /* Darker than muted for better readability */
+    --text-on-surface: 145 14% 15%; /* Dark text for cards */
   }
 
   .dark {
@@ -94,7 +98,7 @@
     --secondary-foreground: 60 20% 95%;
 
     --muted: 145 15% 12%;
-    --muted-foreground: 120 15% 60%;
+    --muted-foreground: 120 15% 70%; /* Lighter for dark mode */
 
     --accent: 45 52% 65%; /* Lighter gold for dark mode */
     --accent-foreground: 145 20% 8%;
@@ -130,6 +134,10 @@
     --chart-4: 4 78% 65%;
     --chart-5: 46 85% 75%;
     --chart-6: 280 60% 70%;
+
+    /* Dark mode text colors */
+    --text-subtle: 145 15% 75%;
+    --text-on-surface: 60 20% 95%;
   }
 }
 
@@ -163,4 +171,8 @@
   .text-status-completed { color: hsl(var(--status-completed)); }
   .text-status-cancelled { color: hsl(var(--status-cancelled)); }
   .text-status-quality-check { color: hsl(var(--status-quality-check)); }
+
+  /* New text utilities for better visibility */
+  .text-subtle { color: hsl(var(--text-subtle)); }
+  .text-on-surface { color: hsl(var(--text-on-surface)); }
 }

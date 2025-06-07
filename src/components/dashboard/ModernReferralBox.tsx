@@ -113,27 +113,27 @@ const ModernReferralBox = () => {
   };
 
   return (
-    <Card className="bg-white border border-gray-200 shadow-sm">
+    <Card className="bg-card border-border shadow-sm">
       <CardContent className="p-8">
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
-              <Gift className="w-5 h-5 text-blue-600" />
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <Gift className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">Freunde einladen</h3>
-              <p className="text-sm text-gray-500">10 kostenfreie Bilder pro Empfehlung</p>
+              <h3 className="text-lg font-semibold text-foreground">Freunde einladen</h3>
+              <p className="text-sm text-subtle">10 kostenfreie Bilder pro Empfehlung</p>
             </div>
           </div>
           {referralStats && referralStats.successful_referrals > 0 && (
             <div className="flex items-center space-x-4">
               <div className="text-center">
-                <div className="text-xl font-bold text-gray-900">{referralStats.successful_referrals}</div>
-                <div className="text-xs text-gray-500">Empfehlungen</div>
+                <div className="text-xl font-bold text-foreground">{referralStats.successful_referrals}</div>
+                <div className="text-xs text-subtle">Empfehlungen</div>
               </div>
               <div className="text-center">
-                <div className="text-xl font-bold text-blue-600">{referralStats.total_rewards}</div>
-                <div className="text-xs text-gray-500">Bilder erhalten</div>
+                <div className="text-xl font-bold text-primary">{referralStats.total_rewards}</div>
+                <div className="text-xs text-subtle">Bilder erhalten</div>
               </div>
             </div>
           )}
@@ -141,12 +141,12 @@ const ModernReferralBox = () => {
 
         {referralCode ? (
           <div className="space-y-4">
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div className="bg-muted rounded-lg p-4">
               <div className="flex items-center space-x-3">
                 <Input 
                   value={referralCode} 
                   readOnly 
-                  className="font-mono text-center bg-white border-gray-200 text-gray-900" 
+                  className="font-mono text-center bg-background border-border text-foreground" 
                 />
                 <Button 
                   variant="outline" 
@@ -168,11 +168,11 @@ const ModernReferralBox = () => {
             </div>
 
             <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center space-x-2 text-gray-600">
-                <CheckCircle className="w-4 h-4 text-green-500" />
+              <div className="flex items-center space-x-2 text-subtle">
+                <CheckCircle className="w-4 h-4 text-success" />
                 <span>Code erstellt und bereit zum Teilen</span>
               </div>
-              <Button variant="link" size="sm" className="text-blue-600 p-0">
+              <Button variant="link" size="sm" className="text-primary p-0">
                 Mehr Details
                 <ArrowRight className="w-3 h-3 ml-1" />
               </Button>
@@ -180,13 +180,13 @@ const ModernReferralBox = () => {
           </div>
         ) : (
           <div className="text-center">
-            <p className="text-gray-600 mb-4">
+            <p className="text-subtle mb-4">
               Erstellen Sie Ihren persönlichen Empfehlungscode und verdienen Sie kostenfreie Bilder.
             </p>
             <Button 
               onClick={() => createReferralCode.mutate()} 
               disabled={createReferralCode.isPending}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               {createReferralCode.isPending ? 'Erstelle...' : 'Empfehlungscode erstellen'}
             </Button>

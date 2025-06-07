@@ -39,9 +39,9 @@ const RecentActivity = () => {
       case 'payment_pending':
         return 'bg-warning text-warning-foreground';
       case 'pending':
-        return 'bg-muted text-muted-foreground';
+        return 'bg-secondary text-secondary-foreground';
       default:
-        return 'bg-muted text-muted-foreground';
+        return 'bg-secondary text-secondary-foreground';
     }
   };
 
@@ -89,8 +89,8 @@ const RecentActivity = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-6 text-muted">
-            <Image className="w-8 h-8 mx-auto mb-2 text-muted" />
+          <div className="text-center py-6 text-subtle">
+            <Image className="w-8 h-8 mx-auto mb-2 text-subtle" />
             <p className="text-sm">Noch keine Aktivitäten</p>
           </div>
         </CardContent>
@@ -112,13 +112,13 @@ const RecentActivity = () => {
             <div className="flex items-start justify-between">
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-surface-muted rounded-lg flex items-center justify-center">
-                  <Image className="w-6 h-6 text-muted" />
+                  <Image className="w-6 h-6 text-subtle" />
                 </div>
                 <div>
                   <p className="font-medium text-foreground">
                     Bestellung #{formatOrderId(order.id)}
                   </p>
-                  <p className="text-sm text-muted">
+                  <p className="text-sm text-subtle">
                     {order.image_count} Bilder
                   </p>
                 </div>
@@ -131,11 +131,11 @@ const RecentActivity = () => {
             {order.status === 'processing' && (
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted">Fortschritt</span>
+                  <span className="text-subtle">Fortschritt</span>
                   <span className="text-foreground">{getProgress(order.status)}%</span>
                 </div>
                 <Progress value={getProgress(order.status)} className="h-2" />
-                <p className="text-xs text-muted">
+                <p className="text-xs text-subtle">
                   Wird bearbeitet...
                 </p>
               </div>

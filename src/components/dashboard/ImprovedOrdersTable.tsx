@@ -96,23 +96,23 @@ const ImprovedOrdersTable = () => {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-border">
-                    <th className="text-left py-3 px-2 font-medium text-muted">Bestellnummer</th>
-                    <th className="text-left py-3 px-2 font-medium text-muted">Datum</th>
-                    <th className="text-left py-3 px-2 font-medium text-muted">Bilderanzahl</th>
-                    <th className="text-left py-3 px-2 font-medium text-muted">Status</th>
-                    <th className="text-right py-3 px-2 font-medium text-muted">Aktionen</th>
+                    <th className="text-left py-3 px-2 font-medium text-foreground">Bestellnummer</th>
+                    <th className="text-left py-3 px-2 font-medium text-foreground">Datum</th>
+                    <th className="text-left py-3 px-2 font-medium text-foreground">Bilderanzahl</th>
+                    <th className="text-left py-3 px-2 font-medium text-foreground">Status</th>
+                    <th className="text-right py-3 px-2 font-medium text-foreground">Aktionen</th>
                   </tr>
                 </thead>
                 <tbody>
                   {orders.map((order) => (
                     <tr key={order.id} className="border-b border-border hover:bg-surface-muted">
-                      <td className="py-3 px-2 font-mono text-sm">
+                      <td className="py-3 px-2 font-mono text-sm text-foreground">
                         {formatOrderId(order.id)}
                       </td>
-                      <td className="py-3 px-2 text-sm text-muted">
+                      <td className="py-3 px-2 text-sm text-subtle">
                         {new Date(order.created_at).toLocaleDateString('de-DE')}
                       </td>
-                      <td className="py-3 px-2 text-sm">
+                      <td className="py-3 px-2 text-sm text-foreground">
                         {order.image_count}
                       </td>
                       <td className="py-3 px-2">
@@ -155,7 +155,7 @@ const ImprovedOrdersTable = () => {
           </>
         ) : (
           <div className="text-center py-8">
-            <p className="text-muted mb-4">Noch keine Bestellungen vorhanden</p>
+            <p className="text-subtle mb-4">Noch keine Bestellungen vorhanden</p>
             <Button onClick={() => navigate('/order')}>
               Erste Bestellung erstellen
             </Button>
