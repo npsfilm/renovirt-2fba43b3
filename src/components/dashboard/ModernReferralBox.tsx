@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,11 +7,13 @@ import { useAuth } from '@/hooks/useAuth';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import ReferralShareModal from './ReferralShareModal';
 
 const ModernReferralBox = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const { data: referralCode } = useQuery({
     queryKey: ['referral-code', user?.id],
@@ -95,105 +96,100 @@ const ModernReferralBox = () => {
     }
   };
 
-  const shareReferralCode = async () => {
-    const shareText = `Schau dir Renovirt an! Mit meinem Code "${referralCode}" kannst du sofort professionelle Bildbearbeitung ausprobieren!`;
-    
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Renovirt Empfehlung',
-          text: shareText
-        });
-      } catch (err) {
-        copyToClipboard(shareText);
-      }
-    } else {
-      copyToClipboard(shareText);
-    }
+  const shareReferralCode = () => {
+    setIsShareModalOpen(true);
   };
 
   return (
-    <Card className="bg-card border-border shadow-sm">
-      <CardContent className="p-8">
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-              <Gift className="w-5 h-5 text-primary" />
+    <>
+      <Card className="bg-card border-border shadow-sm">
+        <CardContent className="p-8">
+          <div className="flex items-start justify-between mb-6">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+                <Gift className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Freunde einladen</h3>
+                <p className="text-sm text-subtle">10 kostenfreie Bilder pro Empfehlung</p>
+              </div>
             </div>
-            <div>
-              <h3 className="text-lg font-semibold text-foreground">Freunde einladen</h3>
-              <p className="text-sm text-subtle">10 kostenfreie Bilder pro Empfehlung</p>
-            </div>
+            {referralStats && referralStats.successful_referrals > 0 && (
+              <div className="flex items-center space-x-4">
+                <div className="text-center">
+                  <div className="text-xl font-bold text-foreground">{referralStats.successful_referrals}</div>
+                  <div className="text-xs text-subtle">Empfehlungen</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-primary">{referralStats.total_rewards}</div>
+                  <div className="text-xs text-subtle">Bilder erhalten</div>
+                </div>
+              </div>
+            )}
           </div>
-          {referralStats && referralStats.successful_referrals > 0 && (
-            <div className="flex items-center space-x-4">
-              <div className="text-center">
-                <div className="text-xl font-bold text-foreground">{referralStats.successful_referrals}</div>
-                <div className="text-xs text-subtle">Empfehlungen</div>
+
+          {referralCode ? (
+            <div className="space-y-4">
+              <div className="bg-muted rounded-lg p-4">
+                <div className="flex items-center space-x-3">
+                  <Input 
+                    value={referralCode} 
+                    readOnly 
+                    className="font-mono text-center bg-background border-border text-foreground" 
+                  />
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => copyToClipboard(referralCode)}
+                    className="flex-shrink-0"
+                  >
+                    <Copy className="w-4 h-4" />
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={shareReferralCode}
+                    className="flex-shrink-0"
+                  >
+                    <Share2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
-              <div className="text-center">
-                <div className="text-xl font-bold text-primary">{referralStats.total_rewards}</div>
-                <div className="text-xs text-subtle">Bilder erhalten</div>
+
+              <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center space-x-2 text-subtle">
+                  <CheckCircle className="w-4 h-4 text-success" />
+                  <span>Code erstellt und bereit zum Teilen</span>
+                </div>
+                <Button variant="link" size="sm" className="text-primary p-0">
+                  Mehr Details
+                  <ArrowRight className="w-3 h-3 ml-1" />
+                </Button>
               </div>
             </div>
-          )}
-        </div>
-
-        {referralCode ? (
-          <div className="space-y-4">
-            <div className="bg-muted rounded-lg p-4">
-              <div className="flex items-center space-x-3">
-                <Input 
-                  value={referralCode} 
-                  readOnly 
-                  className="font-mono text-center bg-background border-border text-foreground" 
-                />
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => copyToClipboard(referralCode)}
-                  className="flex-shrink-0"
-                >
-                  <Copy className="w-4 h-4" />
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={shareReferralCode}
-                  className="flex-shrink-0"
-                >
-                  <Share2 className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center space-x-2 text-subtle">
-                <CheckCircle className="w-4 h-4 text-success" />
-                <span>Code erstellt und bereit zum Teilen</span>
-              </div>
-              <Button variant="link" size="sm" className="text-primary p-0">
-                Mehr Details
-                <ArrowRight className="w-3 h-3 ml-1" />
+          ) : (
+            <div className="text-center">
+              <p className="text-subtle mb-4">
+                Erstellen Sie Ihren persönlichen Empfehlungscode und verdienen Sie kostenfreie Bilder.
+              </p>
+              <Button 
+                onClick={() => createReferralCode.mutate()} 
+                disabled={createReferralCode.isPending}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground"
+              >
+                {createReferralCode.isPending ? 'Erstelle...' : 'Empfehlungscode erstellen'}
               </Button>
             </div>
-          </div>
-        ) : (
-          <div className="text-center">
-            <p className="text-subtle mb-4">
-              Erstellen Sie Ihren persönlichen Empfehlungscode und verdienen Sie kostenfreie Bilder.
-            </p>
-            <Button 
-              onClick={() => createReferralCode.mutate()} 
-              disabled={createReferralCode.isPending}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground"
-            >
-              {createReferralCode.isPending ? 'Erstelle...' : 'Empfehlungscode erstellen'}
-            </Button>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          )}
+        </CardContent>
+      </Card>
+
+      <ReferralShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        referralCode={referralCode || ''}
+      />
+    </>
   );
 };
 
