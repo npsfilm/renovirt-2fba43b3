@@ -35,7 +35,10 @@ const OrderFlow = () => {
     { number: 4, title: 'Extras', status: currentStep > 4 ? 'completed' : currentStep === 4 ? 'current' : 'upcoming' },
     { number: 5, title: 'Zusammenfassung', status: orderData.acceptedTerms ? 'completed' : currentStep === 5 ? 'current' : 'upcoming' },
     { number: 6, title: 'Bestätigung', status: currentStep === 6 ? 'current' : 'upcoming' },
-  ] as const;
+  ].map(step => ({
+    ...step,
+    status: step.status as 'completed' | 'current' | 'upcoming'
+  }));
 
   const updateOrderData = (updates: Partial<OrderData>) => {
     setOrderData(prev => ({ ...prev, ...updates }));
@@ -84,17 +87,17 @@ const OrderFlow = () => {
         return (
           <PackageStep
             selectedPackage={orderData.package}
-            onSelect={(pkg) => updateOrderData({ package: pkg })}
+            onPackageChange={(pkg) => updateOrderData({ package: pkg })}
             onNext={goToNext}
+            onPrev={goToPrev}
           />
         );
       case 2:
         return (
           <PhotoTypeStep
             selectedType={orderData.photoType}
-            onSelect={(type) => updateOrderData({ photoType: type })}
+            onTypeChange={(type) => updateOrderData({ photoType: type })}
             onNext={goToNext}
-            onPrev={goToPrev}
           />
         );
       case 3:
@@ -111,7 +114,8 @@ const OrderFlow = () => {
         return (
           <ExtrasStep
             orderData={orderData}
-            onUpdate={updateOrderData}
+            onExtrasChange={(extras) => updateOrderData({ extras })}
+            onWatermarkFileChange={(file) => updateOrderData({ watermarkFile: file })}
             onNext={goToNext}
             onPrev={goToPrev}
           />
