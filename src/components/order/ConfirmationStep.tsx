@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -228,7 +227,7 @@ const ConfirmationStep = ({
           Wir halten Sie über alle Fortschritte Ihrer Bestellung auf dem Laufenden
         </p>
         <p className="text-center text-info/80 text-sm">
-          Über {Math.floor(Math.random() * 5000) + 5000} zufriedene Kunden vertrauen auf Renovirt für ihre Immobilienbilder
+          Über 30'000 bearbeitete Bilder sprechen für sich. Danke für Ihr Vertrauen.
         </p>
       </div>
 
