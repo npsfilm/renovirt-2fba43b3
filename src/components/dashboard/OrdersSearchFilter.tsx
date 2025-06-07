@@ -39,14 +39,14 @@ const OrdersSearchFilter = ({
           <SelectValue placeholder="Status Filter" />
         </SelectTrigger>
         <SelectContent className="bg-background border border-border">
-          <SelectItem value="all" className="hover:!bg-transparent focus:!bg-transparent data-[highlighted]:!bg-transparent">Alle Status</SelectItem>
-          <SelectItem value="pending" className="hover:!bg-transparent focus:!bg-transparent data-[highlighted]:!bg-transparent">Warteschlange</SelectItem>
-          <SelectItem value="processing" className="hover:!bg-transparent focus:!bg-transparent data-[highlighted]:!bg-transparent">In Bearbeitung</SelectItem>
-          <SelectItem value="quality_check" className="hover:!bg-transparent focus:!bg-transparent data-[highlighted]:!bg-transparent">Überprüfung</SelectItem>
-          <SelectItem value="revision" className="hover:!bg-transparent focus:!bg-transparent data-[highlighted]:!bg-transparent">In Revision</SelectItem>
-          <SelectItem value="completed" className="hover:!bg-transparent focus:!bg-transparent data-[highlighted]:!bg-transparent">Abgeschlossen</SelectItem>
-          <SelectItem value="delivered" className="hover:!bg-transparent focus:!bg-transparent data-[highlighted]:!bg-transparent">Abgeschlossen & bezahlt</SelectItem>
-          <SelectItem value="cancelled" className="hover:!bg-transparent focus:!bg-transparent data-[highlighted]:!bg-transparent">Storniert</SelectItem>
+          <SelectItem value="all">Alle Status</SelectItem>
+          <SelectItem value="pending">Warteschlange</SelectItem>
+          <SelectItem value="processing">In Bearbeitung</SelectItem>
+          <SelectItem value="quality_check">Überprüfung</SelectItem>
+          <SelectItem value="revision">In Revision</SelectItem>
+          <SelectItem value="completed">Abgeschlossen</SelectItem>
+          <SelectItem value="delivered">Abgeschlossen & bezahlt</SelectItem>
+          <SelectItem value="cancelled">Storniert</SelectItem>
         </SelectContent>
       </Select>
 
@@ -55,11 +55,11 @@ const OrdersSearchFilter = ({
           <SelectValue placeholder="Sortieren nach" />
         </SelectTrigger>
         <SelectContent className="bg-background border border-border">
-          <SelectItem value="created_at_desc" className="hover:!bg-transparent focus:!bg-transparent data-[highlighted]:!bg-transparent">Neueste zuerst</SelectItem>
-          <SelectItem value="created_at_asc" className="hover:!bg-transparent focus:!bg-transparent data-[highlighted]:!bg-transparent">Älteste zuerst</SelectItem>
-          <SelectItem value="total_price_desc" className="hover:!bg-transparent focus:!bg-transparent data-[highlighted]:!bg-transparent">Höchster Preis</SelectItem>
-          <SelectItem value="total_price_asc" className="hover:!bg-transparent focus:!bg-transparent data-[highlighted]:!bg-transparent">Niedrigster Preis</SelectItem>
-          <SelectItem value="status" className="hover:!bg-transparent focus:!bg-transparent data-[highlighted]:!bg-transparent">Nach Status</SelectItem>
+          <SelectItem value="created_at_desc">Neueste zuerst</SelectItem>
+          <SelectItem value="created_at_asc">Älteste zuerst</SelectItem>
+          <SelectItem value="total_price_desc">Höchster Preis</SelectItem>
+          <SelectItem value="total_price_asc">Niedrigster Preis</SelectItem>
+          <SelectItem value="status">Nach Status</SelectItem>
         </SelectContent>
       </Select>
     </div>
