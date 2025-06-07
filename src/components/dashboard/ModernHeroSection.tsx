@@ -83,10 +83,7 @@ const ModernHeroSection = () => {
 
             {/* Status indicator */}
             <div className="lg:text-right">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-success/10 rounded-full">
-                <div className="w-2 h-2 bg-success rounded-full animate-pulse" />
-                <span className="text-sm font-medium text-success">Alle Systeme online</span>
-              </div>
+              
             </div>
           </div>
         </CardContent>
