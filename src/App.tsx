@@ -2,7 +2,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -50,6 +50,9 @@ function App() {
                   <Route path="/admin-auth" element={<AdminAuth />} />
                   <Route path="/email-verification" element={<EmailVerification />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
+                  
+                  {/* Redirect order-flow to order */}
+                  <Route path="/order-flow" element={<Navigate to="/order" replace />} />
                   
                   {/* Protected routes */}
                   <Route path="/onboarding" element={
