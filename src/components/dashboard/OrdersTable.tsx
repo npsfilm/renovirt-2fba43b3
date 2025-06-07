@@ -117,7 +117,7 @@ const OrdersTable = ({ orders, onOrderSelect }: OrdersTableProps) => {
         </thead>
         <tbody>
           {orders.map((order) => (
-            <tr key={order.id} className="border-b hover:bg-gray-50">
+            <tr key={order.id} className="border-b">
               <td className="py-3 px-2">
                 <span className="font-mono text-sm">
                   {order.order_number || `#${order.id.slice(0, 8)}`}
