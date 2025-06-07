@@ -39,14 +39,14 @@ const OrdersSearchFilter = ({
           <SelectValue placeholder="Status Filter" />
         </SelectTrigger>
         <SelectContent className="bg-background border border-border">
-          <SelectItem value="all" className="focus:bg-muted focus:text-muted-foreground hover:bg-muted hover:text-muted-foreground">Alle Status</SelectItem>
-          <SelectItem value="pending" className="focus:bg-muted focus:text-muted-foreground hover:bg-muted hover:text-muted-foreground">Warteschlange</SelectItem>
-          <SelectItem value="processing" className="focus:bg-muted focus:text-muted-foreground hover:bg-muted hover:text-muted-foreground">In Bearbeitung</SelectItem>
-          <SelectItem value="quality_check" className="focus:bg-muted focus:text-muted-foreground hover:bg-muted hover:text-muted-foreground">Überprüfung</SelectItem>
-          <SelectItem value="revision" className="focus:bg-muted focus:text-muted-foreground hover:bg-muted hover:text-muted-foreground">In Revision</SelectItem>
-          <SelectItem value="completed" className="focus:bg-muted focus:text-muted-foreground hover:bg-muted hover:text-muted-foreground">Abgeschlossen</SelectItem>
-          <SelectItem value="delivered" className="focus:bg-muted focus:text-muted-foreground hover:bg-muted hover:text-muted-foreground">Abgeschlossen & bezahlt</SelectItem>
-          <SelectItem value="cancelled" className="focus:bg-muted focus:text-muted-foreground hover:bg-muted hover:text-muted-foreground">Storniert</SelectItem>
+          <SelectItem value="all" className="focus:bg-transparent focus:text-current hover:bg-transparent hover:text-current data-[highlighted]:bg-transparent data-[highlighted]:text-current">Alle Status</SelectItem>
+          <SelectItem value="pending" className="focus:bg-transparent focus:text-current hover:bg-transparent hover:text-current data-[highlighted]:bg-transparent data-[highlighted]:text-current">Warteschlange</SelectItem>
+          <SelectItem value="processing" className="focus:bg-transparent focus:text-current hover:bg-transparent hover:text-current data-[highlighted]:bg-transparent data-[highlighted]:text-current">In Bearbeitung</SelectItem>
+          <SelectItem value="quality_check" className="focus:bg-transparent focus:text-current hover:bg-transparent hover:text-current data-[highlighted]:bg-transparent data-[highlighted]:text-current">Überprüfung</SelectItem>
+          <SelectItem value="revision" className="focus:bg-transparent focus:text-current hover:bg-transparent hover:text-current data-[highlighted]:bg-transparent data-[highlighted]:text-current">In Revision</SelectItem>
+          <SelectItem value="completed" className="focus:bg-transparent focus:text-current hover:bg-transparent hover:text-current data-[highlighted]:bg-transparent data-[highlighted]:text-current">Abgeschlossen</SelectItem>
+          <SelectItem value="delivered" className="focus:bg-transparent focus:text-current hover:bg-transparent hover:text-current data-[highlighted]:bg-transparent data-[highlighted]:text-current">Abgeschlossen & bezahlt</SelectItem>
+          <SelectItem value="cancelled" className="focus:bg-transparent focus:text-current hover:bg-transparent hover:text-current data-[highlighted]:bg-transparent data-[highlighted]:text-current">Storniert</SelectItem>
         </SelectContent>
       </Select>
 
@@ -55,11 +55,11 @@ const OrdersSearchFilter = ({
           <SelectValue placeholder="Sortieren nach" />
         </SelectTrigger>
         <SelectContent className="bg-background border border-border">
-          <SelectItem value="created_at_desc" className="focus:bg-muted focus:text-muted-foreground hover:bg-muted hover:text-muted-foreground">Neueste zuerst</SelectItem>
-          <SelectItem value="created_at_asc" className="focus:bg-muted focus:text-muted-foreground hover:bg-muted hover:text-muted-foreground">Älteste zuerst</SelectItem>
-          <SelectItem value="total_price_desc" className="focus:bg-muted focus:text-muted-foreground hover:bg-muted hover:text-muted-foreground">Höchster Preis</SelectItem>
-          <SelectItem value="total_price_asc" className="focus:bg-muted focus:text-muted-foreground hover:bg-muted hover:text-muted-foreground">Niedrigster Preis</SelectItem>
-          <SelectItem value="status" className="focus:bg-muted focus:text-muted-foreground hover:bg-muted hover:text-muted-foreground">Nach Status</SelectItem>
+          <SelectItem value="created_at_desc" className="focus:bg-transparent focus:text-current hover:bg-transparent hover:text-current data-[highlighted]:bg-transparent data-[highlighted]:text-current">Neueste zuerst</SelectItem>
+          <SelectItem value="created_at_asc" className="focus:bg-transparent focus:text-current hover:bg-transparent hover:text-current data-[highlighted]:bg-transparent data-[highlighted]:text-current">Älteste zuerst</SelectItem>
+          <SelectItem value="total_price_desc" className="focus:bg-transparent focus:text-current hover:bg-transparent hover:text-current data-[highlighted]:bg-transparent data-[highlighted]:text-current">Höchster Preis</SelectItem>
+          <SelectItem value="total_price_asc" className="focus:bg-transparent focus:text-current hover:bg-transparent hover:text-current data-[highlighted]:bg-transparent data-[highlighted]:text-current">Niedrigster Preis</SelectItem>
+          <SelectItem value="status" className="focus:bg-transparent focus:text-current hover:bg-transparent hover:text-current data-[highlighted]:bg-transparent data-[highlighted]:text-current">Nach Status</SelectItem>
         </SelectContent>
       </Select>
     </div>
