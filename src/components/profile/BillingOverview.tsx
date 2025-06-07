@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+
 const BillingOverview = () => {
   const {
     user
@@ -83,9 +84,12 @@ const BillingOverview = () => {
   const handleDownloadInvoice = async (order: any) => {
     // For now, generate a simple receipt
     toast({
-      title: "Rechnung wird vorbereitet",
-      description: "Die Rechnung wird in Kürze als PDF verfügbar sein."
+      title: "Rechnung wird heruntergeladen",
+      description: `Rechnung für Bestellung ${formatOrderId(order)} wird vorbereitet.`
     });
+    
+    // TODO: Implement actual invoice download logic
+    // This could involve calling an edge function to generate a PDF invoice
   };
   const handlePayOrder = async (order: any) => {
     if (order.stripe_session_id) {
@@ -162,7 +166,6 @@ const BillingOverview = () => {
                   <TableHead>Rechnungs-Nr.</TableHead>
                   <TableHead>Datum</TableHead>
                   <TableHead>Beschreibung</TableHead>
-                  <TableHead>Status</TableHead>
                   <TableHead className="text-right">Betrag</TableHead>
                   <TableHead>Aktionen</TableHead>
                 </TableRow>
@@ -184,17 +187,20 @@ const BillingOverview = () => {
                         <p className="text-sm text-gray-500">{order.image_count} Bilder</p>
                       </div>
                     </TableCell>
-                    <TableCell>
-                      {getStatusBadge(order.status || 'pending', order.payment_status)}
-                    </TableCell>
                     <TableCell className="text-right font-medium">
                       €{parseFloat(order.total_price?.toString() || '0').toFixed(2)}
                     </TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
-                        {order.status === 'completed' && order.payment_status === 'paid' && <Button variant="ghost" size="sm" onClick={() => handleDownloadInvoice(order)} title="Rechnung herunterladen">
-                            <Download className="w-4 h-4" />
-                          </Button>}
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => handleDownloadInvoice(order)} 
+                          title="Rechnung herunterladen"
+                        >
+                          <Download className="w-4 h-4 mr-1" />
+                          Rechnung
+                        </Button>
                         {order.payment_status === 'pending' && <Button size="sm" onClick={() => handlePayOrder(order)} title="Jetzt bezahlen">
                             <ExternalLink className="w-4 h-4 mr-1" />
                             Bezahlen
@@ -211,4 +217,5 @@ const BillingOverview = () => {
       </Card>
     </div>;
 };
+
 export default BillingOverview;
