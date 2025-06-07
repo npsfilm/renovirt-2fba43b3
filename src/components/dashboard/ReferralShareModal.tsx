@@ -1,26 +1,23 @@
-
 import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Copy, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-
 interface ReferralShareModalProps {
   isOpen: boolean;
   onClose: () => void;
   referralCode: string;
 }
-
-const ReferralShareModal = ({ isOpen, onClose, referralCode }: ReferralShareModalProps) => {
+const ReferralShareModal = ({
+  isOpen,
+  onClose,
+  referralCode
+}: ReferralShareModalProps) => {
   const [copied, setCopied] = useState(false);
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   const shareText = `Hey! 👋
 
 Ich nutze seit einiger Zeit Renovirt für meine Immobilienfotos und bin echt begeistert! 
@@ -40,7 +37,6 @@ Einfach auf renovirt.de registrieren und den Code eingeben.
 Probier's mal aus, falls du mal professionelle Bildbearbeitung brauchst! 📸
 
 Liebe Grüße!`;
-
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(shareText);
@@ -58,9 +54,7 @@ Liebe Grüße!`;
       });
     }
   };
-
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+  return <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
@@ -74,11 +68,7 @@ Liebe Grüße!`;
           </p>
           
           <div className="relative">
-            <Textarea
-              value={shareText}
-              readOnly
-              className="min-h-[350px] text-sm font-mono bg-muted border-border resize-none"
-            />
+            <Textarea value={shareText} readOnly className="min-h-[350px] text-sm font-mono bg-muted border-border resize-none" />
           </div>
           
           <div className="flex justify-between items-center">
@@ -87,31 +77,22 @@ Liebe Grüße!`;
             </div>
             
             <Button onClick={copyToClipboard} className="flex items-center space-x-2">
-              {copied ? (
-                <>
+              {copied ? <>
                   <Check className="w-4 h-4" />
                   <span>Kopiert!</span>
-                </>
-              ) : (
-                <>
+                </> : <>
                   <Copy className="w-4 h-4" />
                   <span>Text kopieren</span>
-                </>
-              )}
+                </>}
             </Button>
           </div>
           
           <div className="bg-muted/50 rounded-lg p-4 text-sm">
-            <p className="font-medium mb-2">💡 Tipp:</p>
-            <p className="text-subtle">
-              Teilen Sie diesen Text per E-Mail, WhatsApp, LinkedIn oder in sozialen Netzwerken. 
-              Der Text ist bewusst persönlich und freundschaftlich geschrieben, um authentisch zu wirken.
-            </p>
+            
+            <p className="text-subtle">Teilen Sie diesen Text per E-Mail, WhatsApp, LinkedIn oder in sozialen Netzwerken. </p>
           </div>
         </div>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>;
 };
-
 export default ReferralShareModal;
