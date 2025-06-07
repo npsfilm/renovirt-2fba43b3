@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Upload, FileImage, User, Building2, Mail } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useQuery } from '@tanstack/react-query';
 import type { OrderData } from '@/utils/orderValidation';
 
 interface OrderSummaryDetailsProps {
@@ -20,17 +21,33 @@ const OrderSummaryDetails = ({ orderData, onUpdateData }: OrderSummaryDetailsPro
   const [isUploadingWatermark, setIsUploadingWatermark] = useState(false);
   const { user } = useAuth();
 
+  // Fetch customer profile data
+  const { data: profile } = useQuery({
+    queryKey: ['customer-profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      const { data, error } = await supabase
+        .from('customer_profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
   const handleWatermarkUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file || !user) return;
 
     if (!file.type.startsWith('image/')) {
-      // Removed toast notification - just return silently
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      // Removed toast notification - just return silently
       return;
     }
 
@@ -38,10 +55,8 @@ const OrderSummaryDetails = ({ orderData, onUpdateData }: OrderSummaryDetailsPro
 
     try {
       onUpdateData({ watermarkFile: file });
-      // Removed success toast notification
     } catch (error) {
       console.error('Watermark upload error:', error);
-      // Removed error toast notification
     } finally {
       setIsUploadingWatermark(false);
     }
@@ -49,7 +64,8 @@ const OrderSummaryDetails = ({ orderData, onUpdateData }: OrderSummaryDetailsPro
 
   const getPhotoTypeLabel = (type?: string) => {
     switch (type) {
-      case 'single': return 'Einzelbilder';
+      case 'handy': return 'Smartphone';
+      case 'kamera': return 'Kamera';
       case 'bracketing-3': return 'Bracketing (3 Bilder)';
       case 'bracketing-5': return 'Bracketing (5 Bilder)';
       default: return 'Nicht ausgewählt';
@@ -58,8 +74,8 @@ const OrderSummaryDetails = ({ orderData, onUpdateData }: OrderSummaryDetailsPro
 
   const getPackageLabel = (pkg?: string) => {
     switch (pkg) {
-      case 'basic': return 'Basic HDR';
-      case 'premium': return 'Premium HDR & Retusche';
+      case 'basic': return 'Basic';
+      case 'premium': return 'Premium';
       default: return 'Nicht ausgewählt';
     }
   };
@@ -91,26 +107,17 @@ const OrderSummaryDetails = ({ orderData, onUpdateData }: OrderSummaryDetailsPro
               />
             </div>
             <div>
-              <Label htmlFor="contactPerson">Ansprechpartner</Label>
+              <Label htmlFor="company" className="flex items-center gap-2">
+                <Building2 className="w-4 h-4" />
+                Unternehmen
+              </Label>
               <Input
-                id="contactPerson"
-                value={orderData.contactPerson || ''}
-                onChange={(e) => onUpdateData({ contactPerson: e.target.value })}
-                placeholder="Max Mustermann"
+                id="company"
+                value={orderData.company || profile?.company || ''}
+                onChange={(e) => onUpdateData({ company: e.target.value })}
+                placeholder="Mustermann GmbH"
               />
             </div>
-          </div>
-          <div>
-            <Label htmlFor="company" className="flex items-center gap-2">
-              <Building2 className="w-4 h-4" />
-              Unternehmen (optional)
-            </Label>
-            <Input
-              id="company"
-              value={orderData.company || ''}
-              onChange={(e) => onUpdateData({ company: e.target.value })}
-              placeholder="Mustermann GmbH"
-            />
           </div>
         </CardContent>
       </Card>
@@ -145,6 +152,20 @@ const OrderSummaryDetails = ({ orderData, onUpdateData }: OrderSummaryDetailsPro
             </div>
           </div>
 
+          {/* Object Reference */}
+          <div>
+            <Label htmlFor="objectReference">Objektreferenz</Label>
+            <Input
+              id="objectReference"
+              value={orderData.objectReference || ''}
+              onChange={(e) => onUpdateData({ objectReference: e.target.value })}
+              placeholder="z.B. Musterstraße 123, 12345 Musterstadt"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Referenz für das fotografierte Objekt (Adresse, Projektnummer, etc.)
+            </p>
+          </div>
+
           {/* Extras */}
           {(orderData.extras.express || orderData.extras.upscale || orderData.extras.watermark) && (
             <div>
@@ -175,7 +196,7 @@ const OrderSummaryDetails = ({ orderData, onUpdateData }: OrderSummaryDetailsPro
                     {isUploadingWatermark ? 'Wird hochgeladen...' : 'Datei wählen'}
                   </Button>
                   {orderData.watermarkFile && (
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-muted-foreground">
                       {orderData.watermarkFile.name}
                     </span>
                   )}
@@ -187,7 +208,7 @@ const OrderSummaryDetails = ({ orderData, onUpdateData }: OrderSummaryDetailsPro
                   onChange={handleWatermarkUpload}
                   className="hidden"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   PNG, JPG oder GIF. Max. 5MB. Hilft bei der präzisen Entfernung.
                 </p>
               </div>

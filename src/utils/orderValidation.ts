@@ -6,6 +6,7 @@ export const OrderDataSchema = z.object({
   email: z.string().email().optional(),
   contactPerson: z.string().optional(),
   company: z.string().optional(),
+  objectReference: z.string().optional(),
   photoType: z.enum(['handy', 'kamera', 'bracketing-3', 'bracketing-5']).optional(),
   package: z.enum(['basic', 'premium']).optional(),
   imageCount: z.number().min(1).optional(),
@@ -30,6 +31,7 @@ export type OrderData = {
   email?: string;
   contactPerson?: string;
   company?: string;
+  objectReference?: string;
   photoType?: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5';
   package?: 'basic' | 'premium';
   imageCount?: number;

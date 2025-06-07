@@ -20,18 +20,16 @@ const PaymentMethodSelector = ({ paymentMethod, onPaymentMethodChange }: Payment
         <RadioGroup value={paymentMethod} onValueChange={onPaymentMethodChange}>
           <div className="space-y-4">
             <Label htmlFor="stripe" className="cursor-pointer">
-              <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50">
+              <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-muted/50">
                 <RadioGroupItem value="stripe" id="stripe" />
                 <div className="flex-1">
                   <div className="flex items-center space-x-3">
-                    <img 
-                      src="/lovable-uploads/afe41099-f9af-4290-9dad-bb31fb7cf67f.png" 
-                      alt="Stripe" 
-                      className="w-8 h-5 object-contain"
-                    />
+                    <div className="w-8 h-5 bg-primary rounded flex items-center justify-center">
+                      <span className="text-xs font-bold text-primary-foreground">S</span>
+                    </div>
                     <span className="font-medium">Kreditkarte / Online-Zahlung</span>
                   </div>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     Sichere Zahlung über Stripe
                   </p>
                   <div className="mt-3">
@@ -42,14 +40,14 @@ const PaymentMethodSelector = ({ paymentMethod, onPaymentMethodChange }: Payment
             </Label>
 
             <Label htmlFor="invoice" className="cursor-pointer">
-              <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50">
+              <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-muted/50">
                 <RadioGroupItem value="invoice" id="invoice" />
                 <div className="flex-1">
                   <div className="flex items-center space-x-3">
                     <InvoiceIcon className="w-5 h-5" />
                     <span className="font-medium">Rechnung</span>
                   </div>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     Sie erhalten eine Rechnung per E-Mail (Zahlungsziel: 14 Tage)
                   </p>
                 </div>
