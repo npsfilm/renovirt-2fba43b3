@@ -10,7 +10,7 @@ import type { OrderData } from '@/utils/orderValidation';
 interface SummaryStepProps {
   orderData: OrderData;
   onUpdateData: (updates: Partial<OrderData>) => void;
-  onNext: () => void;
+  onNext: (createdOrder?: any) => void;
   onPrev: () => void;
 }
 
