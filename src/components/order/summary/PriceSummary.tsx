@@ -15,13 +15,25 @@ interface PriceSummaryProps {
 const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSummaryProps) => {
   const { calculateTotalPrice } = useOrders();
   const grossPrice = calculateTotalPrice(orderData);
-  const netPrice = grossPrice / 1.19; // Calculate net price from gross
-  const vatAmount = grossPrice - netPrice;
   const creditDiscount = creditsToUse * 1; // 1 Euro per credit
   const finalPrice = Math.max(0, grossPrice - creditDiscount);
   
   // Calculate effective image count
   const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
+  
+  // Base package price (5€ per image net)
+  const baseNetPrice = 5 * imageCount;
+  
+  // Calculate extras prices
+  const extrasNetPrices = {
+    express: orderData.extras.express ? 2 * imageCount : 0,
+    upscale: orderData.extras.upscale ? 2 * imageCount : 0,
+    watermark: orderData.extras.watermark ? 2 * imageCount : 0,
+  };
+  
+  const totalExtrasNet = Object.values(extrasNetPrices).reduce((sum, price) => sum + price, 0);
+  const totalNetPrice = baseNetPrice + totalExtrasNet;
+  const vatAmount = totalNetPrice * 0.19;
 
   return (
     <div className="space-y-4">
@@ -30,21 +42,69 @@ const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSum
           <CardTitle>Preisübersicht</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="flex justify-between text-sm text-muted-foreground">
-            <span>Netto</span>
-            <span>{netPrice.toFixed(2)} €</span>
+          {/* Base Package */}
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="font-medium">Basispaket ({imageCount} Bilder)</span>
+              <span>{baseNetPrice.toFixed(2)} €</span>
+            </div>
+            <div className="text-xs text-muted-foreground pl-2">
+              5,00 € pro Bild (netto)
+            </div>
           </div>
           
+          {/* Extras Section */}
+          {totalExtrasNet > 0 && (
+            <div className="space-y-2 border-t pt-2">
+              <div className="text-sm font-medium text-muted-foreground">Extras:</div>
+              
+              {orderData.extras.express && (
+                <div className="flex justify-between text-sm pl-2">
+                  <span>24h Express-Lieferung</span>
+                  <span>{extrasNetPrices.express.toFixed(2)} €</span>
+                </div>
+              )}
+              
+              {orderData.extras.upscale && (
+                <div className="flex justify-between text-sm pl-2">
+                  <span>4K Upscale</span>
+                  <span>{extrasNetPrices.upscale.toFixed(2)} €</span>
+                </div>
+              )}
+              
+              {orderData.extras.watermark && (
+                <div className="flex justify-between text-sm pl-2">
+                  <span>Eigenes Wasserzeichen</span>
+                  <span>{extrasNetPrices.watermark.toFixed(2)} €</span>
+                </div>
+              )}
+              
+              <div className="flex justify-between text-sm font-medium border-t pt-2">
+                <span>Extras gesamt</span>
+                <span>{totalExtrasNet.toFixed(2)} €</span>
+              </div>
+            </div>
+          )}
+          
+          {/* Net Total */}
+          <div className="flex justify-between border-t pt-2">
+            <span>Netto gesamt</span>
+            <span>{totalNetPrice.toFixed(2)} €</span>
+          </div>
+          
+          {/* VAT */}
           <div className="flex justify-between text-sm text-muted-foreground">
             <span>MwSt. (19%)</span>
             <span>{vatAmount.toFixed(2)} €</span>
           </div>
           
+          {/* Gross Total */}
           <div className="flex justify-between border-t pt-2">
-            <span>Brutto</span>
+            <span>Brutto gesamt</span>
             <span>{grossPrice.toFixed(2)} €</span>
           </div>
           
+          {/* Credits Discount */}
           {creditsToUse > 0 && (
             <div className="flex justify-between text-green-600">
               <span>Credits-Rabatt ({creditsToUse} Credits)</span>
@@ -52,6 +112,7 @@ const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSum
             </div>
           )}
           
+          {/* Final Price */}
           <div className="border-t pt-3">
             <div className="flex justify-between text-lg font-semibold">
               <span>Gesamtpreis</span>
@@ -60,7 +121,7 @@ const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSum
           </div>
           
           <div className="text-xs text-muted-foreground">
-            Preise zzgl. 19% MwSt.
+            Alle Preise inklusive 19% MwSt.
           </div>
         </CardContent>
       </Card>
