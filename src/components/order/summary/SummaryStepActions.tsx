@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 
 interface SummaryStepActionsProps {
   onPrev: () => void;
@@ -11,33 +12,36 @@ interface SummaryStepActionsProps {
   paymentMethod: 'stripe' | 'invoice';
 }
 
-const SummaryStepActions = ({
-  onPrev,
-  onSubmit,
-  canProceed,
-  isProcessing,
-  finalPrice,
-  paymentMethod
+const SummaryStepActions = ({ 
+  onPrev, 
+  onSubmit, 
+  canProceed, 
+  isProcessing, 
+  finalPrice, 
+  paymentMethod 
 }: SummaryStepActionsProps) => {
-  const getButtonText = () => {
-    if (isProcessing) return "Wird erstellt...";
-    if (finalPrice > 0) {
-      return paymentMethod === 'stripe' ? "Zur Zahlung →" : "Kostenpflichtig bestellen →";
-    }
-    return "Kostenlos bestellen →";
-  };
-
   return (
-    <div className="flex justify-between">
-      <Button variant="outline" onClick={onPrev}>
+    <div className="flex justify-between items-center pt-6 border-t border-border">
+      <Button variant="outline" onClick={onPrev} disabled={isProcessing} className="shadow-sm">
         ← Zurück zum Paket
       </Button>
-      <Button 
+      
+      <Button
         onClick={onSubmit}
         disabled={!canProceed || isProcessing}
-        className="min-w-[200px] bg-green-600 hover:bg-green-700"
+        size="lg"
+        className="min-w-[200px] shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02]"
       >
-        {getButtonText()}
+        {isProcessing ? (
+          <>
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            Verarbeitung...
+          </>
+        ) : finalPrice > 0 ? (
+          paymentMethod === 'stripe' ? 'Zur Zahlung' : 'Bestellung abschicken'
+        ) : (
+          'Kostenlose Bestellung abschicken'
+        )}
       </Button>
     </div>
   );

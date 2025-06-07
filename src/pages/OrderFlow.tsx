@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/layout/AppSidebar';
@@ -145,17 +146,17 @@ const OrderFlow = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
+      <div className="min-h-screen flex w-full bg-gradient-to-br from-background via-background to-muted/20">
         <AppSidebar />
         <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border px-4 bg-background/80 backdrop-blur-sm">
             <SidebarTrigger className="-ml-1" />
-            <h1 className="text-xl font-semibold">Bestellflow</h1>
+            <h1 className="text-xl font-semibold text-foreground">Bestellflow</h1>
           </header>
           <main className="flex-1 p-6">
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-5xl mx-auto space-y-8">
               <OrderProgress steps={steps} />
-              <div className="mt-8">
+              <div className="bg-card border rounded-lg p-8 shadow-sm">
                 {renderStep()}
               </div>
             </div>

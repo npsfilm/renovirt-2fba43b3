@@ -14,29 +14,33 @@ interface OrderProgressProps {
 
 const OrderProgress = ({ steps }: OrderProgressProps) => {
   return (
-    <div className="w-full">
+    <div className="w-full bg-card border rounded-lg p-6 shadow-sm">
       <div className="flex items-center justify-between">
         {steps.map((step, index) => (
           <React.Fragment key={step.number}>
             <div className="flex flex-col items-center">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
+                className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
                   step.status === 'completed'
-                    ? 'bg-green-600 border-green-600 text-white'
+                    ? 'bg-success border-success text-success-foreground shadow-sm'
                     : step.status === 'current'
-                    ? 'bg-blue-600 border-blue-600 text-white'
-                    : 'bg-gray-100 border-gray-300 text-gray-500'
+                    ? 'bg-primary border-primary text-primary-foreground shadow-sm ring-2 ring-primary/20'
+                    : 'bg-muted border-muted-foreground/30 text-muted-foreground'
                 }`}
               >
                 {step.status === 'completed' ? (
                   <Check className="w-5 h-5" />
                 ) : (
-                  <span className="text-sm font-medium">{step.number}</span>
+                  <span className="text-sm font-semibold">{step.number}</span>
                 )}
               </div>
               <span
-                className={`mt-2 text-sm ${
-                  step.status === 'current' ? 'text-blue-600 font-medium' : 'text-gray-500'
+                className={`mt-2 text-sm transition-colors duration-300 ${
+                  step.status === 'current' 
+                    ? 'text-primary font-semibold' 
+                    : step.status === 'completed'
+                    ? 'text-success font-medium'
+                    : 'text-muted-foreground'
                 }`}
               >
                 {step.title}
@@ -45,8 +49,8 @@ const OrderProgress = ({ steps }: OrderProgressProps) => {
             {index < steps.length - 1 && (
               <div className="flex-1 mx-4">
                 <div
-                  className={`h-0.5 ${
-                    step.status === 'completed' ? 'bg-green-600' : 'bg-gray-300'
+                  className={`h-0.5 transition-all duration-500 ${
+                    step.status === 'completed' ? 'bg-success' : 'bg-border'
                   }`}
                 />
               </div>
