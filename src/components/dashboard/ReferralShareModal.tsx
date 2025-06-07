@@ -21,19 +21,25 @@ const ReferralShareModal = ({ isOpen, onClose, referralCode }: ReferralShareModa
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
-  const shareText = `🎨 Entdecke Renovirt - Professionelle Bildbearbeitung in nur 24-48h!
+  const shareText = `Hey! 👋
 
-✨ Was macht Renovirt besonders?
-• Professionelle Retusche von Immobilienfotos
-• Schnelle Bearbeitung in 24-48 Stunden
-• Faire Preise ab 2€ pro Bild
-• Einfacher Upload und Download
+Ich nutze seit einiger Zeit Renovirt für meine Immobilienfotos und bin echt begeistert! 
 
-🎁 Exklusiv für dich: Mit meinem Empfehlungscode "${referralCode}" erhältst du 10 kostenlose Bildbearbeitungen zum Ausprobieren!
+Falls du auch manchmal Fotos professionell bearbeiten lassen musst - das könnte interessant für dich sein:
 
-Perfekt für Immobilienmakler, Fotografen und alle, die professionelle Bildbearbeitung brauchen.
+✨ Was Renovirt macht:
+• Professionelle Bildbearbeitung für Immobilien
+• Himmel austauschen, Objekte entfernen, Farben optimieren
+• Super schnell - meist fertig in 1-2 Tagen
+• Preise starten schon ab 1,50€ pro Bild
 
-Jetzt ausprobieren: renovirt.de`;
+🎁 Das Beste: Mit meinem Code "${referralCode}" bekommst du 10 kostenlose Bearbeitungen zum Ausprobieren!
+
+Einfach auf renovirt.de registrieren und den Code eingeben. 
+
+Probier's mal aus, falls du mal professionelle Bildbearbeitung brauchst! 📸
+
+Liebe Grüße!`;
 
   const copyToClipboard = async () => {
     try {
@@ -71,7 +77,7 @@ Jetzt ausprobieren: renovirt.de`;
             <Textarea
               value={shareText}
               readOnly
-              className="min-h-[300px] text-sm font-mono bg-muted border-border resize-none"
+              className="min-h-[350px] text-sm font-mono bg-muted border-border resize-none"
             />
           </div>
           
@@ -99,8 +105,7 @@ Jetzt ausprobieren: renovirt.de`;
             <p className="font-medium mb-2">💡 Tipp:</p>
             <p className="text-subtle">
               Teilen Sie diesen Text per E-Mail, WhatsApp, LinkedIn oder in sozialen Netzwerken. 
-              Sobald sich jemand mit Ihrem Code registriert und seine erste Bestellung aufgibt, 
-              erhalten Sie 10 kostenfreie Bildbearbeitungen!
+              Der Text ist bewusst persönlich und freundschaftlich geschrieben, um authentisch zu wirken.
             </p>
           </div>
         </div>
