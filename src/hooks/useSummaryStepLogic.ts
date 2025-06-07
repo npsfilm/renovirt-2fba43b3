@@ -23,7 +23,7 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
   const [currentOrderData, setCurrentOrderData] = useState<OrderData | null>(null);
 
   const { user } = useAuth();
-  const { createPaymentIntent, handlePaymentSuccess } = usePayment();
+  const { initiatePayment, confirmPayment } = usePayment();
   const { packages, addOns } = useOrderData();
   const { createOrder, createOrderAfterPayment } = useOrderCreation(packages, addOns);
   const { calculateTotalPrice } = useOrders();
@@ -138,12 +138,8 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
         // For Stripe payments, prepare for payment but don't create order yet
         setCurrentOrderData(secureOrderData);
         
-        // Create payment intent with a temporary order ID
-        const paymentData = await createPaymentIntent({
-          orderId: 'temp-stripe-order',
-          amount: finalPrice,
-          currency: 'eur',
-        });
+        // Create payment intent using the new initiatePayment method
+        const paymentData = await initiatePayment(finalPrice, 'temp-stripe-order');
 
         setClientSecret(paymentData.client_secret);
         setShowPaymentModal(true);

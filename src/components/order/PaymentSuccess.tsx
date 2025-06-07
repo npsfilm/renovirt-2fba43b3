@@ -10,7 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { handlePaymentSuccess } = usePayment();
+  const { confirmPayment } = usePayment();
   const { user } = useAuth();
 
   useEffect(() => {
@@ -18,9 +18,10 @@ const PaymentSuccess = () => {
     const sessionId = searchParams.get('session_id');
 
     if (orderId && sessionId && user) {
-      handlePaymentSuccess(orderId, user.id);
+      // Use confirmPayment to verify the payment was successful
+      confirmPayment(sessionId).catch(console.error);
     }
-  }, [searchParams, user, handlePaymentSuccess]);
+  }, [searchParams, user, confirmPayment]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
