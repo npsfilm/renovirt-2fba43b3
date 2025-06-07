@@ -35,10 +35,7 @@ const OrderFlow = () => {
     { number: 4, title: 'Extras', status: currentStep > 4 ? 'completed' : currentStep === 4 ? 'current' : 'upcoming' },
     { number: 5, title: 'Zusammenfassung', status: orderData.acceptedTerms ? 'completed' : currentStep === 5 ? 'current' : 'upcoming' },
     { number: 6, title: 'Bestätigung', status: currentStep === 6 ? 'current' : 'upcoming' },
-  ].map(step => ({
-    ...step,
-    status: step.status as 'completed' | 'current' | 'upcoming'
-  }));
+  ] as const;
 
   const updateOrderData = (updates: Partial<OrderData>) => {
     setOrderData(prev => ({ ...prev, ...updates }));
@@ -143,22 +140,27 @@ const OrderFlow = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background py-8">
-      <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-foreground mb-2">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background">
+      <div className="container mx-auto px-4 py-6 md:py-8">
+        <div className="max-w-5xl mx-auto">
+          {/* Header Section */}
+          <div className="text-center mb-6 md:mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
               Ihre Immobilienbilder perfekt bearbeitet
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground text-sm md:text-base">
               In wenigen Schritten zu professionellen HDR-Bildern
             </p>
           </div>
 
-          <OrderProgress steps={steps} />
+          {/* Progress Bar */}
+          <div className="mb-6 md:mb-8">
+            <OrderProgress steps={[...steps]} />
+          </div>
 
-          <Card className="mt-8">
-            <CardContent className="p-8">
+          {/* Main Content Card */}
+          <Card className="shadow-sm border-border/50">
+            <CardContent className="p-4 md:p-6 lg:p-8">
               {renderStep()}
             </CardContent>
           </Card>
