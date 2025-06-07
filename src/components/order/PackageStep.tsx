@@ -6,8 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Zap, Crown, Clock, Palette, Eye, Wand2, Sparkles } from 'lucide-react';
 
 interface PackageStepProps {
-  selectedPackage?: 'basic' | 'premium';
-  onPackageChange: (pkg: 'basic' | 'premium') => void;
+  selectedPackage?: 'Basic' | 'Premium';
+  onPackageChange: (pkg: 'Basic' | 'Premium') => void;
   onNext: () => void;
   onPrev: () => void;
 }
@@ -15,7 +15,7 @@ interface PackageStepProps {
 const PackageStep = ({ selectedPackage, onPackageChange, onNext, onPrev }: PackageStepProps) => {
   const packages = [
     {
-      id: 'basic' as const,
+      id: 'Basic' as const,
       name: 'Basic',
       price: '9.00€',
       priceUnit: 'pro Bild',
@@ -32,7 +32,7 @@ const PackageStep = ({ selectedPackage, onPackageChange, onNext, onPrev }: Packa
       iconColor: 'text-primary',
     },
     {
-      id: 'premium' as const,
+      id: 'Premium' as const,
       name: 'Premium',
       price: '13.00€',
       priceUnit: 'pro Bild',

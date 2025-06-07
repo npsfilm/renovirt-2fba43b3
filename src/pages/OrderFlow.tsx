@@ -38,7 +38,7 @@ const OrderFlow = () => {
   
   const [orderData, setOrderData] = useState<OrderData>({
     files: [],
-    package: 'premium', // Pre-select premium package
+    package: 'Premium', // Pre-select premium package with correct capitalization
     extras: {
       express: false,
       upscale: false,

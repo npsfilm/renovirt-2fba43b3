@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useOrders } from '@/hooks/useOrders';
@@ -24,14 +23,14 @@ const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSum
   // Get package price from database or fallback to hardcoded values
   const getPackagePrice = () => {
     if (packages && packages.length > 0) {
-      const selectedPackage = packages.find(pkg => pkg.name.toLowerCase() === orderData.package);
+      const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
       if (selectedPackage) {
         return selectedPackage.base_price;
       }
     }
     
     // Fallback to hardcoded values if packages not loaded
-    return orderData.package === 'basic' ? 9 : 13;
+    return orderData.package === 'Basic' ? 9 : 13;
   };
   
   const packagePricePerImage = getPackagePrice();
@@ -58,7 +57,7 @@ const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSum
           {/* Base Package */}
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="font-medium">{orderData.package === 'basic' ? 'Basic' : 'Premium'} Paket ({imageCount} Bilder)</span>
+              <span className="font-medium">{orderData.package} Paket ({imageCount} Bilder)</span>
               <span>{baseNetPrice.toFixed(2)} €</span>
             </div>
             <div className="text-xs text-muted-foreground pl-2">
