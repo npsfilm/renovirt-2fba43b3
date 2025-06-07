@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import OrderDetailsModal from './OrderDetailsModal';
+
 const ActiveProjectsGrid = () => {
   const {
     user
@@ -16,6 +17,7 @@ const ActiveProjectsGrid = () => {
   const navigate = useNavigate();
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const {
     data: activeProjects,
     isLoading
@@ -34,6 +36,7 @@ const ActiveProjectsGrid = () => {
     },
     enabled: !!user?.id
   });
+
   const getStatusConfig = (status: string) => {
     const configs = {
       pending: {
@@ -57,10 +60,17 @@ const ActiveProjectsGrid = () => {
     };
     return configs[status as keyof typeof configs] || configs.pending;
   };
+
   const formatOrderId = (id: string) => `#${id.slice(0, 8).toUpperCase()}`;
+
+  const getDisplayOrderNumber = (order: any) => {
+    return order.order_number || formatOrderId(order.id);
+  };
+
   const getImageText = (count: number) => {
     return count === 1 ? '1 Bild' : `${count} Bilder`;
   };
+
   const getEstimatedCompletion = (project: any) => {
     if (!project.created_at) return 'Unbekannt';
     const orderDate = new Date(project.created_at);
@@ -75,14 +85,17 @@ const ActiveProjectsGrid = () => {
       minute: '2-digit'
     });
   };
+
   const handleViewProject = (order: any) => {
     setSelectedOrder(order);
     setIsModalOpen(true);
   };
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedOrder(null);
   };
+
   if (isLoading) {
     return <Card className="border-0 bg-card/50 backdrop-blur-sm">
         <CardHeader>
@@ -95,6 +108,7 @@ const ActiveProjectsGrid = () => {
         </CardContent>
       </Card>;
   }
+
   if (!activeProjects?.length) {
     return <Card className="border-0 bg-card/50 backdrop-blur-sm">
         <CardHeader>
@@ -117,6 +131,7 @@ const ActiveProjectsGrid = () => {
         </CardContent>
       </Card>;
   }
+
   return <>
       <Card className="border-0 bg-card/50 backdrop-blur-sm">
         <CardHeader className="flex flex-row items-center justify-between py-[12px]">
@@ -136,7 +151,7 @@ const ActiveProjectsGrid = () => {
                       <div className="flex items-start justify-between">
                         <div className="space-y-1">
                           <div className="font-mono text-sm text-foreground">
-                            {formatOrderId(project.id)}
+                            {getDisplayOrderNumber(project)}
                           </div>
                           <div className="text-xs text-subtle">
                             {getImageText(project.image_count)}
@@ -181,4 +196,5 @@ const ActiveProjectsGrid = () => {
       <OrderDetailsModal isOpen={isModalOpen} onClose={handleCloseModal} order={selectedOrder} />
     </>;
 };
+
 export default ActiveProjectsGrid;
