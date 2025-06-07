@@ -32,6 +32,14 @@ const AppSidebar = () => {
     if (path === '/dashboard') {
       return location.pathname === '/dashboard';
     }
+    // Handle exact matches for specific conflicting paths
+    if (path === '/order') {
+      return location.pathname === '/order' || location.pathname.startsWith('/order/');
+    }
+    if (path === '/orders') {
+      return location.pathname === '/orders' || location.pathname.startsWith('/orders/');
+    }
+    // For all other paths, use startsWith logic
     return location.pathname.startsWith(path);
   };
 
