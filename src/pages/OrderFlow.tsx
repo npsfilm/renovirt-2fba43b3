@@ -84,17 +84,17 @@ const OrderFlow = () => {
         return (
           <PackageStep
             selectedPackage={orderData.package}
-            onPackageChange={(pkg) => updateOrderData({ package: pkg })}
+            onSelect={(pkg) => updateOrderData({ package: pkg })}
             onNext={goToNext}
-            onPrev={goToPrev}
           />
         );
       case 2:
         return (
           <PhotoTypeStep
             selectedType={orderData.photoType}
-            onTypeChange={(type) => updateOrderData({ photoType: type })}
+            onSelect={(type) => updateOrderData({ photoType: type })}
             onNext={goToNext}
+            onPrev={goToPrev}
           />
         );
       case 3:
@@ -111,8 +111,7 @@ const OrderFlow = () => {
         return (
           <ExtrasStep
             orderData={orderData}
-            onExtrasChange={(extras) => updateOrderData({ extras })}
-            onWatermarkFileChange={(file) => updateOrderData({ watermarkFile: file })}
+            onUpdate={updateOrderData}
             onNext={goToNext}
             onPrev={goToPrev}
           />
@@ -140,27 +139,22 @@ const OrderFlow = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background">
-      <div className="container mx-auto px-4 py-6 md:py-8">
-        <div className="max-w-5xl mx-auto">
-          {/* Header Section */}
-          <div className="text-center mb-6 md:mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background py-8">
+      <div className="container mx-auto px-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-foreground mb-2">
               Ihre Immobilienbilder perfekt bearbeitet
             </h1>
-            <p className="text-muted-foreground text-sm md:text-base">
+            <p className="text-muted-foreground">
               In wenigen Schritten zu professionellen HDR-Bildern
             </p>
           </div>
 
-          {/* Progress Bar */}
-          <div className="mb-6 md:mb-8">
-            <OrderProgress steps={[...steps]} />
-          </div>
+          <OrderProgress steps={steps} />
 
-          {/* Main Content Card */}
-          <Card className="shadow-sm border-border/50">
-            <CardContent className="p-4 md:p-6 lg:p-8">
+          <Card className="mt-8">
+            <CardContent className="p-8">
               {renderStep()}
             </CardContent>
           </Card>
