@@ -144,7 +144,7 @@ const OrdersTable = ({ orders, onOrderSelect }: OrdersTableProps) => {
                     variant="ghost"
                     size="sm"
                     onClick={() => onOrderSelect(order.id)}
-                    className="h-8 w-8 p-0"
+                    className="h-8 w-8 p-0 hover:bg-transparent"
                     title="Details anzeigen"
                   >
                     <Eye className="h-4 w-4" />
@@ -153,7 +153,7 @@ const OrdersTable = ({ orders, onOrderSelect }: OrdersTableProps) => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0"
+                      className="h-8 w-8 p-0 hover:bg-transparent"
                       onClick={() => handleDownloadAll(order)}
                       title="Alle Dateien herunterladen"
                     >
