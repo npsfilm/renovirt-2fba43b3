@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,22 +7,23 @@ import { Link } from 'react-router-dom';
 import { useOrders } from '@/hooks/useOrders';
 import { calculateEffectiveImageCount } from '@/utils/orderValidation';
 import type { OrderData } from '@/utils/orderValidation';
-
 interface ConfirmationStepProps {
   orderData: OrderData;
   orderId?: string;
   orderNumber?: string;
 }
-
-const ConfirmationStep = ({ orderData, orderNumber = 'RV-' + Date.now().toString().slice(-8) }: ConfirmationStepProps) => {
-  const { packages, addOns } = useOrders();
+const ConfirmationStep = ({
+  orderData,
+  orderNumber = 'RV-' + Date.now().toString().slice(-8)
+}: ConfirmationStepProps) => {
+  const {
+    packages,
+    addOns
+  } = useOrders();
   const estimatedDelivery = orderData.extras.express ? '24 Stunden' : '24–48 Stunden';
-
   const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
   const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       {/* Header section with success icon */}
       <div className="text-center space-y-4 mb-6">
         <div className="w-20 h-20 bg-success/10 rounded-full flex items-center justify-center mx-auto">
@@ -38,27 +38,7 @@ const ConfirmationStep = ({ orderData, orderNumber = 'RV-' + Date.now().toString
 
       {/* Order progress steps */}
       <div className="max-w-3xl mx-auto">
-        <div className="flex justify-between mb-8">
-          <div className="flex flex-col items-center">
-            <div className="w-10 h-10 rounded-full bg-success flex items-center justify-center text-success-foreground">1</div>
-            <span className="text-sm mt-2 text-success font-medium">Bestätigt</span>
-          </div>
-          <div className="flex-1 border-t-2 border-success self-center"></div>
-          <div className="flex flex-col items-center">
-            <div className="w-10 h-10 rounded-full bg-info/10 flex items-center justify-center text-info">2</div>
-            <span className="text-sm mt-2 text-muted-foreground">In Bearbeitung</span>
-          </div>
-          <div className="flex-1 border-t-2 border-border self-center"></div>
-          <div className="flex flex-col items-center">
-            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground">3</div>
-            <span className="text-sm mt-2 text-muted-foreground">Qualitätsprüfung</span>
-          </div>
-          <div className="flex-1 border-t-2 border-border self-center"></div>
-          <div className="flex flex-col items-center">
-            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground">4</div>
-            <span className="text-sm mt-2 text-muted-foreground">Fertiggestellt</span>
-          </div>
-        </div>
+        
       </div>
 
       {/* Order summary card */}
@@ -66,9 +46,7 @@ const ConfirmationStep = ({ orderData, orderNumber = 'RV-' + Date.now().toString
         <CardHeader className="border-b bg-muted/30">
           <CardTitle className="flex items-center justify-between">
             <span>Bestellnummer: {orderNumber}</span>
-            <Badge variant="outline" className="bg-info/10 text-info border-info/30">
-              In Bearbeitung
-            </Badge>
+            
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6 space-y-6">
@@ -84,11 +62,7 @@ const ConfirmationStep = ({ orderData, orderNumber = 'RV-' + Date.now().toString
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Foto-Typ:</span>
                   <span className="font-medium">
-                    {orderData.photoType === 'handy' ? 'Smartphone' : 
-                     orderData.photoType === 'kamera' ? 'Kamera' :
-                     orderData.photoType === 'bracketing-3' ? 'Bracketing (3 Bilder)' :
-                     orderData.photoType === 'bracketing-5' ? 'Bracketing (5 Bilder)' : 
-                     orderData.photoType}
+                    {orderData.photoType === 'handy' ? 'Smartphone' : orderData.photoType === 'kamera' ? 'Kamera' : orderData.photoType === 'bracketing-3' ? 'Bracketing (3 Bilder)' : orderData.photoType === 'bracketing-5' ? 'Bracketing (5 Bilder)' : orderData.photoType}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -112,40 +86,26 @@ const ConfirmationStep = ({ orderData, orderNumber = 'RV-' + Date.now().toString
                     <p className="text-muted-foreground text-sm">in {estimatedDelivery}</p>
                   </div>
                 </div>
-                <div className="flex items-start space-x-3">
-                  <Download className="w-5 h-5 text-info mt-0.5" />
-                  <div>
-                    <p className="font-medium">Download-Link</p>
-                    <p className="text-muted-foreground text-sm">Sie erhalten den Link nach Fertigstellung per E-Mail</p>
-                  </div>
-                </div>
+                
               </div>
             </div>
           </div>
 
           {/* Extras section - only show if extras were selected */}
-          {Object.values(orderData.extras).some(Boolean) && (
-            <div className="border-t pt-4">
+          {Object.values(orderData.extras).some(Boolean) && <div className="border-t pt-4">
               <h3 className="font-medium text-foreground mb-2">Gewählte Extras</h3>
               <div className="flex flex-wrap gap-2">
-                {orderData.extras.express && (
-                  <Badge variant="outline" className="border-warning/30 bg-warning/10 text-warning">
+                {orderData.extras.express && <Badge variant="outline" className="border-warning/30 bg-warning/10 text-warning">
                     Express Bearbeitung
-                  </Badge>
-                )}
-                {orderData.extras.upscale && (
-                  <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary">
+                  </Badge>}
+                {orderData.extras.upscale && <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary">
                     KI Upscaling
-                  </Badge>
-                )}
-                {orderData.extras.watermark && (
-                  <Badge variant="outline" className="border-info/30 bg-info/10 text-info">
+                  </Badge>}
+                {orderData.extras.watermark && <Badge variant="outline" className="border-info/30 bg-info/10 text-info">
                     Eigenes Wasserzeichen
-                  </Badge>
-                )}
+                  </Badge>}
               </div>
-            </div>
-          )}
+            </div>}
         </CardContent>
       </Card>
 
@@ -173,8 +133,6 @@ const ConfirmationStep = ({ orderData, orderNumber = 'RV-' + Date.now().toString
           </Link>
         </Button>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default ConfirmationStep;
