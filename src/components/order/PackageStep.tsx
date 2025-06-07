@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,9 +27,9 @@ const PackageStep = ({ selectedPackage, onPackageChange, onNext, onPrev }: Packa
         { icon: Clock, text: 'Lieferung innerhalb 48h' },
       ],
       popular: false,
-      gradient: 'from-info/10 to-info/20',
-      iconBg: 'bg-info/10',
-      iconColor: 'text-info',
+      gradient: 'from-primary/10 to-primary/20',
+      iconBg: 'bg-primary/10',
+      iconColor: 'text-primary',
     },
     {
       id: 'premium' as const,
