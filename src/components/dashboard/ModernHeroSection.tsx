@@ -50,8 +50,8 @@ const ModernHeroSection = () => {
     
     if (customerProfile?.salutation && customerProfile?.last_name) {
       const formattedSalutation = formatSalutation(customerProfile.salutation);
-      const uppercaseLastName = customerProfile.last_name.toUpperCase();
-      return `${timeGreeting}, ${formattedSalutation} ${uppercaseLastName}`;
+      const formattedLastName = customerProfile.last_name.charAt(0).toUpperCase() + customerProfile.last_name.slice(1).toLowerCase();
+      return `${timeGreeting}, ${formattedSalutation} ${formattedLastName}`;
     }
     
     // Fallback to current behavior
