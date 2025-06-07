@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
@@ -77,8 +76,10 @@ const OrderAnalytics = () => {
   const statusColors = {
     pending: 'hsl(var(--status-pending))',
     processing: 'hsl(var(--status-processing))', 
-    ready_for_review: 'hsl(var(--status-quality-check))',
+    quality_check: 'hsl(var(--status-quality-check))',
+    revision: 'hsl(var(--status-revision))',
     completed: 'hsl(var(--status-completed))',
+    delivered: 'hsl(var(--status-delivered))',
     cancelled: 'hsl(var(--status-cancelled))',
   };
 
