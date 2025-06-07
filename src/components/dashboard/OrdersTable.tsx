@@ -37,19 +37,19 @@ const OrdersTable = ({ orders, onOrderSelect }: OrdersTableProps) => {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      pending: { label: 'Ausstehend', variant: 'secondary' as const },
-      processing: { label: 'In Bearbeitung', variant: 'default' as const },
-      ready: { label: 'Bereit', variant: 'outline' as const },
-      completed: { label: 'Abgeschlossen', variant: 'default' as const },
-      cancelled: { label: 'Storniert', variant: 'destructive' as const },
+      pending: { label: 'Warteschlange', className: 'bg-warning text-warning-foreground' },
+      processing: { label: 'In Bearbeitung', className: 'bg-primary text-primary-foreground' },
+      quality_check: { label: 'Überprüfung', className: 'bg-accent text-accent-foreground' },
+      revision: { label: 'In Revision', className: 'bg-orange-100 text-orange-800' },
+      completed: { label: 'Abgeschlossen', className: 'bg-success text-success-foreground' },
+      delivered: { label: 'Abgeschlossen & bezahlt', className: 'bg-green-100 text-green-800' },
+      cancelled: { label: 'Storniert', className: 'bg-error text-error-foreground' },
     };
 
-    const config = statusConfig[status as keyof typeof statusConfig] || { 
-      label: status, 
-      variant: 'secondary' as const 
-    };
+    const config = statusConfig[status as keyof typeof statusConfig] || 
+                   { label: status, className: 'bg-secondary text-secondary-foreground' };
 
-    return <Badge variant={config.variant}>{config.label}</Badge>;
+    return <Badge className={config.className}>{config.label}</Badge>;
   };
 
   const handleDownloadAll = async (order: Order) => {
@@ -149,7 +149,7 @@ const OrdersTable = ({ orders, onOrderSelect }: OrdersTableProps) => {
                   >
                     <Eye className="h-4 w-4" />
                   </Button>
-                  {(order.status === 'completed' || order.status === 'ready') && order.order_images && order.order_images.length > 0 && (
+                  {(order.status === 'completed' || order.status === 'delivered') && order.order_images && order.order_images.length > 0 && (
                     <Button
                       variant="ghost"
                       size="sm"
