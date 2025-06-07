@@ -5,7 +5,7 @@ import { useOrderCreation } from '@/hooks/useOrderCreation';
 import { useOrderData } from '@/hooks/useOrderData';
 import { useUserCredits } from '@/hooks/useUserCredits';
 import { useToast } from '@/hooks/use-toast';
-import { calculateOrderPricing } from '@/utils/orderPricing';
+import { useOrders } from '@/hooks/useOrders';
 import { withCSRFProtection } from '@/utils/csrfProtection';
 import { validateAdminOperation } from '@/utils/enhancedSecurityValidation';
 import { secureLog, logSecurityEvent } from '@/utils/secureLogging';
@@ -24,6 +24,7 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
   const { createPaymentIntent, handlePaymentSuccess } = usePayment();
   const { packages, addOns } = useOrderData();
   const { createOrder } = useOrderCreation(packages, addOns);
+  const { calculateTotalPrice } = useOrders();
   const userCreditsResult = useUserCredits();
   const { credits, isLoading: creditsLoading } = userCreditsResult;
   const { toast } = useToast();
@@ -34,17 +35,20 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
       return;
     }
 
-    const { calculatedPrice, creditsDiscount } = calculateOrderPricing(orderData, credits || 0);
-    // calculatedPrice is already the gross price (including VAT)
-    setFinalPrice(calculatedPrice);
+    // Use the same calculation as in PriceSummary
+    const grossPrice = calculateTotalPrice(orderData);
+    const creditsDiscount = Math.min(credits || 0, grossPrice);
+    const calculatedFinalPrice = Math.max(0, grossPrice - creditsDiscount);
+    
+    setFinalPrice(calculatedFinalPrice);
 
     // Automatically use all available credits if possible
-    if (credits && calculatedPrice > 0) {
+    if (credits && grossPrice > 0) {
       setCreditsToUse(Math.min(credits, creditsDiscount));
     } else {
       setCreditsToUse(0);
     }
-  }, [orderData, credits, creditsLoading]);
+  }, [orderData, credits, creditsLoading, calculateTotalPrice]);
 
   useEffect(() => {
     // Check if the order can proceed based on the acceptance of terms
@@ -122,10 +126,10 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
       });
 
       if (paymentMethod === 'stripe' && finalPrice > 0) {
-        // Create payment intent for Stripe payments with gross price (including VAT)
+        // Create payment intent for Stripe payments with the same final price
         const paymentData = await createPaymentIntent({
           orderId: createdOrder.id,
-          amount: finalPrice, // This is already the gross price including VAT
+          amount: finalPrice, // This should now match the displayed price
           currency: 'eur',
         });
 
