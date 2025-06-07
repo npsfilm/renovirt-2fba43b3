@@ -6,15 +6,18 @@ import { CheckCircle, ArrowRight, Download, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useOrders } from '@/hooks/useOrders';
 import { calculateEffectiveImageCount } from '@/utils/orderValidation';
+import { generateOrderNumber } from '@/utils/orderNumberGenerator';
 import type { OrderData } from '@/utils/orderValidation';
+
 interface ConfirmationStepProps {
   orderData: OrderData;
   orderId?: string;
   orderNumber?: string;
 }
+
 const ConfirmationStep = ({
   orderData,
-  orderNumber = 'RV-' + Date.now().toString().slice(-8)
+  orderNumber = generateOrderNumber()
 }: ConfirmationStepProps) => {
   const {
     packages,
@@ -135,4 +138,5 @@ const ConfirmationStep = ({
       </div>
     </div>;
 };
+
 export default ConfirmationStep;
