@@ -34,7 +34,7 @@ export const calculateOrderTotal = (
   const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
   if (!selectedPackage) {
     // Fallback to hardcoded values if package not found
-    const fallbackPrice = orderData.package === 'basic' ? 9 : 13;
+    const fallbackPrice = orderData.package === 'Basic' ? 9 : 13;
     let netTotal = fallbackPrice;
     const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
     netTotal *= imageCount;
@@ -77,7 +77,7 @@ export const calculateOrderTotal = (
 
 export const calculateOrderPricing = (orderData: OrderData, availableCredits: number = 0) => {
   // Get package price - fallback to hardcoded values
-  const packagePrice = orderData.package === 'basic' ? 9 : 13; // Net price per image
+  const packagePrice = orderData.package === 'Basic' ? 9 : 13; // Net price per image
   const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
   
   let calculatedNetPrice = packagePrice * imageCount;

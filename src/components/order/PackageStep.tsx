@@ -88,7 +88,7 @@ const PackageStep = ({ selectedPackage, onPackageChange, onNext, onPrev }: Packa
               <CardHeader className="text-center pb-4 pt-6">
                 <div className="flex items-center justify-center mb-3">
                   <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${pkg.iconBg}`}>
-                    {pkg.id === 'basic' ? (
+                    {pkg.id === 'Basic' ? (
                       <Zap className={`w-6 h-6 ${pkg.iconColor}`} />
                     ) : (
                       <Crown className={`w-6 h-6 ${pkg.iconColor}`} />

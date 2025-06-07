@@ -1,3 +1,4 @@
+
 export interface OrderData {
   files: File[];
   package: 'Basic' | 'Premium';
@@ -9,6 +10,9 @@ export interface OrderData {
   };
   watermarkFile?: File;
   email?: string;
+  company?: string;
+  objectReference?: string;
+  specialRequests?: string;
   acceptedTerms: boolean;
 }
 
@@ -38,4 +42,27 @@ export const calculateEffectiveImageCount = (files: File[], photoType?: string):
   }
 
   return files.length;
+};
+
+export const validateOrderFiles = (files: File[]) => {
+  const errors: string[] = [];
+  
+  if (!files || files.length === 0) {
+    errors.push('Please select at least one file');
+  }
+  
+  files.forEach(file => {
+    if (!file.type.startsWith('image/')) {
+      errors.push(`${file.name} is not a valid image file`);
+    }
+    
+    if (file.size > 50 * 1024 * 1024) { // 50MB limit
+      errors.push(`${file.name} is too large (max 50MB)`);
+    }
+  });
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
 };
