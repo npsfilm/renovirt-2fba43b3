@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { OrderProgress } from '@/components/order/OrderProgress';
+import OrderProgress from '@/components/order/OrderProgress';
 import PackageStep from '@/components/order/PackageStep';
 import PhotoTypeStep from '@/components/order/PhotoTypeStep';
 import UploadStep from '@/components/order/UploadStep';
@@ -28,13 +29,13 @@ const OrderFlow = () => {
   });
 
   const steps = [
-    { id: 1, title: 'Paket wählen', completed: !!orderData.package },
-    { id: 2, title: 'Foto-Typ', completed: !!orderData.photoType },
-    { id: 3, title: 'Bilder hochladen', completed: orderData.files.length > 0 },
-    { id: 4, title: 'Extras', completed: true },
-    { id: 5, title: 'Zusammenfassung', completed: orderData.acceptedTerms },
-    { id: 6, title: 'Bestätigung', completed: false },
-  ];
+    { number: 1, title: 'Paket wählen', status: !!orderData.package ? 'completed' : currentStep === 1 ? 'current' : 'upcoming' },
+    { number: 2, title: 'Foto-Typ', status: !!orderData.photoType ? 'completed' : currentStep === 2 ? 'current' : 'upcoming' },
+    { number: 3, title: 'Bilder hochladen', status: orderData.files.length > 0 ? 'completed' : currentStep === 3 ? 'current' : 'upcoming' },
+    { number: 4, title: 'Extras', status: currentStep > 4 ? 'completed' : currentStep === 4 ? 'current' : 'upcoming' },
+    { number: 5, title: 'Zusammenfassung', status: orderData.acceptedTerms ? 'completed' : currentStep === 5 ? 'current' : 'upcoming' },
+    { number: 6, title: 'Bestätigung', status: currentStep === 6 ? 'current' : 'upcoming' },
+  ] as const;
 
   const updateOrderData = (updates: Partial<OrderData>) => {
     setOrderData(prev => ({ ...prev, ...updates }));
@@ -83,7 +84,7 @@ const OrderFlow = () => {
         return (
           <PackageStep
             selectedPackage={orderData.package}
-            onPackageSelect={(pkg) => updateOrderData({ package: pkg })}
+            onSelect={(pkg) => updateOrderData({ package: pkg })}
             onNext={goToNext}
           />
         );
@@ -91,7 +92,7 @@ const OrderFlow = () => {
         return (
           <PhotoTypeStep
             selectedType={orderData.photoType}
-            onTypeSelect={(type) => updateOrderData({ photoType: type })}
+            onSelect={(type) => updateOrderData({ photoType: type })}
             onNext={goToNext}
             onPrev={goToPrev}
           />
@@ -101,7 +102,7 @@ const OrderFlow = () => {
           <UploadStep
             files={orderData.files}
             photoType={orderData.photoType}
-            onFilesUpdate={(files) => updateOrderData({ files })}
+            onFilesChange={(files) => updateOrderData({ files })}
             onNext={goToNext}
             onPrev={goToPrev}
           />
@@ -110,7 +111,7 @@ const OrderFlow = () => {
         return (
           <ExtrasStep
             orderData={orderData}
-            onUpdateData={updateOrderData}
+            onUpdate={updateOrderData}
             onNext={goToNext}
             onPrev={goToPrev}
           />
@@ -150,7 +151,7 @@ const OrderFlow = () => {
             </p>
           </div>
 
-          <OrderProgress steps={steps} currentStep={currentStep} />
+          <OrderProgress steps={steps} />
 
           <Card className="mt-8">
             <CardContent className="p-8">
