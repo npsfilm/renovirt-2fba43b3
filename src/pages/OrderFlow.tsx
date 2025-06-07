@@ -114,7 +114,8 @@ const OrderFlow = () => {
         return (
           <ExtrasStep
             orderData={orderData}
-            onUpdateData={updateOrderData}
+            onExtrasChange={(extras) => updateOrderData({ extras })}
+            onWatermarkFileChange={(file) => updateOrderData({ watermarkFile: file })}
             onNext={goToNext}
             onPrev={goToPrev}
           />
