@@ -1,7 +1,8 @@
 
-import React, { useCallback, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Upload } from 'lucide-react';
+import React from 'react';
+import { Upload, Image, FileImage } from 'lucide-react';
+import SecureUploadZone from '@/components/security/SecureUploadZone';
+import { useAuth } from '@/hooks/useAuth';
 
 interface UploadZoneProps {
   onFiles: (files: FileList) => void;
@@ -11,69 +12,41 @@ interface UploadZoneProps {
 }
 
 const UploadZone = ({ onFiles, supportedFormats, maxFileSize, maxFiles }: UploadZoneProps) => {
-  const [dragActive, setDragActive] = useState(false);
+  const { user } = useAuth();
 
-  const handleDrag = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
-  }, []);
-
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      onFiles(e.dataTransfer.files);
-      e.dataTransfer.clearData();
-    }
-  }, [onFiles]);
-
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      onFiles(e.target.files);
-      e.target.value = '';
-    }
-  }, [onFiles]);
+  const formatFileSize = (bytes: number) => {
+    return Math.round(bytes / 1024 / 1024);
+  };
 
   return (
-    <div
-      className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
-        dragActive ? 'border-primary bg-primary/5' : 'border-border hover:border-border/80'
-      }`}
-      onDragEnter={handleDrag}
-      onDragLeave={handleDrag}
-      onDragOver={handleDrag}
-      onDrop={handleDrop}
-      onClick={() => document.getElementById('file-upload')?.click()}
+    <SecureUploadZone 
+      onFiles={onFiles} 
+      maxFiles={maxFiles}
+      userId={user?.id}
+      className="w-full"
     >
-      <Upload className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-      <h3 className="text-lg font-medium text-foreground mb-2">
-        Dateien hier ablegen oder klicken zum Auswählen
-      </h3>
-      <p className="text-muted-foreground mb-4">
-        Unterstützte Formate: {supportedFormats.join(', ').toUpperCase()}
-      </p>
-      <p className="text-sm text-muted-foreground mb-4">
-        Max {Math.round(maxFileSize / 1024 / 1024)}MB pro Datei, bis zu {maxFiles} Dateien
-      </p>
-      <input
-        type="file"
-        multiple
-        accept={supportedFormats.map(format => `.${format}`).join(',')}
-        onChange={handleInputChange}
-        className="hidden"
-        id="file-upload"
-      />
-      <Button variant="outline" type="button">
-        Dateien auswählen
-      </Button>
-    </div>
+      <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer bg-gray-50 hover:bg-gray-100">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="flex space-x-2">
+            <Upload className="h-12 w-12 text-gray-400" />
+            <Image className="h-12 w-12 text-blue-500" />
+            <FileImage className="h-12 w-12 text-green-500" />
+          </div>
+          
+          <div className="space-y-2">
+            <h3 className="text-lg font-medium text-gray-900">
+              Klicken Sie hier oder ziehen Sie Ihre Bilder hinein
+            </h3>
+            <p className="text-sm text-gray-600">
+              Unterstützte Formate: {supportedFormats.join(', ').toUpperCase()}
+            </p>
+            <p className="text-sm text-gray-500">
+              Max. {formatFileSize(maxFileSize)} MB pro Datei • Bis zu {maxFiles} Dateien
+            </p>
+          </div>
+        </div>
+      </div>
+    </SecureUploadZone>
   );
 };
 

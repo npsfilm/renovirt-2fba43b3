@@ -1,112 +1,79 @@
 
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useSecurePayment } from './useSecurePayment';
+import { logSecurityEvent } from '@/utils/secureLogging';
 import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/use-toast';
-import { useReferralCredits } from '@/hooks/useReferralCredits';
-
-interface PaymentData {
-  orderId: string;
-  amount: number;
-  currency: string;
-}
-
-interface PaymentIntentResponse {
-  client_secret: string;
-  payment_intent_id: string;
-}
 
 export const usePayment = () => {
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
   const { user } = useAuth();
-  const { toast } = useToast();
-  const { approveReferralCredits } = useReferralCredits();
+  const { createSecurePayment, verifyPayment, loading } = useSecurePayment();
+  const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
 
-  const createPaymentIntent = async (paymentData: PaymentData): Promise<PaymentIntentResponse> => {
+  const initiatePayment = async (amount: number, orderId?: string) => {
     if (!user) {
-      throw new Error('User must be authenticated');
+      throw new Error('User not authenticated');
     }
 
-    setIsProcessingPayment(true);
+    setPaymentStatus('processing');
 
     try {
-      console.log('Creating payment intent for order:', paymentData.orderId);
-
-      const { data, error } = await supabase.functions.invoke('create-payment', {
-        body: {
-          orderId: paymentData.orderId,
-          amount: paymentData.amount,
-          currency: paymentData.currency,
-          userId: user.id,
-        },
+      logSecurityEvent('payment_initiation_started', { 
+        userId: user.id, 
+        amount, 
+        orderId 
       });
 
-      if (error) {
-        console.error('Payment intent creation failed:', error);
-        throw error;
-      }
+      const result = await createSecurePayment(amount, orderId);
+      
+      setPaymentStatus('success');
+      
+      logSecurityEvent('payment_initiation_success', { 
+        userId: user.id, 
+        paymentIntentId: result.payment_intent_id 
+      });
 
-      if (data?.client_secret) {
-        setClientSecret(data.client_secret);
-        console.log('Payment intent created successfully');
-        return data;
-      } else {
-        throw new Error('No client secret received');
-      }
+      return result;
     } catch (error: any) {
-      console.error('Payment intent creation failed:', error);
-      toast({
-        title: 'Zahlungsfehler',
-        description: error.message || 'Die Zahlung konnte nicht vorbereitet werden.',
-        variant: 'destructive',
+      setPaymentStatus('error');
+      
+      logSecurityEvent('payment_initiation_failed', { 
+        userId: user.id, 
+        error: error.message 
       });
+      
       throw error;
-    } finally {
-      setIsProcessingPayment(false);
     }
   };
 
-  const handlePaymentSuccess = async (orderId: string, userId: string, paymentIntentId?: string) => {
+  const confirmPayment = async (paymentIntentId: string) => {
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
     try {
-      console.log('Handling payment success for order:', orderId);
-
-      // Update payment status using Payment Intent ID
-      const { error: updateError } = await supabase.rpc('update_order_payment_status', {
-        p_order_id: orderId,
-        p_payment_status: 'paid',
-        p_stripe_session_id: paymentIntentId
+      const result = await verifyPayment(paymentIntentId);
+      
+      logSecurityEvent('payment_confirmation_success', { 
+        userId: user.id, 
+        paymentIntentId 
       });
 
-      if (updateError) {
-        console.error('Failed to update order payment status:', updateError);
-        throw updateError;
-      }
-
-      // Try to approve referral credits for this order
-      await approveReferralCredits(orderId, userId);
-
-      toast({
-        title: 'Zahlung erfolgreich!',
-        description: 'Ihre Bestellung wurde erfolgreich bezahlt.',
+      return result;
+    } catch (error: any) {
+      logSecurityEvent('payment_confirmation_failed', { 
+        userId: user.id, 
+        paymentIntentId,
+        error: error.message 
       });
-
-      console.log('Payment success handled successfully');
-    } catch (error) {
-      console.error('Failed to handle payment success:', error);
+      
+      throw error;
     }
-  };
-
-  const resetPaymentState = () => {
-    setClientSecret(null);
-    setIsProcessingPayment(false);
   };
 
   return {
-    createPaymentIntent,
-    handlePaymentSuccess,
-    resetPaymentState,
-    isProcessingPayment,
-    clientSecret,
+    initiatePayment,
+    confirmPayment,
+    loading,
+    paymentStatus
   };
 };

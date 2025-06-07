@@ -1,40 +1,18 @@
 
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAdminRole } from '@/hooks/useAdminRole';
-import { useAuth } from '@/hooks/useAuth';
+import SecureAdminWrapper from './SecureAdminWrapper';
 
 interface AdminRouteProps {
   children: React.ReactNode;
+  requireReauth?: boolean;
 }
 
-const AdminRoute = ({ children }: AdminRouteProps) => {
-  const { user, loading: authLoading } = useAuth();
-  const { isAdmin, loading: adminLoading } = useAdminRole();
-
-  // Show loading state while checking authentication and admin status
-  if (authLoading || adminLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Überprüfe Admin-Berechtigung...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Redirect to admin login if not authenticated
-  if (!user) {
-    return <Navigate to="/admin-auth" replace />;
-  }
-
-  // Redirect to admin login if not admin (instead of regular dashboard)
-  if (!isAdmin) {
-    return <Navigate to="/admin-auth" replace />;
-  }
-
-  return <>{children}</>;
+const AdminRoute = ({ children, requireReauth = false }: AdminRouteProps) => {
+  return (
+    <SecureAdminWrapper requireReauth={requireReauth}>
+      {children}
+    </SecureAdminWrapper>
+  );
 };
 
 export default AdminRoute;
