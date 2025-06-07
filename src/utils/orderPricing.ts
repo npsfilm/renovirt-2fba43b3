@@ -32,7 +32,23 @@ export const calculateOrderTotal = (
   addOns: AddOn[]
 ): number => {
   const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
-  if (!selectedPackage) return 0;
+  if (!selectedPackage) {
+    // Fallback to hardcoded values if package not found
+    const fallbackPrice = orderData.package === 'basic' ? 9 : 13;
+    let netTotal = fallbackPrice;
+    const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
+    netTotal *= imageCount;
+    
+    // Add new extras with fixed net prices
+    Object.entries(orderData.extras).forEach(([extraName, isSelected]) => {
+      if (isSelected && extraName in EXTRAS_NET_PRICES) {
+        const pricePerImage = EXTRAS_NET_PRICES[extraName as keyof typeof EXTRAS_NET_PRICES];
+        netTotal += pricePerImage * imageCount;
+      }
+    });
+    
+    return netTotal * (1 + VAT_RATE);
+  }
 
   let netTotal = selectedPackage.base_price;
   const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
@@ -60,11 +76,11 @@ export const calculateOrderTotal = (
 };
 
 export const calculateOrderPricing = (orderData: OrderData, availableCredits: number = 0) => {
-  // Base pricing calculation
-  const baseNetPrice = 5; // Base net price per image
+  // Get package price - fallback to hardcoded values
+  const packagePrice = orderData.package === 'basic' ? 9 : 13; // Net price per image
   const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
   
-  let calculatedNetPrice = baseNetPrice * imageCount;
+  let calculatedNetPrice = packagePrice * imageCount;
   
   // Add extras pricing (net) with new fixed prices
   Object.entries(orderData.extras).forEach(([extraName, isSelected]) => {

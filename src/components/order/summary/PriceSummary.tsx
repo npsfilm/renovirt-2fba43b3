@@ -13,7 +13,7 @@ interface PriceSummaryProps {
 }
 
 const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSummaryProps) => {
-  const { calculateTotalPrice } = useOrders();
+  const { calculateTotalPrice, packages } = useOrders();
   const grossPrice = calculateTotalPrice(orderData);
   const creditDiscount = creditsToUse * 1; // 1 Euro per credit
   const finalPrice = Math.max(0, grossPrice - creditDiscount);
@@ -21,8 +21,21 @@ const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSum
   // Calculate effective image count
   const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
   
-  // Base package price (5€ per image net)
-  const baseNetPrice = 5 * imageCount;
+  // Get package price from database or fallback to hardcoded values
+  const getPackagePrice = () => {
+    if (packages && packages.length > 0) {
+      const selectedPackage = packages.find(pkg => pkg.name.toLowerCase() === orderData.package);
+      if (selectedPackage) {
+        return selectedPackage.base_price;
+      }
+    }
+    
+    // Fallback to hardcoded values if packages not loaded
+    return orderData.package === 'basic' ? 9 : 13;
+  };
+  
+  const packagePricePerImage = getPackagePrice();
+  const baseNetPrice = packagePricePerImage * imageCount;
   
   // Calculate extras prices
   const extrasNetPrices = {
@@ -45,11 +58,11 @@ const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSum
           {/* Base Package */}
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="font-medium">Basispaket ({imageCount} Bilder)</span>
+              <span className="font-medium">{orderData.package === 'basic' ? 'Basic' : 'Premium'} Paket ({imageCount} Bilder)</span>
               <span>{baseNetPrice.toFixed(2)} €</span>
             </div>
             <div className="text-xs text-muted-foreground pl-2">
-              5,00 € pro Bild (netto)
+              {packagePricePerImage.toFixed(2)} € pro Bild (netto)
             </div>
           </div>
           
