@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Gift, Copy, Share2, Users, ArrowRight, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import ReferralShareModal from './ReferralShareModal';
@@ -12,10 +13,9 @@ import ReferralShareModal from './ReferralShareModal';
 const ModernReferralBox = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
-  const { data: referralCode } = useQuery({
+  const { data: referralCode, isLoading } = useQuery({
     queryKey: ['referral-code', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
@@ -53,33 +53,6 @@ const ModernReferralBox = () => {
     enabled: !!user?.id,
   });
 
-  const createReferralCode = useMutation({
-    mutationFn: async () => {
-      if (!user?.id) throw new Error('User not authenticated');
-      
-      const { data, error } = await supabase.rpc('create_user_referral_code', {
-        user_uuid: user.id
-      });
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['referral-code', user?.id] });
-      toast({
-        title: "Empfehlungscode erstellt",
-        description: "Ihr persönlicher Empfehlungscode wurde erfolgreich erstellt."
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Fehler",
-        description: "Empfehlungscode konnte nicht erstellt werden.",
-        variant: "destructive"
-      });
-    }
-  });
-
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -99,6 +72,26 @@ const ModernReferralBox = () => {
   const shareReferralCode = () => {
     setIsShareModalOpen(true);
   };
+
+  if (isLoading) {
+    return (
+      <Card className="bg-card border-border shadow-sm">
+        <CardContent className="p-8">
+          <div className="animate-pulse">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="w-10 h-10 bg-muted rounded-xl"></div>
+              <div>
+                <div className="h-5 bg-muted rounded w-32 mb-2"></div>
+                <div className="h-4 bg-muted rounded w-48"></div>
+              </div>
+            </div>
+            <div className="h-12 bg-muted rounded mb-4"></div>
+            <div className="h-4 bg-muted rounded w-40"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <>
@@ -159,7 +152,7 @@ const ModernReferralBox = () => {
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center space-x-2 text-subtle">
                   <CheckCircle className="w-4 h-4 text-success" />
-                  <span>Code erstellt und bereit zum Teilen</span>
+                  <span>Ihr persönlicher Empfehlungscode</span>
                 </div>
                 <Button variant="link" size="sm" className="text-primary p-0">
                   Mehr Details
@@ -170,15 +163,8 @@ const ModernReferralBox = () => {
           ) : (
             <div className="text-center">
               <p className="text-subtle mb-4">
-                Erstellen Sie Ihren persönlichen Empfehlungscode und verdienen Sie kostenfreie Bilder.
+                Laden Sie Ihre Referral-Code Daten...
               </p>
-              <Button 
-                onClick={() => createReferralCode.mutate()} 
-                disabled={createReferralCode.isPending}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground"
-              >
-                {createReferralCode.isPending ? 'Erstelle...' : 'Empfehlungscode erstellen'}
-              </Button>
             </div>
           )}
         </CardContent>

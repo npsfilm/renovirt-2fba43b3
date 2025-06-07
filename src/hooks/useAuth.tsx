@@ -131,8 +131,30 @@ export const useAuth = () => {
       
       if (error) {
         logSecurityEvent('signup_failed', { email, error: error.message });
-      } else {
+      } else if (data.user) {
         logSecurityEvent('signup_success', { email });
+        
+        // Create customer profile which will automatically trigger referral code generation
+        try {
+          const { error: profileError } = await supabase
+            .from('customer_profiles')
+            .insert({
+              user_id: data.user.id,
+              first_name: userData.firstName,
+              last_name: userData.lastName,
+              role: userData.role,
+            });
+          
+          if (profileError) {
+            console.error('Error creating customer profile:', profileError);
+            // Don't fail the registration, profile creation is not critical
+          } else {
+            console.log('Customer profile created successfully, referral code will be auto-generated');
+          }
+        } catch (profileCreationError) {
+          console.error('Error during profile creation:', profileCreationError);
+          // Don't fail the registration
+        }
       }
       
       return { data, error };
