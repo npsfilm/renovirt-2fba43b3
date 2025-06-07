@@ -1,34 +1,30 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { 
-  Download, 
-  FileText, 
-  Calendar,
-  Euro,
-  Receipt,
-  ExternalLink
-} from 'lucide-react';
+import { Download, FileText, Calendar, Euro, Receipt, ExternalLink } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-
 const BillingOverview = () => {
-  const { user } = useAuth();
-  const { toast } = useToast();
-
-  const { data: billingData } = useQuery({
+  const {
+    user
+  } = useAuth();
+  const {
+    toast
+  } = useToast();
+  const {
+    data: billingData
+  } = useQuery({
     queryKey: ['user-billing', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
-      
-      const { data: orders, error } = await supabase
-        .from('orders')
-        .select(`
+      const {
+        data: orders,
+        error
+      } = await supabase.from('orders').select(`
           id, 
           total_price, 
           created_at, 
@@ -48,35 +44,26 @@ const BillingOverview = () => {
           packages (
             name
           )
-        `)
-        .eq('user_id', user.id)
-        .neq('payment_flow_status', 'draft')
-        .order('created_at', { ascending: false });
-
+        `).eq('user_id', user.id).neq('payment_flow_status', 'draft').order('created_at', {
+        ascending: false
+      });
       if (error) throw error;
-
-      const totalSpent = orders?.reduce((sum, order) => 
-        sum + (parseFloat(order.total_price?.toString() || '0')), 0) || 0;
-
+      const totalSpent = orders?.reduce((sum, order) => sum + parseFloat(order.total_price?.toString() || '0'), 0) || 0;
       const completedOrders = orders?.filter(order => order.status === 'completed') || [];
       const pendingPayments = orders?.filter(order => order.payment_status === 'pending') || [];
-
       return {
         orders: orders || [],
         totalSpent,
         completedOrders: completedOrders.length,
         pendingPayments,
-        totalPending: pendingPayments.reduce((sum, order) => 
-          sum + (parseFloat(order.total_price?.toString() || '0')), 0)
+        totalPending: pendingPayments.reduce((sum, order) => sum + parseFloat(order.total_price?.toString() || '0'), 0)
       };
     },
-    enabled: !!user?.id,
+    enabled: !!user?.id
   });
-
   const formatOrderId = (order: any) => {
     return order.order_number || `#${order.id.slice(0, 8).toUpperCase()}`;
   };
-
   const getStatusBadge = (status: string, paymentStatus?: string) => {
     if (paymentStatus === 'paid' && status === 'completed') {
       return <Badge className="bg-green-100 text-green-800">Bezahlt</Badge>;
@@ -84,7 +71,6 @@ const BillingOverview = () => {
     if (paymentStatus === 'pending') {
       return <Badge className="bg-orange-100 text-orange-800">Ausstehend</Badge>;
     }
-    
     switch (status) {
       case 'completed':
         return <Badge className="bg-green-100 text-green-800">Abgeschlossen</Badge>;
@@ -94,15 +80,13 @@ const BillingOverview = () => {
         return <Badge className="bg-gray-100 text-gray-800">Pending</Badge>;
     }
   };
-
   const handleDownloadInvoice = async (order: any) => {
     // For now, generate a simple receipt
     toast({
       title: "Rechnung wird vorbereitet",
-      description: "Die Rechnung wird in Kürze als PDF verfügbar sein.",
+      description: "Die Rechnung wird in Kürze als PDF verfügbar sein."
     });
   };
-
   const handlePayOrder = async (order: any) => {
     if (order.stripe_session_id) {
       // Redirect to existing Stripe session
@@ -111,69 +95,24 @@ const BillingOverview = () => {
       toast({
         title: "Zahlung nicht verfügbar",
         description: "Bitte kontaktieren Sie den Support für Zahlungsoptionen.",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
-
   const handleExportAll = () => {
     toast({
       title: "Export wird vorbereitet",
-      description: "Der CSV-Export wird in Kürze verfügbar sein.",
+      description: "Der CSV-Export wird in Kürze verfügbar sein."
     });
   };
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6 py-0">
       {/* Billing Summary */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-                <Euro className="w-5 h-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">
-                  €{billingData?.totalSpent.toFixed(2) || '0.00'}
-                </p>
-                <p className="text-xs text-gray-600">Gesamt ausgegeben</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
-                <Receipt className="w-5 h-5 text-green-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">
-                  {billingData?.completedOrders || 0}
-                </p>
-                <p className="text-xs text-gray-600">Bezahlte Rechnungen</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center">
-                <FileText className="w-5 h-5 text-orange-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">
-                  €{billingData?.totalPending.toFixed(2) || '0.00'}
-                </p>
-                <p className="text-xs text-gray-600">Offene Rechnungen</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        
       </div>
 
       {/* Payment Information */}
@@ -217,8 +156,7 @@ const BillingOverview = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {billingData?.orders.length ? (
-            <Table>
+          {billingData?.orders.length ? <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Rechnungs-Nr.</TableHead>
@@ -230,8 +168,7 @@ const BillingOverview = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {billingData.orders.map((order) => (
-                  <TableRow key={order.id}>
+                {billingData.orders.map(order => <TableRow key={order.id}>
                     <TableCell className="font-medium">
                       {formatOrderId(order)}
                     </TableCell>
@@ -255,42 +192,23 @@ const BillingOverview = () => {
                     </TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
-                        {(order.status === 'completed' && order.payment_status === 'paid') && (
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            onClick={() => handleDownloadInvoice(order)}
-                            title="Rechnung herunterladen"
-                          >
+                        {order.status === 'completed' && order.payment_status === 'paid' && <Button variant="ghost" size="sm" onClick={() => handleDownloadInvoice(order)} title="Rechnung herunterladen">
                             <Download className="w-4 h-4" />
-                          </Button>
-                        )}
-                        {order.payment_status === 'pending' && (
-                          <Button 
-                            size="sm"
-                            onClick={() => handlePayOrder(order)}
-                            title="Jetzt bezahlen"
-                          >
+                          </Button>}
+                        {order.payment_status === 'pending' && <Button size="sm" onClick={() => handlePayOrder(order)} title="Jetzt bezahlen">
                             <ExternalLink className="w-4 h-4 mr-1" />
                             Bezahlen
-                          </Button>
-                        )}
+                          </Button>}
                       </div>
                     </TableCell>
-                  </TableRow>
-                ))}
+                  </TableRow>)}
               </TableBody>
-            </Table>
-          ) : (
-            <div className="text-center py-8 text-gray-500">
+            </Table> : <div className="text-center py-8 text-gray-500">
               <FileText className="w-8 h-8 mx-auto mb-2 text-gray-300" />
               <p>Noch keine Rechnungen vorhanden</p>
-            </div>
-          )}
+            </div>}
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
-
 export default BillingOverview;
