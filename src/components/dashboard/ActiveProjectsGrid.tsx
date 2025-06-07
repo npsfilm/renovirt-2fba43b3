@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -61,6 +62,27 @@ const ActiveProjectsGrid = () => {
   };
 
   const formatOrderId = (id: string) => `#${id.slice(0, 8).toUpperCase()}`;
+
+  const getImageText = (count: number) => {
+    return count === 1 ? '1 Bild' : `${count} Bilder`;
+  };
+
+  const getEstimatedCompletion = (project: any) => {
+    if (!project.created_at) return 'Unbekannt';
+    
+    const orderDate = new Date(project.created_at);
+    // Check if 24h service was booked (this would need to be stored in the order data)
+    // For now, assuming standard 48h service
+    const hoursToAdd = project.express_service ? 24 : 48;
+    const estimatedDate = new Date(orderDate.getTime() + (hoursToAdd * 60 * 60 * 1000));
+    
+    return estimatedDate.toLocaleDateString('de-DE', {
+      day: '2-digit',
+      month: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   const handleViewProject = (order: any) => {
     setSelectedOrder(order);
@@ -141,7 +163,7 @@ const ActiveProjectsGrid = () => {
                             {formatOrderId(project.id)}
                           </div>
                           <div className="text-xs text-subtle">
-                            {project.image_count} Bilder
+                            {getImageText(project.image_count)}
                           </div>
                         </div>
                         <Badge className={statusConfig.color}>
@@ -156,6 +178,11 @@ const ActiveProjectsGrid = () => {
                         </div>
                         <Progress value={statusConfig.progress} className="h-1" />
                         <div className="text-xs text-subtle">{statusConfig.description}</div>
+                      </div>
+
+                      <div className="text-xs text-subtle">
+                        <div>Fertigstellung bis voraussichtlich:</div>
+                        <div className="font-medium text-foreground">{getEstimatedCompletion(project)}</div>
                       </div>
 
                       <div className="flex items-center gap-2 pt-2">

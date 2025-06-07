@@ -5,7 +5,7 @@ import AppSidebar from '@/components/layout/AppSidebar';
 import ModernHeroSection from '@/components/dashboard/ModernHeroSection';
 import IntelligentStats from '@/components/dashboard/IntelligentStats';
 import ActiveProjectsGrid from '@/components/dashboard/ActiveProjectsGrid';
-import SmartInsights from '@/components/dashboard/SmartInsights';
+import ModernReferralBox from '@/components/dashboard/ModernReferralBox';
 import GlobalAIWidget from '@/components/layout/GlobalAIWidget';
 
 const Dashboard = () => {
@@ -28,8 +28,8 @@ const Dashboard = () => {
             {/* Active Projects - Now full width */}
             <ActiveProjectsGrid />
 
-            {/* Smart Insights */}
-            <SmartInsights />
+            {/* Modern Referral Box */}
+            <ModernReferralBox />
           </main>
         </SidebarInset>
         <GlobalAIWidget />

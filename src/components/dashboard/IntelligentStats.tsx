@@ -1,8 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Clock, CheckCircle, Image, Zap } from 'lucide-react';
+import { Clock, CheckCircle, Image } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -37,14 +36,10 @@ const IntelligentStats = () => {
       const totalProcessed = orders?.reduce((sum, order) => 
         sum + (order.image_count || 0), 0) || 0;
 
-      // Calculate workflow efficiency (mock for now)
-      const efficiency = Math.min(95, 70 + (completedThisWeek * 5));
-
       return {
         activeOrders,
         completedThisWeek,
-        totalProcessed,
-        efficiency
+        totalProcessed
       };
     },
     enabled: !!user?.id,
@@ -74,20 +69,11 @@ const IntelligentStats = () => {
       color: "text-primary",
       bgColor: "bg-primary/10",
       description: "insgesamt"
-    },
-    {
-      label: "Workflow-Effizienz",
-      value: `${workflowData?.efficiency || 0}%`,
-      icon: Zap,
-      color: "text-accent",
-      bgColor: "bg-accent/10",
-      description: "Leistung",
-      progress: workflowData?.efficiency || 0
     }
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {stats.map((stat, index) => {
         const IconComponent = stat.icon;
         return (
@@ -111,12 +97,6 @@ const IntelligentStats = () => {
                     {stat.description}
                   </div>
                 </div>
-
-                {stat.progress !== undefined && (
-                  <div className="pt-2">
-                    <Progress value={stat.progress} className="h-2" />
-                  </div>
-                )}
               </div>
             </CardContent>
           </Card>
