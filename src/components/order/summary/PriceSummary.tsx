@@ -25,16 +25,11 @@ const EXTRAS_NET_PRICES = {
 };
 
 const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSummaryProps) => {
-  const { calculateTotalPrice } = useOrders();
-  const grossPrice = calculateTotalPrice(orderData);
-  const creditDiscount = creditsToUse * 1; // 1 Euro per credit
-  const finalPrice = Math.max(0, grossPrice - creditDiscount);
-  
   // Calculate effective image count
   const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
   
   // Get net price per image for the selected package
-  const packageNetPrice = PACKAGE_NET_PRICES[orderData.package as keyof typeof PACKAGE_NET_PRICES];
+  const packageNetPrice = PACKAGE_NET_PRICES[orderData.package as keyof typeof PACKAGE_NET_PRICES] || 0;
   const baseNetPrice = packageNetPrice * imageCount;
   
   // Calculate extras net prices
@@ -47,6 +42,10 @@ const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSum
   const totalExtrasNet = Object.values(extrasNetPrices).reduce((sum, price) => sum + price, 0);
   const totalNetPrice = baseNetPrice + totalExtrasNet;
   const vatAmount = totalNetPrice * 0.19;
+  const grossPrice = totalNetPrice + vatAmount;
+  
+  const creditDiscount = creditsToUse * 1; // 1 Euro per credit
+  const finalPrice = Math.max(0, grossPrice - creditDiscount);
 
   return (
     <div className="space-y-4">
