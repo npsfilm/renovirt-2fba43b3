@@ -3,8 +3,8 @@ import React from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 
-// Initialize Stripe with your publishable key
-const stripePromise = loadStripe('pk_live_51RVC15GBJSdVtvnbWNXeloDmabSIjTKHk1E3m6TmAgEhSptSbSorOSqxqFlZf0hERNpMJ18fx3EYhBXoGdwgtkSU00tora2LR4');
+// Use environment variable for Stripe publishable key
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder');
 
 interface StripeProviderProps {
   children: React.ReactNode;
@@ -17,7 +17,7 @@ const StripeProvider = ({ children, clientSecret }: StripeProviderProps) => {
     appearance: {
       theme: 'stripe' as const,
       variables: {
-        colorPrimary: '#16a34a', // Green to match your app
+        colorPrimary: '#16a34a',
         colorBackground: '#ffffff',
         colorText: '#1f2937',
         colorDanger: '#dc2626',

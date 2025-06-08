@@ -25,7 +25,6 @@ serve(async (req) => {
 
     console.log("Verifying payment intent:", paymentIntentId);
 
-    // Initialize Stripe with environment variable
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) {
       console.error("Stripe is not configured");
@@ -36,7 +35,6 @@ serve(async (req) => {
       apiVersion: "2023-10-16",
     });
 
-    // Retrieve the payment intent
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
 
     if (!paymentIntent) {
@@ -46,13 +44,6 @@ serve(async (req) => {
 
     console.log("Payment Intent status:", paymentIntent.status);
 
-    // Create Supabase service client
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
-
-    // Update payment status based on payment intent status
     let paymentStatus = "pending";
     let paymentFlowStatus = "payment_pending";
 
@@ -64,46 +55,19 @@ serve(async (req) => {
       paymentFlowStatus = "payment_failed";
     }
 
-    console.log("Updating order payment status:", { paymentStatus, paymentFlowStatus });
-
-    // Update the order using our enhanced function
-    const { error: updateError } = await supabase.rpc('update_order_payment_status', {
-      p_order_id: paymentIntent.metadata?.orderId,
-      p_payment_status: paymentStatus,
-      p_stripe_session_id: paymentIntentId
-    });
-
-    if (updateError) {
-      console.error("Failed to update order:", updateError);
-      throw updateError;
-    }
-
-    // Create notification for successful payment
-    if (paymentStatus === "paid") {
-      console.log("Creating success notification");
-      const { error: notificationError } = await supabase
-        .from("order_notifications")
-        .insert({
-          order_id: paymentIntent.metadata?.orderId,
-          user_id: paymentIntent.metadata?.userId,
-          title: "Zahlung erfolgreich",
-          message: "Ihre Zahlung wurde erfolgreich verarbeitet. Die Bearbeitung Ihrer Bilder beginnt nun.",
-          type: "success",
-          notification_type: "payment_success"
-        });
-
-      if (notificationError) {
-        console.error("Failed to create notification:", notificationError);
-      }
-    }
-
     console.log("Payment verification completed successfully");
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         paymentStatus,
-        paymentFlowStatus
+        paymentFlowStatus,
+        paymentIntent: {
+          id: paymentIntent.id,
+          status: paymentIntent.status,
+          amount: paymentIntent.amount,
+          currency: paymentIntent.currency
+        }
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

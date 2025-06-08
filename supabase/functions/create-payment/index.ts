@@ -9,7 +9,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -17,20 +16,17 @@ serve(async (req) => {
   try {
     console.log("Payment creation request received");
 
-    // Create Supabase client for user authentication
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? ""
     );
 
-    // Get the authorization header
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       console.error("No authorization header");
       throw new Error("No authorization header");
     }
 
-    // Get user from token
     const token = authHeader.replace("Bearer ", "");
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
     
@@ -41,17 +37,15 @@ serve(async (req) => {
 
     console.log("User authenticated:", user.id);
 
-    // Parse request body
-    const { orderId, amount, currency = "eur" } = await req.json();
+    const { amount, orderId } = await req.json();
 
     if (!amount) {
       console.error("Missing required parameters");
       throw new Error("Missing required parameters: amount");
     }
 
-    console.log("Payment request:", { orderId, amount, currency });
+    console.log("Payment request:", { orderId, amount });
 
-    // Initialize Stripe with environment variable
     const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeSecretKey) {
       console.error("Stripe secret key not configured");
@@ -64,7 +58,6 @@ serve(async (req) => {
 
     console.log("Stripe initialized successfully");
 
-    // Check if a Stripe customer exists for this user
     const customers = await stripe.customers.list({ 
       email: user.email!, 
       limit: 1 
@@ -75,7 +68,6 @@ serve(async (req) => {
       customerId = customers.data[0].id;
       console.log("Existing customer found:", customerId);
     } else {
-      // Create customer if doesn't exist
       const customer = await stripe.customers.create({
         email: user.email!,
         metadata: {
@@ -86,10 +78,9 @@ serve(async (req) => {
       console.log("New customer created:", customerId);
     }
 
-    // Create Payment Intent without storing order in database yet
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), // Convert to cents
-      currency: currency,
+      amount: Math.round(amount * 100),
+      currency: 'eur',
       customer: customerId,
       metadata: {
         orderId: orderId || 'temp-order',
@@ -102,13 +93,10 @@ serve(async (req) => {
 
     console.log("Payment Intent created:", paymentIntent.id);
 
-    // DO NOT create or update any order in the database here
-    // The order will be created only after successful payment
-
     return new Response(
       JSON.stringify({ 
-        client_secret: paymentIntent.client_secret,
-        payment_intent_id: paymentIntent.id 
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id 
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

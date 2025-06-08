@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Lock } from 'lucide-react';
 import { PaymentIcons } from '@/components/payment/PaymentIcons';
-import { supabase } from '@/integrations/supabase/client';
+import { usePayment } from '@/hooks/usePayment';
 
 interface StripePaymentFormProps {
   onSuccess: (paymentIntentId: string) => void;
@@ -20,19 +20,20 @@ const StripePaymentForm = ({ onSuccess, onError, amount, isLoading = false }: St
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
+  const { verifyPayment } = usePayment();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     if (!stripe || !elements) {
-      onError('Stripe is not loaded yet. Please try again.');
+      onError('Stripe ist noch nicht geladen. Bitte versuchen Sie es erneut.');
       return;
     }
 
     setIsProcessing(true);
 
     try {
-      console.log('Confirming payment...');
+      console.log('Bestätige Zahlung...');
       
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
@@ -43,28 +44,20 @@ const StripePaymentForm = ({ onSuccess, onError, amount, isLoading = false }: St
       });
 
       if (error) {
-        console.error('Payment error:', error);
-        onError(error.message || 'Payment failed');
+        console.error('Zahlungsfehler:', error);
+        onError(error.message || 'Zahlung fehlgeschlagen');
         toast({
           title: 'Zahlungsfehler',
           description: error.message || 'Die Zahlung konnte nicht verarbeitet werden.',
           variant: 'destructive',
         });
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-        console.log('Payment succeeded:', paymentIntent.id);
+        console.log('Zahlung erfolgreich:', paymentIntent.id);
         
-        // Verify payment with our backend
         try {
-          const { error: verifyError } = await supabase.functions.invoke('verify-payment', {
-            body: { paymentIntentId: paymentIntent.id }
-          });
-
-          if (verifyError) {
-            console.error('Payment verification error:', verifyError);
-          }
+          await verifyPayment(paymentIntent.id);
         } catch (verifyError) {
-          console.error('Failed to verify payment:', verifyError);
-          // Don't fail the whole process if verification fails
+          console.error('Zahlungsverifikation fehlgeschlagen:', verifyError);
         }
 
         onSuccess(paymentIntent.id);
@@ -74,8 +67,8 @@ const StripePaymentForm = ({ onSuccess, onError, amount, isLoading = false }: St
         });
       }
     } catch (error: any) {
-      console.error('Unexpected payment error:', error);
-      onError(error.message || 'An unexpected error occurred');
+      console.error('Unerwarteter Zahlungsfehler:', error);
+      onError(error.message || 'Ein unerwarteter Fehler ist aufgetreten');
       toast({
         title: 'Fehler',
         description: 'Ein unerwarteter Fehler ist aufgetreten.',

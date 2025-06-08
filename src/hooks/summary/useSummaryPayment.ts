@@ -18,7 +18,7 @@ export const useSummaryPayment = () => {
       description: 'Ihre Bestellung wird jetzt verarbeitet.',
     });
     setShowPaymentModal(false);
-    // Create order after successful payment
+    setIsProcessing(false);
     createOrderAfterPayment(paymentIntentId);
     onNext();
   };
@@ -35,11 +35,13 @@ export const useSummaryPayment = () => {
 
   const initiateStripePayment = async (finalPrice: number, secureOrderData: any) => {
     try {
+      setIsProcessing(true);
       const paymentData = await initiatePayment(finalPrice, 'temp-order-id');
       setClientSecret(paymentData.clientSecret);
       setShowPaymentModal(true);
     } catch (error) {
       console.error('Payment initiation failed:', error);
+      setIsProcessing(false);
       throw error;
     }
   };
