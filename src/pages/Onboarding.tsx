@@ -156,6 +156,7 @@ const Onboarding = () => {
         phone: onboardingData.phone,
         address: onboardingData.address,
         vatId: onboardingData.vatId,
+        dataSource: 'onboarding_flow',
       });
 
       navigate('/dashboard');
