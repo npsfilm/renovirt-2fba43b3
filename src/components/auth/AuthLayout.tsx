@@ -8,9 +8,9 @@ interface AuthLayoutProps {
 
 const AuthLayout = ({ children }: AuthLayoutProps) => {
   return (
-    <div className="min-h-screen bg-gray-950 flex">
+    <div className="min-h-screen bg-background flex">
       {/* Left side - Auth Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-950">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-background">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -27,25 +27,25 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
         </motion.div>
       </div>
 
-      {/* Right side - Marketing Content */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gray-900 relative overflow-hidden">
-        <div className="relative z-10 flex flex-col justify-center items-center p-12 text-white h-full">
+      {/* Right side - Marketing Content with gradient */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary/20 via-accent/30 to-primary/40 relative overflow-hidden">
+        <div className="relative z-10 flex flex-col justify-center items-center p-12 text-foreground h-full">
           <div className="max-w-lg text-center space-y-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <h1 className="text-4xl font-bold leading-tight mb-6 text-white">
+              <h1 className="text-4xl font-bold leading-tight mb-6 text-foreground">
                 30.000+ bearbeitete Immobilienbilder für Makler, Fotografen & Architekten
               </h1>
-              <p className="text-xl text-gray-300 leading-relaxed">
+              <p className="text-xl text-muted-foreground leading-relaxed">
                 Setzen auch Sie auf Qualität, die verkauft – mit unserer 48h Bildbearbeitung in Studioqualität.
               </p>
             </motion.div>
           </div>
           
-          <div className="absolute bottom-12 text-sm text-gray-400">
+          <div className="absolute bottom-12 text-sm text-muted-foreground">
             Made with love in Augsburg.
           </div>
         </div>

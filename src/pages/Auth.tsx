@@ -67,15 +67,15 @@ const Auth = () => {
 
   return (
     <AuthLayout>
-      {/* Benutzerdefinierte Tab-Navigation */}
+      {/* Custom Tab Navigation with light mode styling */}
       <div className="w-full mb-8">
-        <div className="inline-flex h-10 items-center justify-center rounded-lg bg-gray-800 p-1 text-gray-300 w-full">
+        <div className="inline-flex h-10 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground w-full">
           <button
             onClick={() => setActiveTab('login')}
             className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full ${
               activeTab === 'login'
-                ? 'bg-gray-950 text-white shadow-sm'
-                : 'text-gray-400 hover:text-white'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             Anmelden
@@ -84,8 +84,8 @@ const Auth = () => {
             onClick={() => setActiveTab('register')}
             className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full ${
               activeTab === 'register'
-                ? 'bg-gray-950 text-white shadow-sm'
-                : 'text-gray-400 hover:text-white'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             Registrieren
@@ -93,7 +93,7 @@ const Auth = () => {
         </div>
       </div>
 
-      {/* Formulare */}
+      {/* Forms */}
       {activeTab === 'login' && (
         <LoginForm 
           onSuccess={() => handleAuthSuccess(false)} 
