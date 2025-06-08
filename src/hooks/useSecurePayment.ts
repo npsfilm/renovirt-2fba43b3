@@ -20,7 +20,12 @@ export const useSecurePayment = () => {
 
     try {
       // Validate payment request
-      const validation = validatePaymentRequest(amount, user.id);
+      const validation = validatePaymentRequest({
+        amount,
+        currency: 'EUR',
+        userId: user.id
+      });
+      
       if (!validation.valid) {
         throw new Error(validation.error);
       }

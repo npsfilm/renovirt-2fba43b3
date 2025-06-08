@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { generateCSRFToken, withCSRFProtection } from '@/utils/csrfProtection';
-import { sanitizeFormData } from '@/utils/enhancedInputValidation';
+import { sanitizeInput } from '@/utils/inputValidation';
 import { secureLog } from '@/utils/secureLogging';
 
 interface SecureFormProps {
@@ -10,6 +10,20 @@ interface SecureFormProps {
   className?: string;
   requireCSRF?: boolean;
 }
+
+const sanitizeFormData = (data: Record<string, any>): Record<string, any> => {
+  const sanitized: Record<string, any> = {};
+  
+  for (const [key, value] of Object.entries(data)) {
+    if (typeof value === 'string') {
+      sanitized[key] = sanitizeInput(value);
+    } else {
+      sanitized[key] = value;
+    }
+  }
+  
+  return sanitized;
+};
 
 const SecureForm = ({ 
   children, 
@@ -43,7 +57,7 @@ const SecureForm = ({
       
       // Add CSRF protection if required
       const secureData = requireCSRF 
-        ? withCSRFProtection(sanitizedData, csrfToken)
+        ? withCSRFProtection(sanitizedData)
         : sanitizedData;
 
       secureLog('Secure form submission', { 
