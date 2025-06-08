@@ -12,6 +12,8 @@ import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
 import Orders from "@/pages/Orders";
 import Settings from "@/pages/Settings";
+import EmailVerification from "@/pages/EmailVerification";
+import Onboarding from "@/pages/Onboarding";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +30,8 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={user ? <Navigate to="/dashboard" replace /> : <Navigate to="/auth" replace />} />
       <Route path="/auth" element={user ? <Navigate to="/dashboard" replace /> : <Auth />} />
+      <Route path="/email-verification" element={<EmailVerification />} />
+      <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/auth" replace />} />
       <Route path="/orders" element={user ? <Orders /> : <Navigate to="/auth" replace />} />
       <Route path="/settings" element={user ? <Settings /> : <Navigate to="/auth" replace />} />

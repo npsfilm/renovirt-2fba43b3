@@ -16,15 +16,12 @@ const EmailVerification = () => {
     canResend,
     retryDelay,
     emailStatus,
-    smartSuggestions,
-    getEmailProviderInfo,
     totalAttempts
   } = useEnhancedEmailVerification();
   
   const { showEmailSentSuccess, showEmailResendError } = useEnhancedRegistrationToastHelper();
   const [countdown, setCountdown] = useState(0);
 
-  // Countdown timer for UI feedback
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (countdown > 0) {
@@ -33,7 +30,6 @@ const EmailVerification = () => {
     return () => clearTimeout(timer);
   }, [countdown]);
 
-  // Update countdown based on retry delay
   useEffect(() => {
     if (!canResend && retryDelay > 0) {
       setCountdown(retryDelay);
@@ -53,63 +49,58 @@ const EmailVerification = () => {
   };
 
   const getButtonText = () => {
-    if (isRetrying) return "Sending...";
-    if (!canResend && countdown > 0) return `Wait ${countdown}s`;
-    return "Resend Email";
+    if (isRetrying) return "Wird gesendet...";
+    if (!canResend && countdown > 0) return `Warten ${countdown}s`;
+    return "E-Mail erneut senden";
   };
 
-  const emailProviderInfo = user?.email ? getEmailProviderInfo(user.email) : null;
   const hasEmailBeenSent = emailStatus !== 'idle' || totalAttempts > 0;
 
-  // Get one smart suggestion based on attempts
   const getSmartHint = () => {
     if (totalAttempts === 0) return null;
-    if (totalAttempts === 1) return "Check your spam folder";
-    if (totalAttempts >= 2) return "Try adding our email to your contacts";
+    if (totalAttempts === 1) return "Überprüfen Sie Ihren Spam-Ordner";
+    if (totalAttempts >= 2) return "Fügen Sie unsere E-Mail zu Ihren Kontakten hinzu";
     return null;
   };
 
   const smartHint = getSmartHint();
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <Card className="shadow-lg">
           <CardHeader className="text-center pb-4">
-            <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Mail className="w-8 h-8 text-blue-600" />
+            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Mail className="w-8 h-8 text-primary" />
             </div>
-            <CardTitle className="text-xl font-medium text-gray-900">
-              Check your email
+            <CardTitle className="text-xl font-medium text-foreground">
+              E-Mail überprüfen
             </CardTitle>
           </CardHeader>
           
           <CardContent className="text-center space-y-6">
             <div className="space-y-2">
-              <p className="text-gray-600">
-                We sent a verification link to
+              <p className="text-muted-foreground">
+                Wir haben einen Bestätigungslink gesendet an
               </p>
-              <p className="font-medium text-gray-900 bg-gray-50 rounded-lg p-3 text-sm">
+              <p className="font-medium text-foreground bg-muted rounded-lg p-3 text-sm">
                 {user?.email}
               </p>
             </div>
 
-            {/* Simple Status Indicator */}
             {hasEmailBeenSent && (
-              <div className="flex items-center justify-center gap-2 text-green-700 bg-green-50 rounded-lg p-3">
+              <div className="flex items-center justify-center gap-2 text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950 rounded-lg p-3">
                 <Check className="w-4 h-4" />
-                <span className="text-sm font-medium">Email sent</span>
+                <span className="text-sm font-medium">E-Mail gesendet</span>
               </div>
             )}
 
-            {/* Smart Hint */}
             {smartHint && (
-              <div className="text-sm text-gray-500 bg-blue-50 rounded-lg p-3">
+              <div className="text-sm text-muted-foreground bg-primary/5 rounded-lg p-3">
                 💡 {smartHint}
               </div>
             )}
 
-            {/* Action Button */}
             <Button 
               variant="outline" 
               onClick={handleResendEmail}
@@ -120,25 +111,10 @@ const EmailVerification = () => {
               {getButtonText()}
             </Button>
 
-            {/* Email Provider Helper */}
-            {emailProviderInfo && (
-              <p className="text-xs text-gray-400">
-                Open{' '}
-                <button
-                  onClick={() => window.open(emailProviderInfo.url, '_blank')}
-                  className="text-blue-600 hover:underline"
-                >
-                  {emailProviderInfo.name}
-                </button>{' '}
-                to check your inbox
-              </p>
-            )}
-
-            {/* Contact Support */}
-            <p className="text-xs text-gray-400 pt-4 border-t">
-              Need help?{' '}
-              <a href="mailto:support@renovirt.de" className="text-blue-600 hover:underline">
-                Contact support
+            <p className="text-xs text-muted-foreground pt-4 border-t">
+              Benötigen Sie Hilfe?{' '}
+              <a href="mailto:support@fotoedit.de" className="text-primary hover:underline">
+                Support kontaktieren
               </a>
             </p>
           </CardContent>
