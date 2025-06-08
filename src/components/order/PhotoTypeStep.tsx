@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,28 +18,24 @@ const PhotoTypeStep = ({ selectedType, onTypeChange, onNext }: PhotoTypeStepProp
       title: 'Handy',
       description: 'Fotos von Smartphone oder Tablet',
       icon: Smartphone,
-      gradient: 'from-info/10 to-info/20'
     },
     {
       id: 'kamera' as const,
       title: 'Kamera',
       description: 'Einzelaufnahmen von professioneller Kamera',
       icon: Camera,
-      gradient: 'from-primary/10 to-primary/20'
     },
     {
       id: 'bracketing-3' as const,
       title: 'Bracketing (3 Bilder)',
       description: 'HDR-Serie mit 3 verschiedenen Belichtungen',
       icon: Layers,
-      gradient: 'from-success/10 to-success/20'
     },
     {
       id: 'bracketing-5' as const,
       title: 'Bracketing (5 Bilder)',
       description: 'HDR-Serie mit 5 verschiedenen Belichtungen',
       icon: Layers,
-      gradient: 'from-warning/10 to-warning/20'
     },
   ];
 
@@ -68,7 +63,7 @@ const PhotoTypeStep = ({ selectedType, onTypeChange, onNext }: PhotoTypeStepProp
               <Card className={`
                 relative overflow-hidden transition-all duration-300 ease-out transform
                 ${isSelected 
-                  ? 'ring-2 ring-primary shadow-lg scale-[1.02] bg-gradient-to-br ' + type.gradient
+                  ? 'ring-2 ring-primary shadow-lg scale-[1.02] bg-gradient-to-br from-primary/10 to-primary/20'
                   : 'hover:shadow-md hover:scale-[1.01] border-border bg-card'
                 }
                 border h-full
