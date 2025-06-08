@@ -23,7 +23,7 @@ const ReferralCodeInput = ({ onReferralCodeChange }: ReferralCodeInputProps) => 
 
   return (
     <div className="space-y-2">
-      <Label htmlFor="referralCode" className="text-sm text-gray-300">
+      <Label htmlFor="referralCode" className="text-sm text-muted-foreground">
         Empfehlungscode (optional)
       </Label>
       <div className="relative">
@@ -34,7 +34,7 @@ const ReferralCodeInput = ({ onReferralCodeChange }: ReferralCodeInputProps) => 
           value={referralCode}
           onChange={handleInputChange}
           maxLength={12}
-          className={`bg-gray-800 border-gray-700 text-white placeholder-gray-500 h-12 pr-10 ${
+          className={`bg-input border-border text-foreground placeholder-muted-foreground h-12 pr-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20 ${
             validationState === 'valid' 
               ? 'border-green-500' 
               : validationState === 'invalid' 
