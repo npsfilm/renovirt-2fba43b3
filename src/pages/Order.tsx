@@ -14,6 +14,12 @@ import { validateOrderData, type OrderData } from '@/utils/orderValidation';
 
 type Step = 'photo-type' | 'upload' | 'package' | 'extras' | 'summary' | 'confirmation';
 
+interface ProgressStep {
+  number: number;
+  title: string;
+  status: 'current' | 'completed' | 'upcoming';
+}
+
 const Order = () => {
   const [currentStep, setCurrentStep] = useState<Step>('photo-type');
   const [orderData, setOrderData] = useState<OrderData>({
@@ -28,14 +34,27 @@ const Order = () => {
     watermarkFile: undefined,
     email: '',
     acceptedTerms: false,
+    company: '',
+    objectReference: '',
+    specialRequests: '',
   });
 
-  const steps = [
-    { number: 1, title: 'Foto-Typ', status: currentStep === 'photo-type' ? 'current' : 'completed' as const },
-    { number: 2, title: 'Upload', status: currentStep === 'upload' ? 'current' : (currentStep === 'photo-type' ? 'upcoming' : 'completed') as const },
-    { number: 3, title: 'Paket', status: currentStep === 'package' ? 'current' : (['photo-type', 'upload'].includes(currentStep) ? 'upcoming' : 'completed') as const },
-    { number: 4, title: 'Extras', status: currentStep === 'extras' ? 'current' : (['photo-type', 'upload', 'package'].includes(currentStep) ? 'upcoming' : 'completed') as const },
-    { number: 5, title: 'Übersicht', status: currentStep === 'summary' ? 'current' : (['photo-type', 'upload', 'package', 'extras'].includes(currentStep) ? 'upcoming' : 'completed') as const },
+  const getStepStatus = (stepName: Step): 'current' | 'completed' | 'upcoming' => {
+    const stepOrder = ['photo-type', 'upload', 'package', 'extras', 'summary'];
+    const currentIndex = stepOrder.indexOf(currentStep);
+    const stepIndex = stepOrder.indexOf(stepName);
+    
+    if (stepIndex < currentIndex) return 'completed';
+    if (stepIndex === currentIndex) return 'current';
+    return 'upcoming';
+  };
+
+  const steps: ProgressStep[] = [
+    { number: 1, title: 'Foto-Typ', status: getStepStatus('photo-type') },
+    { number: 2, title: 'Upload', status: getStepStatus('upload') },
+    { number: 3, title: 'Paket', status: getStepStatus('package') },
+    { number: 4, title: 'Extras', status: getStepStatus('extras') },
+    { number: 5, title: 'Übersicht', status: getStepStatus('summary') },
   ];
 
   const updateOrderData = (updates: Partial<OrderData>) => {
@@ -134,22 +153,6 @@ const Order = () => {
         return (
           <ConfirmationStep
             orderData={orderData}
-            onStartNewOrder={() => {
-              setCurrentStep('photo-type');
-              setOrderData({
-                photoType: undefined,
-                files: [],
-                package: undefined,
-                extras: {
-                  upscale: false,
-                  express: false,
-                  watermark: false,
-                },
-                watermarkFile: undefined,
-                email: '',
-                acceptedTerms: false,
-              });
-            }}
           />
         );
       default:
