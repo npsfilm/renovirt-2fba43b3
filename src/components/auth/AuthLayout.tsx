@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Star, CheckCircle, Users, Clock } from 'lucide-react';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -27,25 +28,71 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
         </motion.div>
       </div>
 
-      {/* Right side - Marketing Content with enhanced gradient */}
+      {/* Right side - Enhanced Marketing Content */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary/60 via-accent/70 to-primary/80 relative overflow-hidden">
+        {/* Floating background elements */}
+        <div className="absolute top-20 right-20 w-32 h-32 bg-accent/20 rounded-full blur-2xl animate-pulse"></div>
+        <div className="absolute bottom-32 left-16 w-24 h-24 bg-primary/30 rounded-full blur-xl"></div>
+        
         {/* Additional gradient overlay for more depth */}
         <div className="absolute inset-0 bg-gradient-to-t from-accent/50 via-transparent to-primary/30"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-accent/20 to-primary/40"></div>
         
         <div className="relative z-10 flex flex-col justify-center items-center p-12 text-foreground h-full w-full">
-          <div className="flex flex-col justify-center items-center h-full max-w-lg text-center space-y-6">
+          <div className="flex flex-col justify-center items-center h-full max-w-lg text-center space-y-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               className="space-y-6"
             >
+              {/* Enhanced Value Proposition */}
               <h1 className="text-4xl font-bold leading-tight text-foreground">
-                30.000+ bearbeitete Immobilienbilder für Makler, Fotografen & Architekten
+                Immobilienbilder die verkaufen
               </h1>
               <p className="text-xl text-foreground/80 leading-relaxed">
-                Setzen auch Sie auf Qualität, die verkauft – mit unserer 48h Bildbearbeitung in Studioqualität.
+                Professionelle Bildbearbeitung in Studioqualität – 48h Lieferzeit garantiert
+              </p>
+              
+              {/* Key Benefits */}
+              <div className="grid grid-cols-2 gap-4 mt-8">
+                <div className="flex items-center space-x-2 text-foreground/90">
+                  <CheckCircle className="w-5 h-5 text-accent" />
+                  <span className="text-sm font-medium">48h Lieferzeit</span>
+                </div>
+                <div className="flex items-center space-x-2 text-foreground/90">
+                  <Users className="w-5 h-5 text-accent" />
+                  <span className="text-sm font-medium">30.000+ Bilder</span>
+                </div>
+                <div className="flex items-center space-x-2 text-foreground/90">
+                  <Star className="w-5 h-5 text-accent" />
+                  <span className="text-sm font-medium">Studioqualität</span>
+                </div>
+                <div className="flex items-center space-x-2 text-foreground/90">
+                  <Clock className="w-5 h-5 text-accent" />
+                  <span className="text-sm font-medium">Zuverlässig</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Social Proof */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="bg-foreground/10 backdrop-blur-sm rounded-lg p-6 border border-foreground/20"
+            >
+              <div className="flex items-center space-x-1 mb-3">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star key={star} className="w-4 h-4 fill-accent text-accent" />
+                ))}
+                <span className="text-sm font-medium text-foreground/90 ml-2">4.9/5</span>
+              </div>
+              <p className="text-sm text-foreground/80 italic">
+                "Renovirt hat unsere Immobilienvermarktung revolutioniert. Die Bildqualität ist außergewöhnlich!"
+              </p>
+              <p className="text-xs text-foreground/60 mt-2 font-medium">
+                - Maria Schmidt, Immobilienmaklerin
               </p>
             </motion.div>
           </div>

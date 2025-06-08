@@ -1,9 +1,11 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { ArrowRight, Mail, Lock } from 'lucide-react';
 
 interface LoginFormProps {
   onSuccess: () => void;
@@ -121,11 +123,13 @@ const LoginForm = ({
     }
   };
 
-  return <div className="space-y-6">
+  return (
+    <div className="space-y-6">
+      {/* Enhanced Google Button */}
       <div className="space-y-4">
         <Button 
           variant="outline" 
-          className="w-full h-12 border-border bg-background hover:bg-muted text-foreground" 
+          className="w-full h-12 border-border bg-background hover:bg-muted text-foreground font-medium transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow-md" 
           onClick={handleGoogleAuth} 
           disabled={loading} 
           type="button"
@@ -155,44 +159,56 @@ const LoginForm = ({
 
       <form onSubmit={handleLogin} className="space-y-4">
         <div className="space-y-2">
-          <Input 
-            id="email" 
-            name="email" 
-            type="email" 
-            placeholder="ihre.email@beispiel.de" 
-            value={formData.email} 
-            onChange={handleInputChange} 
-            required 
-            className="bg-input border-border text-foreground placeholder-muted-foreground h-12" 
-          />
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input 
+              id="email" 
+              name="email" 
+              type="email" 
+              placeholder="ihre.email@beispiel.de" 
+              value={formData.email} 
+              onChange={handleInputChange} 
+              required 
+              className="bg-input border-border text-foreground placeholder-muted-foreground h-12 pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20" 
+            />
+          </div>
         </div>
         <div className="space-y-2">
-          <Input 
-            id="password" 
-            name="password" 
-            type="password" 
-            placeholder="••••••••" 
-            value={formData.password} 
-            onChange={handleInputChange} 
-            required 
-            className="bg-input border-border text-foreground placeholder-muted-foreground h-12" 
-          />
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input 
+              id="password" 
+              name="password" 
+              type="password" 
+              placeholder="••••••••" 
+              value={formData.password} 
+              onChange={handleInputChange} 
+              required 
+              className="bg-input border-border text-foreground placeholder-muted-foreground h-12 pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20" 
+            />
+          </div>
         </div>
         <Button 
           type="submit" 
-          className="w-full h-12 font-medium" 
+          className="w-full h-12 font-medium bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow-md group" 
           disabled={loading}
         >
-          {loading ? 'Wird angemeldet...' : 'Anmelden'}
+          {loading ? 'Wird angemeldet...' : (
+            <>
+              Anmelden
+              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </>
+          )}
         </Button>
       </form>
       
       <div className="text-center text-sm text-muted-foreground">
-        <Link to="/forgot-password" className="hover:text-foreground transition-colors">
+        <Link to="/forgot-password" className="hover:text-foreground transition-colors hover:underline">
           Passwort vergessen?
         </Link>
       </div>
-    </div>;
+    </div>
+  );
 };
 
 export default LoginForm;
