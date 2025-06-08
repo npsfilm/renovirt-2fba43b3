@@ -1,13 +1,18 @@
 
-import { useSummaryPricing } from './summary/useSummaryPricing';
-import { useSummaryPayment } from './summary/useSummaryPayment';
-import { useSummaryValidation } from './summary/useSummaryValidation';
-import { useSummaryOrderCreation } from './summary/useSummaryOrderCreation';
+import { useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { useOrderData } from '@/hooks/useOrderData';
+import { calculateOrderTotal } from '@/utils/orderPricing';
+import { calculateEffectiveImageCount } from '@/utils/orderValidation';
+import { useSummaryOrderCreation } from '@/hooks/summary/useSummaryOrderCreation';
+import { useSummaryPayment } from '@/hooks/summary/useSummaryPayment';
 import type { OrderData } from '@/utils/orderValidation';
 
 export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) => {
-  const { creditsToUse, setCreditsToUse, finalPrice } = useSummaryPricing(orderData);
-  const { canProceed } = useSummaryValidation(orderData);
+  const [creditsToUse, setCreditsToUse] = useState(0);
+  const { user } = useAuth();
+  const { packages, addOns } = useOrderData();
+  
   const {
     paymentMethod,
     setPaymentMethod,
@@ -16,20 +21,26 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
     isProcessing,
     setIsProcessing,
     clientSecret,
-    handlePaymentModalSuccess: baseHandlePaymentModalSuccess,
+    handlePaymentModalSuccess,
     handlePaymentModalError,
     initiateStripePayment
   } = useSummaryPayment();
-  const { handleSubmitOrder: baseHandleSubmitOrder, createOrderAfterPayment } = useSummaryOrderCreation();
 
-  // Wrapper function that includes createOrderAfterPayment and onNext
-  const handlePaymentModalSuccess = async (paymentIntentId: string) => {
-    await baseHandlePaymentModalSuccess(paymentIntentId, createOrderAfterPayment, onNext);
-  };
+  const { handleSubmitOrder, createOrderAfterPayment } = useSummaryOrderCreation();
 
-  // Wrapper function that includes all necessary parameters
-  const handleSubmitOrder = async () => {
-    await baseHandleSubmitOrder(
+  const totalPrice = calculateOrderTotal(orderData, packages, addOns);
+  const finalPrice = Math.max(0, totalPrice - creditsToUse);
+  
+  const canProceed = !!(
+    orderData.photoType &&
+    orderData.files.length > 0 &&
+    orderData.package &&
+    orderData.email &&
+    orderData.acceptedTerms
+  );
+
+  const handleSubmit = () => {
+    handleSubmitOrder(
       orderData,
       paymentMethod,
       creditsToUse,
@@ -39,6 +50,10 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
       initiateStripePayment,
       onNext
     );
+  };
+
+  const handlePaymentSuccess = (paymentIntentId: string) => {
+    handlePaymentModalSuccess(paymentIntentId, createOrderAfterPayment, onNext);
   };
 
   return {
@@ -52,8 +67,8 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
     finalPrice,
     isProcessing,
     clientSecret,
-    handleSubmitOrder,
-    handlePaymentModalSuccess,
+    handleSubmitOrder: handleSubmit,
+    handlePaymentModalSuccess: handlePaymentSuccess,
     handlePaymentModalError
   };
 };
