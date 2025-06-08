@@ -10,6 +10,7 @@ import WelcomeStep from '@/components/onboarding/WelcomeStep';
 import RoleSelectionStep from '@/components/onboarding/RoleSelectionStep';
 import CompanyDataStep from '@/components/onboarding/CompanyDataStep';
 import EmailConfirmationHandler from '@/components/onboarding/EmailConfirmationHandler';
+import UnifiedLoading from '@/components/ui/unified-loading';
 
 export interface OnboardingData {
   role: string;
@@ -20,7 +21,6 @@ export interface OnboardingData {
   phone: string;
   address: string;
   vatId: string;
-  source: string;
 }
 
 const Onboarding = () => {
@@ -36,7 +36,6 @@ const Onboarding = () => {
     phone: '',
     address: '',
     vatId: '',
-    source: '',
   });
 
   const navigate = useNavigate();
@@ -157,7 +156,6 @@ const Onboarding = () => {
         phone: onboardingData.phone,
         address: onboardingData.address,
         vatId: onboardingData.vatId,
-        dataSource: onboardingData.source,
       });
 
       navigate('/dashboard');
@@ -169,10 +167,11 @@ const Onboarding = () => {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Laden...</p>
-        </div>
+        <UnifiedLoading 
+          size="xl" 
+          text="Laden..." 
+          variant="with-background"
+        />
       </div>
     );
   }
