@@ -5,7 +5,7 @@ export const useFormValidation = () => {
   const { toast } = useToast();
 
   const validatePassword = (password: string) => {
-    const hasMinLength = password.length >= 8;
+    const hasMinLength = password.length >= 10;
     const hasLowercase = /[a-z]/.test(password);
     const hasUppercase = /[A-Z]/.test(password);
     const hasNumber = /\d/.test(password);
@@ -17,8 +17,8 @@ export const useFormValidation = () => {
   const getPasswordValidationErrors = (password: string): string[] => {
     const errors: string[] = [];
     
-    if (password.length < 8) {
-      errors.push('Das Passwort muss mindestens 8 Zeichen lang sein');
+    if (password.length < 10) {
+      errors.push('Das Passwort muss mindestens 10 Zeichen lang sein');
     }
     if (!/[a-z]/.test(password)) {
       errors.push('Das Passwort muss mindestens einen Kleinbuchstaben enthalten');
@@ -54,7 +54,7 @@ export const useFormValidation = () => {
     if (passwordErrors.length > 0) {
       toast({
         title: 'Passwort-Anforderungen nicht erfüllt',
-        description: passwordErrors[0],
+        description: passwordErrors[0], // Zeige den ersten Fehler
         variant: 'destructive',
       });
       return false;
@@ -70,6 +70,7 @@ export const useFormValidation = () => {
       return false;
     }
 
+    // Only validate referral code if one was entered
     if (referralCode && referralCode.trim() && !isReferralValid) {
       toast({
         title: 'Fehler',

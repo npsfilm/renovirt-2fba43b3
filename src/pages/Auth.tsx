@@ -14,24 +14,31 @@ const Auth = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Die Seite abrufen, die der Benutzer vor der Weiterleitung zur Anmeldung besuchen wollte
   const from = location.state?.from?.pathname || '/dashboard';
 
+  // Weiterleitung wenn bereits angemeldet
   useEffect(() => {
     const checkUserProfileAndRedirect = async () => {
       if (user) {
+        // Wenn Benutzer bestätigt ist (E-Mail verifiziert), Profilvollständigkeit prüfen
         if (user.email_confirmed_at) {
           try {
             const profile = await getCustomerProfile();
             
+            // Wenn Profil existiert und erforderliche Felder hat, zur ursprünglich angeforderten Seite oder Dashboard gehen
             if (profile && profile.first_name && profile.last_name && profile.role) {
               navigate(from, { replace: true });
             } else {
+              // Wenn Profil nicht existiert oder unvollständig ist, zum Onboarding gehen
               navigate('/onboarding');
             }
           } catch (error) {
+            // Bei Fehler beim Abrufen des Profils, annehmen dass es nicht existiert
             navigate('/onboarding');
           }
         } else {
+          // Wenn Benutzer nicht bestätigt ist, E-Mail-Verifizierungsbildschirm anzeigen
           navigate('/email-verification');
         }
       }
@@ -42,7 +49,11 @@ const Auth = () => {
 
   const handleAuthSuccess = (isRegistration = false) => {
     if (isRegistration) {
+      // Nach Registrierung zur E-Mail-Verifizierung weiterleiten
       navigate('/email-verification');
+    } else {
+      // Nach Anmeldung basierend auf E-Mail-Bestätigungsstatus und Profilvollständigkeit weiterleiten
+      // Dies wird durch den useEffect oben gehandhabt
     }
   };
 
@@ -56,6 +67,7 @@ const Auth = () => {
 
   return (
     <AuthLayout>
+      {/* Custom Tab Navigation with light mode styling */}
       <div className="w-full mb-8">
         <div className="inline-flex h-10 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground w-full">
           <button
@@ -81,6 +93,7 @@ const Auth = () => {
         </div>
       </div>
 
+      {/* Forms */}
       {activeTab === 'login' && (
         <LoginForm 
           onSuccess={() => handleAuthSuccess(false)} 
