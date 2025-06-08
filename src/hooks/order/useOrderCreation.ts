@@ -20,23 +20,14 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
   const createOrderMutation = useMutation({
     mutationFn: async ({ orderData, paymentMethod }: { orderData: OrderData; paymentMethod: PaymentMethod }) => {
       if (!user) {
-        throw new Error('Benutzer nicht authentifiziert');
-      }
-
-      // Validate required data
-      if (!packages || packages.length === 0) {
-        throw new Error('Pakete konnten nicht geladen werden');
-      }
-
-      if (!addOns) {
-        throw new Error('Add-ons konnten nicht geladen werden');
+        throw new Error('User not authenticated');
       }
       
       // For Stripe payments, we only create a temporary order reference and return it
       // The actual order will be created after successful payment
       if (paymentMethod === 'stripe') {
         const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
-        if (!selectedPackage) throw new Error('Paket nicht gefunden');
+        if (!selectedPackage) throw new Error('Package not found');
 
         const totalPrice = calculateOrderTotal(orderData, packages, addOns);
         
@@ -52,7 +43,7 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
       
       // For invoice payments, create the order immediately as before
       const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
-      if (!selectedPackage) throw new Error('Paket nicht gefunden');
+      if (!selectedPackage) throw new Error('Package not found');
 
       const totalPrice = calculateOrderTotal(orderData, packages, addOns);
       const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
@@ -61,13 +52,7 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
       const order = await createOrderInDatabase({ orderData, paymentMethod }, packages, addOns, user.id);
 
       // Upload files for invoice orders
-      try {
-        await handleOrderFiles(orderData, order.id, user.id);
-      } catch (fileError) {
-        console.error('File upload error:', fileError);
-        // Don't fail the entire order for file upload issues
-        secureLog('File upload failed but order created', { orderId: order.id, error: fileError });
-      }
+      await handleOrderFiles(orderData, order.id, user.id);
       
       // Get selected add-ons for email
       const selectedAddOns = addOns.filter(addon => 
@@ -88,8 +73,6 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
         await sendOrderConfirmationEmail(order.order_number, orderData.email || '', orderDetails);
       } catch (emailError) {
         console.error('Failed to send confirmation email:', emailError);
-        // Don't fail the order for email issues
-        secureLog('Email sending failed but order created', { orderId: order.id, error: emailError });
       }
 
       return order;
@@ -115,12 +98,9 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
     },
     onError: (error: any) => {
       secureLog('Order creation error:', error);
-      
-      const errorMessage = error.message || 'Es ist ein unerwarteter Fehler aufgetreten';
-      
       toast({
         title: "Fehler bei der Bestellung",
-        description: errorMessage,
+        description: "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
         variant: "destructive",
       });
     },
@@ -129,11 +109,11 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
   // New method to create order after successful Stripe payment
   const createOrderAfterPayment = async (orderData: OrderData, paymentIntentId: string) => {
     if (!user) {
-      throw new Error('Benutzer nicht authentifiziert');
+      throw new Error('User not authenticated');
     }
 
     const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
-    if (!selectedPackage) throw new Error('Paket nicht gefunden');
+    if (!selectedPackage) throw new Error('Package not found');
 
     const totalPrice = calculateOrderTotal(orderData, packages, addOns);
     const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
@@ -148,12 +128,7 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
     );
 
     // Upload files
-    try {
-      await handleOrderFiles(orderData, order.id, user.id);
-    } catch (fileError) {
-      console.error('File upload error after payment:', fileError);
-      secureLog('File upload failed after payment', { orderId: order.id, error: fileError });
-    }
+    await handleOrderFiles(orderData, order.id, user.id);
     
     // Get selected add-ons for email
     const selectedAddOns = addOns.filter(addon => 
@@ -173,8 +148,7 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
 
       await sendOrderConfirmationEmail(order.order_number, orderData.email || '', orderDetails);
     } catch (emailError) {
-      console.error('Failed to send confirmation email after payment:', emailError);
-      secureLog('Email sending failed after payment', { orderId: order.id, error: emailError });
+      console.error('Failed to send confirmation email:', emailError);
     }
 
     // Invalidate queries to refresh the UI

@@ -6,34 +6,10 @@ export const useFormValidation = () => {
 
   const validatePassword = (password: string) => {
     const hasMinLength = password.length >= 10;
-    const hasLowercase = /[a-z]/.test(password);
-    const hasUppercase = /[A-Z]/.test(password);
     const hasNumber = /\d/.test(password);
-    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(password);
+    const hasSpecialChar = /[!$%&=?*#+-<>]/.test(password);
     
-    return hasMinLength && hasLowercase && hasUppercase && hasNumber && hasSpecialChar;
-  };
-
-  const getPasswordValidationErrors = (password: string): string[] => {
-    const errors: string[] = [];
-    
-    if (password.length < 10) {
-      errors.push('Das Passwort muss mindestens 10 Zeichen lang sein');
-    }
-    if (!/[a-z]/.test(password)) {
-      errors.push('Das Passwort muss mindestens einen Kleinbuchstaben enthalten');
-    }
-    if (!/[A-Z]/.test(password)) {
-      errors.push('Das Passwort muss mindestens einen Großbuchstaben enthalten');
-    }
-    if (!/\d/.test(password)) {
-      errors.push('Das Passwort muss mindestens eine Zahl enthalten');
-    }
-    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(password)) {
-      errors.push('Das Passwort muss mindestens ein Sonderzeichen enthalten');
-    }
-    
-    return errors;
+    return hasMinLength && hasNumber && hasSpecialChar;
   };
 
   const validateForm = (
@@ -50,11 +26,10 @@ export const useFormValidation = () => {
       return false;
     }
 
-    const passwordErrors = getPasswordValidationErrors(formData.password);
-    if (passwordErrors.length > 0) {
+    if (!validatePassword(formData.password)) {
       toast({
-        title: 'Passwort-Anforderungen nicht erfüllt',
-        description: passwordErrors[0], // Zeige den ersten Fehler
+        title: 'Fehler',
+        description: 'Das Passwort erfüllt nicht alle Anforderungen.',
         variant: 'destructive',
       });
       return false;
@@ -85,7 +60,6 @@ export const useFormValidation = () => {
 
   return {
     validateForm,
-    validatePassword,
-    getPasswordValidationErrors
+    validatePassword
   };
 };
