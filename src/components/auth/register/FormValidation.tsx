@@ -5,11 +5,35 @@ export const useFormValidation = () => {
   const { toast } = useToast();
 
   const validatePassword = (password: string) => {
-    const hasMinLength = password.length >= 10;
+    const hasMinLength = password.length >= 8;
+    const hasLowercase = /[a-z]/.test(password);
+    const hasUppercase = /[A-Z]/.test(password);
     const hasNumber = /\d/.test(password);
-    const hasSpecialChar = /[!$%&=?*#+-<>]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(password);
     
-    return hasMinLength && hasNumber && hasSpecialChar;
+    return hasMinLength && hasLowercase && hasUppercase && hasNumber && hasSpecialChar;
+  };
+
+  const getPasswordValidationErrors = (password: string): string[] => {
+    const errors: string[] = [];
+    
+    if (password.length < 8) {
+      errors.push('Das Passwort muss mindestens 8 Zeichen lang sein');
+    }
+    if (!/[a-z]/.test(password)) {
+      errors.push('Das Passwort muss mindestens einen Kleinbuchstaben enthalten');
+    }
+    if (!/[A-Z]/.test(password)) {
+      errors.push('Das Passwort muss mindestens einen Großbuchstaben enthalten');
+    }
+    if (!/\d/.test(password)) {
+      errors.push('Das Passwort muss mindestens eine Zahl enthalten');
+    }
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(password)) {
+      errors.push('Das Passwort muss mindestens ein Sonderzeichen enthalten');
+    }
+    
+    return errors;
   };
 
   const validateForm = (
@@ -26,10 +50,11 @@ export const useFormValidation = () => {
       return false;
     }
 
-    if (!validatePassword(formData.password)) {
+    const passwordErrors = getPasswordValidationErrors(formData.password);
+    if (passwordErrors.length > 0) {
       toast({
-        title: 'Fehler',
-        description: 'Das Passwort erfüllt nicht alle Anforderungen.',
+        title: 'Passwort-Anforderungen nicht erfüllt',
+        description: passwordErrors[0],
         variant: 'destructive',
       });
       return false;
@@ -45,7 +70,6 @@ export const useFormValidation = () => {
       return false;
     }
 
-    // Only validate referral code if one was entered
     if (referralCode && referralCode.trim() && !isReferralValid) {
       toast({
         title: 'Fehler',
@@ -60,6 +84,7 @@ export const useFormValidation = () => {
 
   return {
     validateForm,
-    validatePassword
+    validatePassword,
+    getPasswordValidationErrors
   };
 };

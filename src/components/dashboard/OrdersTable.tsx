@@ -1,7 +1,8 @@
+
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Download, Package } from 'lucide-react';
+import { Eye, Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { downloadFile } from '@/utils/fileDownloadService';
 
@@ -36,19 +37,26 @@ const OrdersTable = ({ orders, onOrderSelect }: OrdersTableProps) => {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      pending: { label: 'Warteschlange', className: 'bg-warning text-warning-foreground' },
-      processing: { label: 'In Bearbeitung', className: 'bg-primary text-primary-foreground' },
-      quality_check: { label: 'Überprüfung', className: 'bg-accent text-accent-foreground' },
-      revision: { label: 'In Revision', className: 'bg-orange-100 text-orange-800' },
-      completed: { label: 'Abgeschlossen', className: 'bg-success text-success-foreground' },
-      delivered: { label: 'Abgeschlossen & bezahlt', className: 'bg-green-100 text-green-800' },
-      cancelled: { label: 'Storniert', className: 'bg-error text-error-foreground' },
+      pending: { label: 'Warteschlange', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
+      processing: { label: 'In Bearbeitung', className: 'bg-blue-100 text-blue-800 border-blue-200' },
+      quality_check: { label: 'Überprüfung', className: 'bg-purple-100 text-purple-800 border-purple-200' },
+      revision: { label: 'In Revision', className: 'bg-orange-100 text-orange-800 border-orange-200' },
+      completed: { label: 'Abgeschlossen', className: 'bg-green-100 text-green-800 border-green-200' },
+      delivered: { label: 'Abgeschlossen & bezahlt', className: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+      cancelled: { label: 'Storniert', className: 'bg-red-100 text-red-800 border-red-200' },
     };
 
     const config = statusConfig[status as keyof typeof statusConfig] || 
-                   { label: status, className: 'bg-secondary text-secondary-foreground' };
+                   { label: status, className: 'bg-gray-100 text-gray-800 border-gray-200' };
 
-    return <Badge className={config.className}>{config.label}</Badge>;
+    return (
+      <Badge 
+        variant="outline" 
+        className={`${config.className} font-medium`}
+      >
+        {config.label}
+      </Badge>
+    );
   };
 
   const handleDownloadAll = async (order: Order) => {
@@ -72,6 +80,7 @@ const OrdersTable = ({ orders, onOrderSelect }: OrdersTableProps) => {
         description: `${order.order_images.length} Datei(en) werden heruntergeladen...`,
       });
     } catch (error) {
+      console.error('Download error:', error);
       toast({
         title: "Download-Fehler",
         description: "Einige Dateien konnten nicht heruntergeladen werden.",
@@ -81,90 +90,127 @@ const OrdersTable = ({ orders, onOrderSelect }: OrdersTableProps) => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('de-DE', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
+    try {
+      return new Date(dateString).toLocaleDateString('de-DE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    } catch (error) {
+      return 'Ungültiges Datum';
+    }
   };
 
   const formatPrice = (price: number) => {
-    return `€${price.toFixed(2)}`;
+    try {
+      return `€${price.toFixed(2)}`;
+    } catch (error) {
+      return '€0.00';
+    }
   };
 
-  if (orders.length === 0) {
+  if (!orders || orders.length === 0) {
     return (
-      <div className="text-center py-8">
-        <p className="text-gray-500">Noch keine Bestellungen vorhanden.</p>
+      <div className="text-center py-12">
+        <div className="space-y-3">
+          <p className="text-lg font-medium text-muted-foreground">
+            Noch keine Bestellungen vorhanden
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Ihre Bestellungen werden hier angezeigt, sobald Sie eine aufgeben.
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b">
-            <th className="text-left py-3 px-2 font-medium">Bestellnummer</th>
-            <th className="text-left py-3 px-2 font-medium">Datum</th>
-            <th className="text-left py-3 px-2 font-medium">Paket</th>
-            <th className="text-left py-3 px-2 font-medium">Bilder</th>
-            <th className="text-left py-3 px-2 font-medium">Preis</th>
-            <th className="text-left py-3 px-2 font-medium">Status</th>
-            <th className="text-left py-3 px-2 font-medium">Aktionen</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.map((order) => (
-            <tr key={order.id} className="border-b">
-              <td className="py-3 px-2">
-                <span className="font-mono text-sm">
-                  {order.order_number || `#${order.id.slice(0, 8)}`}
-                </span>
-              </td>
-              <td className="py-3 px-2">
-                {formatDate(order.created_at)}
-              </td>
-              <td className="py-3 px-2">
-                {order.packages?.name || 'Unbekannt'}
-              </td>
-              <td className="py-3 px-2">
-                {order.order_images?.length || order.image_count || 0}
-              </td>
-              <td className="py-3 px-2 font-medium">
-                {formatPrice(order.total_price)}
-              </td>
-              <td className="py-3 px-2">
-                {getStatusBadge(order.status)}
-              </td>
-              <td className="py-3 px-2">
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onOrderSelect(order.id)}
-                    className="h-8 w-8 p-0 hover:bg-transparent"
-                    title="Details anzeigen"
-                  >
-                    <Eye className="h-4 w-4" />
-                  </Button>
-                  {(order.status === 'completed' || order.status === 'delivered') && order.order_images && order.order_images.length > 0 && (
+    <div className="overflow-hidden rounded-lg border border-border">
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-muted/50">
+            <tr className="border-b border-border">
+              <th className="text-left py-4 px-4 font-medium text-sm text-muted-foreground">
+                Bestellnummer
+              </th>
+              <th className="text-left py-4 px-4 font-medium text-sm text-muted-foreground">
+                Datum
+              </th>
+              <th className="text-left py-4 px-4 font-medium text-sm text-muted-foreground">
+                Paket
+              </th>
+              <th className="text-left py-4 px-4 font-medium text-sm text-muted-foreground">
+                Bilder
+              </th>
+              <th className="text-left py-4 px-4 font-medium text-sm text-muted-foreground">
+                Preis
+              </th>
+              <th className="text-left py-4 px-4 font-medium text-sm text-muted-foreground">
+                Status
+              </th>
+              <th className="text-left py-4 px-4 font-medium text-sm text-muted-foreground">
+                Aktionen
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-background">
+            {orders.map((order, index) => (
+              <tr 
+                key={order.id} 
+                className={`border-b border-border hover:bg-muted/30 transition-colors ${
+                  index === orders.length - 1 ? 'border-b-0' : ''
+                }`}
+              >
+                <td className="py-4 px-4">
+                  <span className="font-mono text-sm font-medium">
+                    {order.order_number || `#${order.id.slice(0, 8)}`}
+                  </span>
+                </td>
+                <td className="py-4 px-4 text-sm">
+                  {formatDate(order.created_at)}
+                </td>
+                <td className="py-4 px-4 text-sm">
+                  {order.packages?.name || 'Unbekannt'}
+                </td>
+                <td className="py-4 px-4 text-sm">
+                  {order.order_images?.length || order.image_count || 0}
+                </td>
+                <td className="py-4 px-4 text-sm font-medium">
+                  {formatPrice(order.total_price)}
+                </td>
+                <td className="py-4 px-4">
+                  {getStatusBadge(order.status)}
+                </td>
+                <td className="py-4 px-4">
+                  <div className="flex items-center gap-2">
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0 hover:bg-transparent"
-                      onClick={() => handleDownloadAll(order)}
-                      title="Alle Dateien herunterladen"
+                      onClick={() => onOrderSelect(order.id)}
+                      className="h-8 w-8 p-0 hover:bg-muted"
+                      title="Details anzeigen"
                     >
-                      <Download className="h-4 w-4" />
+                      <Eye className="h-4 w-4" />
                     </Button>
-                  )}
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                    {(order.status === 'completed' || order.status === 'delivered') && 
+                     order.order_images && order.order_images.length > 0 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 hover:bg-muted"
+                        onClick={() => handleDownloadAll(order)}
+                        title="Alle Dateien herunterladen"
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

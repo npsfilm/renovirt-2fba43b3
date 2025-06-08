@@ -29,7 +29,7 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
   const [showPasswordValidation, setShowPasswordValidation] = useState(false);
 
   const { signUp, signInWithGoogle } = useAuth();
-  const { validateForm } = useFormValidation();
+  const { validateForm, getPasswordValidationErrors } = useFormValidation();
   const { processReferralReward } = useReferralProcessing();
   const { 
     showRegistrationSuccess, 
@@ -54,6 +54,37 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
     setIsReferralValid(isValid);
   };
 
+  const getDetailedErrorMessage = (error: any): string => {
+    if (!error) return 'Ein unbekannter Fehler ist aufgetreten.';
+    
+    const errorMessage = error.message || error.error_description || error.msg || '';
+    
+    // Supabase-spezifische Fehlermeldungen übersetzen
+    if (errorMessage.includes('Password should be at least')) {
+      return 'Das Passwort erfüllt nicht die Mindestanforderungen. Bitte überprüfen Sie die Passwort-Richtlinien.';
+    }
+    
+    if (errorMessage.includes('User already registered')) {
+      return 'Diese E-Mail-Adresse ist bereits registriert. Versuchen Sie sich anzumelden oder verwenden Sie eine andere E-Mail-Adresse.';
+    }
+    
+    if (errorMessage.includes('Invalid email')) {
+      return 'Bitte geben Sie eine gültige E-Mail-Adresse ein.';
+    }
+    
+    if (errorMessage.includes('Signup requires a valid password')) {
+      const passwordErrors = getPasswordValidationErrors(formData.password);
+      return passwordErrors.length > 0 ? passwordErrors.join('. ') : 'Das Passwort ist ungültig.';
+    }
+    
+    if (errorMessage.includes('weak password') || errorMessage.includes('password')) {
+      return 'Das Passwort ist zu schwach. Es muss mindestens 10 Zeichen haben und Groß-/Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.';
+    }
+    
+    // Fallback für andere Fehler
+    return errorMessage || 'Ein Fehler bei der Registrierung ist aufgetreten. Bitte versuchen Sie es erneut.';
+  };
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -68,7 +99,8 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
         email: formData.email, 
         firstName: formData.firstName, 
         lastName: formData.lastName,
-        hasReferralCode: !!referralCode
+        hasReferralCode: !!referralCode,
+        passwordLength: formData.password.length
       });
       
       const { data, error } = await signUp(formData.email, formData.password, {
@@ -81,7 +113,11 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
 
       if (error) {
         console.error('Registration error:', error);
-        showRegistrationError(error);
+        const detailedMessage = getDetailedErrorMessage(error);
+        showRegistrationError({
+          message: detailedMessage,
+          error_description: detailedMessage
+        });
       } else if (data?.user) {
         console.log('Registration successful for user:', data.user.email);
         
@@ -98,7 +134,11 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
       }
     } catch (error: any) {
       console.error('Registration error:', error);
-      showRegistrationError(error);
+      const detailedMessage = getDetailedErrorMessage(error);
+      showRegistrationError({
+        message: detailedMessage,
+        error_description: detailedMessage
+      });
     } finally {
       setLoading(false);
     }
