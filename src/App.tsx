@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,6 +19,7 @@ import AdminUsers from "@/pages/AdminUsers";
 import AdminPackages from "@/pages/AdminPackages";
 import AdminAddons from "@/pages/AdminAddons";
 import Settings from "@/pages/Settings";
+import Billing from "@/pages/Billing";
 import Impressum from "@/pages/Impressum";
 import NotFound from "@/pages/NotFound";
 
@@ -38,6 +40,7 @@ const AppRoutes = () => {
       <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/auth" replace />} />
       <Route path="/order" element={user ? <Order /> : <Navigate to="/auth" replace />} />
       <Route path="/orders" element={user ? <Orders /> : <Navigate to="/auth" replace />} />
+      <Route path="/billing" element={user ? <Billing /> : <Navigate to="/auth" replace />} />
       <Route path="/settings" element={user ? <Settings /> : <Navigate to="/auth" replace />} />
       <Route path="/impressum" element={<Impressum />} />
       <Route path="/admin" element={user?.role === 'admin' ? <Admin /> : <Navigate to="/dashboard" replace />} >
