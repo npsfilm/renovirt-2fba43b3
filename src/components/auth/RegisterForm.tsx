@@ -156,10 +156,10 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-gray-700" />
+          <span className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-gray-950 px-2 text-gray-400">oder</span>
+          <span className="bg-background px-2 text-muted-foreground">oder</span>
         </div>
       </div>
 
@@ -172,7 +172,11 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
 
         <ReferralCodeInput onReferralCodeChange={handleReferralCodeChange} />
         
-        <Button type="submit" className="w-full bg-white text-black hover:bg-gray-100 h-12 font-medium" disabled={loading}>
+        <Button 
+          type="submit" 
+          className="w-full h-12 font-medium bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow-md" 
+          disabled={loading}
+        >
           {loading ? 'Wird erstellt...' : 'Konto erstellen'}
         </Button>
       </form>

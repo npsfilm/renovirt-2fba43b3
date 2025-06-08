@@ -8,12 +8,12 @@ interface RegisterHeaderProps {
 const RegisterHeader = ({ onSwitchToLogin }: RegisterHeaderProps) => {
   return (
     <div className="text-center">
-      <h1 className="text-2xl font-semibold text-white mb-2">Konto erstellen</h1>
-      <p className="text-gray-400 text-sm">
+      <h1 className="text-2xl font-semibold text-foreground mb-2">Konto erstellen</h1>
+      <p className="text-muted-foreground text-sm">
         Haben Sie bereits ein Konto?{' '}
         <button 
           onClick={onSwitchToLogin}
-          className="text-white underline hover:no-underline cursor-pointer"
+          className="text-primary underline hover:no-underline cursor-pointer transition-colors"
         >
           Anmelden
         </button>
