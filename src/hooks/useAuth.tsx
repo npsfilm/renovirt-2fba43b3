@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -233,19 +232,42 @@ export const useAuth = () => {
     }
   };
 
-  // Resend verification email function
+  // Enhanced resend verification email function
   const resendVerificationEmail = async (email: string) => {
     try {
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email: email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/onboarding`
+      console.log('Enhanced resend verification email for:', email);
+      
+      // Try custom edge function first for immediate delivery
+      const { data, error } = await supabase.functions.invoke('resend-verification-email', {
+        body: { 
+          email,
+          firstName: user?.user_metadata?.first_name,
+          lastName: user?.user_metadata?.last_name
         }
       });
-      
-      return { error };
+
+      if (error) {
+        console.warn('Custom resend failed, falling back to Supabase:', error);
+        
+        // Fallback to Supabase's built-in method
+        const fallbackResult = await supabase.auth.resend({
+          type: 'signup',
+          email: email,
+          options: {
+            emailRedirectTo: `${window.location.origin}/onboarding`
+          }
+        });
+        
+        return fallbackResult;
+      }
+
+      if (!data?.success) {
+        throw new Error(data?.error || 'Custom email service failed');
+      }
+
+      return { data, error: null };
     } catch (error) {
+      console.error('Enhanced resend verification failed:', error);
       return { error };
     }
   };
