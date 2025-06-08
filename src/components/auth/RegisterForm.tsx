@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/use-toast';
 import ReferralCodeInput from './ReferralCodeInput';
 import RegisterHeader from './register/RegisterHeader';
 import GoogleAuthButton from './register/GoogleAuthButton';
@@ -10,6 +9,7 @@ import RegisterFormFields from './register/RegisterFormFields';
 import TermsAcceptance from './register/TermsAcceptance';
 import { useFormValidation } from './register/FormValidation';
 import { useReferralProcessing } from './register/ReferralProcessing';
+import { useRegistrationToastHelper } from './RegistrationToastHelper';
 
 interface RegisterFormProps {
   onSuccess: () => void;
@@ -29,9 +29,13 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
   const [showPasswordValidation, setShowPasswordValidation] = useState(false);
 
   const { signUp, signInWithGoogle } = useAuth();
-  const { toast } = useToast();
   const { validateForm } = useFormValidation();
   const { processReferralReward } = useReferralProcessing();
+  const { 
+    showRegistrationSuccess, 
+    showRegistrationError, 
+    showGoogleAuthError 
+  } = useRegistrationToastHelper();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -76,43 +80,25 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
       console.log('Registration result:', { data, error });
 
       if (error) {
-        let errorMessage = 'Ein Fehler ist bei der Registrierung aufgetreten.';
-        
-        if (error.message.includes('User already registered')) {
-          errorMessage = 'Ein Benutzer mit dieser E-Mail-Adresse existiert bereits.';
-        } else if (error.message.includes('Password should be at least')) {
-          errorMessage = 'Das Passwort ist zu schwach. Bitte wählen Sie ein stärkeres Passwort.';
-        } else if (error.message.includes('Invalid email')) {
-          errorMessage = 'Bitte geben Sie eine gültige E-Mail-Adresse ein.';
-        }
-        
-        toast({
-          title: 'Registrierung fehlgeschlagen',
-          description: errorMessage,
-          variant: 'destructive',
-        });
+        console.error('Registration error:', error);
+        showRegistrationError(error);
       } else if (data?.user) {
         console.log('Registration successful for user:', data.user.email);
         
+        // Process referral reward if applicable
         if (referralCode && isReferralValid) {
           await processReferralReward(data.user.id, referralCode, isReferralValid);
         }
         
-        toast({
-          title: 'Registrierung erfolgreich',
-          description: referralCode ? 
-            'Bitte überprüfen Sie Ihre E-Mail für die Bestätigung. Ihre kostenlosen Bilder wurden gutgeschrieben!' :
-            'Bitte überprüfen Sie Ihre E-Mail für die Bestätigung.',
-        });
+        // Show success message with referral info
+        showRegistrationSuccess(!!referralCode && isReferralValid);
+        
+        // Call success callback
         onSuccess();
       }
     } catch (error: any) {
       console.error('Registration error:', error);
-      toast({
-        title: 'Fehler',
-        description: 'Ein unerwarteter Fehler ist aufgetreten.',
-        variant: 'destructive',
-      });
+      showRegistrationError(error);
     } finally {
       setLoading(false);
     }
@@ -126,21 +112,14 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
       
       if (error) {
         console.error('Google registration error:', error);
-        toast({
-          title: 'Google-Registrierung fehlgeschlagen',
-          description: error.message || 'Fehler bei der Google-Registrierung.',
-          variant: 'destructive',
-        });
+        showGoogleAuthError(error);
       } else {
         console.log('Google registration initiated successfully');
+        // The redirect will be handled by Supabase
       }
     } catch (error: any) {
       console.error('Google registration error:', error);
-      toast({
-        title: 'Fehler',
-        description: 'Ein unerwarteter Fehler ist aufgetreten.',
-        variant: 'destructive',
-      });
+      showGoogleAuthError(error);
     } finally {
       setLoading(false);
     }

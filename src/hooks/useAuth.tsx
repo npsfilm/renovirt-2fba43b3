@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -116,6 +117,12 @@ export const useAuth = () => {
     try {
       logSecurityEvent('signup_attempt', { email });
       
+      // Korrekte emailRedirectTo URL für die Produktionsumgebung
+      const baseUrl = window.location.origin;
+      const redirectUrl = `${baseUrl}/onboarding`;
+      
+      console.log('SignUp with redirect URL:', redirectUrl);
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -125,14 +132,16 @@ export const useAuth = () => {
             last_name: userData.lastName,
             role: userData.role,
           },
-          emailRedirectTo: `${window.location.origin}/onboarding`,
+          emailRedirectTo: redirectUrl,
         },
       });
       
       if (error) {
         logSecurityEvent('signup_failed', { email, error: error.message });
+        console.error('SignUp error:', error);
       } else if (data.user) {
         logSecurityEvent('signup_success', { email });
+        console.log('SignUp successful, redirect URL set to:', redirectUrl);
         
         // Create customer profile which will automatically trigger referral code generation
         try {
@@ -186,15 +195,24 @@ export const useAuth = () => {
     try {
       logSecurityEvent('google_signin_attempt');
       
+      // Korrekte redirectTo URL für Google OAuth
+      const baseUrl = window.location.origin;
+      const redirectUrl = `${baseUrl}/onboarding`;
+      
+      console.log('Google signIn with redirect URL:', redirectUrl);
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/onboarding`,
+          redirectTo: redirectUrl,
         },
       });
       
       if (error) {
         logSecurityEvent('google_signin_failed', { error: error.message });
+        console.error('Google signIn error:', error);
+      } else {
+        console.log('Google signIn initiated, redirect URL set to:', redirectUrl);
       }
       
       return { data, error };
@@ -215,6 +233,23 @@ export const useAuth = () => {
     }
   };
 
+  // Resend verification email function
+  const resendVerificationEmail = async (email: string) => {
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/onboarding`
+        }
+      });
+      
+      return { error };
+    } catch (error) {
+      return { error };
+    }
+  };
+
   return {
     user,
     session,
@@ -223,5 +258,6 @@ export const useAuth = () => {
     signIn,
     signInWithGoogle,
     signOut,
+    resendVerificationEmail,
   };
 };
