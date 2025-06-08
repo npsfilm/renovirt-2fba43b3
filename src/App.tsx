@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,6 +19,9 @@ import AdminPackages from "@/pages/AdminPackages";
 import AdminAddons from "@/pages/AdminAddons";
 import Settings from "@/pages/Settings";
 import Billing from "@/pages/Billing";
+import Profile from "@/pages/Profile";
+import Referrals from "@/pages/Referrals";
+import OrderFlow from "@/pages/OrderFlow";
 import Impressum from "@/pages/Impressum";
 import NotFound from "@/pages/NotFound";
 
@@ -41,6 +43,9 @@ const AppRoutes = () => {
       <Route path="/order" element={user ? <Order /> : <Navigate to="/auth" replace />} />
       <Route path="/orders" element={user ? <Orders /> : <Navigate to="/auth" replace />} />
       <Route path="/billing" element={user ? <Billing /> : <Navigate to="/auth" replace />} />
+      <Route path="/profile" element={user ? <Profile /> : <Navigate to="/auth" replace />} />
+      <Route path="/referrals" element={user ? <Referrals /> : <Navigate to="/auth" replace />} />
+      <Route path="/order-flow" element={user ? <OrderFlow /> : <Navigate to="/auth" replace />} />
       <Route path="/settings" element={user ? <Settings /> : <Navigate to="/auth" replace />} />
       <Route path="/impressum" element={<Impressum />} />
       <Route path="/admin" element={user?.role === 'admin' ? <Admin /> : <Navigate to="/dashboard" replace />} >
