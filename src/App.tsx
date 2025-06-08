@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useInactivityLogout } from "@/hooks/useInactivityLogout";
 import ErrorBoundary from "@/components/error/ErrorBoundary";
+import EnhancedSecurityProvider from "@/components/security/EnhancedSecurityProvider";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
@@ -68,7 +70,9 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ErrorBoundary>
-          <AppRoutes />
+          <EnhancedSecurityProvider>
+            <AppRoutes />
+          </EnhancedSecurityProvider>
         </ErrorBoundary>
       </BrowserRouter>
     </TooltipProvider>

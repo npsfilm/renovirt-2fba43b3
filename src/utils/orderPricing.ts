@@ -1,32 +1,22 @@
 
 import type { OrderData } from './orderValidation';
+import { calculateEffectiveImageCount } from './orderValidation';
 
-export const calculateOrderTotal = (
-  orderData: OrderData,
-  packages: any[],
-  addOns: any[]
-): number => {
+export const calculateOrderTotal = (orderData: OrderData, packages: any[], addOns: any[]): number => {
+  if (!orderData.package || !packages.length) return 0;
+  
   const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
   if (!selectedPackage) return 0;
-
-  const imageCount = orderData.photoType === 'bracketing-3' 
-    ? Math.floor(orderData.files.length / 3)
-    : orderData.photoType === 'bracketing-5'
-    ? Math.floor(orderData.files.length / 5)
-    : orderData.files.length;
-
+  
+  const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
   let total = selectedPackage.base_price * imageCount;
-
+  
   // Add extras
-  if (orderData.extras.upscale) {
-    total += 2.00 * imageCount;
-  }
-  if (orderData.extras.express) {
-    total += 2.00 * imageCount;
-  }
-  if (orderData.extras.watermark) {
-    total += 2.00 * imageCount;
-  }
-
+  const extraPrice = 2.00; // Net price per image for extras
+  
+  if (orderData.extras.upscale) total += extraPrice * imageCount;
+  if (orderData.extras.express) total += extraPrice * imageCount;
+  if (orderData.extras.watermark) total += extraPrice * imageCount;
+  
   return total;
 };

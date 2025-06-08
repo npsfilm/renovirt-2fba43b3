@@ -24,22 +24,22 @@ const UploadStep = ({ files, photoType, onFilesChange, onNext, onPrev }: UploadS
   const maxFiles = 100;
 
   // Calculate effective photos based on bracketing
-  const getEffectivePhotoCount = (fileCount: number): number => {
+  const getEffectivePhotoCount = useCallback((fileCount: number): number => {
     if (photoType === 'bracketing-3') {
       return Math.floor(fileCount / 3);
     } else if (photoType === 'bracketing-5') {
       return Math.floor(fileCount / 5);
     }
     return fileCount;
-  };
+  }, [photoType]);
 
-  const getBracketingDivisor = (): number => {
+  const getBracketingDivisor = useCallback((): number => {
     if (photoType === 'bracketing-3') return 3;
     if (photoType === 'bracketing-5') return 5;
     return 1;
-  };
+  }, [photoType]);
 
-  const validateFile = (file: File): boolean => {
+  const validateFile = useCallback((file: File): boolean => {
     const extension = file.name.split('.').pop()?.toLowerCase();
     if (!extension || !supportedFormats.includes(extension)) {
       toast({
@@ -60,7 +60,7 @@ const UploadStep = ({ files, photoType, onFilesChange, onNext, onPrev }: UploadS
     }
 
     return true;
-  };
+  }, [toast, maxFileSize, supportedFormats]);
 
   const handleFiles = useCallback((newFiles: FileList) => {
     if (!newFiles) return;
@@ -97,16 +97,16 @@ const UploadStep = ({ files, photoType, onFilesChange, onNext, onPrev }: UploadS
         description: `${uniqueFiles.length} Datei(en) erfolgreich hinzugefügt.`,
       });
     }
-  }, [files, onFilesChange, toast, validateFile]);
+  }, [files, onFilesChange, toast, validateFile, maxFiles]);
 
-  const removeFile = (index: number) => {
+  const removeFile = useCallback((index: number) => {
     const newFiles = files.filter((_, i) => i !== index);
     onFilesChange(newFiles);
     toast({
       title: "Datei entfernt",
       description: "Die Datei wurde aus der Liste entfernt.",
     });
-  };
+  }, [files, onFilesChange, toast]);
 
   const canProceed = files.length > 0;
   const effectivePhotos = getEffectivePhotoCount(files.length);
