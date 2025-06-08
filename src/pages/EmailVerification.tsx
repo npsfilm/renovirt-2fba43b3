@@ -4,11 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Mail, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/use-toast';
+import { useRegistrationToastHelper } from '@/components/auth/RegistrationToastHelper';
 
 const EmailVerification = () => {
-  const { user } = useAuth();
-  const { toast } = useToast();
+  const { user, resendVerificationEmail } = useAuth();
+  const { showEmailSentSuccess, showEmailResendError } = useRegistrationToastHelper();
   const [isResending, setIsResending] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const [lastResendTime, setLastResendTime] = useState(0);
@@ -31,30 +31,11 @@ const EmailVerification = () => {
     try {
       console.log('Attempting to resend verification email to:', user.email);
       
-      // Supabase's resend verification email
-      const { error } = await user.resend({ 
-        type: 'signup',
-        email: user.email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/onboarding`
-        }
-      });
+      const { error } = await resendVerificationEmail(user.email);
       
       if (error) {
         console.error('Error resending verification email:', error);
-        
-        let errorMessage = "Die E-Mail konnte nicht erneut gesendet werden.";
-        if (error.message.includes('rate_limit')) {
-          errorMessage = "Zu viele Anfragen. Bitte warten Sie einen Moment und versuchen Sie es erneut.";
-        } else if (error.message.includes('email_already_confirmed')) {
-          errorMessage = "Ihre E-Mail-Adresse ist bereits bestätigt. Sie können sich jetzt anmelden.";
-        }
-        
-        toast({
-          title: "Fehler beim E-Mail-Versand",
-          description: errorMessage,
-          variant: "destructive",
-        });
+        showEmailResendError(error);
       } else {
         console.log('Verification email resent successfully');
         
@@ -63,18 +44,11 @@ const EmailVerification = () => {
         setLastResendTime(Date.now());
         setCountdown(60); // 60 Sekunden Wartezeit
         
-        toast({
-          title: "E-Mail gesendet",
-          description: `Wir haben Ihnen eine neue Bestätigungs-E-Mail gesendet. ${newResendCount > 1 ? `(${newResendCount}. Versuch)` : ''}`,
-        });
+        showEmailSentSuccess(true);
       }
     } catch (error: any) {
       console.error('Unexpected error during email resend:', error);
-      toast({
-        title: "Unerwarteter Fehler",
-        description: "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
-        variant: "destructive",
-      });
+      showEmailResendError(error);
     } finally {
       setIsResending(false);
     }
