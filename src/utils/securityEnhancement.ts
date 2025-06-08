@@ -4,6 +4,12 @@ interface FileValidationResult {
   errors: string[];
 }
 
+interface PaymentRequest {
+  amount: number;
+  currency: string;
+  userId: string;
+}
+
 const supportedFormats = ['jpg', 'jpeg', 'png', 'cr2', 'cr3', 'nef', 'arw', 'dng', 'zip'];
 const maxFileSize = 25 * 1024 * 1024; // 25MB
 
@@ -30,6 +36,22 @@ export const validateFileSecurely = (file: File): FileValidationResult => {
     valid: errors.length === 0,
     errors
   };
+};
+
+export const validatePaymentRequest = (request: PaymentRequest): { valid: boolean; error?: string } => {
+  if (!request.amount || request.amount <= 0) {
+    return { valid: false, error: 'Ungültiger Betrag' };
+  }
+  
+  if (!request.currency || request.currency !== 'EUR') {
+    return { valid: false, error: 'Ungültige Währung' };
+  }
+  
+  if (!request.userId) {
+    return { valid: false, error: 'Benutzer-ID fehlt' };
+  }
+  
+  return { valid: true };
 };
 
 // Rate limiting
