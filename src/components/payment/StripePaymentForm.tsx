@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,8 +19,15 @@ const StripePaymentForm = ({ onSuccess, onError, amount, isLoading = false }: St
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isElementsReady, setIsElementsReady] = useState(false);
   const { toast } = useToast();
   const { verifyPayment } = usePayment();
+
+  useEffect(() => {
+    if (stripe && elements) {
+      setIsElementsReady(true);
+    }
+  }, [stripe, elements]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -86,6 +93,19 @@ const StripePaymentForm = ({ onSuccess, onError, amount, isLoading = false }: St
     }).format(amount);
   };
 
+  if (!stripe || !elements) {
+    return (
+      <Card className="w-full">
+        <CardContent className="flex items-center justify-center p-8">
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+            <p>Zahlungsformular wird geladen...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -100,12 +120,27 @@ const StripePaymentForm = ({ onSuccess, onError, amount, isLoading = false }: St
         </div>
         
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="min-h-[200px]">
-            <PaymentElement 
-              options={{
-                layout: 'tabs',
-              }}
-            />
+          <div className="min-h-[200px] border rounded-lg p-4">
+            {isElementsReady ? (
+              <PaymentElement 
+                options={{
+                  layout: 'tabs',
+                  fields: {
+                    billingDetails: {
+                      name: 'auto',
+                      email: 'auto'
+                    }
+                  }
+                }}
+              />
+            ) : (
+              <div className="flex items-center justify-center h-[150px]">
+                <div className="text-center">
+                  <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
+                  <p className="text-sm text-gray-600">Zahlungsfelder werden geladen...</p>
+                </div>
+              </div>
+            )}
           </div>
           
           <div className="flex items-center justify-center text-xs text-gray-500 space-x-4">
@@ -119,7 +154,7 @@ const StripePaymentForm = ({ onSuccess, onError, amount, isLoading = false }: St
           
           <Button
             type="submit"
-            disabled={!stripe || !elements || isProcessing || isLoading}
+            disabled={!stripe || !elements || isProcessing || isLoading || !isElementsReady}
             className="w-full bg-green-600 hover:bg-green-700"
           >
             {isProcessing ? (

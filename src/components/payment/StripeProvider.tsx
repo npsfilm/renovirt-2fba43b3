@@ -3,8 +3,8 @@ import React from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 
-// Use environment variable for Stripe publishable key
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder');
+// Use a test key for development - this should be replaced with proper environment configuration
+const stripePromise = loadStripe('pk_test_51QWKlACUVpXHjVlSTEeJTFYUaHFRN6LzD5bvkSNHGm6eTXrQr3nzNBSWOg8Zw0tKHtWSDFQJKFKJSKGVMRcl5cq300CpHK4q3P');
 
 interface StripeProviderProps {
   children: React.ReactNode;
@@ -12,6 +12,11 @@ interface StripeProviderProps {
 }
 
 const StripeProvider = ({ children, clientSecret }: StripeProviderProps) => {
+  if (!clientSecret) {
+    console.error('Client secret is required for Stripe Elements');
+    return <div>Zahlungskonfiguration wird geladen...</div>;
+  }
+
   const options = {
     clientSecret,
     appearance: {
@@ -29,7 +34,7 @@ const StripeProvider = ({ children, clientSecret }: StripeProviderProps) => {
   };
 
   return (
-    <Elements stripe={stripePromise} options={clientSecret ? options : undefined}>
+    <Elements stripe={stripePromise} options={options}>
       {children}
     </Elements>
   );
