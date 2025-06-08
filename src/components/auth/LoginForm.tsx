@@ -12,14 +12,22 @@ interface LoginFormProps {
   onSwitchToRegister: () => void;
 }
 
-const LoginForm = ({ onSuccess, onSwitchToRegister }: LoginFormProps) => {
+const LoginForm = ({
+  onSuccess,
+  onSwitchToRegister
+}: LoginFormProps) => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
   const [loading, setLoading] = useState(false);
-  const { signIn, signInWithGoogle } = useAuth();
-  const { toast } = useToast();
+  const {
+    signIn,
+    signInWithGoogle
+  } = useAuth();
+  const {
+    toast
+  } = useToast();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -40,8 +48,17 @@ const LoginForm = ({ onSuccess, onSwitchToRegister }: LoginFormProps) => {
     }
     setLoading(true);
     try {
-      const { data, error } = await signIn(formData.email, formData.password);
-      
+      console.log('Attempting login with:', {
+        email: formData.email
+      });
+      const {
+        data,
+        error
+      } = await signIn(formData.email, formData.password);
+      console.log('Login result:', {
+        data,
+        error
+      });
       if (error) {
         let errorMessage = 'Ein Fehler ist bei der Anmeldung aufgetreten.';
         if (error.message.includes('Invalid login credentials')) {
@@ -57,6 +74,7 @@ const LoginForm = ({ onSuccess, onSwitchToRegister }: LoginFormProps) => {
           variant: 'destructive'
         });
       } else if (data?.user) {
+        console.log('Login successful for user:', data.user.email);
         toast({
           title: 'Willkommen zurück!',
           description: 'Sie wurden erfolgreich angemeldet.'
@@ -64,6 +82,7 @@ const LoginForm = ({ onSuccess, onSwitchToRegister }: LoginFormProps) => {
         onSuccess();
       }
     } catch (error: any) {
+      console.error('Login error:', error);
       toast({
         title: 'Fehler',
         description: 'Ein unerwarteter Fehler ist aufgetreten.',
@@ -77,15 +96,23 @@ const LoginForm = ({ onSuccess, onSwitchToRegister }: LoginFormProps) => {
   const handleGoogleAuth = async () => {
     setLoading(true);
     try {
-      const { data, error } = await signInWithGoogle();
+      console.log('Attempting Google authentication');
+      const {
+        data,
+        error
+      } = await signInWithGoogle();
       if (error) {
+        console.error('Google auth error:', error);
         toast({
           title: 'Google-Anmeldung fehlgeschlagen',
           description: error.message || 'Fehler bei der Google-Anmeldung.',
           variant: 'destructive'
         });
+      } else {
+        console.log('Google auth initiated successfully');
       }
     } catch (error: any) {
+      console.error('Google auth error:', error);
       toast({
         title: 'Fehler',
         description: 'Ein unerwarteter Fehler ist aufgetreten.',
@@ -98,6 +125,7 @@ const LoginForm = ({ onSuccess, onSwitchToRegister }: LoginFormProps) => {
 
   return (
     <div className="space-y-6">
+      {/* Enhanced Google Button */}
       <div className="space-y-4">
         <Button 
           variant="outline" 
@@ -126,7 +154,7 @@ const LoginForm = ({ onSuccess, onSwitchToRegister }: LoginFormProps) => {
       </div>
 
       <div className="text-center text-sm text-muted-foreground">
-        E-Mail und Passwort eingeben
+        E-Mail und Passwort eingeben zum Anmelden
       </div>
 
       <form onSubmit={handleLogin} className="space-y-4">
@@ -141,7 +169,7 @@ const LoginForm = ({ onSuccess, onSwitchToRegister }: LoginFormProps) => {
               value={formData.email} 
               onChange={handleInputChange} 
               required 
-              className="h-12 pl-10" 
+              className="bg-input border-border text-foreground placeholder-muted-foreground h-12 pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20" 
             />
           </div>
         </div>
@@ -156,13 +184,13 @@ const LoginForm = ({ onSuccess, onSwitchToRegister }: LoginFormProps) => {
               value={formData.password} 
               onChange={handleInputChange} 
               required 
-              className="h-12 pl-10" 
+              className="bg-input border-border text-foreground placeholder-muted-foreground h-12 pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20" 
             />
           </div>
         </div>
         <Button 
           type="submit" 
-          className="w-full h-12 font-medium transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow-md group" 
+          className="w-full h-12 font-medium bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow-md group" 
           disabled={loading}
         >
           {loading ? 'Wird angemeldet...' : (
