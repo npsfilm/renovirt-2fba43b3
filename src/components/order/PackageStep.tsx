@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,13 @@ interface PackageStepProps {
 }
 
 const PackageStep = ({ selectedPackage, onPackageChange, onNext, onPrev }: PackageStepProps) => {
+  // Preselect Premium if nothing is selected
+  React.useEffect(() => {
+    if (!selectedPackage) {
+      onPackageChange('Premium');
+    }
+  }, [selectedPackage, onPackageChange]);
+
   const packages = [
     {
       id: 'Basic' as const,
@@ -34,7 +42,7 @@ const PackageStep = ({ selectedPackage, onPackageChange, onNext, onPrev }: Packa
     {
       id: 'Premium' as const,
       name: 'Premium',
-      price: '13,00€',
+      price: '9,00€',
       priceUnit: 'pro Bild',
       netPrice: 'netto',
       description: 'Professionelle HDR-Bearbeitung & Detailretusche.',
@@ -71,7 +79,7 @@ const PackageStep = ({ selectedPackage, onPackageChange, onNext, onPrev }: Packa
           return (
             <Card
               key={pkg.id}
-              className={`relative cursor-pointer transition-all duration-300 ease-out transform ${
+              className={`relative cursor-pointer transition-all duration-300 ease-out transform flex flex-col ${
                 isSelected
                   ? 'ring-2 ring-primary border-primary shadow-lg scale-[1.02] bg-gradient-to-br ' + pkg.gradient
                   : 'hover:shadow-md hover:scale-[1.01] border-border bg-card'
@@ -105,8 +113,8 @@ const PackageStep = ({ selectedPackage, onPackageChange, onNext, onPrev }: Packa
                 <p className="text-muted-foreground text-sm leading-relaxed">{pkg.description}</p>
               </CardHeader>
 
-              <CardContent className="space-y-4 pt-0">
-                <div className="space-y-3">
+              <CardContent className="space-y-4 pt-0 flex-1 flex flex-col">
+                <div className="space-y-3 flex-1">
                   {pkg.features.map((feature, index) => (
                     <div key={index} className="flex items-center space-x-3">
                       <div className="w-5 h-5 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0">
@@ -117,20 +125,26 @@ const PackageStep = ({ selectedPackage, onPackageChange, onNext, onPrev }: Packa
                   ))}
                 </div>
 
-                <Button
-                  className={`w-full mt-6 transition-all duration-200 ${
-                    isSelected
-                      ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-md'
-                      : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground'
-                  }`}
-                  onClick={() => onPackageChange(pkg.id)}
-                >
-                  {isSelected ? 'Ausgewählt' : 'Dieses Paket wählen'}
-                </Button>
+                <div className="mt-auto pt-4">
+                  <Button
+                    className={`w-full transition-all duration-200 ${
+                      isSelected
+                        ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-md'
+                        : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground border border-border'
+                    }`}
+                    onClick={() => onPackageChange(pkg.id)}
+                  >
+                    {isSelected ? 'Ausgewählt' : 'Auswählen'}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           );
         })}
+      </div>
+
+      <div className="text-center text-sm text-muted-foreground">
+        Alle Preise sind zzgl. 19% MwSt.
       </div>
 
       <div className="flex justify-between max-w-4xl mx-auto">
