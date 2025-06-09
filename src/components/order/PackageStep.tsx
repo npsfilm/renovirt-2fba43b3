@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -48,7 +49,7 @@ const PackageStep = ({
   }, {
     id: 'Premium' as const,
     name: 'Premium',
-    price: '9,00€',
+    price: '13,00€',
     priceUnit: 'pro Bild',
     netPrice: 'netto',
     description: 'Professionelle HDR-Bearbeitung & Detailretusche.',
@@ -102,7 +103,7 @@ const PackageStep = ({
                 <CardTitle className="text-xl font-semibold">{pkg.name}</CardTitle>
                 <div className="text-3xl font-bold text-foreground">
                   {pkg.price}
-                  <span className="text-sm font-normal text-muted-foreground ml-1">{pkg.priceUnit}</span>
+                  <span className="text-sm font-normal text-muted-foreground ml-1">/ {pkg.priceUnit}</span>
                 </div>
                 
                 <p className="text-muted-foreground text-sm leading-relaxed">{pkg.description}</p>
