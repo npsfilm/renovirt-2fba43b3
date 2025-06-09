@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
 import { Button } from '@/components/ui/button';
@@ -7,70 +6,71 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Lock } from 'lucide-react';
 import { PaymentIcons } from '@/components/payment/PaymentIcons';
 import { usePayment } from '@/hooks/usePayment';
-
 interface StripePaymentFormProps {
   onSuccess: (paymentIntentId: string) => void;
   onError: (error: string) => void;
   amount: number;
   isLoading?: boolean;
 }
-
-const StripePaymentForm = ({ onSuccess, onError, amount, isLoading = false }: StripePaymentFormProps) => {
+const StripePaymentForm = ({
+  onSuccess,
+  onError,
+  amount,
+  isLoading = false
+}: StripePaymentFormProps) => {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isElementsReady, setIsElementsReady] = useState(false);
-  const { toast } = useToast();
-  const { verifyPayment } = usePayment();
-
+  const {
+    toast
+  } = useToast();
+  const {
+    verifyPayment
+  } = usePayment();
   useEffect(() => {
     if (stripe && elements) {
       setIsElementsReady(true);
     }
   }, [stripe, elements]);
-
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
     if (!stripe || !elements) {
       onError('Stripe ist noch nicht geladen. Bitte versuchen Sie es erneut.');
       return;
     }
-
     setIsProcessing(true);
-
     try {
       console.log('Bestätige Zahlung...');
-      
-      const { error, paymentIntent } = await stripe.confirmPayment({
+      const {
+        error,
+        paymentIntent
+      } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: `${window.location.origin}/payment/success`,
+          return_url: `${window.location.origin}/payment/success`
         },
-        redirect: 'if_required',
+        redirect: 'if_required'
       });
-
       if (error) {
         console.error('Zahlungsfehler:', error);
         onError(error.message || 'Zahlung fehlgeschlagen');
         toast({
           title: 'Zahlungsfehler',
           description: error.message || 'Die Zahlung konnte nicht verarbeitet werden.',
-          variant: 'destructive',
+          variant: 'destructive'
         });
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
         console.log('Zahlung erfolgreich:', paymentIntent.id);
-        
         try {
           await verifyPayment(paymentIntent.id);
         } catch (verifyError) {
           console.error('Zahlungsverifikation fehlgeschlagen:', verifyError);
         }
-
         onSuccess(paymentIntent.id);
         toast({
           title: 'Zahlung erfolgreich!',
-          description: 'Ihre Bestellung wurde erfolgreich bezahlt.',
+          description: 'Ihre Bestellung wurde erfolgreich bezahlt.'
         });
       }
     } catch (error: any) {
@@ -79,36 +79,30 @@ const StripePaymentForm = ({ onSuccess, onError, amount, isLoading = false }: St
       toast({
         title: 'Fehler',
         description: 'Ein unerwarteter Fehler ist aufgetreten.',
-        variant: 'destructive',
+        variant: 'destructive'
       });
     } finally {
       setIsProcessing(false);
     }
   };
-
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat('de-DE', {
       style: 'currency',
-      currency: 'EUR',
+      currency: 'EUR'
     }).format(amount);
   };
-
   if (!stripe || !elements) {
-    return (
-      <Card className="w-full">
+    return <Card className="w-full">
         <CardContent className="flex items-center justify-center p-8">
           <div className="text-center">
             <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
             <p>Zahlungsformular wird geladen...</p>
           </div>
         </CardContent>
-      </Card>
-    );
+      </Card>;
   }
-
-  return (
-    <Card className="w-full">
-      <CardHeader>
+  return <Card className="w-full">
+      <CardHeader className="py-[8px]">
         <CardTitle className="text-lg">Zahlung abschließen</CardTitle>
         <p className="text-sm text-gray-600">
           Betrag: <span className="font-semibold">{formatAmount(amount)}</span>
@@ -121,26 +115,20 @@ const StripePaymentForm = ({ onSuccess, onError, amount, isLoading = false }: St
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="min-h-[200px] border rounded-lg p-4">
-            {isElementsReady ? (
-              <PaymentElement 
-                options={{
-                  layout: 'tabs',
-                  fields: {
-                    billingDetails: {
-                      name: 'auto',
-                      email: 'auto'
-                    }
-                  }
-                }}
-              />
-            ) : (
-              <div className="flex items-center justify-center h-[150px]">
+            {isElementsReady ? <PaymentElement options={{
+            layout: 'tabs',
+            fields: {
+              billingDetails: {
+                name: 'auto',
+                email: 'auto'
+              }
+            }
+          }} /> : <div className="flex items-center justify-center h-[150px]">
                 <div className="text-center">
                   <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
                   <p className="text-sm text-gray-600">Zahlungsfelder werden geladen...</p>
                 </div>
-              </div>
-            )}
+              </div>}
           </div>
           
           <div className="flex items-center justify-center text-xs text-gray-500 space-x-4">
@@ -152,24 +140,14 @@ const StripePaymentForm = ({ onSuccess, onError, amount, isLoading = false }: St
             <span>Powered by Stripe</span>
           </div>
           
-          <Button
-            type="submit"
-            disabled={!stripe || !elements || isProcessing || isLoading || !isElementsReady}
-            className="w-full bg-green-600 hover:bg-green-700"
-          >
-            {isProcessing ? (
-              <>
+          <Button type="submit" disabled={!stripe || !elements || isProcessing || isLoading || !isElementsReady} className="w-full bg-green-600 hover:bg-green-700">
+            {isProcessing ? <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Zahlung wird verarbeitet...
-              </>
-            ) : (
-              `${formatAmount(amount)} bezahlen`
-            )}
+              </> : `${formatAmount(amount)} bezahlen`}
           </Button>
         </form>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };
-
 export default StripePaymentForm;
