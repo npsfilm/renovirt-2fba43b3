@@ -5,7 +5,7 @@ import { loadStripe } from '@stripe/stripe-js';
 
 // Get Stripe publishable key from environment
 const stripePromise = loadStripe(
-  import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || ''
+  'pk_live_51RVC15GBJSdVtvnbWNXeloDmabSIjTKHk1E3m6TmAgEhSptSbSorOSqxqFlZf0hERNpMJ18fx3EYhBXoGdwgtkSU00tora2LR4'
 );
 
 interface StripeProviderProps {
@@ -17,20 +17,6 @@ const StripeProvider = ({ children, clientSecret }: StripeProviderProps) => {
   if (!clientSecret) {
     console.error('Client secret is required for Stripe Elements');
     return <div>Zahlungskonfiguration wird geladen...</div>;
-  }
-
-  // Check if we have a valid Stripe key
-  const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-  if (!stripeKey) {
-    console.error('VITE_STRIPE_PUBLISHABLE_KEY is not configured');
-    return (
-      <div className="p-6 text-center">
-        <h3 className="text-lg font-semibold mb-2">Stripe-Konfiguration erforderlich</h3>
-        <p className="text-muted-foreground">
-          Bitte konfigurieren Sie Ihren Stripe-Schlüssel in den Umgebungsvariablen.
-        </p>
-      </div>
-    );
   }
 
   const options = {
