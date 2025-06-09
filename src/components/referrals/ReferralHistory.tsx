@@ -2,12 +2,10 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Clock, User } from 'lucide-react';
+import { Users, Calendar, CheckCircle, Clock } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { format } from 'date-fns';
-import { de } from 'date-fns/locale';
 
 const ReferralHistory = () => {
   const { user } = useAuth();
@@ -20,8 +18,13 @@ const ReferralHistory = () => {
       const { data, error } = await supabase
         .from('referrals')
         .select(`
-          *,
-          customer_profiles!referrals_referred_user_id_fkey(first_name, last_name, company)
+          id,
+          referral_code,
+          reward_amount,
+          reward_claimed,
+          created_at,
+          credits_approved_at,
+          first_order_id
         `)
         .eq('referrer_id', user.id)
         .order('created_at', { ascending: false });
@@ -36,22 +39,18 @@ const ReferralHistory = () => {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Empfehlungsverlauf</CardTitle>
+          <CardTitle>Empfehlungshistorie</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="animate-pulse border rounded-lg p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-muted rounded-full"></div>
-                    <div className="space-y-2">
-                      <div className="h-4 bg-muted rounded w-32"></div>
-                      <div className="h-3 bg-muted rounded w-24"></div>
-                    </div>
-                  </div>
-                  <div className="h-6 bg-muted rounded w-20"></div>
+              <div key={i} className="flex items-center space-x-4 p-4 border rounded-lg animate-pulse">
+                <div className="w-12 h-12 bg-muted rounded-full"></div>
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-muted rounded w-1/4"></div>
+                  <div className="h-3 bg-muted rounded w-1/2"></div>
                 </div>
+                <div className="w-20 h-6 bg-muted rounded"></div>
               </div>
             ))}
           </div>
@@ -60,70 +59,92 @@ const ReferralHistory = () => {
     );
   }
 
+  const getStatusBadge = (referral: any) => {
+    if (referral.credits_approved_at) {
+      return <Badge variant="default" className="bg-green-100 text-green-800">Belohnung erhalten</Badge>;
+    }
+    if (referral.first_order_id) {
+      return <Badge variant="secondary">Erste Bestellung erfolgt</Badge>;
+    }
+    return <Badge variant="outline">Warten auf erste Bestellung</Badge>;
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('de-DE', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
-          <User className="w-5 h-5" />
-          <span>Empfehlungsverlauf</span>
+        <CardTitle className="flex items-center gap-2">
+          <Users className="w-5 h-5" />
+          Empfehlungshistorie
         </CardTitle>
       </CardHeader>
       <CardContent>
         {referrals && referrals.length > 0 ? (
           <div className="space-y-4">
             {referrals.map((referral) => (
-              <div key={referral.id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                      <User className="w-4 h-4 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-medium">
-                        {referral.customer_profiles?.first_name} {referral.customer_profiles?.last_name}
-                        {referral.customer_profiles?.company && (
-                          <span className="text-muted-foreground"> • {referral.customer_profiles.company}</span>
-                        )}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Empfohlen am {format(new Date(referral.created_at), 'dd. MMMM yyyy', { locale: de })}
-                      </p>
-                    </div>
+              <div key={referral.id} className="flex items-center space-x-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Users className="w-6 h-6 text-blue-600" />
+                </div>
+                
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-medium">Code: {referral.referral_code}</span>
+                    {getStatusBadge(referral)}
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <span className="text-sm font-medium">{referral.reward_amount} Bilder</span>
-                    <Badge variant={referral.credits_approved_at ? "default" : "secondary"}>
-                      {referral.credits_approved_at ? (
-                        <div className="flex items-center space-x-1">
-                          <CheckCircle className="w-3 h-3" />
-                          <span>Gutgeschrieben</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center space-x-1">
-                          <Clock className="w-3 h-3" />
-                          <span>Ausstehend</span>
-                        </div>
-                      )}
-                    </Badge>
+                  
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>Erstellt: {formatDate(referral.created_at)}</span>
+                    </div>
+                    
+                    {referral.credits_approved_at && (
+                      <div className="flex items-center gap-1">
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                        <span>Belohnt: {formatDate(referral.credits_approved_at)}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
-                {referral.credits_approved_at && (
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Gutgeschrieben am {format(new Date(referral.credits_approved_at), 'dd. MMMM yyyy', { locale: de })}
-                  </p>
-                )}
+                
+                <div className="text-right">
+                  <div className="font-semibold text-lg">
+                    {referral.reward_amount} Bilder
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {referral.credits_approved_at ? 'Gutgeschrieben' : 'Ausstehend'}
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         ) : (
           <div className="text-center py-8">
-            <User className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-medium mb-2">Noch keine Empfehlungen</h3>
-            <p className="text-muted-foreground">
-              Teilen Sie Ihren Empfehlungscode, um Ihre ersten Belohnungen zu erhalten.
+            <Users className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+            <h3 className="text-lg font-semibold mb-2">Noch keine Empfehlungen</h3>
+            <p className="text-muted-foreground mb-4">
+              Teilen Sie Ihren Empfehlungscode und erhalten Sie kostenlose Bilder für jede erfolgreiche Empfehlung.
             </p>
           </div>
         )}
+        
+        <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+          <h4 className="font-semibold mb-2">So funktioniert es:</h4>
+          <ul className="text-sm text-muted-foreground space-y-1">
+            <li>• Teilen Sie Ihren persönlichen Empfehlungscode</li>
+            <li>• Neue Nutzer erhalten 10 kostenlose Bilder bei der Registrierung</li>
+            <li>• Nach deren erster Bestellung erhalten Sie 10 kostenlose Bilder</li>
+            <li>• Belohnungen werden automatisch gutgeschrieben</li>
+          </ul>
+        </div>
       </CardContent>
     </Card>
   );

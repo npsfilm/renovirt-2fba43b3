@@ -23,6 +23,7 @@ import Settings from "@/pages/Settings";
 import Billing from "@/pages/Billing";
 import Profile from "@/pages/Profile";
 import Referrals from "@/pages/Referrals";
+import Help from "@/pages/Help";
 import OrderFlow from "@/pages/OrderFlow";
 import Impressum from "@/pages/Impressum";
 import NotFound from "@/pages/NotFound";
@@ -47,6 +48,7 @@ const AppRoutes = () => {
       <Route path="/billing" element={user ? <Billing /> : <Navigate to="/auth" replace />} />
       <Route path="/profile" element={user ? <Profile /> : <Navigate to="/auth" replace />} />
       <Route path="/referrals" element={user ? <Referrals /> : <Navigate to="/auth" replace />} />
+      <Route path="/help" element={user ? <Help /> : <Navigate to="/auth" replace />} />
       <Route path="/order-flow" element={user ? <OrderFlow /> : <Navigate to="/auth" replace />} />
       <Route path="/settings" element={user ? <Settings /> : <Navigate to="/auth" replace />} />
       <Route path="/impressum" element={<Impressum />} />

@@ -22,6 +22,12 @@ import {
 } from 'lucide-react';
 
 const Help = () => {
+  const handleSubmitForm = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Hier würde die Form-Submission implementiert werden
+    console.log('Kontaktformular abgesendet');
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
@@ -102,32 +108,34 @@ const Help = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <Label htmlFor="subject">Betreff</Label>
-                    <Input id="subject" placeholder="Beschreiben Sie Ihr Anliegen kurz" />
+                <form onSubmit={handleSubmitForm} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label htmlFor="subject">Betreff</Label>
+                      <Input id="subject" placeholder="Beschreiben Sie Ihr Anliegen kurz" />
+                    </div>
+                    <div>
+                      <Label htmlFor="priority">Priorität</Label>
+                      <select className="w-full p-2 border rounded-md" id="priority">
+                        <option value="low">Niedrig</option>
+                        <option value="medium">Mittel</option>
+                        <option value="high">Hoch</option>
+                      </select>
+                    </div>
                   </div>
                   <div>
-                    <Label htmlFor="priority">Priorität</Label>
-                    <select className="w-full p-2 border rounded-md" id="priority">
-                      <option value="low">Niedrig</option>
-                      <option value="medium">Mittel</option>
-                      <option value="high">Hoch</option>
-                    </select>
+                    <Label htmlFor="message">Nachricht</Label>
+                    <Textarea 
+                      id="message" 
+                      placeholder="Beschreiben Sie Ihr Problem oder Ihre Frage ausführlich..."
+                      rows={4}
+                    />
                   </div>
-                </div>
-                <div>
-                  <Label htmlFor="message">Nachricht</Label>
-                  <Textarea 
-                    id="message" 
-                    placeholder="Beschreiben Sie Ihr Problem oder Ihre Frage ausführlich..."
-                    rows={4}
-                  />
-                </div>
-                <Button className="w-full">
-                  <Mail className="w-4 h-4 mr-2" />
-                  Nachricht senden
-                </Button>
+                  <Button type="submit" className="w-full">
+                    <Mail className="w-4 h-4 mr-2" />
+                    Nachricht senden
+                  </Button>
+                </form>
               </CardContent>
             </Card>
 
@@ -143,7 +151,7 @@ const Help = () => {
                 <CardContent className="space-y-3">
                   <div className="flex items-center gap-2">
                     <Mail className="w-4 h-4 text-gray-600" />
-                    <span className="text-sm">support@renovirt.com</span>
+                    <span className="text-sm">support@renovirt.de</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Phone className="w-4 h-4 text-gray-600" />
