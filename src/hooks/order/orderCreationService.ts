@@ -20,6 +20,7 @@ export const createOrderInDatabase = async (
   const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
   const orderNumber = generateOrderNumber();
 
+  // Create order without company field (it's stored in customer_profiles)
   const { data: order, error } = await supabase
     .from('orders')
     .insert({
@@ -32,10 +33,8 @@ export const createOrderInDatabase = async (
       payment_method: paymentMethod,
       payment_status: paymentMethod === 'stripe' ? 'paid' : 'pending',
       payment_intent_id: paymentIntentId,
-      email: orderData.email,
-      company: orderData.company,
-      object_reference: orderData.objectReference,
-      special_requests: orderData.specialRequests,
+      customer_email: orderData.email,
+      admin_notes: orderData.specialRequests,
       extras: orderData.extras,
       status: 'pending'
     })
@@ -43,5 +42,21 @@ export const createOrderInDatabase = async (
     .single();
 
   if (error) throw error;
+
+  // Update customer profile with company information if provided
+  if (orderData.company) {
+    const { error: profileError } = await supabase
+      .from('customer_profiles')
+      .update({ 
+        company: orderData.company 
+      })
+      .eq('user_id', userId);
+
+    if (profileError) {
+      console.error('Failed to update customer profile:', profileError);
+      // Don't fail the order creation for profile update issues
+    }
+  }
+
   return order;
 };
