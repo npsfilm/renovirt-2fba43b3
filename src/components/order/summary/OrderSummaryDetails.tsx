@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -38,6 +38,13 @@ const OrderSummaryDetails = ({ orderData, onUpdateData }: OrderSummaryDetailsPro
     },
     enabled: !!user?.id,
   });
+
+  // Auto-fill email from user profile when component loads or user changes
+  useEffect(() => {
+    if (user?.email && !orderData.email) {
+      onUpdateData({ email: user.email });
+    }
+  }, [user?.email, orderData.email, onUpdateData]);
 
   const handleWatermarkUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -100,7 +107,7 @@ const OrderSummaryDetails = ({ orderData, onUpdateData }: OrderSummaryDetailsPro
               <Input
                 id="email"
                 type="email"
-                value={orderData.email || ''}
+                value={orderData.email || user?.email || ''}
                 onChange={(e) => onUpdateData({ email: e.target.value })}
                 placeholder="ihre@email.de"
                 required
