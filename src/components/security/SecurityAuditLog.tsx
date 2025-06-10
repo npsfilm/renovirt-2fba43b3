@@ -22,9 +22,12 @@ const SecurityAuditLog = () => {
   const { data: securityEvents, isLoading } = useQuery({
     queryKey: ['security-events'],
     queryFn: async () => {
-      // Direkter SQL-Aufruf bis die Typen aktualisiert sind
+      // Direkter Query auf die security_events Tabelle
       const { data, error } = await supabase
-        .rpc('get_security_events', {});
+        .from('security_events')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(50);
       
       if (error) {
         console.error('Error fetching security events:', error);

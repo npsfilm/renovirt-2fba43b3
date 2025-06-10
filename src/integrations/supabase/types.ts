@@ -822,6 +822,19 @@ export type Database = {
           daily_stats: Json
         }[]
       }
+      get_security_events: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          event_type: string
+          user_id: string
+          details: Json
+          ip_address: unknown
+          user_agent: string
+          created_at: string
+          severity: string
+        }[]
+      }
       get_user_credits: {
         Args: { user_uuid: string }
         Returns: number
@@ -829,6 +842,16 @@ export type Database = {
       has_admin_role: {
         Args: { user_uuid: string }
         Returns: boolean
+      }
+      log_security_event: {
+        Args: {
+          p_event_type: string
+          p_details?: Json
+          p_severity?: string
+          p_ip_address?: string
+          p_user_agent?: string
+        }
+        Returns: string
       }
       process_referral: {
         Args: { referral_code_param: string; new_user_id: string }

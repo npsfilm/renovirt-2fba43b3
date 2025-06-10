@@ -15,14 +15,16 @@ export const trackSecurityEvent = async (
   severity: 'low' | 'medium' | 'high' | 'critical' = 'low'
 ) => {
   try {
-    // Direkter RPC-Aufruf bis die Typen aktualisiert sind
-    const { error } = await supabase.rpc('log_security_event', {
-      p_event_type: eventType,
-      p_details: details,
-      p_severity: severity,
-      p_ip_address: await getUserIP(),
-      p_user_agent: navigator.userAgent
-    });
+    // Direktes Insert in die security_events Tabelle
+    const { error } = await supabase
+      .from('security_events')
+      .insert({
+        event_type: eventType,
+        details: details,
+        severity: severity,
+        ip_address: await getUserIP(),
+        user_agent: navigator.userAgent
+      });
 
     if (error) {
       secureLog('Failed to track security event:', error);
