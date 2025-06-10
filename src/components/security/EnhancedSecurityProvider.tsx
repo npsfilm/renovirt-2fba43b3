@@ -1,21 +1,20 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { verifyAdminRole, enhancedRateLimit } from '@/utils/securityEnhancement';
-import { logSecurityEvent } from '@/utils/secureLogging';
+import { useAdminRole } from '@/hooks/useAdminRole';
+import { supabase } from '@/integrations/supabase/client';
+import { secureLog, logSecurityEvent } from '@/utils/secureLogging';
 
 interface SecurityContextType {
-  isSecureSession: boolean;
   hasAdminAccess: boolean;
+  isSecureSession: boolean;
   refreshSecurity: () => Promise<void>;
-  checkPermission: (action: string) => boolean;
 }
 
 const SecurityContext = createContext<SecurityContextType>({
-  isSecureSession: false,
   hasAdminAccess: false,
+  isSecureSession: false,
   refreshSecurity: async () => {},
-  checkPermission: () => false,
 });
 
 export const useSecurity = () => useContext(SecurityContext);
@@ -26,70 +25,62 @@ interface EnhancedSecurityProviderProps {
 
 const EnhancedSecurityProvider = ({ children }: EnhancedSecurityProviderProps) => {
   const { user } = useAuth();
-  const [isSecureSession, setIsSecureSession] = useState(false);
+  const { isAdmin } = useAdminRole();
   const [hasAdminAccess, setHasAdminAccess] = useState(false);
+  const [isSecureSession, setIsSecureSession] = useState(false);
 
-  const refreshSecurity = async () => {
-    if (!user) {
-      setIsSecureSession(false);
+  const verifyAdminAccess = async () => {
+    if (!user || !isAdmin) {
       setHasAdminAccess(false);
+      setIsSecureSession(false);
       return;
     }
 
     try {
-      setIsSecureSession(true);
-      
-      // Check admin access with enhanced security
-      const adminAccess = await verifyAdminRole(user.id);
-      setHasAdminAccess(adminAccess);
-      
-      logSecurityEvent('security_context_refreshed', { 
-        userId: user.id, 
-        hasAdminAccess: adminAccess 
+      // Verify admin role through RPC function
+      const { data, error } = await supabase.rpc('has_admin_role', {
+        user_uuid: user.id
       });
+
+      if (error) {
+        logSecurityEvent('admin_verification_failed', { 
+          userId: user.id, 
+          error: error.message 
+        });
+        setHasAdminAccess(false);
+        setIsSecureSession(false);
+        return;
+      }
+
+      if (data === true) {
+        setHasAdminAccess(true);
+        setIsSecureSession(true);
+        logSecurityEvent('admin_verification_success', { userId: user.id });
+      } else {
+        logSecurityEvent('admin_verification_denied', { userId: user.id });
+        setHasAdminAccess(false);
+        setIsSecureSession(false);
+      }
     } catch (error) {
-      logSecurityEvent('security_context_error', { userId: user.id, error });
-      setIsSecureSession(false);
+      logSecurityEvent('admin_verification_error', { userId: user.id, error });
       setHasAdminAccess(false);
+      setIsSecureSession(false);
     }
   };
 
-  const checkPermission = (action: string): boolean => {
-    if (!user || !isSecureSession) return false;
-
-    // Rate limit permission checks
-    if (!enhancedRateLimit(`permission_${user.id}_${action}`, 100, 60000)) {
-      logSecurityEvent('permission_check_rate_limited', { userId: user.id, action });
-      return false;
-    }
-
-    // Basic permission logic - can be extended
-    switch (action) {
-      case 'admin_access':
-        return hasAdminAccess;
-      case 'file_upload':
-        return isSecureSession;
-      case 'create_order':
-        return isSecureSession;
-      default:
-        return isSecureSession;
-    }
+  const refreshSecurity = async () => {
+    await verifyAdminAccess();
   };
 
   useEffect(() => {
-    refreshSecurity();
-    
-    // Refresh security context every 5 minutes
-    const interval = setInterval(refreshSecurity, 300000);
-    return () => clearInterval(interval);
-  }, [user]);
+    verifyAdminAccess();
+  }, [user, isAdmin]);
 
   return (
     <SecurityContext.Provider value={{
-      isSecureSession,
       hasAdminAccess,
-      refreshSecurity,
-      checkPermission
+      isSecureSession,
+      refreshSecurity
     }}>
       {children}
     </SecurityContext.Provider>
