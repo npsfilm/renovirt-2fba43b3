@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminRole } from '@/hooks/useAdminRole';
@@ -9,12 +8,14 @@ interface SecurityContextType {
   hasAdminAccess: boolean;
   isSecureSession: boolean;
   refreshSecurity: () => Promise<void>;
+  checkPermission: (permission: string) => boolean;
 }
 
 const SecurityContext = createContext<SecurityContextType>({
   hasAdminAccess: false,
   isSecureSession: false,
   refreshSecurity: async () => {},
+  checkPermission: () => false,
 });
 
 export const useSecurity = () => useContext(SecurityContext);
@@ -28,6 +29,20 @@ const EnhancedSecurityProvider = ({ children }: EnhancedSecurityProviderProps) =
   const { isAdmin } = useAdminRole();
   const [hasAdminAccess, setHasAdminAccess] = useState(false);
   const [isSecureSession, setIsSecureSession] = useState(false);
+
+  const checkPermission = (permission: string): boolean => {
+    // Basic permission checking - can be extended based on requirements
+    if (!user) return false;
+    
+    switch (permission) {
+      case 'file_upload':
+        return true; // All authenticated users can upload files
+      case 'admin_access':
+        return hasAdminAccess;
+      default:
+        return false;
+    }
+  };
 
   const verifyAdminAccess = async () => {
     if (!user || !isAdmin) {
@@ -80,7 +95,8 @@ const EnhancedSecurityProvider = ({ children }: EnhancedSecurityProviderProps) =
     <SecurityContext.Provider value={{
       hasAdminAccess,
       isSecureSession,
-      refreshSecurity
+      refreshSecurity,
+      checkPermission
     }}>
       {children}
     </SecurityContext.Provider>
