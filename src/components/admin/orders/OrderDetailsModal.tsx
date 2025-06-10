@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -132,7 +131,7 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
   if (isLoading) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[95vw] w-full max-h-[95vh] overflow-y-auto">
           <div className="flex items-center justify-center p-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
           </div>
@@ -143,8 +142,8 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="pb-4">
+      <DialogContent className="max-w-[95vw] w-full max-h-[95vh] overflow-y-auto p-6">
+        <DialogHeader className="pb-6">
           <DialogTitle className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span className="text-xl font-semibold">
@@ -156,7 +155,7 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
         </DialogHeader>
 
         {/* Quick Actions - Most Important at Top */}
-        <div className="mb-4">
+        <div className="mb-6">
           <QuickActions
             order={order}
             selectedStatus={selectedStatus}
@@ -166,16 +165,16 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
           />
         </div>
 
-        {/* Main Content Grid - 5 equal columns */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-          {/* Column 1 - Order Summary */}
-          <div className="space-y-4">
+        {/* Main Content Grid - Responsive layout */}
+        <div className="grid grid-cols-1 xl:grid-cols-6 lg:grid-cols-4 md:grid-cols-2 gap-6">
+          {/* Column 1 - Order Summary & Customer */}
+          <div className="space-y-6">
             <OrderSummary order={order} />
             <CustomerDetails order={order} />
           </div>
 
           {/* Column 2 - Status Management */}
-          <div className="space-y-4">
+          <div className="space-y-6">
             <StatusAndNotes
               selectedStatus={selectedStatus}
               setSelectedStatus={setSelectedStatus}
@@ -188,12 +187,12 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
           </div>
 
           {/* Column 3 - Change History */}
-          <div className="space-y-4">
+          <div className="space-y-6">
             <ChangeHistory orderId={orderId} />
           </div>
 
           {/* Column 4 - Files and Invoices */}
-          <div className="space-y-4">
+          <div className="space-y-6">
             <FilesAndInvoices
               order={order}
               orderId={orderId}
@@ -201,8 +200,8 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
             />
           </div>
 
-          {/* Column 5 - Final Files */}
-          <div className="space-y-4">
+          {/* Column 5 & 6 - Final Files Upload (takes 2 columns on xl screens) */}
+          <div className="xl:col-span-2 space-y-6">
             <FinalFilesUpload
               order={order}
               orderId={orderId}
