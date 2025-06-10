@@ -21,6 +21,12 @@ interface CompanyDataStepProps {
   loading?: boolean;
 }
 
+const countries = [
+  { value: 'Deutschland', label: 'Deutschland' },
+  { value: 'Österreich', label: 'Österreich' },
+  { value: 'Schweiz', label: 'Schweiz' },
+];
+
 const CompanyDataStep = ({ data, updateData, nextStep, prevStep }: CompanyDataStepProps) => {
   const [errors, setErrors] = useState<string[]>([]);
   const { toast } = useToast();
@@ -37,35 +43,36 @@ const CompanyDataStep = ({ data, updateData, nextStep, prevStep }: CompanyDataSt
   };
 
   const handleNext = () => {
-    // Validate all company data
-    const validation = validateCompanyData({
-      company: data.company,
-      address: data.address,
-      vatId: data.vatId,
-      phone: data.phone,
-    });
+    const validationErrors: string[] = [];
 
-    if (!validation.valid) {
-      setErrors(validation.errors);
-      toast({
-        title: 'Validierungsfehler',
-        description: validation.errors.join(', '),
-        variant: 'destructive',
+    // Required field validation
+    if (!data.salutation) validationErrors.push('Anrede ist erforderlich');
+    if (!data.firstName) validationErrors.push('Vorname ist erforderlich');
+    if (!data.lastName) validationErrors.push('Nachname ist erforderlich');
+    if (!data.street) validationErrors.push('Straße ist erforderlich');
+    if (!data.city) validationErrors.push('Stadt ist erforderlich');
+    if (!data.postalCode) validationErrors.push('Postleitzahl ist erforderlich');
+    if (!data.country) validationErrors.push('Land ist erforderlich');
+
+    // Company data validation (if provided)
+    if (data.company || data.phone) {
+      const validation = validateCompanyData({
+        company: data.company,
+        address: `${data.street}, ${data.city}, ${data.postalCode}, ${data.country}`,
+        vatId: data.vatId,
+        phone: data.phone,
       });
-      return;
+
+      if (!validation.valid) {
+        validationErrors.push(...validation.errors);
+      }
     }
 
-    // Additional required field validation
-    if (!data.salutation || !data.firstName || !data.lastName) {
-      const missingFields = [];
-      if (!data.salutation) missingFields.push('Anrede');
-      if (!data.firstName) missingFields.push('Vorname');
-      if (!data.lastName) missingFields.push('Nachname');
-      
-      setErrors([`Pflichtfelder fehlen: ${missingFields.join(', ')}`]);
+    if (validationErrors.length > 0) {
+      setErrors(validationErrors);
       toast({
-        title: 'Pflichtfelder fehlen',
-        description: `Bitte füllen Sie folgende Felder aus: ${missingFields.join(', ')}`,
+        title: 'Validierungsfehler',
+        description: validationErrors.join(', '),
         variant: 'destructive',
       });
       return;
@@ -147,6 +154,64 @@ const CompanyDataStep = ({ data, updateData, nextStep, prevStep }: CompanyDataSt
           </div>
         </div>
 
+        {/* Address Information */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium text-foreground">Adresse *</h3>
+          
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <Label htmlFor="street">Straße und Hausnummer *</Label>
+              <Input
+                id="street"
+                value={data.street}
+                onChange={(e) => handleInputChange('street', e.target.value)}
+                placeholder="Musterstraße 123"
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="postalCode">Postleitzahl *</Label>
+                <Input
+                  id="postalCode"
+                  value={data.postalCode}
+                  onChange={(e) => handleInputChange('postalCode', e.target.value)}
+                  placeholder="12345"
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="city">Stadt *</Label>
+                <Input
+                  id="city"
+                  value={data.city}
+                  onChange={(e) => handleInputChange('city', e.target.value)}
+                  placeholder="Musterstadt"
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="country">Land *</Label>
+                <Select value={data.country} onValueChange={(value) => handleInputChange('country', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Land wählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {countries.map((country) => (
+                      <SelectItem key={country.value} value={country.value}>
+                        {country.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Company Information */}
         <div className="space-y-4">
           <h3 className="text-lg font-medium text-foreground">Unternehmen</h3>
@@ -169,17 +234,6 @@ const CompanyDataStep = ({ data, updateData, nextStep, prevStep }: CompanyDataSt
               value={data.phone}
               onChange={(e) => handleInputChange('phone', e.target.value)}
               placeholder="+49 123 456789"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="address">Adresse</Label>
-            <Textarea
-              id="address"
-              value={data.address}
-              onChange={(e) => handleInputChange('address', e.target.value)}
-              placeholder="Straße, Hausnummer, PLZ, Ort"
-              rows={3}
             />
           </div>
 

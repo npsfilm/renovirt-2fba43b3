@@ -53,7 +53,19 @@ const ProfileForm = () => {
   useEffect(() => {
     if (existingProfile) {
       // Parse address if it exists
-      const addressParts = existingProfile.address ? existingProfile.address.split(', ') : ['', '', '', ''];
+      let addressParts = ['', '', '', 'Deutschland'];
+      if (existingProfile.address) {
+        const parts = existingProfile.address.split(', ');
+        if (parts.length >= 4) {
+          addressParts = [parts[0], parts[1], parts[2], parts[3]];
+        } else if (parts.length === 3) {
+          addressParts = [parts[0], parts[1], parts[2], 'Deutschland'];
+        } else if (parts.length === 2) {
+          addressParts = [parts[0], parts[1], '', 'Deutschland'];
+        } else if (parts.length === 1) {
+          addressParts = [parts[0], '', '', 'Deutschland'];
+        }
+      }
       
       setFormData({
         role: existingProfile.role || '',
@@ -108,7 +120,7 @@ const ProfileForm = () => {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center">
-          <User className="w-5 h-5 mr-2 text-blue-600" />
+          <User className="w-5 h-5 mr-2 text-primary" />
           Profil bearbeiten
         </CardTitle>
       </CardHeader>

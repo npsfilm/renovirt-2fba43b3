@@ -20,7 +20,10 @@ export interface OnboardingData {
   lastName: string;
   company: string;
   phone: string;
-  address: string;
+  street: string;
+  city: string;
+  postalCode: string;
+  country: string;
   vatId: string;
   source: string;
 }
@@ -36,7 +39,10 @@ const Onboarding = () => {
     lastName: '',
     company: '',
     phone: '',
-    address: '',
+    street: '',
+    city: '',
+    postalCode: '',
+    country: 'Deutschland',
     vatId: '',
     source: '',
   });
@@ -159,6 +165,9 @@ const Onboarding = () => {
       
       console.log('Valid session found, proceeding with profile save');
       
+      // Combine address fields for storage
+      const address = `${onboardingData.street}, ${onboardingData.city}, ${onboardingData.postalCode}, ${onboardingData.country}`;
+      
       await saveCustomerProfile({
         role: onboardingData.role,
         salutation: onboardingData.salutation,
@@ -166,7 +175,7 @@ const Onboarding = () => {
         lastName: onboardingData.lastName,
         company: onboardingData.company,
         phone: onboardingData.phone,
-        address: onboardingData.address,
+        address: address,
         vatId: onboardingData.vatId,
         dataSource: onboardingData.source,
       });
