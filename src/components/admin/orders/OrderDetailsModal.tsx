@@ -6,11 +6,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import OrderStatusBadge from './OrderStatusBadge';
 import { downloadFile } from '@/utils/fileDownloadService';
-import OrderInfo from './OrderInfo';
-import StatusManager from './StatusManager';
-import OrderFilesList from './OrderFilesList';
-import InvoiceUpload from './InvoiceUpload';
-import RemarksHistory from './RemarksHistory';
+import QuickActions from './QuickActions';
+import OrderSummary from './OrderSummary';
+import StatusAndNotes from './StatusAndNotes';
+import FilesAndInvoices from './FilesAndInvoices';
+import CustomerDetails from './CustomerDetails';
 import type { ExtendedOrder } from '@/types/database';
 
 interface OrderDetailsModalProps {
@@ -129,7 +129,7 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
   if (isLoading) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
           <div className="flex items-center justify-center p-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
           </div>
@@ -140,20 +140,37 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            Bestellung #{order?.order_number || order?.id.slice(0, 8)}
-            <OrderStatusBadge status={order?.status || 'pending'} />
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="pb-4">
+          <DialogTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-xl font-semibold">
+                #{order?.order_number || order?.id.slice(0, 8)}
+              </span>
+              <OrderStatusBadge status={order?.status || 'pending'} />
+            </div>
           </DialogTitle>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left column */}
-          <div className="space-y-6">
-            <OrderInfo order={order} />
-            
-            <StatusManager
+        {/* Quick Actions - Most Important at Top */}
+        <QuickActions
+          order={order}
+          selectedStatus={selectedStatus}
+          onStatusUpdate={handleStatusUpdate}
+          isUpdating={updateStatusMutation.isPending}
+        />
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+          {/* Left Column - Order Summary (Primary Info) */}
+          <div className="lg:col-span-1 space-y-4">
+            <OrderSummary order={order} />
+            <CustomerDetails order={order} />
+          </div>
+
+          {/* Center Column - Status Management */}
+          <div className="lg:col-span-1 space-y-4">
+            <StatusAndNotes
               selectedStatus={selectedStatus}
               setSelectedStatus={setSelectedStatus}
               notes={notes}
@@ -163,20 +180,11 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
             />
           </div>
 
-          {/* Right column */}
-          <div className="space-y-6">
-            <InvoiceUpload 
-              orderId={orderId} 
-              existingInvoices={order?.order_invoices || []} 
-            />
-            
-            <RemarksHistory orderId={orderId} />
-          </div>
-
-          {/* Full width sections */}
-          <div className="lg:col-span-2 space-y-6">
-            <OrderFilesList
+          {/* Right Column - Files and Invoices */}
+          <div className="lg:col-span-1 space-y-4">
+            <FilesAndInvoices
               order={order}
+              orderId={orderId}
               onFileDownload={handleFileDownload}
             />
           </div>
