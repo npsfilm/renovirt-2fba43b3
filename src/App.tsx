@@ -16,6 +16,7 @@ import Auth from '@/pages/Auth';
 import OrderFlow from '@/pages/OrderFlow';
 import Referrals from '@/pages/Referrals';
 import Admin from '@/pages/Admin';
+import AdminAuth from '@/pages/AdminAuth';
 import AdminDashboard from '@/pages/AdminDashboard';
 import AdminOrders from '@/pages/AdminOrders';
 import AdminCustomers from '@/pages/AdminCustomers';
@@ -47,6 +48,9 @@ function App() {
               <Route path="/auth" element={<Auth />} />
               <Route path="/order-flow" element={<OrderFlow />} />
               <Route path="/referrals" element={<Referrals />} />
+
+              {/* Admin Authentication Route */}
+              <Route path="/admin-auth" element={<AdminAuth />} />
 
               {/* Admin Routes */}
               <Route path="/admin" element={<Admin />} />
