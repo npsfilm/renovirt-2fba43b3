@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Bot, MessageCircle, Sparkles } from 'lucide-react';
+import { Bot, MessageCircle } from 'lucide-react';
 import HelpSearchBar from './HelpSearchBar';
 import SearchResult from './SearchResult';
 import SupportContactModal from './SupportContactModal';
@@ -30,46 +30,40 @@ const IntelligentHelpSearch = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-blue-900">
-            <Bot className="w-6 h-6" />
-            <Sparkles className="w-5 h-5" />
-            Intelligente Hilfe-Suche
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-blue-800 mb-4">
-            Beschreiben Sie Ihr Problem und erhalten Sie sofortige, maßgeschneiderte Hilfe von unserem AI-Assistenten.
+      {/* Clean Hero Section */}
+      <div className="text-center space-y-6 py-8">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
+          <Bot className="w-8 h-8 text-primary" />
+        </div>
+        
+        <div className="space-y-2">
+          <h1 className="text-3xl font-light text-foreground">
+            Intelligente Hilfe
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Beschreiben Sie Ihr Anliegen und erhalten Sie sofort eine maßgeschneiderte Antwort
           </p>
-          <div className="flex items-center gap-2 text-sm text-blue-700">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span>Sofortige Antworten • Kennt alle unsere Services • Verfügbar 24/7</span>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* Search Bar */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Wie können wir Ihnen helfen?</CardTitle>
-        </CardHeader>
-        <CardContent>
+      {/* Search Interface */}
+      <Card className="border-0 shadow-sm bg-card/50">
+        <CardContent className="p-8">
           <HelpSearchBar 
             onSearch={performSearch}
             isLoading={isLoading}
+            placeholder="Beschreiben Sie Ihr Problem oder Ihre Frage..."
           />
           
           {searchState !== 'idle' && (
-            <div className="mt-4">
+            <div className="mt-6 flex justify-center">
               <Button 
-                variant="outline" 
+                variant="ghost" 
                 size="sm" 
                 onClick={resetSearch}
-                className="text-xs"
+                className="text-muted-foreground hover:text-foreground"
               >
-                Neue Suche starten
+                Neue Suche
               </Button>
             </div>
           )}
@@ -78,40 +72,40 @@ const IntelligentHelpSearch = () => {
 
       {/* Search Results */}
       {searchState === 'results' && searchResult && (
-        <SearchResult
-          query={searchQuery}
-          result={searchResult}
-          onFeedback={markAsHelpful}
-          isHelpful={isHelpful}
-        />
+        <div className="animate-in fade-in-50 duration-500">
+          <SearchResult
+            query={searchQuery}
+            result={searchResult}
+            onFeedback={markAsHelpful}
+            isHelpful={isHelpful}
+          />
+        </div>
       )}
 
-      {/* Support Contact Option */}
+      {/* Support Contact - Only when needed */}
       {canContactSupport && (
-        <Card className="border-blue-200 bg-blue-50">
-          <CardContent className="p-6">
-            <div className="text-center space-y-4">
-              <div className="flex justify-center">
-                <MessageCircle className="w-12 h-12 text-blue-600" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-blue-900 mb-2">
+        <div className="animate-in fade-in-50 duration-500">
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="p-8 text-center space-y-4">
+              <MessageCircle className="w-12 h-12 mx-auto text-primary" />
+              <div className="space-y-2">
+                <h3 className="text-lg font-medium text-foreground">
                   Benötigen Sie persönliche Unterstützung?
                 </h3>
-                <p className="text-blue-800 text-sm mb-4">
-                  Unser Support-Team steht bereit, um Ihnen individuell zu helfen.
+                <p className="text-muted-foreground">
+                  Unser Support-Team hilft Ihnen gerne weiter
                 </p>
-                <Button 
-                  onClick={handleSupportContact}
-                  className="bg-blue-600 hover:bg-blue-700"
-                >
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  Support kontaktieren
-                </Button>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+              <Button 
+                onClick={handleSupportContact}
+                className="mt-4"
+                size="lg"
+              >
+                Support kontaktieren
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       )}
 
       {/* Support Modal */}
