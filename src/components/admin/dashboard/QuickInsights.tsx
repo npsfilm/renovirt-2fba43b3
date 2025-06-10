@@ -26,7 +26,7 @@ const QuickInsights = ({ onOrderFilterChange }: QuickInsightsProps) => {
       
       const { data: todayOrders, error: todayError } = await supabase
         .from('orders')
-        .select('total_price, payment_status, status, created_at, updated_at')
+        .select('id, total_price, payment_status, status, created_at, updated_at')
         .gte('created_at', today.toISOString())
         .neq('payment_flow_status', 'draft');
       
@@ -36,7 +36,7 @@ const QuickInsights = ({ onOrderFilterChange }: QuickInsightsProps) => {
       
       const { data: yesterdayOrders, error: yesterdayError } = await supabase
         .from('orders')
-        .select('total_price, payment_status, status, created_at, updated_at')
+        .select('id, total_price, payment_status, status, created_at, updated_at')
         .gte('created_at', yesterday.toISOString())
         .lt('created_at', today.toISOString())
         .neq('payment_flow_status', 'draft');
