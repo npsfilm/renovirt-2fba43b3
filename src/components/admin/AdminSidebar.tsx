@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { Home, FileText, Users, Settings, LogOut, Package, TrendingUp, Plus, UserCheck, HelpCircle } from 'lucide-react';
+import { Home, FileText, Users, Settings, LogOut, TrendingUp, Plus, UserCheck, HelpCircle } from 'lucide-react';
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
@@ -25,7 +25,6 @@ const AdminSidebar = () => {
     { title: 'Kunden', icon: Users, url: '/admin/customers' },
     { title: 'Hilfestatistik', icon: HelpCircle, url: '/admin/help-analytics' },
     { title: 'Analytics', icon: TrendingUp, url: '/admin/analytics' },
-    { title: 'Pakete', icon: Package, url: '/admin/packages' },
     { title: 'Add-ons', icon: Plus, url: '/admin/addons' },
     { title: 'Benutzer', icon: UserCheck, url: '/admin/users' },
     { title: 'Einstellungen', icon: Settings, url: '/admin/settings' }
