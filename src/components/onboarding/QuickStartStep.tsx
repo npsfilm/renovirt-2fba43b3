@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { OnboardingData } from '@/pages/Onboarding';
 import { Upload, Eye, HelpCircle, CheckCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface QuickStartStepProps {
   data: OnboardingData;
@@ -16,8 +17,18 @@ interface QuickStartStepProps {
 }
 
 const QuickStartStep = ({ data, prevStep, completeOnboarding, loading }: QuickStartStepProps) => {
+  const navigate = useNavigate();
+
   const handleStartUploading = () => {
     completeOnboarding();
+  };
+
+  const handleViewExamples = () => {
+    navigate('/examples');
+  };
+
+  const handleVisitHelp = () => {
+    navigate('/help');
   };
 
   return (
@@ -50,9 +61,9 @@ const QuickStartStep = ({ data, prevStep, completeOnboarding, loading }: QuickSt
         </button>
 
         <button
-          onClick={handleStartUploading}
+          onClick={handleViewExamples}
           disabled={loading}
-          className="w-full p-6 rounded-lg border-2 border-border hover:bg-accent hover:border-accent-foreground/20 transition-all text-left"
+          className="w-full p-6 rounded-lg border-2 border-border hover:bg-primary/5 hover:border-primary/30 transition-all text-left"
         >
           <div className="flex items-center space-x-4">
             <div className="w-14 h-14 bg-muted rounded-lg flex items-center justify-center text-muted-foreground">
@@ -66,9 +77,9 @@ const QuickStartStep = ({ data, prevStep, completeOnboarding, loading }: QuickSt
         </button>
 
         <button
-          onClick={handleStartUploading}
+          onClick={handleVisitHelp}
           disabled={loading}
-          className="w-full p-6 rounded-lg border-2 border-border hover:bg-accent hover:border-accent-foreground/20 transition-all text-left"
+          className="w-full p-6 rounded-lg border-2 border-border hover:bg-primary/5 hover:border-primary/30 transition-all text-left"
         >
           <div className="flex items-center space-x-4">
             <div className="w-14 h-14 bg-muted rounded-lg flex items-center justify-center text-muted-foreground">
@@ -80,31 +91,6 @@ const QuickStartStep = ({ data, prevStep, completeOnboarding, loading }: QuickSt
             </div>
           </div>
         </button>
-      </div>
-
-      {/* Summary */}
-      <div className="bg-accent/50 rounded-lg p-6 mb-8">
-        <h3 className="font-semibold text-foreground mb-4">Ihre Kontodaten im Überblick:</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Rolle:</span>
-            <span className="font-medium text-foreground">{data.role}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Name:</span>
-            <span className="font-medium text-foreground">{data.firstName} {data.lastName}</span>
-          </div>
-          {data.company && (
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Firma:</span>
-              <span className="font-medium text-foreground">{data.company}</span>
-            </div>
-          )}
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Quelle:</span>
-            <span className="font-medium text-foreground">{data.source}</span>
-          </div>
-        </div>
       </div>
 
       <div className="flex justify-between">

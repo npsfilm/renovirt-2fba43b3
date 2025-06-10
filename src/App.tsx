@@ -16,6 +16,7 @@ import Auth from '@/pages/Auth';
 import OrderFlow from '@/pages/OrderFlow';
 import Referrals from '@/pages/Referrals';
 import Guidelines from '@/pages/Guidelines';
+import Examples from '@/pages/Examples';
 import Admin from '@/pages/Admin';
 import AdminAuth from '@/pages/AdminAuth';
 import AdminDashboard from '@/pages/AdminDashboard';
@@ -49,6 +50,7 @@ function App() {
               <Route path="/auth" element={<Auth />} />
               <Route path="/email-verification" element={<EmailVerification />} />
               <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/examples" element={<Examples />} />
               <Route path="/order-flow" element={<OrderFlow />} />
               <Route path="/referrals" element={<Referrals />} />
               <Route path="/guidelines" element={<Guidelines />} />
