@@ -44,6 +44,15 @@ export interface ExtendedOrder {
     storage_path: string;
     created_at: string;
   }>;
+  order_invoices?: Array<{
+    id: string;
+    file_name: string;
+    file_size: number;
+    file_type: string;
+    storage_path: string;
+    uploaded_by_name: string;
+    created_at: string;
+  }>;
   packages?: {
     name: string;
     description?: string;
