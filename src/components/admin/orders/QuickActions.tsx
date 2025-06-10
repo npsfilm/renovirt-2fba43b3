@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Clock, AlertCircle, Package } from 'lucide-react';
+import { CheckCircle, Clock, AlertCircle, Package, Euro } from 'lucide-react';
 import type { ExtendedOrder } from '@/types/database';
 
 interface QuickActionsProps {
@@ -44,16 +44,22 @@ const QuickActions = ({ order, selectedStatus, setSelectedStatus, onStatusUpdate
   };
 
   const quickActions = getQuickActions();
+  const showPaymentButton = order?.status === 'completed' && order?.payment_status !== 'paid';
 
   const handleQuickAction = (status: string) => {
     setSelectedStatus(status);
     onStatusUpdate();
   };
 
-  if (quickActions.length === 0) {
+  const handleMarkAsPaid = () => {
+    setSelectedStatus('delivered');
+    onStatusUpdate();
+  };
+
+  if (quickActions.length === 0 && !showPaymentButton) {
     return (
-      <Card className="border-2 border-green-200 bg-green-50">
-        <CardContent className="p-3">
+      <Card className="border-2 border-green-200 bg-green-50 max-w-xs">
+        <CardContent className="p-2">
           <div className="text-center">
             <Badge variant="outline" className="bg-green-100 text-green-800 text-xs">
               Bestellung abgeschlossen
@@ -65,14 +71,14 @@ const QuickActions = ({ order, selectedStatus, setSelectedStatus, onStatusUpdate
   }
 
   return (
-    <Card className="border-2 border-blue-200 bg-blue-50">
-      <CardContent className="p-3">
+    <Card className="border-2 border-blue-200 bg-blue-50 max-w-xs">
+      <CardContent className="p-2">
         <div className="space-y-2">
           <div>
             <h3 className="font-semibold text-sm text-gray-700">Schnellaktionen</h3>
-            <p className="text-xs text-gray-600">Häufig verwendete Statusänderungen</p>
+            <p className="text-xs text-gray-600">Häufig verwendete Aktionen</p>
           </div>
-          <div className="grid grid-cols-1 gap-2">
+          <div className="space-y-1">
             {quickActions.map((action) => {
               const Icon = action.icon;
               return (
@@ -82,13 +88,26 @@ const QuickActions = ({ order, selectedStatus, setSelectedStatus, onStatusUpdate
                   variant={action.variant as any}
                   onClick={() => handleQuickAction(action.status)}
                   disabled={isUpdating}
-                  className="flex items-center gap-2 text-xs h-8 justify-start"
+                  className="flex items-center gap-2 text-xs h-7 w-full justify-start"
                 >
                   <Icon className="w-3 h-3 flex-shrink-0" />
-                  <span className="truncate">{action.label}</span>
+                  <span className="truncate text-left">{action.label}</span>
                 </Button>
               );
             })}
+            
+            {showPaymentButton && (
+              <Button
+                size="sm"
+                variant="default"
+                onClick={handleMarkAsPaid}
+                disabled={isUpdating}
+                className="flex items-center gap-2 text-xs h-7 w-full justify-start bg-green-600 hover:bg-green-700"
+              >
+                <Euro className="w-3 h-3 flex-shrink-0" />
+                <span className="truncate text-left">Als bezahlt markieren</span>
+              </Button>
+            )}
           </div>
         </div>
       </CardContent>
