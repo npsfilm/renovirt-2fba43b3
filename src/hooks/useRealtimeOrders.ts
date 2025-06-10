@@ -17,11 +17,15 @@ export const useRealtimeOrders = () => {
           table: 'orders'
         },
         () => {
+          console.log('Orders table changed - invalidating queries');
           // Invalidate all order-related queries when orders change
           queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
           queryClient.invalidateQueries({ queryKey: ['orders'] });
           queryClient.invalidateQueries({ queryKey: ['order-details'] });
           queryClient.invalidateQueries({ queryKey: ['order-analytics'] });
+          queryClient.invalidateQueries({ queryKey: ['quick-insights'] }); // Wichtig für Tagesumsatz
+          queryClient.invalidateQueries({ queryKey: ['priority-orders'] });
+          queryClient.invalidateQueries({ queryKey: ['admin-analytics'] });
         }
       )
       .on(

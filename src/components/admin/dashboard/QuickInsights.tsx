@@ -22,18 +22,29 @@ const QuickInsights = ({ onOrderFilterChange }: QuickInsightsProps) => {
       const yesterday = new Date(today);
       yesterday.setDate(yesterday.getDate() - 1);
       
-      const { data: todayOrders } = await supabase
+      console.log('Fetching insights for today:', today.toISOString());
+      console.log('Fetching insights for yesterday:', yesterday.toISOString());
+      
+      const { data: todayOrders, error: todayError } = await supabase
         .from('orders')
-        .select('total_price, payment_status')
+        .select('total_price, payment_status, status')
         .gte('created_at', today.toISOString())
         .neq('payment_flow_status', 'draft');
       
-      const { data: yesterdayOrders } = await supabase
+      if (todayError) {
+        console.error('Error fetching today orders:', todayError);
+      }
+      
+      const { data: yesterdayOrders, error: yesterdayError } = await supabase
         .from('orders')
-        .select('total_price, payment_status')
+        .select('total_price, payment_status, status')
         .gte('created_at', yesterday.toISOString())
         .lt('created_at', today.toISOString())
         .neq('payment_flow_status', 'draft');
+      
+      if (yesterdayError) {
+        console.error('Error fetching yesterday orders:', yesterdayError);
+      }
       
       // Get pending orders that need attention
       const { data: urgentOrders } = await supabase
@@ -53,20 +64,36 @@ const QuickInsights = ({ onOrderFilterChange }: QuickInsightsProps) => {
         .lt('created_at', twoDaysAgo.toISOString())
         .neq('payment_flow_status', 'draft');
       
-      const todayRevenue = todayOrders?.reduce((sum, order) => 
-        sum + (order.payment_status === 'paid' ? parseFloat(order.total_price.toString()) : 0), 0
-      ) || 0;
+      // Calculate revenue more comprehensively - consider both payment_status and order status
+      const todayRevenue = todayOrders?.reduce((sum, order) => {
+        const isRevenueCounted = order.payment_status === 'paid' || 
+                                 order.status === 'delivered' || 
+                                 order.status === 'completed';
+        const amount = isRevenueCounted ? parseFloat(order.total_price.toString()) : 0;
+        console.log(`Order revenue: ${amount}, status: ${order.status}, payment: ${order.payment_status}`);
+        return sum + amount;
+      }, 0) || 0;
       
-      const yesterdayRevenue = yesterdayOrders?.reduce((sum, order) => 
-        sum + (order.payment_status === 'paid' ? parseFloat(order.total_price.toString()) : 0), 0
-      ) || 0;
+      const yesterdayRevenue = yesterdayOrders?.reduce((sum, order) => {
+        const isRevenueCounted = order.payment_status === 'paid' || 
+                                 order.status === 'delivered' || 
+                                 order.status === 'completed';
+        return sum + (isRevenueCounted ? parseFloat(order.total_price.toString()) : 0);
+      }, 0) || 0;
       
       const revenueTrend = yesterdayRevenue > 0 
         ? ((todayRevenue - yesterdayRevenue) / yesterdayRevenue) * 100 
-        : 0;
+        : todayRevenue > 0 ? 100 : 0;
       
       const revisionCount = urgentOrders?.filter(o => o.status === 'revision').length || 0;
       const pendingCount = urgentOrders?.filter(o => o.status === 'pending').length || 0;
+      
+      console.log('Insights calculated:', {
+        todayOrders: todayOrders?.length || 0,
+        todayRevenue,
+        yesterdayRevenue,
+        revenueTrend
+      });
       
       return {
         todayOrders: todayOrders?.length || 0,
@@ -78,7 +105,8 @@ const QuickInsights = ({ onOrderFilterChange }: QuickInsightsProps) => {
         overdueCount: overdueOrders?.length || 0,
       };
     },
-    refetchInterval: 60000,
+    refetchInterval: 30000, // Verkürzt auf 30 Sekunden für häufigere Updates
+    staleTime: 10000, // Daten sind 10 Sekunden lang "frisch"
   });
 
   if (isLoading) {
@@ -97,7 +125,7 @@ const QuickInsights = ({ onOrderFilterChange }: QuickInsightsProps) => {
 
   const ordersTrend = insights?.yesterdayOrders 
     ? ((insights.todayOrders - insights.yesterdayOrders) / insights.yesterdayOrders) * 100 
-    : 0;
+    : insights?.todayOrders > 0 ? 100 : 0;
 
   const handleCardClick = (filter: string) => {
     if (onOrderFilterChange) {
@@ -145,11 +173,11 @@ const QuickInsights = ({ onOrderFilterChange }: QuickInsightsProps) => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold text-green-600">
-                €{insights?.todayRevenue?.toFixed(0) || 0}
+                €{insights?.todayRevenue?.toFixed(0) || '0'}
               </p>
               <p className="text-sm text-gray-600">Tagesumsatz</p>
               <p className="text-xs text-gray-500 mt-1">
-                Bezahlte Aufträge von heute
+                Bezahlte & abgeschlossene Aufträge
               </p>
             </div>
             <div className="flex flex-col items-end">
@@ -157,7 +185,7 @@ const QuickInsights = ({ onOrderFilterChange }: QuickInsightsProps) => {
               {insights?.revenueTrend !== 0 && (
                 <Badge variant={insights?.revenueTrend > 0 ? "default" : "secondary"} className="text-xs">
                   {insights?.revenueTrend > 0 ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingDown className="w-3 h-3 mr-1" />}
-                  {Math.abs(insights?.revenueTrend).toFixed(0)}%
+                  {Math.abs(insights?.revenueTrend || 0).toFixed(0)}%
                 </Badge>
               )}
             </div>
