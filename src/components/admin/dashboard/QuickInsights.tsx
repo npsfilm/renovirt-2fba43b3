@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -27,7 +26,7 @@ const QuickInsights = ({ onOrderFilterChange }: QuickInsightsProps) => {
       
       const { data: todayOrders, error: todayError } = await supabase
         .from('orders')
-        .select('total_price, payment_status, status')
+        .select('total_price, payment_status, status, created_at, updated_at')
         .gte('created_at', today.toISOString())
         .neq('payment_flow_status', 'draft');
       
@@ -37,7 +36,7 @@ const QuickInsights = ({ onOrderFilterChange }: QuickInsightsProps) => {
       
       const { data: yesterdayOrders, error: yesterdayError } = await supabase
         .from('orders')
-        .select('total_price, payment_status, status')
+        .select('total_price, payment_status, status, created_at, updated_at')
         .gte('created_at', yesterday.toISOString())
         .lt('created_at', today.toISOString())
         .neq('payment_flow_status', 'draft');
@@ -64,13 +63,30 @@ const QuickInsights = ({ onOrderFilterChange }: QuickInsightsProps) => {
         .lt('created_at', twoDaysAgo.toISOString())
         .neq('payment_flow_status', 'draft');
       
-      // Calculate revenue more comprehensively - consider both payment_status and order status
+      // Calculate revenue - include orders that are paid OR have been delivered/completed
+      // Also include orders that were updated today (status changes)
       const todayRevenue = todayOrders?.reduce((sum, order) => {
-        const isRevenueCounted = order.payment_status === 'paid' || 
-                                 order.status === 'delivered' || 
-                                 order.status === 'completed';
-        const amount = isRevenueCounted ? parseFloat(order.total_price.toString()) : 0;
-        console.log(`Order revenue: ${amount}, status: ${order.status}, payment: ${order.payment_status}`);
+        const orderDate = new Date(order.created_at);
+        const updateDate = new Date(order.updated_at);
+        const isTodaysOrder = orderDate >= today;
+        const isTodaysUpdate = updateDate >= today;
+        
+        // Count revenue if order was created today OR updated today (status change)
+        const shouldCount = (isTodaysOrder || isTodaysUpdate) && 
+                           (order.payment_status === 'paid' || 
+                            order.status === 'delivered' || 
+                            order.status === 'completed');
+        
+        const amount = shouldCount ? parseFloat(order.total_price.toString()) : 0;
+        console.log(`Order revenue calculation:`, {
+          orderId: order.id?.slice(0, 8),
+          amount,
+          status: order.status,
+          payment: order.payment_status,
+          created: orderDate.toLocaleString(),
+          updated: updateDate.toLocaleString(),
+          shouldCount
+        });
         return sum + amount;
       }, 0) || 0;
       
@@ -105,8 +121,10 @@ const QuickInsights = ({ onOrderFilterChange }: QuickInsightsProps) => {
         overdueCount: overdueOrders?.length || 0,
       };
     },
-    refetchInterval: 30000, // Verkürzt auf 30 Sekunden für häufigere Updates
-    staleTime: 10000, // Daten sind 10 Sekunden lang "frisch"
+    refetchInterval: 10000, // Verkürzt auf 10 Sekunden für häufigere Updates
+    staleTime: 5000, // Daten sind nur 5 Sekunden lang "frisch"
+    refetchOnWindowFocus: true, // Aktualisierung beim Fensterfokus
+    refetchOnMount: true, // Aktualisierung beim Mount
   });
 
   if (isLoading) {

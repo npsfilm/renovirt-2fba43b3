@@ -16,8 +16,8 @@ export const useRealtimeOrders = () => {
           schema: 'public',
           table: 'orders'
         },
-        () => {
-          console.log('Orders table changed - invalidating queries');
+        (payload) => {
+          console.log('Orders table changed - invalidating queries', payload);
           // Invalidate all order-related queries when orders change
           queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
           queryClient.invalidateQueries({ queryKey: ['orders'] });
@@ -26,6 +26,9 @@ export const useRealtimeOrders = () => {
           queryClient.invalidateQueries({ queryKey: ['quick-insights'] }); // Wichtig für Tagesumsatz
           queryClient.invalidateQueries({ queryKey: ['priority-orders'] });
           queryClient.invalidateQueries({ queryKey: ['admin-analytics'] });
+          
+          // Force refetch für sofortige Updates
+          queryClient.refetchQueries({ queryKey: ['quick-insights'] });
         }
       )
       .on(
