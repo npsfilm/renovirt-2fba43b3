@@ -35,8 +35,56 @@ export const createOrderZip = async (
       throw new Error('Fehler beim Erstellen des ZIP-Ordners');
     }
 
-    // Download all files and add them to the ZIP
-    const downloadPromises = files.map(async (file) => {
+    // Check if files exist first
+    const existenceChecks = files.map(async (file) => {
+      try {
+        const { data, error } = await supabase.storage
+          .from(bucketName)
+          .list(file.storage_path.split('/').slice(0, -1).join('/'), {
+            search: file.storage_path.split('/').pop()
+          });
+        
+        if (error) {
+          secureLog('File existence check failed:', { 
+            fileName: file.file_name, 
+            error: error.message,
+            storagePath: file.storage_path 
+          });
+          return { file, exists: false, error: error.message };
+        }
+        
+        const exists = data && data.length > 0;
+        secureLog('File existence check:', { 
+          fileName: file.file_name, 
+          exists,
+          foundFiles: data?.map(f => f.name) || []
+        });
+        
+        return { file, exists, error: null };
+      } catch (error) {
+        secureLog('File existence check error:', { 
+          fileName: file.file_name, 
+          error: error instanceof Error ? error.message : 'Unknown error' 
+        });
+        return { file, exists: false, error: 'Check failed' };
+      }
+    });
+
+    const existenceResults = await Promise.all(existenceChecks);
+    const existingFiles = existenceResults.filter(result => result.exists).map(result => result.file);
+    
+    secureLog('File existence results:', { 
+      total: files.length,
+      existing: existingFiles.length,
+      missing: files.length - existingFiles.length
+    });
+
+    if (existingFiles.length === 0) {
+      throw new Error('Keine der Dateien konnte im Storage gefunden werden. Möglicherweise wurden sie verschoben oder gelöscht.');
+    }
+
+    // Download existing files and add them to the ZIP
+    const downloadPromises = existingFiles.map(async (file) => {
       try {
         secureLog('Attempting to download file:', { 
           fileName: file.file_name, 
@@ -44,7 +92,6 @@ export const createOrderZip = async (
           bucketName 
         });
 
-        // Try downloading from the specified bucket
         const { data, error } = await supabase.storage
           .from(bucketName)
           .download(file.storage_path);
@@ -56,27 +103,6 @@ export const createOrderZip = async (
             storagePath: file.storage_path,
             bucketName
           });
-          
-          // Try alternative bucket if the primary fails
-          if (bucketName === 'order-images') {
-            secureLog('Trying alternative bucket: order-deliverables');
-            const { data: altData, error: altError } = await supabase.storage
-              .from('order-deliverables')
-              .download(file.storage_path);
-            
-            if (altError) {
-              secureLog('Alternative bucket also failed:', { 
-                fileName: file.file_name, 
-                error: altError.message 
-              });
-              return null;
-            }
-            
-            folder.file(file.file_name, altData);
-            secureLog('File downloaded from alternative bucket:', { fileName: file.file_name });
-            return file.file_name;
-          }
-          
           return null;
         }
 
@@ -104,12 +130,12 @@ export const createOrderZip = async (
 
     secureLog('Download results:', { 
       successful: successfulFiles.length, 
-      total: files.length,
+      total: existingFiles.length,
       successfulFiles 
     });
 
     if (successfulFiles.length === 0) {
-      throw new Error('Keine Dateien konnten heruntergeladen werden. Möglicherweise sind die Dateien nicht verfügbar oder der Storage-Bucket ist nicht korrekt konfiguriert.');
+      throw new Error('Keine Dateien konnten heruntergeladen werden, obwohl sie im Storage vorhanden zu sein scheinen.');
     }
 
     // Generate and download ZIP using native browser API
