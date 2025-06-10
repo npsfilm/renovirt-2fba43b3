@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, Users, ShoppingCart, chart-bar } from 'lucide-react';
+import { TrendingUp, Users, ShoppingCart, BarChart } from 'lucide-react';
 
 interface AdminMetricsProps {
   totalRevenue: number;
@@ -47,7 +47,7 @@ const AdminMetrics = ({ totalRevenue, totalOrders, newCustomers, avgOrderValue }
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Durchschnitt pro Bestellung</CardTitle>
-          <chart-bar className="h-4 w-4 text-muted-foreground" />
+          <BarChart className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">€{avgOrderValue.toFixed(2)}</div>
