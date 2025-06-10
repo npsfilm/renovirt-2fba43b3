@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -154,26 +155,22 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
           </DialogTitle>
         </DialogHeader>
 
-        {/* Quick Actions - Most Important at Top */}
-        <div className="mb-6">
-          <QuickActions
-            order={order}
-            selectedStatus={selectedStatus}
-            setSelectedStatus={setSelectedStatus}
-            onStatusUpdate={handleStatusUpdate}
-            isUpdating={updateStatusMutation.isPending}
-          />
-        </div>
-
-        {/* Main Content Grid - Responsive layout */}
-        <div className="grid grid-cols-1 xl:grid-cols-6 lg:grid-cols-4 md:grid-cols-2 gap-6">
-          {/* Column 1 - Order Summary & Customer */}
+        {/* Responsive Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Left Column - Quick Actions */}
           <div className="space-y-6">
+            <QuickActions
+              order={order}
+              selectedStatus={selectedStatus}
+              setSelectedStatus={setSelectedStatus}
+              onStatusUpdate={handleStatusUpdate}
+              isUpdating={updateStatusMutation.isPending}
+            />
             <OrderSummary order={order} />
             <CustomerDetails order={order} />
           </div>
 
-          {/* Column 2 - Status Management */}
+          {/* Middle Column - Status & Files */}
           <div className="space-y-6">
             <StatusAndNotes
               selectedStatus={selectedStatus}
@@ -184,15 +181,6 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
               isUpdating={updateStatusMutation.isPending}
               orderId={orderId}
             />
-          </div>
-
-          {/* Column 3 - Change History */}
-          <div className="space-y-6">
-            <ChangeHistory orderId={orderId} />
-          </div>
-
-          {/* Column 4 - Files and Invoices */}
-          <div className="space-y-6">
             <FilesAndInvoices
               order={order}
               orderId={orderId}
@@ -200,12 +188,17 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
             />
           </div>
 
-          {/* Column 5 & 6 - Final Files Upload (takes 2 columns on xl screens) */}
-          <div className="xl:col-span-2 space-y-6">
+          {/* Middle-Right Column - Final Files Upload */}
+          <div className="space-y-6">
             <FinalFilesUpload
               order={order}
               orderId={orderId}
             />
+          </div>
+
+          {/* Right Column - Chat-like Change History */}
+          <div className="space-y-6">
+            <ChangeHistory orderId={orderId} />
           </div>
         </div>
       </DialogContent>

@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Clock, AlertCircle, Package, Euro } from 'lucide-react';
+import { CheckCircle, Clock, AlertCircle, Package, Euro, X } from 'lucide-react';
 import type { ExtendedOrder } from '@/types/database';
 
 interface QuickActionsProps {
@@ -22,7 +22,7 @@ const QuickActions = ({ order, selectedStatus, setSelectedStatus, onStatusUpdate
       case 'pending':
         return [
           { status: 'processing', label: 'Bearbeitung starten', icon: Clock, variant: 'default' },
-          { status: 'cancelled', label: 'Stornieren', icon: AlertCircle, variant: 'destructive' }
+          { status: 'cancelled', label: 'Stornieren', icon: X, variant: 'destructive' }
         ];
       case 'processing':
         return [
@@ -36,7 +36,7 @@ const QuickActions = ({ order, selectedStatus, setSelectedStatus, onStatusUpdate
         ];
       case 'completed':
         return [
-          { status: 'delivered', label: 'Als bezahlt markieren', icon: Package, variant: 'default' }
+          { status: 'delivered', label: 'Als bezahlt markieren', icon: Euro, variant: 'default' }
         ];
       default:
         return [];
@@ -44,24 +44,21 @@ const QuickActions = ({ order, selectedStatus, setSelectedStatus, onStatusUpdate
   };
 
   const quickActions = getQuickActions();
-  const showPaymentButton = order?.status === 'completed' && order?.payment_status !== 'paid';
 
   const handleQuickAction = (status: string) => {
     setSelectedStatus(status);
-    onStatusUpdate();
+    // Kleine Verzögerung um sicherzustellen, dass der Status gesetzt wurde
+    setTimeout(() => {
+      onStatusUpdate();
+    }, 100);
   };
 
-  const handleMarkAsPaid = () => {
-    setSelectedStatus('delivered');
-    onStatusUpdate();
-  };
-
-  if (quickActions.length === 0 && !showPaymentButton) {
+  if (quickActions.length === 0) {
     return (
-      <Card className="border-2 border-green-200 bg-green-50 max-w-xs">
-        <CardContent className="p-2">
+      <Card className="border-2 border-green-200 bg-green-50">
+        <CardContent className="p-4">
           <div className="text-center">
-            <Badge variant="outline" className="bg-green-100 text-green-800 text-xs">
+            <Badge variant="outline" className="bg-green-100 text-green-800">
               Bestellung abgeschlossen
             </Badge>
           </div>
@@ -71,43 +68,30 @@ const QuickActions = ({ order, selectedStatus, setSelectedStatus, onStatusUpdate
   }
 
   return (
-    <Card className="border-2 border-blue-200 bg-blue-50 max-w-xs">
-      <CardContent className="p-2">
-        <div className="space-y-2">
+    <Card className="border-2 border-blue-200 bg-blue-50">
+      <CardContent className="p-4">
+        <div className="space-y-4">
           <div>
-            <h3 className="font-semibold text-sm text-gray-700">Schnellaktionen</h3>
-            <p className="text-xs text-gray-600">Häufig verwendete Aktionen</p>
+            <h3 className="font-semibold text-base text-gray-700">Schnellaktionen</h3>
+            <p className="text-sm text-gray-600">Häufig verwendete Aktionen für diesen Status</p>
           </div>
-          <div className="space-y-1">
+          <div className="grid grid-cols-1 gap-3">
             {quickActions.map((action) => {
               const Icon = action.icon;
               return (
                 <Button
                   key={action.status}
-                  size="sm"
+                  size="lg"
                   variant={action.variant as any}
                   onClick={() => handleQuickAction(action.status)}
                   disabled={isUpdating}
-                  className="flex items-center gap-2 text-xs h-7 w-full justify-start"
+                  className="flex flex-col items-center gap-2 h-20 text-sm font-medium"
                 >
-                  <Icon className="w-3 h-3 flex-shrink-0" />
-                  <span className="truncate text-left">{action.label}</span>
+                  <Icon className="w-6 h-6" />
+                  <span className="text-center leading-tight">{action.label}</span>
                 </Button>
               );
             })}
-            
-            {showPaymentButton && (
-              <Button
-                size="sm"
-                variant="default"
-                onClick={handleMarkAsPaid}
-                disabled={isUpdating}
-                className="flex items-center gap-2 text-xs h-7 w-full justify-start bg-green-600 hover:bg-green-700"
-              >
-                <Euro className="w-3 h-3 flex-shrink-0" />
-                <span className="truncate text-left">Als bezahlt markieren</span>
-              </Button>
-            )}
           </div>
         </div>
       </CardContent>
