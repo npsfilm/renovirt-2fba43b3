@@ -419,6 +419,7 @@ export type Database = {
           created_by: string | null
           estimated_completion: string | null
           id: string
+          is_note: boolean
           message: string | null
           order_id: string
           status: string
@@ -428,6 +429,7 @@ export type Database = {
           created_by?: string | null
           estimated_completion?: string | null
           id?: string
+          is_note?: boolean
           message?: string | null
           order_id: string
           status: string
@@ -437,6 +439,7 @@ export type Database = {
           created_by?: string | null
           estimated_completion?: string | null
           id?: string
+          is_note?: boolean
           message?: string | null
           order_id?: string
           status?: string

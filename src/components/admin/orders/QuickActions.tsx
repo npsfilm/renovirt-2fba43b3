@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Clock, AlertCircle, Package, Euro, X } from 'lucide-react';
+import { CheckCircle, Clock, AlertCircle, Euro, X } from 'lucide-react';
 import type { ExtendedOrder } from '@/types/database';
 
 interface QuickActionsProps {
@@ -56,9 +56,9 @@ const QuickActions = ({ order, selectedStatus, setSelectedStatus, onStatusUpdate
   if (quickActions.length === 0) {
     return (
       <Card className="border-2 border-green-200 bg-green-50">
-        <CardContent className="p-4">
+        <CardContent className="p-3">
           <div className="text-center">
-            <Badge variant="outline" className="bg-green-100 text-green-800">
+            <Badge variant="outline" className="bg-green-100 text-green-800 text-xs">
               Bestellung abgeschlossen
             </Badge>
           </div>
@@ -69,26 +69,28 @@ const QuickActions = ({ order, selectedStatus, setSelectedStatus, onStatusUpdate
 
   return (
     <Card className="border-2 border-blue-200 bg-blue-50">
-      <CardContent className="p-4">
-        <div className="space-y-4">
+      <CardContent className="p-3">
+        <div className="space-y-3">
           <div>
-            <h3 className="font-semibold text-base text-gray-700">Schnellaktionen</h3>
-            <p className="text-sm text-gray-600">Häufig verwendete Aktionen für diesen Status</p>
+            <h3 className="font-semibold text-sm text-gray-700">Schnellaktionen</h3>
+            <p className="text-xs text-gray-600">Häufig verwendete Aktionen</p>
           </div>
-          <div className="grid grid-cols-1 gap-3">
+          <div className="grid grid-cols-1 gap-2">
             {quickActions.map((action) => {
               const Icon = action.icon;
               return (
                 <Button
                   key={action.status}
-                  size="lg"
+                  size="sm"
                   variant={action.variant as any}
                   onClick={() => handleQuickAction(action.status)}
                   disabled={isUpdating}
-                  className="flex flex-col items-center gap-2 h-20 text-sm font-medium"
+                  className="flex items-center gap-2 h-12 text-xs font-medium justify-start p-2"
                 >
-                  <Icon className="w-6 h-6" />
-                  <span className="text-center leading-tight">{action.label}</span>
+                  <div className="w-8 h-8 flex items-center justify-center bg-white/20 rounded-md">
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <span className="text-left leading-tight">{action.label}</span>
                 </Button>
               );
             })}

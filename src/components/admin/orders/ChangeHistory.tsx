@@ -12,6 +12,17 @@ interface ChangeHistoryProps {
   orderId: string;
 }
 
+interface HistoryEntry {
+  id: string;
+  order_id: string;
+  status: string;
+  message: string | null;
+  created_at: string;
+  created_by: string | null;
+  estimated_completion: string | null;
+  is_note: boolean;
+}
+
 const ChangeHistory = ({ orderId }: ChangeHistoryProps) => {
   const [newNote, setNewNote] = useState('');
   const { toast } = useToast();
@@ -19,7 +30,7 @@ const ChangeHistory = ({ orderId }: ChangeHistoryProps) => {
 
   const { data: history, isLoading } = useQuery({
     queryKey: ['order-status-history', orderId],
-    queryFn: async () => {
+    queryFn: async (): Promise<HistoryEntry[]> => {
       const { data, error } = await supabase
         .from('order_status_history')
         .select(`
@@ -30,7 +41,7 @@ const ChangeHistory = ({ orderId }: ChangeHistoryProps) => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data as HistoryEntry[];
     },
   });
 
