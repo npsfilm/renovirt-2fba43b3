@@ -21,7 +21,6 @@ import AdminDashboard from '@/pages/AdminDashboard';
 import AdminOrders from '@/pages/AdminOrders';
 import AdminCustomers from '@/pages/AdminCustomers';
 import AdminAnalytics from '@/pages/AdminAnalytics';
-import AdminAddons from '@/pages/AdminAddons';
 import AdminUsers from '@/pages/AdminUsers';
 import AdminSettings from '@/pages/AdminSettings';
 import AdminRoute from '@/components/admin/AdminRoute';
@@ -71,11 +70,6 @@ function App() {
               <Route path="/admin/analytics" element={
                 <AdminRoute>
                   <AdminAnalytics />
-                </AdminRoute>
-              } />
-              <Route path="/admin/addons" element={
-                <AdminRoute>
-                  <AdminAddons />
                 </AdminRoute>
               } />
               <Route path="/admin/users" element={
