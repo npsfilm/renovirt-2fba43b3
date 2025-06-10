@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { OnboardingData } from '@/pages/Onboarding';
 import { validateCompanyData, validateAndSanitizeText } from '@/utils/enhancedInputValidation';
 import { useToast } from '@/hooks/use-toast';
+import { Building } from 'lucide-react';
 
 interface CompanyDataStepProps {
   data: OnboardingData;
@@ -77,19 +78,19 @@ const CompanyDataStep = ({ data, updateData, nextStep, prevStep }: CompanyDataSt
     <div className="max-w-2xl">
       <div className="mb-8">
         <div className="flex items-center mb-6">
-          <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mr-4">
-            <span className="text-2xl">🏢</span>
+          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mr-4">
+            <Building className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Unternehmensdaten</h1>
-            <p className="text-orange-600 font-medium">Für eine rechtssichere Abrechnung benötigen wir Ihre Daten.</p>
+            <h1 className="text-2xl font-bold text-foreground">Unternehmensdaten</h1>
+            <p className="text-primary font-medium">Für eine rechtssichere Abrechnung benötigen wir Ihre Daten.</p>
           </div>
         </div>
       </div>
 
       {errors.length > 0 && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <div className="text-red-800">
+        <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+          <div className="text-destructive">
             <h3 className="font-medium mb-2">Bitte korrigieren Sie folgende Fehler:</h3>
             <ul className="list-disc list-inside space-y-1">
               {errors.map((error, index) => (
@@ -103,7 +104,7 @@ const CompanyDataStep = ({ data, updateData, nextStep, prevStep }: CompanyDataSt
       <div className="space-y-6">
         {/* Personal Information */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium text-gray-900">Persönliche Angaben</h3>
+          <h3 className="text-lg font-medium text-foreground">Persönliche Angaben</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -148,7 +149,7 @@ const CompanyDataStep = ({ data, updateData, nextStep, prevStep }: CompanyDataSt
 
         {/* Company Information */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium text-gray-900">Unternehmen</h3>
+          <h3 className="text-lg font-medium text-foreground">Unternehmen</h3>
           
           <div>
             <Label htmlFor="company">Firmenname</Label>
@@ -190,7 +191,7 @@ const CompanyDataStep = ({ data, updateData, nextStep, prevStep }: CompanyDataSt
               onChange={(e) => handleInputChange('vatId', e.target.value)}
               placeholder="DE123456789 (verpflichtend bei Unternehmen außerhalb von DE)"
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Optional - verpflichtend bei Unternehmen außerhalb von Deutschland
             </p>
           </div>
@@ -206,7 +207,7 @@ const CompanyDataStep = ({ data, updateData, nextStep, prevStep }: CompanyDataSt
           </Button>
           <Button 
             onClick={handleNext}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-6"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground px-6"
           >
             Weiter
           </Button>

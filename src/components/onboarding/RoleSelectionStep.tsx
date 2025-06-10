@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Building, Camera, Users } from 'lucide-react';
@@ -64,8 +65,8 @@ const RoleSelectionStep = ({ data, updateData, nextStep, prevStep }: RoleSelecti
   return (
     <div className="max-w-2xl">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Welche Rolle beschreibt Sie am besten?</h2>
-        <p className="text-gray-600">
+        <h2 className="text-2xl font-bold text-foreground mb-2">Welche Rolle beschreibt Sie am besten?</h2>
+        <p className="text-muted-foreground">
           Wählen Sie Ihre Rolle, damit wir Ihnen die besten Features empfehlen können.
         </p>
       </div>
@@ -81,27 +82,27 @@ const RoleSelectionStep = ({ data, updateData, nextStep, prevStep }: RoleSelecti
               onClick={() => selectRole(role.id)}
               className={`p-6 rounded-lg border-2 transition-all text-left hover:shadow-md ${
                 isSelected
-                  ? 'border-blue-500 bg-blue-50 shadow-md'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? 'border-primary bg-primary/5 shadow-md'
+                  : 'border-border hover:border-primary/50 bg-card'
               }`}
             >
               <div className="flex items-start space-x-4">
                 <div className={`p-3 rounded-lg ${
-                  isSelected ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600'
+                  isSelected ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
                 }`}>
                   <Icon className="w-6 h-6" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{role.title}</h3>
-                  <p className="text-gray-600 mb-3">{role.description}</p>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">{role.title}</h3>
+                  <p className="text-muted-foreground mb-3">{role.description}</p>
                   <div className="flex flex-wrap gap-2">
                     {role.benefits.map((benefit, index) => (
                       <span
                         key={index}
                         className={`px-3 py-1 rounded-full text-xs font-medium ${
                           isSelected
-                            ? 'bg-blue-100 text-blue-700'
-                            : 'bg-gray-100 text-gray-600'
+                            ? 'bg-primary/10 text-primary'
+                            : 'bg-muted text-muted-foreground'
                         }`}
                       >
                         {benefit}
@@ -119,21 +120,21 @@ const RoleSelectionStep = ({ data, updateData, nextStep, prevStep }: RoleSelecti
           onClick={handleOtherRole}
           className={`p-6 rounded-lg border-2 transition-all text-left hover:shadow-md ${
             showOther
-              ? 'border-blue-500 bg-blue-50 shadow-md'
-              : 'border-gray-200 hover:border-gray-300'
+              ? 'border-primary bg-primary/5 shadow-md'
+              : 'border-border hover:border-primary/50 bg-card'
           }`}
         >
           <div className="flex items-start space-x-4">
             <div className={`p-3 rounded-lg ${
-              showOther ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600'
+              showOther ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
             }`}>
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Sonstiges</h3>
-              <p className="text-gray-600 mb-3">Andere Rolle (bitte angeben)</p>
+              <h3 className="text-lg font-semibold text-foreground mb-2">Sonstiges</h3>
+              <p className="text-muted-foreground mb-3">Andere Rolle (bitte angeben)</p>
             </div>
           </div>
         </button>
@@ -145,13 +146,13 @@ const RoleSelectionStep = ({ data, updateData, nextStep, prevStep }: RoleSelecti
               value={otherRole}
               onChange={(e) => setOtherRole(e.target.value)}
               placeholder="Bitte geben Sie Ihre Rolle an..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-background text-foreground"
               autoFocus
             />
             <Button
               onClick={handleOtherSubmit}
               disabled={!otherRole.trim()}
-              className="bg-blue-500 hover:bg-blue-600 text-white"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               Weiter
             </Button>
