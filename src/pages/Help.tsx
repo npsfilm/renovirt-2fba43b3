@@ -27,13 +27,15 @@ const Help = () => {
               {/* Main Help Search - Hero Section */}
               <IntelligentHelpSearch />
 
-              {/* Minimalist Contact Information */}
+              {/* Updated Contact Information */}
               <div className="border-t border-border pt-8">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
                   <div className="space-y-2">
                     <Mail className="w-6 h-6 mx-auto text-muted-foreground" />
-                    <p className="text-sm font-medium">E-Mail</p>
-                    <p className="text-sm text-muted-foreground">support@renovirt.de</p>
+                    <p className="text-sm font-medium">Kontakt</p>
+                    <p className="text-sm text-muted-foreground">
+                      Bitte nutzen Sie die Hilfe oben, danach können Sie uns eine Support Nachricht zukommen lassen.
+                    </p>
                   </div>
                   
                   <div className="space-y-2">
@@ -45,7 +47,7 @@ const Help = () => {
                   <div className="space-y-2">
                     <HelpCircle className="w-6 h-6 mx-auto text-muted-foreground" />
                     <p className="text-sm font-medium">Antwortzeit</p>
-                    <p className="text-sm text-muted-foreground">2-4 Stunden</p>
+                    <p className="text-sm text-muted-foreground">Innerhalb von 24h</p>
                   </div>
                 </div>
               </div>
