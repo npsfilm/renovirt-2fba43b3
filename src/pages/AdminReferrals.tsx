@@ -38,13 +38,10 @@ const AdminReferrals = () => {
   const { data: referrals, isLoading } = useQuery({
     queryKey: ['admin-referrals'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('admin_referrals_view')
-        .select('*')
-        .order('created_at', { ascending: false });
+      const { data, error } = await supabase.rpc('get_admin_referrals');
 
       if (error) throw error;
-      return data as AdminReferral[];
+      return (data || []) as AdminReferral[];
     }
   });
 

@@ -529,20 +529,6 @@ export type Database = {
             foreignKeyName: "fk_orders_customer_profiles"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "admin_referrals_view"
-            referencedColumns: ["referred_user_id"]
-          },
-          {
-            foreignKeyName: "fk_orders_customer_profiles"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_referrals_view"
-            referencedColumns: ["referrer_user_id"]
-          },
-          {
-            foreignKeyName: "fk_orders_customer_profiles"
-            columns: ["user_id"]
-            isOneToOne: false
             referencedRelation: "customer_profiles"
             referencedColumns: ["user_id"]
           },
@@ -767,25 +753,7 @@ export type Database = {
       }
     }
     Views: {
-      admin_referrals_view: {
-        Row: {
-          admin_approved: boolean | null
-          admin_approved_at: string | null
-          admin_approved_by: string | null
-          admin_name: string | null
-          admin_notes: string | null
-          created_at: string | null
-          first_order_id: string | null
-          id: string | null
-          referral_code: string | null
-          referred_name: string | null
-          referred_user_id: string | null
-          referrer_name: string | null
-          referrer_user_id: string | null
-          reward_amount: number | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       approve_referral_by_admin: {
@@ -811,6 +779,25 @@ export type Database = {
       generate_referral_code: {
         Args: { user_uuid: string }
         Returns: string
+      }
+      get_admin_referrals: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          referral_code: string
+          created_at: string
+          first_order_id: string
+          admin_approved: boolean
+          admin_approved_at: string
+          admin_approved_by: string
+          admin_notes: string
+          reward_amount: number
+          referrer_name: string
+          referrer_user_id: string
+          referred_name: string
+          referred_user_id: string
+          admin_name: string
+        }[]
       }
       get_help_analytics: {
         Args: { start_date?: string; end_date?: string }
