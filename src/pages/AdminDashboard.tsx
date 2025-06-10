@@ -3,11 +3,15 @@ import React from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import OrderAnalytics from '@/components/admin/analytics/OrderAnalytics';
+import AdminMetrics from '@/components/admin/analytics/components/AdminMetrics';
+import { useAdminAnalytics } from '@/hooks/useAdminAnalytics';
 import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
 
 const AdminDashboard = () => {
   // Echtzeit-Updates für Administrator-Dashboard aktivieren
   useRealtimeOrders();
+
+  const { data: analytics, isLoading } = useAdminAnalytics();
 
   return (
     <AdminLayout>
@@ -25,7 +29,24 @@ const AdminDashboard = () => {
       </header>
 
       {/* Hauptinhalt */}
-      <main className="flex-1 p-6 bg-background">
+      <main className="flex-1 p-6 bg-background space-y-6">
+        {/* Wichtige Kennzahlen */}
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-32 bg-card rounded-lg animate-pulse" />
+            ))}
+          </div>
+        ) : analytics ? (
+          <AdminMetrics
+            totalRevenue={analytics.totalRevenue}
+            totalOrders={analytics.totalOrders}
+            newCustomers={analytics.newCustomers}
+            avgOrderValue={analytics.avgOrderValue}
+          />
+        ) : null}
+
+        {/* Detaillierte Analytics */}
         <OrderAnalytics />
       </main>
     </AdminLayout>
