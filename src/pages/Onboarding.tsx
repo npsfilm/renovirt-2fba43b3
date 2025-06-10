@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -103,6 +104,7 @@ const Onboarding = () => {
   }, []);
 
   useEffect(() => {
+    // Don't redirect if we're confirming email
     if (!authLoading && !user && !isConfirmingEmail) {
       console.log('User not authenticated, redirecting to auth page');
       navigate('/auth');
@@ -116,8 +118,6 @@ const Onboarding = () => {
     { component: SourceStep, title: 'Wie haben Sie uns gefunden?' },
     { component: QuickStartStep, title: 'Schnellstart' },
   ];
-
-  const progress = ((currentStep + 1) / steps.length) * 100;
 
   const nextStep = () => {
     if (currentStep < steps.length - 1) {
@@ -177,6 +177,7 @@ const Onboarding = () => {
     }
   };
 
+  // Show loading while auth is being determined
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -188,8 +189,14 @@ const Onboarding = () => {
     );
   }
 
+  // Show email confirmation handler if confirming
   if (isConfirmingEmail) {
     return <EmailConfirmationHandler error={confirmationError} />;
+  }
+
+  // If no user and not loading, don't render anything (will redirect)
+  if (!user) {
+    return null;
   }
 
   const CurrentStepComponent = steps[currentStep].component;
@@ -200,7 +207,7 @@ const Onboarding = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">New Account Registration</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Neue Konto-Registrierung</h1>
           </div>
           <div className="text-sm text-gray-500">
             Deutsch
@@ -236,11 +243,11 @@ const Onboarding = () => {
                     }`}>
                       {step.title}
                     </h3>
-                    {index === 0 && <p className="text-xs text-gray-500 mt-1">Provide your personal details</p>}
-                    {index === 1 && <p className="text-xs text-gray-500 mt-1">Provide your identification details</p>}
-                    {index === 2 && <p className="text-xs text-gray-500 mt-1">Provide your business details</p>}
-                    {index === 3 && <p className="text-xs text-gray-500 mt-1">How did you find us?</p>}
-                    {index === 4 && <p className="text-xs text-gray-500 mt-1">Get up and running in 1 minute</p>}
+                    {index === 0 && <p className="text-xs text-gray-500 mt-1">Geben Sie Ihre persönlichen Daten an</p>}
+                    {index === 1 && <p className="text-xs text-gray-500 mt-1">Geben Sie Ihre Identifikationsdaten an</p>}
+                    {index === 2 && <p className="text-xs text-gray-500 mt-1">Geben Sie Ihre Geschäftsdaten an</p>}
+                    {index === 3 && <p className="text-xs text-gray-500 mt-1">Wie haben Sie uns gefunden?</p>}
+                    {index === 4 && <p className="text-xs text-gray-500 mt-1">Starten Sie in 1 Minute</p>}
                   </div>
                 </div>
               ))}
@@ -292,7 +299,7 @@ const Onboarding = () => {
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Back to login
+            Zurück zur Anmeldung
           </button>
         </div>
       </div>
