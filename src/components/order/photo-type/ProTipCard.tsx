@@ -3,8 +3,11 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Info, ExternalLink } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const ProTipCard = () => {
+  const navigate = useNavigate();
+
   return (
     <Card className="bg-gradient-to-r from-success/5 to-success/10 border-success/20 shadow-sm">
       <CardHeader className="pb-3">
@@ -24,6 +27,7 @@ const ProTipCard = () => {
           <Button 
             variant="outline" 
             size="sm" 
+            onClick={() => navigate('/guidelines')}
             className="text-success border-success/30 hover:bg-success/5 hover:border-success/50 transition-all duration-200"
           >
             <ExternalLink className="w-4 h-4 mr-2" />
@@ -32,6 +36,7 @@ const ProTipCard = () => {
           <Button 
             variant="outline" 
             size="sm" 
+            onClick={() => navigate('/guidelines')}
             className="text-success border-success/30 hover:bg-success/5 hover:border-success/50 transition-all duration-200"
           >
             <ExternalLink className="w-4 h-4 mr-2" />
