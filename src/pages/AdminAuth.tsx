@@ -14,7 +14,7 @@ const AdminAuth = () => {
   // Weiterleitung wenn bereits als Administrator angemeldet
   useEffect(() => {
     if (user && isAdmin) {
-      navigate('/management');
+      navigate('/admin/dashboard');
     } else if (user && !isAdmin) {
       // Wenn Benutzer angemeldet aber kein Administrator ist, zum normalen Dashboard weiterleiten
       navigate('/dashboard');
