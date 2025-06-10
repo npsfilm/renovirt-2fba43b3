@@ -9,11 +9,12 @@ import type { ExtendedOrder } from '@/types/database';
 interface QuickActionsProps {
   order: ExtendedOrder | undefined;
   selectedStatus: string;
+  setSelectedStatus: (status: string) => void;
   onStatusUpdate: () => void;
   isUpdating: boolean;
 }
 
-const QuickActions = ({ order, selectedStatus, onStatusUpdate, isUpdating }: QuickActionsProps) => {
+const QuickActions = ({ order, selectedStatus, setSelectedStatus, onStatusUpdate, isUpdating }: QuickActionsProps) => {
   const getQuickActions = () => {
     const currentStatus = order?.status || 'pending';
     
@@ -44,6 +45,14 @@ const QuickActions = ({ order, selectedStatus, onStatusUpdate, isUpdating }: Qui
 
   const quickActions = getQuickActions();
 
+  const handleQuickAction = (status: string) => {
+    setSelectedStatus(status);
+    // Trigger update after setting status
+    setTimeout(() => {
+      onStatusUpdate();
+    }, 100);
+  };
+
   if (quickActions.length === 0) {
     return (
       <Card className="border-2 border-green-200 bg-green-50">
@@ -72,8 +81,8 @@ const QuickActions = ({ order, selectedStatus, onStatusUpdate, isUpdating }: Qui
                   key={action.status}
                   size="sm"
                   variant={action.variant as any}
-                  onClick={onStatusUpdate}
-                  disabled={isUpdating || selectedStatus !== action.status}
+                  onClick={() => handleQuickAction(action.status)}
+                  disabled={isUpdating}
                   className="flex items-center gap-1 text-xs"
                 >
                   <Icon className="w-3 h-3" />

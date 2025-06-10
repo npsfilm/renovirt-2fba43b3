@@ -11,6 +11,8 @@ import OrderSummary from './OrderSummary';
 import StatusAndNotes from './StatusAndNotes';
 import FilesAndInvoices from './FilesAndInvoices';
 import CustomerDetails from './CustomerDetails';
+import ChangeHistory from './ChangeHistory';
+import FinalFilesUpload from './FinalFilesUpload';
 import type { ExtendedOrder } from '@/types/database';
 
 interface OrderDetailsModalProps {
@@ -94,6 +96,7 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
       });
       queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
       queryClient.invalidateQueries({ queryKey: ['order-details', orderId] });
+      queryClient.invalidateQueries({ queryKey: ['order-status-history', orderId] });
     },
     onError: (error: any) => {
       console.error('Status update error:', error);
@@ -129,7 +132,7 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
   if (isLoading) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
           <div className="flex items-center justify-center p-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
           </div>
@@ -140,7 +143,7 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
         <DialogHeader className="pb-4">
           <DialogTitle className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -156,19 +159,20 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
         <QuickActions
           order={order}
           selectedStatus={selectedStatus}
+          setSelectedStatus={setSelectedStatus}
           onStatusUpdate={handleStatusUpdate}
           isUpdating={updateStatusMutation.isPending}
         />
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-          {/* Left Column - Order Summary (Primary Info) */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
+          {/* Left Column - Order Summary */}
           <div className="lg:col-span-1 space-y-4">
             <OrderSummary order={order} />
             <CustomerDetails order={order} />
           </div>
 
-          {/* Center Column - Status Management */}
+          {/* Center Column - Status Management & History */}
           <div className="lg:col-span-1 space-y-4">
             <StatusAndNotes
               selectedStatus={selectedStatus}
@@ -178,14 +182,23 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
               onStatusUpdate={handleStatusUpdate}
               isUpdating={updateStatusMutation.isPending}
             />
+            <ChangeHistory orderId={orderId} />
           </div>
 
-          {/* Right Column - Files and Invoices */}
+          {/* Center-Right Column - Files and Invoices */}
           <div className="lg:col-span-1 space-y-4">
             <FilesAndInvoices
               order={order}
               orderId={orderId}
               onFileDownload={handleFileDownload}
+            />
+          </div>
+
+          {/* Right Column - Final Files */}
+          <div className="lg:col-span-1 space-y-4">
+            <FinalFilesUpload
+              order={order}
+              orderId={orderId}
             />
           </div>
         </div>
