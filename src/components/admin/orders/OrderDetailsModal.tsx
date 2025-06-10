@@ -79,7 +79,7 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
 
   // Update order status using the database function
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ status, notes }: { status: string; notes?: string }) => {
+    mutationFn: async ({ status }: { status: string }) => {
       const { error } = await supabase.rpc('update_order_status', {
         p_order_id: orderId,
         p_status: status,
@@ -109,7 +109,7 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
   });
 
   const handleStatusUpdate = () => {
-    updateStatusMutation.mutate({ status: selectedStatus, notes });
+    updateStatusMutation.mutate({ status: selectedStatus });
   };
 
   const handleFileDownload = async (image: any) => {
@@ -132,7 +132,7 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
   if (isLoading) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
           <div className="flex items-center justify-center p-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
           </div>
@@ -143,7 +143,7 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
         <DialogHeader className="pb-4">
           <DialogTitle className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -156,24 +156,26 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
         </DialogHeader>
 
         {/* Quick Actions - Most Important at Top */}
-        <QuickActions
-          order={order}
-          selectedStatus={selectedStatus}
-          setSelectedStatus={setSelectedStatus}
-          onStatusUpdate={handleStatusUpdate}
-          isUpdating={updateStatusMutation.isPending}
-        />
+        <div className="mb-4">
+          <QuickActions
+            order={order}
+            selectedStatus={selectedStatus}
+            setSelectedStatus={setSelectedStatus}
+            onStatusUpdate={handleStatusUpdate}
+            isUpdating={updateStatusMutation.isPending}
+          />
+        </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
-          {/* Left Column - Order Summary */}
-          <div className="lg:col-span-1 space-y-4">
+        {/* Main Content Grid - 5 equal columns */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+          {/* Column 1 - Order Summary */}
+          <div className="space-y-4">
             <OrderSummary order={order} />
             <CustomerDetails order={order} />
           </div>
 
-          {/* Center Column - Status Management & History */}
-          <div className="lg:col-span-1 space-y-4">
+          {/* Column 2 - Status Management */}
+          <div className="space-y-4">
             <StatusAndNotes
               selectedStatus={selectedStatus}
               setSelectedStatus={setSelectedStatus}
@@ -181,12 +183,17 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
               setNotes={setNotes}
               onStatusUpdate={handleStatusUpdate}
               isUpdating={updateStatusMutation.isPending}
+              orderId={orderId}
             />
+          </div>
+
+          {/* Column 3 - Change History */}
+          <div className="space-y-4">
             <ChangeHistory orderId={orderId} />
           </div>
 
-          {/* Center-Right Column - Files and Invoices */}
-          <div className="lg:col-span-1 space-y-4">
+          {/* Column 4 - Files and Invoices */}
+          <div className="space-y-4">
             <FilesAndInvoices
               order={order}
               orderId={orderId}
@@ -194,8 +201,8 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
             />
           </div>
 
-          {/* Right Column - Final Files */}
-          <div className="lg:col-span-1 space-y-4">
+          {/* Column 5 - Final Files */}
+          <div className="space-y-4">
             <FinalFilesUpload
               order={order}
               orderId={orderId}

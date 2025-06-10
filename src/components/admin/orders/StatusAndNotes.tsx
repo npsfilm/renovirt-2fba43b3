@@ -5,7 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Settings, Save } from 'lucide-react';
+import { Settings, Save, FileText } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface StatusAndNotesProps {
   selectedStatus: string;
@@ -14,6 +17,7 @@ interface StatusAndNotesProps {
   setNotes: (notes: string) => void;
   onStatusUpdate: () => void;
   isUpdating: boolean;
+  orderId: string;
 }
 
 const StatusAndNotes = ({
@@ -22,8 +26,42 @@ const StatusAndNotes = ({
   notes,
   setNotes,
   onStatusUpdate,
-  isUpdating
+  isUpdating,
+  orderId
 }: StatusAndNotesProps) => {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const saveNotesMutation = useMutation({
+    mutationFn: async (adminNotes: string) => {
+      const { error } = await supabase
+        .from('orders')
+        .update({ admin_notes: adminNotes })
+        .eq('id', orderId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Notizen gespeichert",
+        description: "Die Admin-Notizen wurden erfolgreich gespeichert.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['order-details', orderId] });
+    },
+    onError: (error: any) => {
+      console.error('Notes save error:', error);
+      toast({
+        title: "Fehler",
+        description: "Die Notizen konnten nicht gespeichert werden.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSaveNotes = () => {
+    saveNotesMutation.mutate(notes);
+  };
+
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -36,7 +74,7 @@ const StatusAndNotes = ({
         <div>
           <Label htmlFor="status" className="text-sm font-medium">Status ändern</Label>
           <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-            <SelectTrigger className="mt-1">
+            <SelectTrigger className="mt-1 h-9">
               <SelectValue placeholder="Status auswählen" />
             </SelectTrigger>
             <SelectContent>
@@ -49,6 +87,15 @@ const StatusAndNotes = ({
               <SelectItem value="cancelled">Storniert</SelectItem>
             </SelectContent>
           </Select>
+          <Button
+            onClick={onStatusUpdate}
+            disabled={isUpdating}
+            className="w-full mt-2 h-8"
+            size="sm"
+          >
+            <Save className="w-3 h-3 mr-2" />
+            {isUpdating ? 'Wird aktualisiert...' : 'Status speichern'}
+          </Button>
         </div>
 
         <div>
@@ -58,20 +105,20 @@ const StatusAndNotes = ({
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Interne Notizen hinzufügen..."
-            rows={4}
-            className="mt-1"
+            rows={3}
+            className="mt-1 text-sm"
           />
+          <Button
+            onClick={handleSaveNotes}
+            disabled={saveNotesMutation.isPending}
+            className="w-full mt-2 h-8"
+            size="sm"
+            variant="outline"
+          >
+            <FileText className="w-3 h-3 mr-2" />
+            {saveNotesMutation.isPending ? 'Wird gespeichert...' : 'Notizen speichern'}
+          </Button>
         </div>
-
-        <Button
-          onClick={onStatusUpdate}
-          disabled={isUpdating}
-          className="w-full"
-          size="sm"
-        >
-          <Save className="w-4 h-4 mr-2" />
-          {isUpdating ? 'Wird aktualisiert...' : 'Status speichern'}
-        </Button>
       </CardContent>
     </Card>
   );

@@ -67,23 +67,27 @@ const ChangeHistory = ({ orderId }: ChangeHistoryProps) => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3 max-h-64 overflow-y-auto">
+        <div className="space-y-2 max-h-80 overflow-y-auto">
           {history && history.length > 0 ? (
             history.map((entry) => (
-              <div key={entry.id} className="p-3 border rounded-lg bg-gray-50">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm">
-                      Status: {getStatusLabel(entry.status)}
-                    </span>
-                  </div>
+              <div key={entry.id} className="p-2 border rounded-lg bg-gray-50 text-xs">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-medium text-xs">
+                    Status: {getStatusLabel(entry.status)}
+                  </span>
                   <div className="flex items-center gap-1 text-xs text-gray-500">
                     <Clock className="w-3 h-3" />
-                    {new Date(entry.created_at).toLocaleString('de-DE')}
+                    {new Date(entry.created_at).toLocaleString('de-DE', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
                   </div>
                 </div>
                 {entry.message && (
-                  <p className="text-sm text-gray-700 mb-2">{entry.message}</p>
+                  <p className="text-xs text-gray-700 mb-1">{entry.message}</p>
                 )}
                 <div className="flex items-center gap-1 text-xs text-gray-500">
                   <User className="w-3 h-3" />
@@ -92,7 +96,7 @@ const ChangeHistory = ({ orderId }: ChangeHistoryProps) => {
               </div>
             ))
           ) : (
-            <p className="text-sm text-gray-500 text-center py-4">
+            <p className="text-xs text-gray-500 text-center py-4">
               Noch keine Änderungen vorhanden
             </p>
           )}

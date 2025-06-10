@@ -47,19 +47,18 @@ const QuickActions = ({ order, selectedStatus, setSelectedStatus, onStatusUpdate
 
   const handleQuickAction = (status: string) => {
     setSelectedStatus(status);
-    // Trigger update after setting status
-    setTimeout(() => {
-      onStatusUpdate();
-    }, 100);
+    onStatusUpdate();
   };
 
   if (quickActions.length === 0) {
     return (
       <Card className="border-2 border-green-200 bg-green-50">
-        <CardContent className="p-4 text-center">
-          <Badge variant="outline" className="bg-green-100 text-green-800">
-            Bestellung abgeschlossen
-          </Badge>
+        <CardContent className="p-3">
+          <div className="text-center">
+            <Badge variant="outline" className="bg-green-100 text-green-800 text-xs">
+              Bestellung abgeschlossen
+            </Badge>
+          </div>
         </CardContent>
       </Card>
     );
@@ -67,13 +66,13 @@ const QuickActions = ({ order, selectedStatus, setSelectedStatus, onStatusUpdate
 
   return (
     <Card className="border-2 border-blue-200 bg-blue-50">
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between">
+      <CardContent className="p-3">
+        <div className="space-y-2">
           <div>
-            <h3 className="font-semibold text-sm text-gray-700 mb-1">Schnellaktionen</h3>
+            <h3 className="font-semibold text-sm text-gray-700">Schnellaktionen</h3>
             <p className="text-xs text-gray-600">Häufig verwendete Statusänderungen</p>
           </div>
-          <div className="flex gap-2">
+          <div className="grid grid-cols-1 gap-2">
             {quickActions.map((action) => {
               const Icon = action.icon;
               return (
@@ -83,10 +82,10 @@ const QuickActions = ({ order, selectedStatus, setSelectedStatus, onStatusUpdate
                   variant={action.variant as any}
                   onClick={() => handleQuickAction(action.status)}
                   disabled={isUpdating}
-                  className="flex items-center gap-1 text-xs"
+                  className="flex items-center gap-2 text-xs h-8 justify-start"
                 >
-                  <Icon className="w-3 h-3" />
-                  {action.label}
+                  <Icon className="w-3 h-3 flex-shrink-0" />
+                  <span className="truncate">{action.label}</span>
                 </Button>
               );
             })}
