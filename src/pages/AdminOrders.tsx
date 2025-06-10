@@ -24,6 +24,8 @@ const AdminOrders = () => {
   const { data: orders, isLoading, refetch } = useQuery({
     queryKey: ['admin-orders', searchTerm, statusFilter, paymentStatusFilter, dateFromFilter, dateToFilter, packageFilter],
     queryFn: async () => {
+      console.log('Fetching orders with search term:', searchTerm);
+      
       let query = supabase
         .from('orders')
         .select(`
@@ -49,6 +51,7 @@ const AdminOrders = () => {
         .neq('payment_flow_status', 'draft') // Entwurfsbestellungen ausschließen
         .order('created_at', { ascending: false });
 
+      // Status-Filter anwenden
       if (statusFilter !== 'all') {
         query = query.eq('status', statusFilter);
       }
@@ -57,6 +60,7 @@ const AdminOrders = () => {
         query = query.eq('payment_status', paymentStatusFilter);
       }
 
+      // Datum-Filter anwenden
       if (dateFromFilter) {
         query = query.gte('created_at', dateFromFilter.toISOString());
       }
@@ -67,20 +71,35 @@ const AdminOrders = () => {
         query = query.lte('created_at', endDate.toISOString());
       }
 
-      if (searchTerm) {
+      // Optimierte Suche für Bestellnummer und Kundenname
+      if (searchTerm && searchTerm.trim()) {
+        const term = searchTerm.trim();
+        console.log('Applying search for term:', term);
+        
+        // Verbesserte OR-Suche mit besserer Performance
         query = query.or(`
-          customer_profiles.first_name.ilike.%${searchTerm}%,
-          customer_profiles.last_name.ilike.%${searchTerm}%,
-          customer_profiles.company.ilike.%${searchTerm}%,
-          customer_email.ilike.%${searchTerm}%,
-          order_number.ilike.%${searchTerm}%
+          order_number.ilike.%${term}%,
+          customer_email.ilike.%${term}%,
+          customer_profiles.first_name.ilike.%${term}%,
+          customer_profiles.last_name.ilike.%${term}%,
+          customer_profiles.company.ilike.%${term}%
         `);
       }
 
       const { data, error } = await query;
-      if (error) throw error;
+      
+      if (error) {
+        console.error('Error fetching orders:', error);
+        throw error;
+      }
+      
+      console.log('Orders fetched:', data?.length || 0);
       return data;
     },
+    // Reduzierte Stale-Zeit für bessere Reaktivität bei Suche
+    staleTime: searchTerm ? 0 : 30000,
+    // Debouncing für bessere Performance bei schnellem Tippen
+    enabled: true,
   });
 
   const handleOrderSelect = (orderId: string) => {

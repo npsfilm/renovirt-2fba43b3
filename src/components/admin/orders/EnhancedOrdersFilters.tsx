@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -46,14 +46,16 @@ const EnhancedOrdersFilters = ({
   const hasActiveFilters = searchTerm || statusFilter !== 'all' || paymentStatusFilter !== 'all' || 
     dateFromFilter || dateToFilter || packageFilter !== 'all';
 
-  const activeFilterCount = [
-    searchTerm,
-    statusFilter !== 'all',
-    paymentStatusFilter !== 'all',
-    dateFromFilter,
-    dateToFilter,
-    packageFilter !== 'all'
-  ].filter(Boolean).length;
+  const activeFilterCount = useMemo(() => {
+    return [
+      searchTerm,
+      statusFilter !== 'all',
+      paymentStatusFilter !== 'all',
+      dateFromFilter,
+      dateToFilter,
+      packageFilter !== 'all'
+    ].filter(Boolean).length;
+  }, [searchTerm, statusFilter, paymentStatusFilter, dateFromFilter, dateToFilter, packageFilter]);
 
   // Quick search suggestions
   const searchSuggestions = [
@@ -112,13 +114,13 @@ const EnhancedOrdersFilters = ({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {/* Enhanced Search */}
           <div className="space-y-2 lg:col-span-2">
-            <Label htmlFor="search" className="font-medium">Intelligente Suche</Label>
+            <Label htmlFor="search" className="font-medium">Bestellnummer oder Kunde</Label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <Input
                 id="search"
                 type="text"
-                placeholder="Kunde, E-Mail, Bestellnummer, Firma..."
+                placeholder="Bestellnummer oder Kundenname eingeben..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 pr-4 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -135,7 +137,7 @@ const EnhancedOrdersFilters = ({
               )}
             </div>
             <p className="text-xs text-gray-500">
-              Suche nach Name, E-Mail, Bestellnummer oder Firmennamen
+              Optimiert für Bestellnummer und Kundenname - Ergebnisse werden sofort angezeigt
             </p>
           </div>
 
