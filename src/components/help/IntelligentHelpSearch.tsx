@@ -30,38 +30,22 @@ const IntelligentHelpSearch = () => {
 
   return (
     <div className="space-y-6">
-      {/* Clean Hero Section */}
-      <div className="text-center space-y-6 py-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
-          <Bot className="w-8 h-8 text-primary" />
-        </div>
-        
-        <div className="space-y-2">
-          <h1 className="text-3xl font-light text-foreground">
-            Intelligente Hilfe
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Beschreiben Sie Ihr Anliegen und erhalten Sie sofort eine maßgeschneiderte Antwort
-          </p>
-        </div>
-      </div>
-
       {/* Search Interface */}
-      <Card className="border-0 shadow-sm bg-card/50">
-        <CardContent className="p-8">
+      <Card className="border-0 shadow-lg bg-card/90 backdrop-blur-sm">
+        <CardContent className="p-6">
           <HelpSearchBar 
             onSearch={performSearch}
             isLoading={isLoading}
-            placeholder="Beschreiben Sie Ihr Problem oder Ihre Frage..."
+            placeholder="Geben Sie Ihre Frage ein..."
           />
           
           {searchState !== 'idle' && (
-            <div className="mt-6 flex justify-center">
+            <div className="mt-4 flex justify-center">
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={resetSearch}
-                className="text-muted-foreground hover:text-foreground"
+                className="text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10"
               >
                 Neue Suche
               </Button>
@@ -86,8 +70,8 @@ const IntelligentHelpSearch = () => {
       {canContactSupport && (
         <div className="animate-in fade-in-50 duration-500">
           <Card className="border-primary/20 bg-primary/5">
-            <CardContent className="p-8 text-center space-y-4">
-              <MessageCircle className="w-12 h-12 mx-auto text-primary" />
+            <CardContent className="p-6 text-center space-y-4">
+              <MessageCircle className="w-10 h-10 mx-auto text-primary" />
               <div className="space-y-2">
                 <h3 className="text-lg font-medium text-foreground">
                   Benötigen Sie persönliche Unterstützung?

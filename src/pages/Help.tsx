@@ -4,6 +4,7 @@ import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/layout/AppSidebar';
 import PageHeader from '@/components/layout/PageHeader';
 import IntelligentHelpSearch from '@/components/help/IntelligentHelpSearch';
+import HelpFAQSection from '@/components/help/HelpFAQSection';
 import AIChatWidget from '@/components/help/AIChatWidget';
 import { 
   Mail, 
@@ -22,13 +23,36 @@ const Help = () => {
             subtitle="Wie können wir Ihnen helfen?"
           />
 
-          <main className="flex-1 p-6">
-            <div className="max-w-4xl mx-auto bg-muted/30 rounded-xl p-8 space-y-8">
-              {/* Main Help Search - Hero Section */}
-              <IntelligentHelpSearch />
+          <main className="flex-1">
+            {/* Hero Section with Search - Similar to 1Password */}
+            <div className="bg-primary text-primary-foreground py-16 px-6">
+              <div className="max-w-4xl mx-auto text-center space-y-8">
+                <div className="space-y-4">
+                  <h1 className="text-4xl font-light">
+                    Willkommen bei RenoviRT Hilfe
+                  </h1>
+                  <p className="text-xl opacity-90">
+                    Wir sind hier, um Ihnen zu helfen!
+                  </p>
+                </div>
+                
+                {/* Search Section */}
+                <div className="max-w-2xl mx-auto">
+                  <IntelligentHelpSearch />
+                </div>
+              </div>
+            </div>
 
-              {/* Updated Contact Information */}
-              <div className="border-t border-border pt-8">
+            {/* FAQ Categories Section - Similar to Netflix */}
+            <div className="py-12 px-6 bg-background">
+              <div className="max-w-6xl mx-auto">
+                <HelpFAQSection />
+              </div>
+            </div>
+
+            {/* Contact Information */}
+            <div className="bg-muted/30 py-8 px-6">
+              <div className="max-w-4xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
                   <div className="space-y-2">
                     <Mail className="w-6 h-6 mx-auto text-muted-foreground" />
