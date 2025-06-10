@@ -1,8 +1,8 @@
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useSecurity } from '@/components/security/EnhancedSecurityProvider';
 import { useAuth } from '@/hooks/useAuth';
+import { useAdminRole } from '@/hooks/useAdminRole';
 import { logSecurityEvent } from '@/utils/secureLogging';
 
 interface SecureAdminWrapperProps {
@@ -11,39 +11,19 @@ interface SecureAdminWrapperProps {
 }
 
 const SecureAdminWrapper = ({ children, requireReauth = false }: SecureAdminWrapperProps) => {
-  const { user } = useAuth();
-  const { hasAdminAccess, isSecureSession, refreshSecurity } = useSecurity();
-  const [loading, setLoading] = useState(true);
-  const [lastAuthCheck, setLastAuthCheck] = useState(Date.now());
+  const { user, loading: authLoading } = useAuth();
+  const { isAdmin, loading: adminLoading } = useAdminRole();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      if (!user) {
-        setLoading(false);
-        return;
-      }
+  console.log('SecureAdminWrapper check:', { 
+    user: !!user, 
+    isAdmin, 
+    authLoading, 
+    adminLoading,
+    userId: user?.id 
+  });
 
-      // Re-authenticate if required or if last check was > 30 minutes ago
-      const needsReauth = requireReauth || (Date.now() - lastAuthCheck > 1800000);
-      
-      if (needsReauth) {
-        await refreshSecurity();
-        setLastAuthCheck(Date.now());
-      }
-
-      setLoading(false);
-    };
-
-    checkAuth();
-  }, [user, requireReauth, refreshSecurity, lastAuthCheck]);
-
-  useEffect(() => {
-    if (user && !hasAdminAccess) {
-      logSecurityEvent('unauthorized_admin_access_attempt', { userId: user.id });
-    }
-  }, [user, hasAdminAccess]);
-
-  if (loading) {
+  // Zeige Ladebildschirm während der Authentifizierung
+  if (authLoading || adminLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -54,16 +34,25 @@ const SecureAdminWrapper = ({ children, requireReauth = false }: SecureAdminWrap
     );
   }
 
-  // Redirect to admin login if not authenticated
-  if (!user || !isSecureSession) {
+  // Protokolliere unbefugte Zugriffe
+  if (user && !isAdmin) {
+    logSecurityEvent('unauthorized_admin_access_attempt', { userId: user.id });
+    console.log('Access denied: User is not admin', { userId: user.id, isAdmin });
+  }
+
+  // Weiterleitung zur Admin-Anmeldung wenn nicht authentifiziert
+  if (!user) {
+    console.log('Redirecting to admin-auth: No user');
     return <Navigate to="/admin-auth" replace />;
   }
 
-  // Redirect to admin login if not admin
-  if (!hasAdminAccess) {
+  // Weiterleitung zur Admin-Anmeldung wenn kein Administrator
+  if (!isAdmin) {
+    console.log('Redirecting to admin-auth: User is not admin');
     return <Navigate to="/admin-auth" replace />;
   }
 
+  console.log('Admin access granted');
   return <>{children}</>;
 };
 
