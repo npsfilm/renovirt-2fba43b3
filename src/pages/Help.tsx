@@ -23,7 +23,7 @@ const Help = () => {
           />
 
           <main className="flex-1 p-6">
-            <div className="max-w-4xl mx-auto space-y-8">
+            <div className="max-w-4xl mx-auto bg-muted/30 rounded-xl p-8 space-y-8">
               {/* Main Help Search - Hero Section */}
               <IntelligentHelpSearch />
 
