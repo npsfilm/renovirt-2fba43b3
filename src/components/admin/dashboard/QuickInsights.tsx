@@ -6,7 +6,11 @@ import { TrendingUp, TrendingDown, AlertCircle, Clock, CheckCircle, Euro } from 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-const QuickInsights = () => {
+interface QuickInsightsProps {
+  onOrderFilterChange?: (filter: string) => void;
+}
+
+const QuickInsights = ({ onOrderFilterChange }: QuickInsightsProps) => {
   const { data: insights, isLoading } = useQuery({
     queryKey: ['quick-insights'],
     queryFn: async () => {
@@ -95,17 +99,29 @@ const QuickInsights = () => {
     ? ((insights.todayOrders - insights.yesterdayOrders) / insights.yesterdayOrders) * 100 
     : 0;
 
+  const handleCardClick = (filter: string) => {
+    if (onOrderFilterChange) {
+      onOrderFilterChange(filter);
+    }
+  };
+
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Today's Orders */}
-      <Card className="border border-blue-200">
+      <Card 
+        className="border border-blue-200 hover:shadow-md transition-shadow cursor-pointer"
+        onClick={() => handleCardClick('today')}
+      >
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold text-blue-600">
                 {insights?.todayOrders || 0}
               </p>
-              <p className="text-sm text-gray-600">Neue Aufträge</p>
+              <p className="text-sm text-gray-600">Heute eingegangen</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Neue Aufträge seit heute 00:00 Uhr
+              </p>
             </div>
             <div className="flex flex-col items-end">
               <CheckCircle className="w-6 h-6 text-blue-500 mb-1" />
@@ -121,14 +137,20 @@ const QuickInsights = () => {
       </Card>
 
       {/* Today's Revenue */}
-      <Card className="border border-green-200">
+      <Card 
+        className="border border-green-200 hover:shadow-md transition-shadow cursor-pointer"
+        onClick={() => handleCardClick('revenue')}
+      >
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold text-green-600">
                 €{insights?.todayRevenue?.toFixed(0) || 0}
               </p>
-              <p className="text-sm text-gray-600">Heutiger Umsatz</p>
+              <p className="text-sm text-gray-600">Tagesumsatz</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Bezahlte Aufträge von heute
+              </p>
             </div>
             <div className="flex flex-col items-end">
               <Euro className="w-6 h-6 text-green-500 mb-1" />
@@ -144,20 +166,26 @@ const QuickInsights = () => {
       </Card>
 
       {/* Urgent Orders */}
-      <Card className="border border-orange-200">
+      <Card 
+        className="border border-orange-200 hover:shadow-md transition-shadow cursor-pointer"
+        onClick={() => handleCardClick('urgent')}
+      >
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold text-orange-600">
                 {(insights?.revisionCount || 0) + (insights?.pendingCount || 0)}
               </p>
-              <p className="text-sm text-gray-600">Benötigen Aufmerksamkeit</p>
+              <p className="text-sm text-gray-600">Sofortige Bearbeitung</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Revisionen und wartende Aufträge
+              </p>
             </div>
             <div className="flex flex-col items-end">
               <Clock className="w-6 h-6 text-orange-500 mb-1" />
               {insights?.revisionCount > 0 && (
                 <Badge variant="destructive" className="text-xs">
-                  {insights.revisionCount} Revision
+                  {insights.revisionCount} Revisionen
                 </Badge>
               )}
             </div>
@@ -166,7 +194,10 @@ const QuickInsights = () => {
       </Card>
 
       {/* Overdue Orders */}
-      <Card className="border border-red-200">
+      <Card 
+        className="border border-red-200 hover:shadow-md transition-shadow cursor-pointer"
+        onClick={() => handleCardClick('overdue')}
+      >
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div>
@@ -174,6 +205,9 @@ const QuickInsights = () => {
                 {insights?.overdueCount || 0}
               </p>
               <p className="text-sm text-gray-600">Überfällige Aufträge</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Älter als 48 Stunden
+              </p>
             </div>
             <div className="flex flex-col items-end">
               <AlertCircle className="w-6 h-6 text-red-500 mb-1" />

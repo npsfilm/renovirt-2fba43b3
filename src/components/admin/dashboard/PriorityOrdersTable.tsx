@@ -1,8 +1,8 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Clock, AlertTriangle, CheckCircle, TrendingUp } from 'lucide-react';
+import { Clock, AlertTriangle, CheckCircle, TrendingUp, Filter } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import OrderStatusBadge from '../orders/OrderStatusBadge';
@@ -24,11 +24,20 @@ interface PriorityOrder {
   } | null;
 }
 
-const PriorityOrdersTable = ({ onOrderSelect }: { onOrderSelect: (orderId: string) => void }) => {
+interface PriorityOrdersTableProps {
+  onOrderSelect: (orderId: string) => void;
+  activeFilter?: string;
+}
+
+const PriorityOrdersTable = ({ onOrderSelect, activeFilter }: PriorityOrdersTableProps) => {
+  const [localFilter, setLocalFilter] = useState<string>('all');
+
+  const currentFilter = activeFilter || localFilter;
+
   const { data: orders, isLoading } = useQuery({
-    queryKey: ['priority-orders'],
+    queryKey: ['priority-orders', currentFilter],
     queryFn: async (): Promise<PriorityOrder[]> => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('orders')
         .select(`
           id,
@@ -46,10 +55,36 @@ const PriorityOrdersTable = ({ onOrderSelect }: { onOrderSelect: (orderId: strin
             company
           )
         `)
-        .neq('payment_flow_status', 'draft')
-        .in('status', ['pending', 'processing', 'quality_check', 'revision'])
+        .neq('payment_flow_status', 'draft');
+
+      // Apply filters based on currentFilter
+      switch (currentFilter) {
+        case 'today':
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          query = query.gte('created_at', today.toISOString());
+          break;
+        case 'urgent':
+          query = query.in('status', ['revision', 'pending']);
+          break;
+        case 'overdue':
+          const twoDaysAgo = new Date();
+          twoDaysAgo.setHours(twoDaysAgo.getHours() - 48);
+          query = query
+            .not('status', 'in', '(completed,delivered,cancelled)')
+            .lt('created_at', twoDaysAgo.toISOString());
+          break;
+        case 'revenue':
+          query = query.eq('payment_status', 'paid');
+          break;
+        default:
+          query = query.in('status', ['pending', 'processing', 'quality_check', 'revision']);
+          break;
+      }
+
+      const { data, error } = await query
         .order('created_at', { ascending: false })
-        .limit(10);
+        .limit(15);
 
       if (error) throw error;
       return data || [];
@@ -80,11 +115,31 @@ const PriorityOrdersTable = ({ onOrderSelect }: { onOrderSelect: (orderId: strin
     return order.customer_email;
   };
 
+  const getFilterTitle = () => {
+    switch (currentFilter) {
+      case 'today': return 'Heutige Aufträge';
+      case 'urgent': return 'Dringende Aufträge';
+      case 'overdue': return 'Überfällige Aufträge';
+      case 'revenue': return 'Bezahlte Aufträge';
+      default: return 'Aktuelle Aufträge';
+    }
+  };
+
+  const getFilterDescription = () => {
+    switch (currentFilter) {
+      case 'today': return 'Alle heute eingegangenen Bestellungen';
+      case 'urgent': return 'Aufträge die sofortige Bearbeitung benötigen';
+      case 'overdue': return 'Aufträge älter als 48 Stunden';
+      case 'revenue': return 'Erfolgreich bezahlte Bestellungen';
+      default: return 'Nach Dringlichkeit sortiert';
+    }
+  };
+
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg font-medium">Aktuelle Aufträge</CardTitle>
+          <CardTitle className="text-lg font-medium">{getFilterTitle()}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="animate-pulse space-y-3">
@@ -102,11 +157,12 @@ const PriorityOrdersTable = ({ onOrderSelect }: { onOrderSelect: (orderId: strin
       <CardHeader className="pb-4">
         <CardTitle className="text-lg font-medium flex items-center gap-2">
           <TrendingUp className="w-5 h-5" />
-          Aktuelle Aufträge
+          {getFilterTitle()}
           <Badge variant="secondary" className="ml-2">
             {orders?.length || 0}
           </Badge>
         </CardTitle>
+        <p className="text-sm text-gray-600">{getFilterDescription()}</p>
       </CardHeader>
       <CardContent className="p-0">
         <div className="space-y-1">
@@ -150,7 +206,7 @@ const PriorityOrdersTable = ({ onOrderSelect }: { onOrderSelect: (orderId: strin
           {(!orders || orders.length === 0) && (
             <div className="p-8 text-center text-gray-500">
               <CheckCircle className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-              <p>Alle Aufträge sind bearbeitet</p>
+              <p>Keine Aufträge in dieser Kategorie</p>
             </div>
           )}
         </div>

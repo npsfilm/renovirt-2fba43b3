@@ -11,6 +11,7 @@ import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
 
 const AdminDashboard = () => {
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [orderFilter, setOrderFilter] = useState<string>('all');
   
   // Echtzeit-Updates für Administrator-Dashboard aktivieren
   useRealtimeOrders();
@@ -23,6 +24,10 @@ const AdminDashboard = () => {
 
   const handleCloseModal = () => {
     setSelectedOrderId(null);
+  };
+
+  const handleOrderFilterChange = (filter: string) => {
+    setOrderFilter(filter);
   };
 
   return (
@@ -43,13 +48,16 @@ const AdminDashboard = () => {
       {/* Hauptinhalt */}
       <main className="flex-1 p-6 bg-gray-50 space-y-6">
         {/* Quick Insights - Sofortige wichtige Informationen */}
-        <QuickInsights />
+        <QuickInsights onOrderFilterChange={handleOrderFilterChange} />
 
         {/* Haupt-Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Linke Spalte - Prioritäts-Aufträge (2/3) */}
           <div className="lg:col-span-2">
-            <PriorityOrdersTable onOrderSelect={handleOrderSelect} />
+            <PriorityOrdersTable 
+              onOrderSelect={handleOrderSelect} 
+              activeFilter={orderFilter}
+            />
           </div>
           
           {/* Rechte Spalte - Kennzahlen (1/3) */}
