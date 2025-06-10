@@ -1,7 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
 import { secureLog } from './secureLogging';
 
 interface FileItem {
@@ -53,9 +52,19 @@ export const createOrderZip = async (
       throw new Error('Keine Dateien konnten heruntergeladen werden');
     }
 
-    // Generate and download ZIP
+    // Generate and download ZIP using native browser API
     const content = await zip.generateAsync({ type: 'blob' });
-    saveAs(content, `${orderNumber}.zip`);
+    
+    // Create download link and trigger download
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(content);
+    link.download = `${orderNumber}.zip`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Clean up object URL
+    URL.revokeObjectURL(link.href);
 
     secureLog('ZIP created successfully:', { 
       orderNumber, 
