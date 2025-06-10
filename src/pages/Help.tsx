@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/layout/AppSidebar';
@@ -6,34 +5,21 @@ import PageHeader from '@/components/layout/PageHeader';
 import IntelligentHelpSearch from '@/components/help/IntelligentHelpSearch';
 import HelpFAQSection from '@/components/help/HelpFAQSection';
 import AIChatWidget from '@/components/help/AIChatWidget';
-import { 
-  Mail, 
-  Clock,
-  HelpCircle
-} from 'lucide-react';
-
+import { Mail, Clock, HelpCircle } from 'lucide-react';
 const Help = () => {
-  return (
-    <SidebarProvider>
+  return <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <SidebarInset>
-          <PageHeader 
-            title="Hilfe" 
-            subtitle="Wie können wir Ihnen helfen?"
-          />
+          <PageHeader title="Hilfe" subtitle="Wie können wir Ihnen helfen?" />
 
           <main className="flex-1">
             {/* Hero Section with Search - Similar to 1Password */}
             <div className="bg-primary text-primary-foreground py-16 px-6">
               <div className="max-w-4xl mx-auto text-center space-y-8">
                 <div className="space-y-4">
-                  <h1 className="text-4xl font-light">
-                    Willkommen bei RenoviRT Hilfe
-                  </h1>
-                  <p className="text-xl opacity-90">
-                    Wir sind hier, um Ihnen zu helfen!
-                  </p>
+                  <h1 className="text-4xl font-bold">Brauchen Sie Unterstützung?</h1>
+                  <p className="text-xl opacity-90">Wir sind hier, um Ihnen zu helfen! Nutzen Sie unsere Intelligente Suche, um Ihre Fragen zu klären.</p>
                 </div>
                 
                 {/* Search Section */}
@@ -82,8 +68,6 @@ const Help = () => {
           <AIChatWidget />
         </SidebarInset>
       </div>
-    </SidebarProvider>
-  );
+    </SidebarProvider>;
 };
-
 export default Help;
