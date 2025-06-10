@@ -34,12 +34,24 @@ const StatusAndNotes = ({
 
   const saveNotesMutation = useMutation({
     mutationFn: async (adminNotes: string) => {
-      const { error } = await supabase
+      const { error: updateError } = await supabase
         .from('orders')
         .update({ admin_notes: adminNotes })
         .eq('id', orderId);
 
-      if (error) throw error;
+      if (updateError) throw updateError;
+
+      // Auch in der Änderungshistorie speichern
+      const { error: historyError } = await supabase
+        .from('order_status_history')
+        .insert({
+          order_id: orderId,
+          status: selectedStatus,
+          message: `Admin-Notizen aktualisiert: ${adminNotes.substring(0, 100)}${adminNotes.length > 100 ? '...' : ''}`,
+          created_by: (await supabase.auth.getUser()).data.user?.id
+        });
+
+      if (historyError) throw historyError;
     },
     onSuccess: () => {
       toast({
@@ -47,6 +59,7 @@ const StatusAndNotes = ({
         description: "Die Admin-Notizen wurden erfolgreich gespeichert.",
       });
       queryClient.invalidateQueries({ queryKey: ['order-details', orderId] });
+      queryClient.invalidateQueries({ queryKey: ['order-status-history', orderId] });
     },
     onError: (error: any) => {
       console.error('Notes save error:', error);
