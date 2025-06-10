@@ -113,8 +113,8 @@ const Onboarding = () => {
 
   const steps = [
     { component: WelcomeStep, title: 'Willkommen' },
-    { component: RoleSelectionStep, title: 'Rolle auswählen' },
-    { component: CompanyDataStep, title: 'Unternehmensdaten' },
+    { component: RoleSelectionStep, title: 'Ihre Rolle' },
+    { component: CompanyDataStep, title: 'Ihre Daten' },
     { component: SourceStep, title: 'Wie haben Sie uns gefunden?' },
     { component: QuickStartStep, title: 'Schnellstart' },
   ];
@@ -180,10 +180,10 @@ const Onboarding = () => {
   // Show loading while auth is being determined
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Laden...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Lädt...</p>
         </div>
       </div>
     );
@@ -202,70 +202,75 @@ const Onboarding = () => {
   const CurrentStepComponent = steps[currentStep].component;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-6xl mx-auto p-6">
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Neue Konto-Registrierung</h1>
+            <h1 className="text-3xl font-bold text-foreground">Willkommen bei RenovIrt</h1>
+            <p className="text-muted-foreground mt-1">Richten Sie Ihr Konto in wenigen Schritten ein</p>
           </div>
-          <div className="text-sm text-gray-500">
-            Deutsch
+          <div className="text-sm text-muted-foreground bg-card px-3 py-1 rounded-full border">
+            Schritt {currentStep + 1} von {steps.length}
           </div>
         </div>
 
         <div className="flex gap-8">
           {/* Left Sidebar - Progress */}
-          <div className="w-80 bg-white rounded-lg p-6 h-fit">
+          <div className="w-80 bg-card rounded-lg border p-6 h-fit">
+            <h2 className="text-lg font-semibold text-foreground mb-6">Einrichtungsfortschritt</h2>
             <div className="space-y-6">
               {steps.map((step, index) => (
                 <div key={index} className="flex items-center space-x-4">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-200 ${
                     index < currentStep 
-                      ? 'bg-orange-500 border-orange-500 text-white' 
+                      ? 'bg-primary border-primary text-primary-foreground' 
                       : index === currentStep
-                      ? 'border-orange-500 text-orange-500 bg-orange-50'
-                      : 'border-gray-300 text-gray-400 bg-gray-50'
+                      ? 'border-primary text-primary bg-primary/10'
+                      : 'border-muted text-muted-foreground bg-muted/50'
                   }`}>
                     {index < currentStep ? (
                       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
                     ) : index === currentStep ? (
-                      <div className="w-3 h-3 bg-orange-500 rounded-full animate-pulse" />
+                      <div className="w-3 h-3 bg-primary rounded-full animate-pulse" />
                     ) : (
                       <span className="text-sm font-medium">{index + 1}</span>
                     )}
                   </div>
                   <div className="flex-1">
                     <h3 className={`text-sm font-medium transition-colors ${
-                      index <= currentStep ? 'text-gray-900' : 'text-gray-400'
+                      index <= currentStep ? 'text-foreground' : 'text-muted-foreground'
                     }`}>
                       {step.title}
                     </h3>
-                    {index === 0 && <p className="text-xs text-gray-500 mt-1">Geben Sie Ihre persönlichen Daten an</p>}
-                    {index === 1 && <p className="text-xs text-gray-500 mt-1">Geben Sie Ihre Identifikationsdaten an</p>}
-                    {index === 2 && <p className="text-xs text-gray-500 mt-1">Geben Sie Ihre Geschäftsdaten an</p>}
-                    {index === 3 && <p className="text-xs text-gray-500 mt-1">Wie haben Sie uns gefunden?</p>}
-                    {index === 4 && <p className="text-xs text-gray-500 mt-1">Starten Sie in 1 Minute</p>}
+                    {index === 0 && <p className="text-xs text-muted-foreground mt-1">Erfahren Sie mehr über RenovIrt</p>}
+                    {index === 1 && <p className="text-xs text-muted-foreground mt-1">Wählen Sie Ihre berufliche Rolle</p>}
+                    {index === 2 && <p className="text-xs text-muted-foreground mt-1">Ihre persönlichen & Firmendaten</p>}
+                    {index === 3 && <p className="text-xs text-muted-foreground mt-1">Helfen Sie uns, besser zu werden</p>}
+                    {index === 4 && <p className="text-xs text-muted-foreground mt-1">Starten Sie Ihr erstes Projekt</p>}
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="mt-8 pt-6 border-t border-gray-100">
-              <div className="flex items-center space-x-2 text-xs text-gray-500">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="mt-8 pt-6 border-t">
+              <div className="flex items-start space-x-3 text-xs text-muted-foreground">
+                <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
-                <span>Ihre Daten werden ausschließlich zur Bearbeitung Ihrer Aufträge verwendet und nicht an Dritte weitergegeben.</span>
+                <div>
+                  <p className="font-medium text-foreground mb-1">Datenschutz & Sicherheit</p>
+                  <p>Ihre Daten werden DSGVO-konform verarbeitet und ausschließlich zur Auftragsbearbeitung verwendet. Keine Weitergabe an Dritte.</p>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Main Content */}
           <div className="flex-1">
-            <div className="bg-white rounded-lg p-8 min-h-[600px]">
+            <div className="bg-card rounded-lg border p-8 min-h-[600px]">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentStep}
@@ -291,12 +296,12 @@ const Onboarding = () => {
         </div>
 
         {/* Back to login */}
-        <div className="mt-6">
+        <div className="mt-8">
           <button 
             onClick={() => navigate('/auth')} 
-            className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+            className="flex items-center text-muted-foreground hover:text-foreground transition-colors group"
           >
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             Zurück zur Anmeldung

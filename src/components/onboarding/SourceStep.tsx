@@ -16,7 +16,7 @@ interface SourceStepProps {
 const sources = [
   {
     id: 'google',
-    title: 'Google Suche',
+    title: 'Google-Suche',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -25,7 +25,7 @@ const sources = [
   },
   {
     id: 'ads',
-    title: 'Online-Werbung (Ads)',
+    title: 'Online-Werbung',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
@@ -42,17 +42,17 @@ const sources = [
     )
   },
   {
-    id: 'print',
-    title: 'Flyer/Print',
+    id: 'social',
+    title: 'Social Media',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
       </svg>
     )
   },
   {
     id: 'partner',
-    title: 'Partner/Kooperation',
+    title: 'Geschäftspartner',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -60,17 +60,8 @@ const sources = [
     )
   },
   {
-    id: 'social',
-    title: 'Social Media',
-    icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m0 0V1a1 1 0 011-1h2a1 1 0 011 1v3M7 4H5a1 1 0 00-1 1v14a1 1 0 001 1h14a1 1 0 001-1V5a1 1 0 00-1-1h-2m-7 0h8m-8 0v2m8-2v2m-8 0h8" />
-      </svg>
-    )
-  },
-  {
     id: 'event',
-    title: 'Messe/Event',
+    title: 'Messe/Veranstaltung',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0V5a2 2 0 012-2h4a2 2 0 012 2v2M8 7l4 8 4-8m-4 8v4m0-4c0 0-3-1.5-3-3s1.5-3 3-3 3 1.5 3 3-3 3-3 3" />
@@ -78,8 +69,17 @@ const sources = [
     )
   },
   {
+    id: 'print',
+    title: 'Print-Medien',
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+    )
+  },
+  {
     id: 'other',
-    title: 'Anderes',
+    title: 'Sonstiges',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -95,15 +95,15 @@ const SourceStep = ({ data, updateData, nextStep, prevStep }: SourceStepProps) =
   };
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-3xl">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Wie sind Sie auf uns aufmerksam geworden?</h2>
-        <p className="text-gray-600">
-          Dies hilft uns, unseren Service weiter zu verbessern.
+        <h2 className="text-2xl font-bold text-foreground mb-3">Wie sind Sie auf RenovIrt aufmerksam geworden?</h2>
+        <p className="text-muted-foreground text-lg">
+          Ihre Antwort hilft uns dabei, unseren Service kontinuierlich zu verbessern und noch besser auf die Bedürfnisse unserer Kunden einzugehen.
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         {sources.map((source) => {
           const isSelected = data.source === source.id;
           
@@ -111,19 +111,19 @@ const SourceStep = ({ data, updateData, nextStep, prevStep }: SourceStepProps) =
             <button
               key={source.id}
               onClick={() => selectSource(source.id)}
-              className={`p-4 rounded-lg border-2 transition-all text-left hover:border-orange-300 ${
+              className={`p-6 rounded-lg border-2 transition-all duration-200 text-left hover:shadow-md ${
                 isSelected
-                  ? 'border-orange-500 bg-orange-50'
-                  : 'border-gray-200 hover:bg-gray-50'
+                  ? 'border-primary bg-primary/5 shadow-md'
+                  : 'border-border hover:border-primary/50 bg-card'
               }`}
             >
-              <div className="flex items-center space-x-3">
-                <div className={`p-2 rounded-lg ${
-                  isSelected ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-600'
+              <div className="flex items-center space-x-4">
+                <div className={`p-3 rounded-lg transition-colors ${
+                  isSelected ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
                 }`}>
                   {source.icon}
                 </div>
-                <h3 className="font-medium text-gray-900 text-sm">{source.title}</h3>
+                <h3 className="font-medium text-foreground">{source.title}</h3>
               </div>
             </button>
           );
