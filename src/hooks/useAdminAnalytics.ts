@@ -35,11 +35,11 @@ export const useAdminAnalytics = (timeFilter: string = '30days') => {
         .select('*', { count: 'exact', head: true })
         .gte('created_at', startDate.toISOString());
 
-      // Get total revenue within date range
+      // Get total revenue within date range - consider both payment_status and status for paid orders
       const { data: revenueData } = await supabase
         .from('orders')
         .select('total_price')
-        .eq('payment_status', 'paid')
+        .or('payment_status.eq.paid,status.eq.delivered')
         .gte('created_at', startDate.toISOString())
         .not('total_price', 'is', null);
 
@@ -51,14 +51,15 @@ export const useAdminAnalytics = (timeFilter: string = '30days') => {
         .select('*', { count: 'exact', head: true })
         .gte('created_at', startDate.toISOString());
 
-      // Calculate average order value
-      const avgOrderValue = totalOrders && totalOrders > 0 ? totalRevenue / totalOrders : 0;
+      // Calculate average order value based on paid orders
+      const paidOrdersCount = revenueData?.length || 0;
+      const avgOrderValue = paidOrdersCount > 0 ? totalRevenue / paidOrdersCount : 0;
 
       // Get time-based revenue data (adjusted based on filter)
       const { data: timeBasedOrderData } = await supabase
         .from('orders')
         .select('created_at, total_price')
-        .eq('payment_status', 'paid')
+        .or('payment_status.eq.paid,status.eq.delivered')
         .gte('created_at', startDate.toISOString())
         .not('total_price', 'is', null);
 
