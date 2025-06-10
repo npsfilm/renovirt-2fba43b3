@@ -26,6 +26,8 @@ import AdminAnalytics from '@/pages/AdminAnalytics';
 import AdminSettings from '@/pages/AdminSettings';
 import AdminRoute from '@/components/admin/AdminRoute';
 import AdminHelpAnalytics from '@/pages/AdminHelpAnalytics';
+import EmailVerification from '@/pages/EmailVerification';
+import Onboarding from '@/pages/Onboarding';
 
 const queryClient = new QueryClient();
 
@@ -45,6 +47,8 @@ function App() {
               <Route path="/settings" element={<Settings />} />
               <Route path="/help" element={<Help />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/email-verification" element={<EmailVerification />} />
+              <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/order-flow" element={<OrderFlow />} />
               <Route path="/referrals" element={<Referrals />} />
               <Route path="/guidelines" element={<Guidelines />} />
