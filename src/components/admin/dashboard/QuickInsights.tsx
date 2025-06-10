@@ -179,7 +179,7 @@ const QuickInsights = () => {
               <AlertCircle className="w-6 h-6 text-red-500 mb-1" />
               {insights?.overdueCount > 0 && (
                 <Badge variant="destructive" className="text-xs">
-                  >48h
+                  &gt;48h
                 </Badge>
               )}
             </div>
