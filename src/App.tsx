@@ -21,6 +21,7 @@ import AdminAuth from '@/pages/AdminAuth';
 import AdminDashboard from '@/pages/AdminDashboard';
 import AdminOrders from '@/pages/AdminOrders';
 import AdminCustomers from '@/pages/AdminCustomers';
+import AdminReferrals from '@/pages/AdminReferrals';
 import AdminAnalytics from '@/pages/AdminAnalytics';
 import AdminSettings from '@/pages/AdminSettings';
 import AdminRoute from '@/components/admin/AdminRoute';
@@ -66,6 +67,11 @@ function App() {
               <Route path="/admin/customers" element={
                 <AdminRoute>
                   <AdminCustomers />
+                </AdminRoute>
+              } />
+              <Route path="/admin/referrals" element={
+                <AdminRoute>
+                  <AdminReferrals />
                 </AdminRoute>
               } />
               <Route path="/admin/analytics" element={

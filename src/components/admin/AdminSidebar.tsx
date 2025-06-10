@@ -1,63 +1,102 @@
 
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
-import { Home, FileText, Users, Settings, LogOut, TrendingUp, HelpCircle } from 'lucide-react';
+import { 
+  Sidebar, 
+  SidebarContent, 
+  SidebarHeader, 
+  SidebarMenu, 
+  SidebarMenuButton, 
+  SidebarMenuItem,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel
+} from '@/components/ui/sidebar';
+import { 
+  LayoutDashboard, 
+  Package, 
+  Users, 
+  BarChart3, 
+  Settings, 
+  HelpCircle,
+  Gift
+} from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 
 const AdminSidebar = () => {
-  const navigate = useNavigate();
   const location = useLocation();
-  const { signOut } = useAuth();
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/auth');
-  };
-
-  const isActivePath = (path: string) => {
-    return location.pathname.startsWith(path);
-  };
-
-  const menuItems = [
-    { title: 'Dashboard', icon: Home, url: '/admin/dashboard' },
-    { title: 'Bestellungen', icon: FileText, url: '/admin/orders' },
-    { title: 'Kunden', icon: Users, url: '/admin/customers' },
-    { title: 'Hilfestatistik', icon: HelpCircle, url: '/admin/help-analytics' },
-    { title: 'Analytics', icon: TrendingUp, url: '/admin/analytics' },
-    { title: 'Einstellungen', icon: Settings, url: '/admin/settings' }
+  const navigationItems = [
+    { 
+      name: 'Dashboard', 
+      href: '/admin/dashboard', 
+      icon: LayoutDashboard 
+    },
+    { 
+      name: 'Bestellungen', 
+      href: '/admin/orders', 
+      icon: Package 
+    },
+    { 
+      name: 'Kunden', 
+      href: '/admin/customers', 
+      icon: Users 
+    },
+    { 
+      name: 'Empfehlungen', 
+      href: '/admin/referrals', 
+      icon: Gift 
+    },
+    { 
+      name: 'Analytics', 
+      href: '/admin/analytics', 
+      icon: BarChart3 
+    },
+    { 
+      name: 'Hilfe Analytics', 
+      href: '/admin/help-analytics', 
+      icon: HelpCircle 
+    },
+    { 
+      name: 'Einstellungen', 
+      href: '/admin/settings', 
+      icon: Settings 
+    }
   ];
 
   return (
-    <Sidebar className="border-r border-sidebar-border bg-sidebar">
-      <SidebarHeader className="border-b border-sidebar-border p-4">
-        <div className="flex items-center gap-2">
-          <img
-            src="/lovable-uploads/d6ac9ba9-7ad2-408b-a2b0-5f31c269dd53.png"
-            alt="Renovirt Logo"
-            className="h-8 w-auto"
-          />
+    <Sidebar className="border-r border-gray-200">
+      <SidebarHeader className="border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-sm">R</span>
+          </div>
+          <div>
+            <h2 className="font-semibold text-gray-900">Renovirt</h2>
+            <p className="text-xs text-gray-500">Admin</p>
+          </div>
         </div>
       </SidebarHeader>
-
-      <SidebarContent className="p-2">
+      
+      <SidebarContent>
         <SidebarGroup>
+          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton
-                    onClick={() => navigate(item.url)}
-                    isActive={isActivePath(item.url)}
-                    className={`w-full justify-start ${
-                      isActivePath(item.url)
-                        ? 'bg-primary/10 text-primary border-primary/20'
-                        : 'hover:bg-sidebar-accent'
-                    }`}
+              {navigationItems.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton 
+                    asChild
+                    className={cn(
+                      "w-full text-left",
+                      location.pathname === item.href && "bg-gray-100"
+                    )}
                   >
-                    <item.icon className="w-4 h-4" />
-                    <span>{item.title}</span>
+                    <Link to={item.href}>
+                      <item.icon className="w-4 h-4" />
+                      <span>{item.name}</span>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -66,16 +105,12 @@ const AdminSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border p-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleSignOut}
-          className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
-        >
-          <LogOut className="w-4 h-4 mr-2" />
-          Abmelden
-        </Button>
+      <SidebarFooter className="border-t border-gray-200 p-4">
+        <div className="text-center">
+          <p className="text-xs text-gray-500">
+            © 2024 Renovirt
+          </p>
+        </div>
       </SidebarFooter>
     </Sidebar>
   );

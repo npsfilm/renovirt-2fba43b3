@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Users, Calendar, CheckCircle, Clock } from 'lucide-react';
+import { Users, Calendar, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -24,7 +24,10 @@ const ReferralHistory = () => {
           reward_claimed,
           created_at,
           credits_approved_at,
-          first_order_id
+          first_order_id,
+          admin_approved,
+          admin_approved_at,
+          admin_notes
         `)
         .eq('referrer_id', user.id)
         .order('created_at', { ascending: false });
@@ -60,13 +63,23 @@ const ReferralHistory = () => {
   }
 
   const getStatusBadge = (referral: any) => {
-    if (referral.credits_approved_at) {
+    if (referral.admin_approved && referral.credits_approved_at) {
       return <Badge variant="default" className="bg-green-100 text-green-800">Belohnung erhalten</Badge>;
     }
     if (referral.first_order_id) {
-      return <Badge variant="secondary">Erste Bestellung erfolgt</Badge>;
+      return <Badge variant="secondary" className="bg-orange-100 text-orange-800">Wartend auf Freigabe</Badge>;
     }
     return <Badge variant="outline">Warten auf erste Bestellung</Badge>;
+  };
+
+  const getStatusIcon = (referral: any) => {
+    if (referral.admin_approved && referral.credits_approved_at) {
+      return <CheckCircle className="w-6 h-6 text-green-600" />;
+    }
+    if (referral.first_order_id) {
+      return <Clock className="w-6 h-6 text-orange-600" />;
+    }
+    return <AlertCircle className="w-6 h-6 text-gray-400" />;
   };
 
   const formatDate = (dateString: string) => {
@@ -91,7 +104,7 @@ const ReferralHistory = () => {
             {referrals.map((referral) => (
               <div key={referral.id} className="flex items-center space-x-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Users className="w-6 h-6 text-blue-600" />
+                  {getStatusIcon(referral)}
                 </div>
                 
                 <div className="flex-1">
@@ -106,13 +119,25 @@ const ReferralHistory = () => {
                       <span>Erstellt: {formatDate(referral.created_at)}</span>
                     </div>
                     
-                    {referral.credits_approved_at && (
+                    {referral.first_order_id && (
                       <div className="flex items-center gap-1">
                         <CheckCircle className="w-4 h-4 text-green-600" />
-                        <span>Belohnt: {formatDate(referral.credits_approved_at)}</span>
+                        <span>Erste Bestellung erfolgt</span>
+                      </div>
+                    )}
+                    
+                    {referral.admin_approved_at && (
+                      <div className="flex items-center gap-1">
+                        <span>Freigegeben: {formatDate(referral.admin_approved_at)}</span>
                       </div>
                     )}
                   </div>
+
+                  {referral.admin_notes && (
+                    <div className="mt-2 text-sm text-muted-foreground bg-muted/50 p-2 rounded">
+                      <strong>Admin-Notiz:</strong> {referral.admin_notes}
+                    </div>
+                  )}
                 </div>
                 
                 <div className="text-right">
@@ -120,7 +145,7 @@ const ReferralHistory = () => {
                     {referral.reward_amount} Bilder
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    {referral.credits_approved_at ? 'Gutgeschrieben' : 'Ausstehend'}
+                    {referral.admin_approved ? 'Gutgeschrieben' : 'Ausstehend'}
                   </div>
                 </div>
               </div>
@@ -140,8 +165,8 @@ const ReferralHistory = () => {
           <h4 className="font-semibold mb-2">So funktioniert es:</h4>
           <ul className="text-sm text-muted-foreground space-y-1">
             <li>• Teilen Sie Ihren persönlichen Empfehlungscode</li>
-            <li>• Neue Nutzer erhalten 10 kostenlose Bilder bei der Registrierung</li>
-            <li>• Nach deren erster Bestellung erhalten Sie 10 kostenlose Bilder</li>
+            <li>• Nach der ersten Bestellung des neuen Kunden erfolgt eine Prüfung</li>
+            <li>• Nach manueller Freigabe durch den Administrator erhalten Sie 10 kostenlose Bilder</li>
             <li>• Belohnungen werden automatisch gutgeschrieben</li>
           </ul>
         </div>

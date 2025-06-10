@@ -529,6 +529,20 @@ export type Database = {
             foreignKeyName: "fk_orders_customer_profiles"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "admin_referrals_view"
+            referencedColumns: ["referred_user_id"]
+          },
+          {
+            foreignKeyName: "fk_orders_customer_profiles"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "admin_referrals_view"
+            referencedColumns: ["referrer_user_id"]
+          },
+          {
+            foreignKeyName: "fk_orders_customer_profiles"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "customer_profiles"
             referencedColumns: ["user_id"]
           },
@@ -627,6 +641,10 @@ export type Database = {
       }
       referrals: {
         Row: {
+          admin_approved: boolean | null
+          admin_approved_at: string | null
+          admin_approved_by: string | null
+          admin_notes: string | null
           created_at: string
           credits_approved_at: string | null
           first_order_id: string | null
@@ -639,6 +657,10 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          admin_approved?: boolean | null
+          admin_approved_at?: string | null
+          admin_approved_by?: string | null
+          admin_notes?: string | null
           created_at?: string
           credits_approved_at?: string | null
           first_order_id?: string | null
@@ -651,6 +673,10 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          admin_approved?: boolean | null
+          admin_approved_at?: string | null
+          admin_approved_by?: string | null
+          admin_notes?: string | null
           created_at?: string
           credits_approved_at?: string | null
           first_order_id?: string | null
@@ -708,9 +734,35 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      admin_referrals_view: {
+        Row: {
+          admin_approved: boolean | null
+          admin_approved_at: string | null
+          admin_approved_by: string | null
+          admin_name: string | null
+          admin_notes: string | null
+          created_at: string | null
+          first_order_id: string | null
+          id: string | null
+          referral_code: string | null
+          referred_name: string | null
+          referred_user_id: string | null
+          referrer_name: string | null
+          referrer_user_id: string | null
+          reward_amount: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      approve_referral_by_admin: {
+        Args: {
+          referral_id_param: string
+          admin_user_id: string
+          admin_notes_param?: string
+        }
+        Returns: Json
+      }
       approve_referral_credits: {
         Args: { order_id_param: string; user_id_param: string }
         Returns: Json

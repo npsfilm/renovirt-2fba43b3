@@ -1,51 +1,30 @@
-import React, { useState } from 'react';
+
+import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Copy, Check } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Copy, Share2, Mail, MessageSquare } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+
 interface ReferralShareModalProps {
   isOpen: boolean;
   onClose: () => void;
   referralCode: string;
 }
-const ReferralShareModal = ({
-  isOpen,
-  onClose,
-  referralCode
-}: ReferralShareModalProps) => {
-  const [copied, setCopied] = useState(false);
-  const {
-    toast
-  } = useToast();
-  const shareText = `Hey! 👋
 
-Ich nutze seit einiger Zeit Renovirt für meine Immobilienfotos und bin echt begeistert! 
+const ReferralShareModal = ({ isOpen, onClose, referralCode }: ReferralShareModalProps) => {
+  const { toast } = useToast();
 
-Falls du auch manchmal Fotos professionell bearbeiten lassen musst - das könnte interessant für dich sein:
+  const shareText = `Entdecken Sie Renovirt - professionelle Bildbearbeitung für Immobilien! Mit meinem Empfehlungscode "${referralCode}" können Sie sofort starten. Jetzt registrieren!`;
+  const shareUrl = `${window.location.origin}/auth?ref=${referralCode}`;
 
-✨ Was Renovirt macht:
-• Professionelle Bildbearbeitung für Immobilien
-• Himmel austauschen, Objekte entfernen, Farben optimieren
-• Super schnell - meist fertig in 1-2 Tagen
-• Preise ab 9€ pro Bild (je nach Aufwand)
-
-🎁 Das Beste: Mit meinem Code "${referralCode}" bekommst du 10 kostenlose Bearbeitungen zum Ausprobieren!
-
-Einfach auf renovirt.de registrieren und den Code eingeben. 
-
-Probier's mal aus, falls du mal professionelle Bildbearbeitung brauchst! 📸
-
-Liebe Grüße!`;
-  const copyToClipboard = async () => {
+  const copyToClipboard = async (text: string) => {
     try {
-      await navigator.clipboard.writeText(shareText);
-      setCopied(true);
+      await navigator.clipboard.writeText(text);
       toast({
-        title: "Text kopiert!",
-        description: "Der Empfehlungstext wurde in die Zwischenablage kopiert."
+        title: "Kopiert!",
+        description: "Text wurde in die Zwischenablage kopiert."
       });
-      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       toast({
         title: "Fehler",
@@ -54,45 +33,134 @@ Liebe Grüße!`;
       });
     }
   };
-  return <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Renovirt Empfehlung',
+          text: shareText,
+          url: shareUrl
+        });
+      } catch (err) {
+        // User cancelled or error occurred
+      }
+    } else {
+      copyToClipboard(shareText);
+    }
+  };
+
+  const handleEmailShare = () => {
+    const subject = 'Empfehlung: Renovirt - Professionelle Bildbearbeitung';
+    const body = `${shareText}\n\nRegistrieren Sie sich hier: ${shareUrl}`;
+    window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+  };
+
+  const handleWhatsAppShare = () => {
+    const whatsappText = `${shareText}\n${shareUrl}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(whatsappText)}`);
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center space-x-2">
-            <span>Renovirt weiterempfehlen</span>
-          </DialogTitle>
+          <DialogTitle>Empfehlungscode teilen</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4">
-          <p className="text-sm text-subtle">
-            Hier ist ein fertiger Text, den Sie an Freunde und Kollegen weiterleiten können:
-          </p>
-          
-          <div className="relative">
-            <Textarea value={shareText} readOnly className="min-h-[350px] text-sm font-mono bg-muted border-border resize-none" />
-          </div>
-          
-          <div className="flex justify-between items-center">
-            <div className="text-xs text-subtle">
-              Der Text enthält Ihren persönlichen Empfehlungscode: <span className="font-mono font-semibold">{referralCode}</span>
+          {/* Referral Code */}
+          <div>
+            <label className="block text-sm font-medium mb-2">Ihr Empfehlungscode:</label>
+            <div className="flex space-x-2">
+              <Input 
+                value={referralCode} 
+                readOnly 
+                className="font-mono text-center" 
+              />
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => copyToClipboard(referralCode)}
+              >
+                <Copy className="w-4 h-4" />
+              </Button>
             </div>
-            
-            <Button onClick={copyToClipboard} className="flex items-center space-x-2">
-              {copied ? <>
-                  <Check className="w-4 h-4" />
-                  <span>Kopiert!</span>
-                </> : <>
-                  <Copy className="w-4 h-4" />
-                  <span>Text kopieren</span>
-                </>}
+          </div>
+
+          {/* Share URL */}
+          <div>
+            <label className="block text-sm font-medium mb-2">Direkter Registrierungs-Link:</label>
+            <div className="flex space-x-2">
+              <Input 
+                value={shareUrl} 
+                readOnly 
+                className="text-sm" 
+              />
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => copyToClipboard(shareUrl)}
+              >
+                <Copy className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Share Text */}
+          <div>
+            <label className="block text-sm font-medium mb-2">Empfehlungstext:</label>
+            <div className="p-3 bg-muted rounded-lg text-sm">
+              {shareText}
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="mt-2 w-full"
+              onClick={() => copyToClipboard(shareText)}
+            >
+              <Copy className="w-4 h-4 mr-2" />
+              Text kopieren
             </Button>
           </div>
-          
-          <div className="bg-muted/50 rounded-lg p-4 text-sm">
+
+          {/* Share Buttons */}
+          <div className="grid grid-cols-1 gap-2">
+            <Button 
+              variant="outline" 
+              onClick={handleNativeShare}
+              className="w-full"
+            >
+              <Share2 className="w-4 h-4 mr-2" />
+              Teilen
+            </Button>
             
-            <p className="text-subtle">Teilen Sie diesen Text per E-Mail, WhatsApp, LinkedIn oder in sozialen Netzwerken. </p>
+            <Button 
+              variant="outline" 
+              onClick={handleEmailShare}
+              className="w-full"
+            >
+              <Mail className="w-4 h-4 mr-2" />
+              Per E-Mail teilen
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              onClick={handleWhatsAppShare}
+              className="w-full"
+            >
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Per WhatsApp teilen
+            </Button>
+          </div>
+
+          <div className="text-sm text-muted-foreground bg-blue-50 p-3 rounded-lg">
+            <strong>Hinweis:</strong> Sie erhalten 10 kostenfreie Bildbearbeitungen, sobald sich jemand mit Ihrem Code registriert und seine erste Bestellung aufgibt. Die Freigabe erfolgt durch unseren Administrator.
           </div>
         </div>
       </DialogContent>
-    </Dialog>;
+    </Dialog>
+  );
 };
+
 export default ReferralShareModal;
