@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Download, Package, Calendar, Euro, FileText, Image } from 'lucide-react';
 import { downloadFile } from '@/utils/fileDownloadService';
+import CustomerInvoicesList from './CustomerInvoicesList';
 
 interface OrderDetailsModalProps {
   orderId: string | null;
@@ -38,6 +39,15 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
             file_size,
             file_type,
             storage_path,
+            created_at
+          ),
+          order_invoices (
+            id,
+            file_name,
+            file_size,
+            file_type,
+            storage_path,
+            uploaded_by_name,
             created_at
           ),
           packages (
@@ -138,7 +148,7 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
             <span>Bestellung #{order.order_number || order.id.slice(0, 8)}</span>
@@ -146,7 +156,7 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
           </DialogTitle>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Order Information */}
           <div className="space-y-4">
             <div className="border rounded-lg p-4">
@@ -234,6 +244,11 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
                 )}
               </div>
             </div>
+          </div>
+
+          {/* Invoices Section */}
+          <div className="space-y-4">
+            <CustomerInvoicesList invoices={order.order_invoices || []} />
           </div>
         </div>
       </DialogContent>
