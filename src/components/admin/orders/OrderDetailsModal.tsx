@@ -86,14 +86,8 @@ const OrderDetailsModal = ({
 
   // Update order status using the database function
   const updateStatusMutation = useMutation({
-    mutationFn: async ({
-      status
-    }: {
-      status: string;
-    }) => {
-      const {
-        error
-      } = await supabase.rpc('update_order_status', {
+    mutationFn: async ({ status }: { status: string }) => {
+      const { error } = await supabase.rpc('update_order_status', {
         p_order_id: orderId,
         p_status: status,
         p_message: `Status aktualisiert von Admin`,
@@ -106,15 +100,9 @@ const OrderDetailsModal = ({
         title: "Status aktualisiert",
         description: "Der Bestellstatus wurde erfolgreich aktualisiert und der Kunde wurde benachrichtigt."
       });
-      queryClient.invalidateQueries({
-        queryKey: ['admin-orders']
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['order-details', orderId]
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['order-status-history', orderId]
-      });
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+      queryClient.invalidateQueries({ queryKey: ['order-details', orderId] });
+      queryClient.invalidateQueries({ queryKey: ['order-status-history', orderId] });
     },
     onError: (error: any) => {
       console.error('Status update error:', error);
@@ -125,11 +113,43 @@ const OrderDetailsModal = ({
       });
     }
   });
+
+  // Update payment status separately
+  const updatePaymentMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.rpc('update_order_payment_status', {
+        p_order_id: orderId,
+        p_payment_status: 'paid'
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Zahlung bestätigt",
+        description: "Die Bestellung wurde als bezahlt markiert."
+      });
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+      queryClient.invalidateQueries({ queryKey: ['order-details', orderId] });
+      queryClient.invalidateQueries({ queryKey: ['admin-analytics'] });
+    },
+    onError: (error: any) => {
+      console.error('Payment update error:', error);
+      toast({
+        title: "Fehler",
+        description: "Der Zahlungsstatus konnte nicht aktualisiert werden.",
+        variant: "destructive"
+      });
+    }
+  });
+
   const handleStatusUpdate = () => {
-    updateStatusMutation.mutate({
-      status: selectedStatus
-    });
+    updateStatusMutation.mutate({ status: selectedStatus });
   };
+
+  const handlePaymentUpdate = () => {
+    updatePaymentMutation.mutate();
+  };
+
   const handleFileDownload = async (image: any) => {
     try {
       const bucket = image.storage_path.includes('order-deliverables') ? 'order-deliverables' : 'order-images';
@@ -164,6 +184,11 @@ const OrderDetailsModal = ({
                 #{order?.order_number || order?.id.slice(0, 8)}
               </span>
               <OrderStatusBadge status={order?.status || 'pending'} />
+              {order?.payment_status === 'paid' && (
+                <Badge className="bg-green-100 text-green-800 text-xs">
+                  Bezahlt
+                </Badge>
+              )}
             </div>
           </DialogTitle>
         </DialogHeader>
@@ -172,7 +197,14 @@ const OrderDetailsModal = ({
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Left Column - Quick Actions */}
           <div className="space-y-6 py-0">
-            <QuickActions order={order} selectedStatus={selectedStatus} setSelectedStatus={setSelectedStatus} onStatusUpdate={handleStatusUpdate} isUpdating={updateStatusMutation.isPending} />
+            <QuickActions 
+              order={order} 
+              selectedStatus={selectedStatus} 
+              setSelectedStatus={setSelectedStatus} 
+              onStatusUpdate={handleStatusUpdate}
+              onPaymentUpdate={handlePaymentUpdate}
+              isUpdating={updateStatusMutation.isPending || updatePaymentMutation.isPending} 
+            />
             <OrderSummary order={order} />
             <CustomerDetails order={order} />
           </div>

@@ -11,6 +11,7 @@ interface QuickActionsProps {
   selectedStatus: string;
   setSelectedStatus: (status: string) => void;
   onStatusUpdate: () => void;
+  onPaymentUpdate: () => void;
   isUpdating: boolean;
 }
 
@@ -19,6 +20,7 @@ const QuickActions = ({
   selectedStatus,
   setSelectedStatus,
   onStatusUpdate,
+  onPaymentUpdate,
   isUpdating
 }: QuickActionsProps) => {
   const getQuickActions = () => {
@@ -61,18 +63,31 @@ const QuickActions = ({
           variant: 'secondary'
         }];
       case 'completed':
-        return [{
-          status: 'delivered',
-          label: 'Als bezahlt markieren',
-          icon: Euro,
-          variant: 'default'
-        }];
+        return []; // Keine Status-Schnellaktionen für abgeschlossene Bestellungen
       default:
         return [];
     }
   };
 
+  const getPaymentActions = () => {
+    const paymentStatus = order?.payment_status || 'pending';
+    const orderStatus = order?.status || 'pending';
+    
+    // Zeige Bezahlt-Button nur wenn Bestellung noch nicht als bezahlt markiert ist
+    if (paymentStatus !== 'paid') {
+      return [{
+        action: 'mark_paid',
+        label: 'Als bezahlt markieren',
+        icon: Euro,
+        variant: 'outline'
+      }];
+    }
+    
+    return [];
+  };
+
   const quickActions = getQuickActions();
+  const paymentActions = getPaymentActions();
 
   const handleQuickAction = (status: string) => {
     setSelectedStatus(status);
@@ -82,13 +97,33 @@ const QuickActions = ({
     }, 100);
   };
 
-  if (quickActions.length === 0) {
+  const handlePaymentAction = () => {
+    onPaymentUpdate();
+  };
+
+  // Zeige spezielle Karte wenn Bestellung abgeschlossen ist
+  if (order?.status === 'completed' && order?.payment_status === 'paid') {
     return (
       <Card className="border-2 border-green-200 bg-green-50">
         <CardContent className="p-3">
           <div className="text-center">
             <Badge variant="outline" className="bg-green-100 text-green-800 text-xs">
-              Bestellung abgeschlossen
+              Bestellung abgeschlossen & bezahlt
+            </Badge>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Zeige Aktionen wenn vorhanden
+  if (quickActions.length === 0 && paymentActions.length === 0) {
+    return (
+      <Card className="border-2 border-blue-200 bg-blue-50">
+        <CardContent className="p-3">
+          <div className="text-center">
+            <Badge variant="outline" className="bg-blue-100 text-blue-800 text-xs">
+              {order?.status === 'completed' ? 'Bestellung abgeschlossen' : 'Keine Aktionen verfügbar'}
             </Badge>
           </div>
         </CardContent>
@@ -101,12 +136,31 @@ const QuickActions = ({
       <CardContent className="p-3">
         <h3 className="font-semibold text-sm mb-3">Schnellaktionen</h3>
         <div className="space-y-2">
+          {/* Status Aktionen */}
           {quickActions.map((action) => {
             const IconComponent = action.icon;
             return (
               <Button
                 key={action.status}
                 onClick={() => handleQuickAction(action.status)}
+                disabled={isUpdating}
+                variant={action.variant as any}
+                size="sm"
+                className="w-full justify-start text-xs"
+              >
+                <IconComponent className="w-3 h-3 mr-2" />
+                {action.label}
+              </Button>
+            );
+          })}
+          
+          {/* Payment Aktionen */}
+          {paymentActions.map((action) => {
+            const IconComponent = action.icon;
+            return (
+              <Button
+                key={action.action}
+                onClick={handlePaymentAction}
                 disabled={isUpdating}
                 variant={action.variant as any}
                 size="sm"
