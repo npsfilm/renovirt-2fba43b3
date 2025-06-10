@@ -71,19 +71,27 @@ const AdminOrders = () => {
         query = query.lte('created_at', endDate.toISOString());
       }
 
-      // Optimierte Suche für Bestellnummer und Kundenname
+      // Verbesserte Suche für Bestellnummer und Kundenname
       if (searchTerm && searchTerm.trim()) {
         const term = searchTerm.trim();
         console.log('Applying search for term:', term);
         
-        // Verbesserte OR-Suche mit besserer Performance
-        query = query.or(`
-          order_number.ilike.%${term}%,
-          customer_email.ilike.%${term}%,
-          customer_profiles.first_name.ilike.%${term}%,
-          customer_profiles.last_name.ilike.%${term}%,
-          customer_profiles.company.ilike.%${term}%
-        `);
+        // Separate Abfragen für bessere Performance und Genauigkeit
+        const searchConditions = [
+          `order_number.ilike.%${term}%`,
+          `customer_email.ilike.%${term}%`
+        ];
+        
+        // Nur wenn der Suchterm nicht nur Zahlen/Buchstaben für Bestellnummer ist
+        if (!/^[A-Z0-9-]+$/.test(term.toUpperCase())) {
+          searchConditions.push(
+            `customer_profiles.first_name.ilike.%${term}%`,
+            `customer_profiles.last_name.ilike.%${term}%`,
+            `customer_profiles.company.ilike.%${term}%`
+          );
+        }
+        
+        query = query.or(searchConditions.join(','));
       }
 
       const { data, error } = await query;
@@ -94,6 +102,7 @@ const AdminOrders = () => {
       }
       
       console.log('Orders fetched:', data?.length || 0);
+      console.log('Sample order with order_number:', data?.[0]?.order_number);
       return data;
     },
     // Reduzierte Stale-Zeit für bessere Reaktivität bei Suche
