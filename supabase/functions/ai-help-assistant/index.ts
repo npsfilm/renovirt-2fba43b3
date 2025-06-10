@@ -109,12 +109,13 @@ Beschreiben Sie gerne Ihr Anliegen - ich bin hier, um zu helfen!`;
       }
     }
 
-    // Get FAQ context from help_documents
+    // Get FAQ context from help_documents - using maybeSingle to avoid errors if table doesn't exist
     const { data: faqDocs } = await supabase
       .from('help_documents')
       .select('title, content')
       .eq('is_active', true)
-      .order('created_at', { ascending: true });
+      .order('id', { ascending: true })
+      .limit(10);
 
     let faqContext = '';
     if (faqDocs && faqDocs.length > 0) {
@@ -151,7 +152,7 @@ RENOVIRT SERVICES:
 
 Beantworte die Kundenfrage präzise und hilfreich basierend auf diesen Informationen.`;
 
-    // Call OpenAI API
+    // Call OpenAI API with updated model
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -159,21 +160,30 @@ Beantworte die Kundenfrage präzise und hilfreich basierend auf diesen Informati
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4.1-2025-04-14',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: question }
         ],
         max_tokens: 1000,
-        temperature: 0.3, // Lower temperature for more consistent, factual responses
+        temperature: 0.3,
       }),
     });
 
     if (!openAIResponse.ok) {
+      console.error(`OpenAI API error: ${openAIResponse.status} - ${openAIResponse.statusText}`);
+      const errorText = await openAIResponse.text();
+      console.error('OpenAI API error details:', errorText);
       throw new Error(`OpenAI API error: ${openAIResponse.status}`);
     }
 
     const data = await openAIResponse.json();
+    
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error('Invalid OpenAI response structure:', data);
+      throw new Error('Invalid response from OpenAI API');
+    }
+    
     const aiResponse = data.choices[0].message.content;
     const responseTime = Date.now() - startTime;
 
