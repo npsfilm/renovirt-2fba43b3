@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { SidebarTrigger } from '@/components/ui/sidebar';
@@ -10,12 +11,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { Search, User, Mail, Phone, Building, FileText, ShoppingCart } from 'lucide-react';
 import CustomerDetailsModal from '@/components/admin/customers/CustomerDetailsModal';
 import CustomerOrdersModal from '@/components/admin/customers/CustomerOrdersModal';
+import CustomerInvoiceUploadModal from '@/components/admin/customers/CustomerInvoiceUploadModal';
 import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
 
 const AdminCustomers = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
   const [selectedCustomerForOrders, setSelectedCustomerForOrders] = useState<{id: string, name: string} | null>(null);
+  const [selectedCustomerForInvoice, setSelectedCustomerForInvoice] = useState<{id: string, name: string} | null>(null);
 
   // Enable real-time updates
   useRealtimeOrders();
@@ -65,9 +68,8 @@ const AdminCustomers = () => {
     setSelectedCustomerForOrders({ id: customerId, name: customerName });
   };
 
-  const handleAttachInvoice = (customerId: string) => {
-    // TODO: Implement invoice attachment functionality
-    console.log('Attach invoice for customer:', customerId);
+  const handleAttachInvoice = (customerId: string, customerName: string) => {
+    setSelectedCustomerForInvoice({ id: customerId, name: customerName });
   };
 
   return (
@@ -198,7 +200,7 @@ const AdminCustomers = () => {
                     size="sm" 
                     variant="outline" 
                     className="w-full"
-                    onClick={() => handleAttachInvoice(customer.id)}
+                    onClick={() => handleAttachInvoice(customer.id, `${customer.first_name} ${customer.last_name}`)}
                   >
                     <FileText className="w-4 h-4 mr-1" />
                     Rechnung anhängen
@@ -227,6 +229,13 @@ const AdminCustomers = () => {
         customerName={selectedCustomerForOrders?.name || ''}
         isOpen={!!selectedCustomerForOrders}
         onClose={() => setSelectedCustomerForOrders(null)}
+      />
+
+      <CustomerInvoiceUploadModal
+        customerId={selectedCustomerForInvoice?.id || null}
+        customerName={selectedCustomerForInvoice?.name || ''}
+        isOpen={!!selectedCustomerForInvoice}
+        onClose={() => setSelectedCustomerForInvoice(null)}
       />
     </AdminLayout>
   );
