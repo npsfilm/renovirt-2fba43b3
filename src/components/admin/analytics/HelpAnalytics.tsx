@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useHelpAnalytics, useRecentHelpInteractions } from './hooks/useHelpAnalytics';
-import AnalyticsMetrics from './components/AnalyticsMetrics';
+import HelpMetrics from './components/HelpMetrics';
 import DailyStatsChart from './components/DailyStatsChart';
 import TopQuestions from './components/TopQuestions';
 import RecentInteractions from './components/RecentInteractions';
@@ -22,7 +22,7 @@ const HelpAnalytics = () => {
   return (
     <div className="space-y-6">
       {/* Key Metrics */}
-      <AnalyticsMetrics analytics={analytics} />
+      <HelpMetrics analytics={analytics} />
 
       {/* Daily Questions Chart */}
       <DailyStatsChart data={analytics.daily_stats} />
