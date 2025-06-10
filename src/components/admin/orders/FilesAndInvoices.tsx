@@ -41,6 +41,10 @@ const FilesAndInvoices = ({ order, orderId, onFileDownload }: FilesAndInvoicesPr
       });
 
       const orderNumber = order.order_number || `Bestellung-${order.id.slice(0, 8)}`;
+      
+      console.log('Starting ZIP creation with files:', order.order_images);
+      console.log('Order number:', orderNumber);
+      
       await createOrderZip(order.order_images, orderNumber, 'order-images');
 
       toast({
@@ -48,9 +52,12 @@ const FilesAndInvoices = ({ order, orderId, onFileDownload }: FilesAndInvoicesPr
         description: `${orderNumber}.zip wird heruntergeladen...`,
       });
     } catch (error) {
+      console.error('ZIP creation error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unbekannter Fehler';
+      
       toast({
         title: "ZIP-Fehler",
-        description: "Das ZIP-Archiv konnte nicht erstellt werden.",
+        description: `Das ZIP-Archiv konnte nicht erstellt werden: ${errorMessage}`,
         variant: "destructive",
       });
     }
@@ -99,6 +106,9 @@ const FilesAndInvoices = ({ order, orderId, onFileDownload }: FilesAndInvoicesPr
                     <p className="text-sm font-medium truncate">{image.file_name}</p>
                     <p className="text-xs text-gray-500">
                       {(image.file_size / 1024 / 1024).toFixed(1)} MB
+                    </p>
+                    <p className="text-xs text-gray-400 truncate">
+                      {image.storage_path}
                     </p>
                   </div>
                 </div>

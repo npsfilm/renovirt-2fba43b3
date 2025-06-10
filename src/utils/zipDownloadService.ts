@@ -17,6 +17,17 @@ export const createOrderZip = async (
   bucketName: string = 'order-images'
 ): Promise<void> => {
   try {
+    secureLog('Starting ZIP creation:', { 
+      orderNumber, 
+      filesCount: files.length,
+      bucketName,
+      files: files.map(f => ({ name: f.file_name, path: f.storage_path }))
+    });
+
+    if (!files || files.length === 0) {
+      throw new Error('Keine Dateien zum Herunterladen vorhanden');
+    }
+
     const zip = new JSZip();
     const folder = zip.folder(orderNumber);
     
@@ -27,20 +38,63 @@ export const createOrderZip = async (
     // Download all files and add them to the ZIP
     const downloadPromises = files.map(async (file) => {
       try {
+        secureLog('Attempting to download file:', { 
+          fileName: file.file_name, 
+          storagePath: file.storage_path,
+          bucketName 
+        });
+
+        // Try downloading from the specified bucket
         const { data, error } = await supabase.storage
           .from(bucketName)
           .download(file.storage_path);
 
         if (error) {
-          secureLog('Failed to download file for ZIP:', { fileName: file.file_name, error });
+          secureLog('Storage download error:', { 
+            fileName: file.file_name, 
+            error: error.message,
+            storagePath: file.storage_path,
+            bucketName
+          });
+          
+          // Try alternative bucket if the primary fails
+          if (bucketName === 'order-images') {
+            secureLog('Trying alternative bucket: order-deliverables');
+            const { data: altData, error: altError } = await supabase.storage
+              .from('order-deliverables')
+              .download(file.storage_path);
+            
+            if (altError) {
+              secureLog('Alternative bucket also failed:', { 
+                fileName: file.file_name, 
+                error: altError.message 
+              });
+              return null;
+            }
+            
+            folder.file(file.file_name, altData);
+            secureLog('File downloaded from alternative bucket:', { fileName: file.file_name });
+            return file.file_name;
+          }
+          
+          return null;
+        }
+
+        if (!data) {
+          secureLog('No data returned for file:', { fileName: file.file_name });
           return null;
         }
 
         // Add file to ZIP folder
         folder.file(file.file_name, data);
+        secureLog('File added to ZIP:', { fileName: file.file_name });
         return file.file_name;
       } catch (error) {
-        secureLog('Error downloading file for ZIP:', { fileName: file.file_name, error });
+        secureLog('Error downloading file for ZIP:', { 
+          fileName: file.file_name, 
+          error: error instanceof Error ? error.message : 'Unknown error',
+          storagePath: file.storage_path
+        });
         return null;
       }
     });
@@ -48,8 +102,14 @@ export const createOrderZip = async (
     const results = await Promise.all(downloadPromises);
     const successfulFiles = results.filter(Boolean);
 
+    secureLog('Download results:', { 
+      successful: successfulFiles.length, 
+      total: files.length,
+      successfulFiles 
+    });
+
     if (successfulFiles.length === 0) {
-      throw new Error('Keine Dateien konnten heruntergeladen werden');
+      throw new Error('Keine Dateien konnten heruntergeladen werden. Möglicherweise sind die Dateien nicht verfügbar oder der Storage-Bucket ist nicht korrekt konfiguriert.');
     }
 
     // Generate and download ZIP using native browser API
@@ -73,7 +133,11 @@ export const createOrderZip = async (
     });
 
   } catch (error) {
-    secureLog('ZIP creation failed:', { orderNumber, error });
+    secureLog('ZIP creation failed:', { 
+      orderNumber, 
+      error: error instanceof Error ? error.message : 'Unknown error',
+      errorDetails: error
+    });
     throw error;
   }
 };
