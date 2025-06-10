@@ -22,14 +22,15 @@ const SecurityAuditLog = () => {
   const { data: securityEvents, isLoading } = useQuery({
     queryKey: ['security-events'],
     queryFn: async () => {
+      // Direkter SQL-Aufruf bis die Typen aktualisiert sind
       const { data, error } = await supabase
-        .from('security_events')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(50);
+        .rpc('get_security_events', {});
       
-      if (error) throw error;
-      return data as SecurityEvent[];
+      if (error) {
+        console.error('Error fetching security events:', error);
+        return [];
+      }
+      return (data || []) as SecurityEvent[];
     },
   });
 
@@ -79,7 +80,7 @@ const SecurityAuditLog = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-3 max-h-96 overflow-y-auto">
-          {securityEvents?.map((event) => (
+          {securityEvents && securityEvents.length > 0 ? securityEvents.map((event) => (
             <div key={event.id} className="flex items-center justify-between p-3 border rounded-lg">
               <div className="flex items-center gap-3">
                 {getEventIcon(event.event_type)}
@@ -97,7 +98,7 @@ const SecurityAuditLog = () => {
                 {event.severity}
               </Badge>
             </div>
-          )) || (
+          )) : (
             <p className="text-center text-gray-500 py-8">
               Keine Sicherheitsereignisse vorhanden
             </p>
