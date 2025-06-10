@@ -1,63 +1,14 @@
-
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarTrigger,
-} from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { 
-  Shield, 
-  ShoppingCart, 
-  Users, 
-  Settings, 
-  LogOut,
-  Home,
-  BarChart3
-} from 'lucide-react';
+import { Home, FileText, Users, Settings, LogOut, Package, TrendingUp, Plus, UserCheck, HelpCircle } from 'lucide-react';
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { signOut } = useAuth();
-
-  // Removed Gallery from admin menu items
-  const adminMenuItems = [
-    {
-      title: 'Dashboard',
-      icon: Home,
-      url: '/management',
-    },
-    {
-      title: 'Bestellungen',
-      icon: ShoppingCart,
-      url: '/management/orders',
-    },
-    {
-      title: 'Kunden',
-      icon: Users,
-      url: '/management/customers',
-    },
-    {
-      title: 'Analytics',
-      icon: BarChart3,
-      url: '/management/analytics',
-    },
-    {
-      title: 'Einstellungen',
-      icon: Settings,
-      url: '/management/settings',
-    },
-  ];
 
   const handleSignOut = async () => {
     await signOut();
@@ -65,25 +16,30 @@ const AdminSidebar = () => {
   };
 
   const isActivePath = (path: string) => {
-    if (path === '/management') {
-      return location.pathname === '/management';
-    }
     return location.pathname.startsWith(path);
   };
 
+  const menuItems = [
+    { title: 'Dashboard', icon: Home, url: '/admin/dashboard' },
+    { title: 'Bestellungen', icon: FileText, url: '/admin/orders' },
+    { title: 'Kunden', icon: Users, url: '/admin/customers' },
+    { title: 'Hilfestatistik', icon: HelpCircle, url: '/admin/help-analytics' },
+    { title: 'Analytics', icon: TrendingUp, url: '/admin/analytics' },
+    { title: 'Pakete', icon: Package, url: '/admin/packages' },
+    { title: 'Add-ons', icon: Plus, url: '/admin/addons' },
+    { title: 'Benutzer', icon: UserCheck, url: '/admin/users' },
+    { title: 'Einstellungen', icon: Settings, url: '/admin/settings' }
+  ];
+
   return (
-    <Sidebar className="border-r border-gray-200 bg-white">
-      <SidebarHeader className="border-b border-gray-200 p-4">
+    <Sidebar className="border-r border-sidebar-border bg-sidebar">
+      <SidebarHeader className="border-b border-sidebar-border p-4">
         <div className="flex items-center gap-2">
-          <img 
-            src="/lovable-uploads/d6ac9ba9-7ad2-408b-a2b0-5f31c269dd53.png" 
-            alt="Renovirt Logo" 
+          <img
+            src="/lovable-uploads/d6ac9ba9-7ad2-408b-a2b0-5f31c269dd53.png"
+            alt="Renovirt Logo"
             className="h-8 w-auto"
           />
-          <div>
-            <h2 className="text-lg font-bold text-gray-900">Admin Panel</h2>
-            <p className="text-xs text-gray-500">Management Dashboard</p>
-          </div>
         </div>
       </SidebarHeader>
 
@@ -91,15 +47,15 @@ const AdminSidebar = () => {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {adminMenuItems.map((item) => (
+              {menuItems.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton
                     onClick={() => navigate(item.url)}
                     isActive={isActivePath(item.url)}
                     className={`w-full justify-start ${
                       isActivePath(item.url)
-                        ? 'bg-red-50 text-red-700 border-red-200'
-                        : 'hover:bg-gray-50'
+                        ? 'bg-primary/10 text-primary border-primary/20'
+                        : 'hover:bg-sidebar-accent'
                     }`}
                   >
                     <item.icon className="w-4 h-4" />
@@ -112,27 +68,16 @@ const AdminSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-gray-200 p-4">
-        <div className="space-y-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate('/dashboard')}
-            className="w-full justify-start"
-          >
-            <Home className="w-4 h-4 mr-2" />
-            Zurück zu App
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleSignOut}
-            className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Abmelden
-          </Button>
-        </div>
+      <SidebarFooter className="border-t border-sidebar-border p-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleSignOut}
+          className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+        >
+          <LogOut className="w-4 h-4 mr-2" />
+          Abmelden
+        </Button>
       </SidebarFooter>
     </Sidebar>
   );

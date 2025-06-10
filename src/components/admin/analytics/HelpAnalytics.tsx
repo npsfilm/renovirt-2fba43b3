@@ -5,6 +5,7 @@ import AnalyticsMetrics from './components/AnalyticsMetrics';
 import DailyStatsChart from './components/DailyStatsChart';
 import TopQuestions from './components/TopQuestions';
 import RecentInteractions from './components/RecentInteractions';
+import HelpInteractionsTable from './components/HelpInteractionsTable';
 
 const HelpAnalytics = () => {
   const { analytics, isLoading } = useHelpAnalytics();
@@ -31,6 +32,9 @@ const HelpAnalytics = () => {
         <TopQuestions questions={analytics.top_questions} />
         <RecentInteractions interactions={recentInteractions} />
       </div>
+
+      {/* Detailed Interactions Table */}
+      <HelpInteractionsTable />
     </div>
   );
 };
