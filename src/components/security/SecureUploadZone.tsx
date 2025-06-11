@@ -99,8 +99,8 @@ const SecureUploadZone = ({
       onFiles(fileList.files);
       
       toast({
-        title: "Dateien hochgeladen",
-        description: `${validFiles.length} Datei(en) erfolgreich validiert und hochgeladen.`,
+        title: "Dateien validiert",
+        description: `${validFiles.length} Datei(en) erfolgreich validiert und bereit zum Upload.`,
       });
     }
 
@@ -108,17 +108,42 @@ const SecureUploadZone = ({
     event.target.value = '';
   }, [onFiles, maxFiles, userId, toast, checkPermission]);
 
+  const handleDragOver = useCallback((event: React.DragEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+  }, []);
+
+  const handleDrop = useCallback(async (event: React.DragEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const files = event.dataTransfer.files;
+    if (files && files.length > 0) {
+      // Create a synthetic event for the file handler
+      const syntheticEvent = {
+        target: { files, value: '' }
+      } as React.ChangeEvent<HTMLInputElement>;
+      
+      await handleFileSelect(syntheticEvent);
+    }
+  }, [handleFileSelect]);
+
   return (
     <div className={className}>
       <input
         type="file"
         multiple
-        accept="image/jpeg,image/png,image/tiff,image/webp"
+        accept="image/jpeg,image/png,image/tiff,image/webp,application/zip"
         onChange={handleFileSelect}
         style={{ display: 'none' }}
         id="secure-file-input"
       />
-      <label htmlFor="secure-file-input" style={{ cursor: 'pointer', display: 'block' }}>
+      <label 
+        htmlFor="secure-file-input" 
+        style={{ cursor: 'pointer', display: 'block' }}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+      >
         {children}
       </label>
     </div>
