@@ -10,33 +10,77 @@ import { supabase } from '@/integrations/supabase/client';
 const ReferralHistory = () => {
   const { user } = useAuth();
 
-  const { data: referrals, isLoading } = useQuery({
+  const { data: referrals, isLoading, error } = useQuery({
     queryKey: ['referral-history', user?.id],
     queryFn: async () => {
-      if (!user?.id) return [];
+      if (!user?.id) {
+        console.log('ReferralHistory: No user ID available');
+        return [];
+      }
       
-      const { data, error } = await supabase
-        .from('referrals')
-        .select(`
-          id,
-          referral_code,
-          reward_amount,
-          reward_claimed,
-          created_at,
-          credits_approved_at,
-          first_order_id,
-          admin_approved,
-          admin_approved_at,
-          admin_notes
-        `)
-        .eq('referrer_id', user.id)
-        .order('created_at', { ascending: false });
+      console.log('ReferralHistory: Fetching referral history for user:', user.id);
+      
+      try {
+        const { data, error } = await supabase
+          .from('referrals')
+          .select(`
+            id,
+            referral_code,
+            reward_amount,
+            reward_claimed,
+            created_at,
+            credits_approved_at,
+            first_order_id,
+            admin_approved,
+            admin_approved_at,
+            admin_notes
+          `)
+          .eq('referrer_id', user.id)
+          .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      return data || [];
+        console.log('ReferralHistory: Query result:', { data, error });
+
+        if (error) {
+          console.error('ReferralHistory: Database error:', error);
+          throw error;
+        }
+
+        console.log('ReferralHistory: Successfully fetched referrals:', data?.length || 0);
+        return data || [];
+      } catch (error) {
+        console.error('ReferralHistory: Error in query function:', error);
+        throw error;
+      }
     },
     enabled: !!user?.id,
+    retry: 3,
+    retryDelay: 1000,
   });
+
+  console.log('ReferralHistory: Component state:', { isLoading, error, referralsCount: referrals?.length, userId: user?.id });
+
+  if (error) {
+    console.error('ReferralHistory: Render error:', error);
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="w-5 h-5" />
+            Empfehlungshistorie
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">
+            <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-500" />
+            <h3 className="text-lg font-semibold mb-2 text-red-600">Fehler beim Laden</h3>
+            <p className="text-muted-foreground mb-4">
+              {error.message || 'Die Empfehlungshistorie konnte nicht geladen werden.'}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (isLoading) {
     return (
