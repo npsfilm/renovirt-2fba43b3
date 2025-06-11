@@ -9,81 +9,41 @@ import { supabase } from '@/integrations/supabase/client';
 const ReferralStats = () => {
   const { user } = useAuth();
 
-  const { data: stats, isLoading, error } = useQuery({
+  const { data: stats, isLoading } = useQuery({
     queryKey: ['referral-detailed-stats', user?.id],
     queryFn: async () => {
-      if (!user?.id) {
-        console.log('ReferralStats: No user ID available');
-        return null;
-      }
+      if (!user?.id) return null;
       
-      console.log('ReferralStats: Fetching referral stats for user:', user.id);
-      
-      try {
-        const { data: referrals, error } = await supabase
-          .from('referrals')
-          .select('reward_amount, reward_claimed, created_at, credits_approved_at')
-          .eq('referrer_id', user.id);
+      const { data: referrals, error } = await supabase
+        .from('referrals')
+        .select('reward_amount, reward_claimed, created_at, credits_approved_at')
+        .eq('referrer_id', user.id);
 
-        console.log('ReferralStats: Query result:', { data: referrals, error });
+      if (error) throw error;
 
-        if (error) {
-          console.error('ReferralStats: Database error:', error);
-          throw error;
-        }
+      const totalReferrals = referrals?.length || 0;
+      const totalRewards = referrals?.reduce((sum, ref) => sum + ref.reward_amount, 0) || 0;
+      const claimedRewards = referrals?.filter(ref => ref.credits_approved_at).length || 0;
+      const pendingRewards = totalReferrals - claimedRewards;
 
-        const totalReferrals = referrals?.length || 0;
-        const totalRewards = referrals?.reduce((sum, ref) => sum + ref.reward_amount, 0) || 0;
-        const claimedRewards = referrals?.filter(ref => ref.credits_approved_at).length || 0;
-        const pendingRewards = totalReferrals - claimedRewards;
+      // Calculate this month's referrals
+      const currentMonth = new Date().getMonth();
+      const currentYear = new Date().getFullYear();
+      const thisMonthReferrals = referrals?.filter(ref => {
+        const refDate = new Date(ref.created_at);
+        return refDate.getMonth() === currentMonth && refDate.getFullYear() === currentYear;
+      }).length || 0;
 
-        // Calculate this month's referrals
-        const currentMonth = new Date().getMonth();
-        const currentYear = new Date().getFullYear();
-        const thisMonthReferrals = referrals?.filter(ref => {
-          const refDate = new Date(ref.created_at);
-          return refDate.getMonth() === currentMonth && refDate.getFullYear() === currentYear;
-        }).length || 0;
-
-        const statsResult = {
-          totalReferrals,
-          totalRewards,
-          claimedRewards,
-          pendingRewards,
-          thisMonthReferrals
-        };
-
-        console.log('ReferralStats: Calculated stats:', statsResult);
-        return statsResult;
-      } catch (error) {
-        console.error('ReferralStats: Error in query function:', error);
-        throw error;
-      }
+      return {
+        totalReferrals,
+        totalRewards,
+        claimedRewards,
+        pendingRewards,
+        thisMonthReferrals
+      };
     },
     enabled: !!user?.id,
-    retry: 3,
-    retryDelay: 1000,
   });
-
-  console.log('ReferralStats: Component state:', { isLoading, error, stats, userId: user?.id });
-
-  if (error) {
-    console.error('ReferralStats: Render error:', error);
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="col-span-full">
-          <CardContent className="p-6">
-            <div className="text-center text-red-600">
-              <p>Fehler beim Laden der Empfehlungsstatistiken</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                {error.message || 'Unbekannter Fehler'}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   if (isLoading) {
     return (
@@ -151,7 +111,7 @@ const ReferralStats = () => {
               </div>
             </div>
           </CardContent>
-        </div>
+        </Card>
       ))}
     </div>
   );
