@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Gift, Copy, Share2, Users, ArrowRight, CheckCircle } from 'lucide-react';
+import { Gift, Copy, Share2, Users, ArrowRight, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import ReferralShareModal from './ReferralShareModal';
@@ -13,13 +13,21 @@ import ReferralShareModal from './ReferralShareModal';
 const ModernReferralBox = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isCreatingCode, setIsCreatingCode] = useState(false);
 
-  const { data: referralCode, isLoading } = useQuery({
+  const { data: referralCode, isLoading, error, refetch } = useQuery({
     queryKey: ['referral-code', user?.id],
     queryFn: async () => {
-      if (!user?.id) return null;
+      if (!user?.id) {
+        console.log('ModernReferralBox: No user ID available');
+        return null;
+      }
       
+      console.log('ModernReferralBox: Fetching referral code for user:', user.id);
+      
+      // First, try to get existing referral code
       const { data, error } = await supabase
         .from('referral_codes')
         .select('code')
@@ -27,10 +35,32 @@ const ModernReferralBox = () => {
         .eq('is_active', true)
         .maybeSingle();
 
-      if (error) throw error;
-      return data?.code || null;
+      if (error) {
+        console.error('ModernReferralBox: Error fetching referral code:', error);
+        throw error;
+      }
+      
+      if (data?.code) {
+        console.log('ModernReferralBox: Found existing referral code:', data.code);
+        return data.code;
+      }
+
+      // If no code exists, create one using the database function
+      console.log('ModernReferralBox: No referral code found, creating new one');
+      const { data: newCode, error: createError } = await supabase
+        .rpc('create_user_referral_code', { user_uuid: user.id });
+
+      if (createError) {
+        console.error('ModernReferralBox: Error creating referral code:', createError);
+        throw createError;
+      }
+
+      console.log('ModernReferralBox: Created new referral code:', newCode);
+      return newCode;
     },
     enabled: !!user?.id,
+    retry: 3,
+    retryDelay: 1000,
   });
 
   const { data: referralStats } = useQuery({
@@ -53,6 +83,25 @@ const ModernReferralBox = () => {
     enabled: !!user?.id,
   });
 
+  const handleRetry = async () => {
+    setIsCreatingCode(true);
+    try {
+      await refetch();
+      toast({
+        title: "Aktualisiert!",
+        description: "Empfehlungscode wurde erfolgreich geladen."
+      });
+    } catch (err) {
+      toast({
+        title: "Fehler",
+        description: "Konnte Empfehlungscode nicht laden.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsCreatingCode(false);
+    }
+  };
+
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -73,7 +122,7 @@ const ModernReferralBox = () => {
     setIsShareModalOpen(true);
   };
 
-  if (isLoading) {
+  if (isLoading || isCreatingCode) {
     return (
       <Card className="bg-card border-border shadow-sm">
         <CardContent className="p-8">
@@ -87,6 +136,41 @@ const ModernReferralBox = () => {
             </div>
             <div className="h-12 bg-muted rounded mb-4"></div>
             <div className="h-4 bg-muted rounded w-40"></div>
+          </div>
+          <div className="text-center mt-4">
+            <p className="text-sm text-muted-foreground">
+              {isCreatingCode ? 'Empfehlungscode wird erstellt...' : 'Empfehlungscode wird geladen...'}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="bg-card border-border shadow-sm">
+        <CardContent className="p-8">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="w-10 h-10 bg-destructive/10 rounded-xl flex items-center justify-center">
+              <AlertCircle className="w-5 h-5 text-destructive" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">Fehler beim Laden</h3>
+              <p className="text-sm text-subtle">Empfehlungscode konnte nicht geladen werden</p>
+            </div>
+          </div>
+          
+          <div className="text-center">
+            <Button 
+              onClick={handleRetry} 
+              variant="outline" 
+              className="flex items-center gap-2"
+              disabled={isCreatingCode}
+            >
+              <RefreshCw className={`w-4 h-4 ${isCreatingCode ? 'animate-spin' : ''}`} />
+              Erneut versuchen
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -163,8 +247,17 @@ const ModernReferralBox = () => {
           ) : (
             <div className="text-center">
               <p className="text-subtle mb-4">
-                Laden Sie Ihre Referral-Code Daten...
+                Kein Empfehlungscode verfügbar.
               </p>
+              <Button 
+                onClick={handleRetry} 
+                variant="outline" 
+                className="flex items-center gap-2"
+                disabled={isCreatingCode}
+              >
+                <RefreshCw className={`w-4 h-4 ${isCreatingCode ? 'animate-spin' : ''}`} />
+                Code erstellen
+              </Button>
             </div>
           )}
         </CardContent>
