@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Star, CheckCircle, Users, Clock } from 'lucide-react';
@@ -60,22 +61,27 @@ const AuthLayout = ({
               </div>
               
               {/* Key Benefits Grid */}
-              <div className="grid grid-cols-2 gap-4 mt-8">
+              <div className="space-y-4 mt-8">
                 <div className="flex items-center space-x-3 text-white/95">
                   <CheckCircle className="w-5 h-5 text-accent flex-shrink-0" />
-                  <span className="text-sm font-medium">48h Lieferzeit</span>
+                  <span className="text-sm font-medium">Über 30.000 bearbeitete Bilder</span>
                 </div>
                 <div className="flex items-center space-x-3 text-white/95">
-                  <Users className="w-5 h-5 text-accent flex-shrink-0" />
-                  <span className="text-sm font-medium">30.000+ Bilder</span>
+                  <CheckCircle className="w-5 h-5 text-accent flex-shrink-0" />
+                  <span className="text-sm font-medium">48h Bearbeitungszeit</span>
                 </div>
                 <div className="flex items-center space-x-3 text-white/95">
-                  
-                  
+                  <CheckCircle className="w-5 h-5 text-accent flex-shrink-0" />
+                  <span className="text-sm font-medium">Bearbeitung durch erfahrene Immobilien-Editor:innen</span>
                 </div>
-                <div className="flex items-center space-x-3 text-white/95">
-                  
-                  
+                
+                <div className="mt-6 pt-6 border-t border-white/20">
+                  <p className="text-lg font-semibold text-white mb-2">
+                    Effizient. Verlässlich. Hochwertig.
+                  </p>
+                  <p className="text-sm text-white/80">
+                    Für Makler, Fotografen und Architekten.
+                  </p>
                 </div>
               </div>
             </motion.div>
