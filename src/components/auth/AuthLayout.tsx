@@ -134,14 +134,14 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
                 <img 
                   src="/lovable-uploads/3edc84fd-1de7-4266-ac80-24a4925dd856.png" 
                   alt="Engel & Völkers" 
-                  className="h-8 max-w-[120px] object-contain filter brightness-0 invert"
+                  className="h-8 max-w-[120px] object-contain"
                 />
               </div>
               <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 flex items-center justify-center h-12">
                 <img 
                   src="/lovable-uploads/e6bd750d-a87a-45ce-84cf-065e03bd72c7.png" 
                   alt="Century 21" 
-                  className="h-8 max-w-[120px] object-contain filter brightness-0 invert"
+                  className="h-8 max-w-[120px] object-contain"
                 />
               </div>
               <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 flex items-center justify-center h-12">
@@ -157,21 +157,21 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
                 <img 
                   src="/lovable-uploads/4127c5fe-1b1e-427e-bd36-ef661e04f853.png" 
                   alt="Bricks & Mortar" 
-                  className="h-8 max-w-[120px] object-contain filter brightness-200 contrast-200"
+                  className="h-8 max-w-[120px] object-contain"
                 />
               </div>
               <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 flex items-center justify-center h-12">
                 <img 
                   src="/lovable-uploads/5c28de02-7e7b-4dfa-9009-20e385d6295a.png" 
                   alt="McMakler" 
-                  className="h-8 max-w-[120px] object-contain filter brightness-200 contrast-150"
+                  className="h-8 max-w-[120px] object-contain"
                 />
               </div>
               <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 flex items-center justify-center h-12">
                 <img 
                   src="/lovable-uploads/34d808bf-8414-4e4d-9dd4-cda24c19367d.png" 
                   alt="Von Poll" 
-                  className="h-8 max-w-[120px] object-contain filter brightness-200 contrast-200"
+                  className="h-8 max-w-[120px] object-contain"
                 />
               </div>
             </div>
