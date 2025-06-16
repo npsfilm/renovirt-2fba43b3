@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Star, CheckCircle, Users, Clock } from 'lucide-react';
@@ -34,7 +33,7 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
         <div 
           className="absolute inset-0 transform rotate-[10deg] scale-125 origin-center"
           style={{
-            backgroundImage: 'url(/lovable-uploads/92d21e8f-1f76-4cba-88d0-80bcfbc76e22.png)',
+            backgroundImage: 'url(/lovable-uploads/fd670a2b-70f6-44eb-89b6-316c7c4280b6.png)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat'
