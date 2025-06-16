@@ -28,13 +28,13 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
         </motion.div>
       </div>
 
-      {/* Right side - Enhanced Marketing Content with Background Image */}
+      {/* Right side - Enhanced Marketing Content with your Background Image */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         {/* Background Image with 10-degree rotation */}
         <div 
           className="absolute inset-0 transform rotate-[10deg] scale-110 origin-center"
           style={{
-            backgroundImage: 'url(/lovable-uploads/d6ac9ba9-7ad2-408b-a2b0-5f31c269dd53.png)',
+            backgroundImage: 'url(/lovable-uploads/77777e02-5a5e-4d6b-a181-95ebade8bf9e.png)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat'
