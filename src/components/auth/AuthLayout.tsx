@@ -1,28 +1,24 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Star, CheckCircle, Users, Clock } from 'lucide-react';
-
 interface AuthLayoutProps {
   children: React.ReactNode;
 }
-
-const AuthLayout = ({ children }: AuthLayoutProps) => {
-  return (
-    <div className="min-h-screen bg-background flex">
+const AuthLayout = ({
+  children
+}: AuthLayoutProps) => {
+  return <div className="min-h-screen bg-background flex">
       {/* Left side - Auth Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-background">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="w-full max-w-md"
-        >
+        <motion.div initial={{
+        opacity: 0,
+        x: -20
+      }} animate={{
+        opacity: 1,
+        x: 0
+      }} className="w-full max-w-md">
           <div className="mb-12 text-center">
-            <img 
-              src="/lovable-uploads/9ec7c3ad-34b9-4fea-a9e9-0d4a0a5532e9.png" 
-              alt="Renovirt Logo" 
-              className="h-10 mx-auto mb-8"
-            />
+            <img src="/lovable-uploads/9ec7c3ad-34b9-4fea-a9e9-0d4a0a5532e9.png" alt="Renovirt Logo" className="h-10 mx-auto mb-8" />
           </div>
           {children}
         </motion.div>
@@ -31,15 +27,12 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
       {/* Right side - Enhanced Marketing Content with Immobilien Grid Background */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         {/* Background Image with 10-degree rotation and closer zoom */}
-        <div 
-          className="absolute inset-0 transform rotate-[10deg] scale-125 origin-center"
-          style={{
-            backgroundImage: 'url(/lovable-uploads/fd670a2b-70f6-44eb-89b6-316c7c4280b6.png)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
-          }}
-        ></div>
+        <div className="absolute inset-0 transform rotate-[10deg] scale-125 origin-center" style={{
+        backgroundImage: 'url(/lovable-uploads/fd670a2b-70f6-44eb-89b6-316c7c4280b6.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}></div>
         
         {/* Dark overlay for better text readability */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/50 to-black/70"></div>
@@ -50,12 +43,15 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
         <div className="relative z-10 flex flex-col justify-between p-12 text-white h-full w-full">
           {/* Top Section - Main Content */}
           <div className="flex flex-col justify-center flex-1 max-w-lg">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="space-y-6"
-            >
+            <motion.div initial={{
+            opacity: 0,
+            y: 20
+          }} animate={{
+            opacity: 1,
+            y: 0
+          }} transition={{
+            delay: 0.2
+          }} className="space-y-6">
               {/* Main Headline */}
               <div className="space-y-4">
                 <h1 className="text-4xl font-bold leading-tight">
@@ -91,17 +87,18 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
             </motion.div>
 
             {/* Testimonial Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 mt-8"
-            >
+            <motion.div initial={{
+            opacity: 0,
+            y: 20
+          }} animate={{
+            opacity: 1,
+            y: 0
+          }} transition={{
+            delay: 0.4
+          }} className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 mt-8">
               <div className="flex items-center space-x-1 mb-4">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star key={star} className="w-5 h-5 fill-accent text-accent" />
-                ))}
-                <span className="text-sm font-medium text-white/90 ml-2">4.9/5</span>
+                {[1, 2, 3, 4, 5].map(star => <Star key={star} className="w-5 h-5 fill-accent text-accent" />)}
+                <span className="text-sm font-medium text-white/90 ml-2">4.6/5</span>
                 <span className="text-xs text-white/70 ml-1">(2.847 Bewertungen)</span>
               </div>
               <p className="text-white/90 italic text-lg leading-relaxed mb-4">
@@ -120,59 +117,38 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
           </div>
           
           {/* Bottom Section - Partner Logos */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="space-y-4"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          delay: 0.6
+        }} className="space-y-4">
             <p className="text-white/70 text-sm text-center">
               Vertraut von führenden Immobilienunternehmen
             </p>
             <div className="flex items-center justify-center space-x-6 opacity-70">
               <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 flex items-center justify-center h-12">
-                <img 
-                  src="/lovable-uploads/3edc84fd-1de7-4266-ac80-24a4925dd856.png" 
-                  alt="Engel & Völkers" 
-                  className="h-8 max-w-[120px] object-contain"
-                />
+                <img src="/lovable-uploads/3edc84fd-1de7-4266-ac80-24a4925dd856.png" alt="Engel & Völkers" className="h-8 max-w-[120px] object-contain" />
               </div>
               <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 flex items-center justify-center h-12">
-                <img 
-                  src="/lovable-uploads/e6bd750d-a87a-45ce-84cf-065e03bd72c7.png" 
-                  alt="Century 21" 
-                  className="h-8 max-w-[120px] object-contain"
-                />
+                <img src="/lovable-uploads/e6bd750d-a87a-45ce-84cf-065e03bd72c7.png" alt="Century 21" className="h-8 max-w-[120px] object-contain" />
               </div>
               <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 flex items-center justify-center h-12">
-                <img 
-                  src="/lovable-uploads/8c510237-f833-4180-8a51-f663f2012aee.png" 
-                  alt="Volksbank" 
-                  className="h-8 max-w-[120px] object-contain"
-                />
+                <img src="/lovable-uploads/8c510237-f833-4180-8a51-f663f2012aee.png" alt="Volksbank" className="h-8 max-w-[120px] object-contain" />
               </div>
             </div>
             <div className="flex items-center justify-center space-x-6 opacity-70 mt-3">
               <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 flex items-center justify-center h-12">
-                <img 
-                  src="/lovable-uploads/4127c5fe-1b1e-427e-bd36-ef661e04f853.png" 
-                  alt="Bricks & Mortar" 
-                  className="h-8 max-w-[120px] object-contain"
-                />
+                <img src="/lovable-uploads/4127c5fe-1b1e-427e-bd36-ef661e04f853.png" alt="Bricks & Mortar" className="h-8 max-w-[120px] object-contain" />
               </div>
               <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 flex items-center justify-center h-12">
-                <img 
-                  src="/lovable-uploads/5c28de02-7e7b-4dfa-9009-20e385d6295a.png" 
-                  alt="McMakler" 
-                  className="h-8 max-w-[120px] object-contain"
-                />
+                <img src="/lovable-uploads/5c28de02-7e7b-4dfa-9009-20e385d6295a.png" alt="McMakler" className="h-8 max-w-[120px] object-contain" />
               </div>
               <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 flex items-center justify-center h-12">
-                <img 
-                  src="/lovable-uploads/34d808bf-8414-4e4d-9dd4-cda24c19367d.png" 
-                  alt="Von Poll" 
-                  className="h-8 max-w-[120px] object-contain"
-                />
+                <img src="/lovable-uploads/34d808bf-8414-4e4d-9dd4-cda24c19367d.png" alt="Von Poll" className="h-8 max-w-[120px] object-contain" />
               </div>
             </div>
             <div className="text-center">
@@ -183,8 +159,6 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
           </motion.div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default AuthLayout;
