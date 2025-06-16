@@ -30,9 +30,9 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
 
       {/* Right side - Enhanced Marketing Content with Immobilien Grid Background */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        {/* Background Image with 10-degree rotation */}
+        {/* Background Image with 10-degree rotation and closer zoom */}
         <div 
-          className="absolute inset-0 transform rotate-[10deg] scale-110 origin-center"
+          className="absolute inset-0 transform rotate-[10deg] scale-125 origin-center"
           style={{
             backgroundImage: 'url(/lovable-uploads/92d21e8f-1f76-4cba-88d0-80bcfbc76e22.png)',
             backgroundSize: 'cover',
