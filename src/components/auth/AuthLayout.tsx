@@ -128,15 +128,50 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
             <p className="text-white/70 text-sm text-center">
               Vertraut von führenden Immobilienunternehmen
             </p>
-            <div className="flex items-center justify-center space-x-8 opacity-70">
-              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
-                <span className="text-white font-semibold text-sm">RE/MAX</span>
+            <div className="flex items-center justify-center space-x-6 opacity-70">
+              <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 flex items-center justify-center h-12">
+                <img 
+                  src="/lovable-uploads/3edc84fd-1de7-4266-ac80-24a4925dd856.png" 
+                  alt="Engel & Völkers" 
+                  className="h-8 max-w-[120px] object-contain filter brightness-0 invert"
+                />
               </div>
-              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
-                <span className="text-white font-semibold text-sm">Century 21</span>
+              <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 flex items-center justify-center h-12">
+                <img 
+                  src="/lovable-uploads/e6bd750d-a87a-45ce-84cf-065e03bd72c7.png" 
+                  alt="Century 21" 
+                  className="h-8 max-w-[120px] object-contain filter brightness-0 invert"
+                />
               </div>
-              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
-                <span className="text-white font-semibold text-sm">Engel & Völkers</span>
+              <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 flex items-center justify-center h-12">
+                <img 
+                  src="/lovable-uploads/8c510237-f833-4180-8a51-f663f2012aee.png" 
+                  alt="Volksbank" 
+                  className="h-8 max-w-[120px] object-contain"
+                />
+              </div>
+            </div>
+            <div className="flex items-center justify-center space-x-6 opacity-70 mt-3">
+              <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 flex items-center justify-center h-12">
+                <img 
+                  src="/lovable-uploads/4127c5fe-1b1e-427e-bd36-ef661e04f853.png" 
+                  alt="Bricks & Mortar" 
+                  className="h-8 max-w-[120px] object-contain filter brightness-0 invert"
+                />
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 flex items-center justify-center h-12">
+                <img 
+                  src="/lovable-uploads/5c28de02-7e7b-4dfa-9009-20e385d6295a.png" 
+                  alt="McMakler" 
+                  className="h-8 max-w-[120px] object-contain filter brightness-0 invert"
+                />
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 flex items-center justify-center h-12">
+                <img 
+                  src="/lovable-uploads/34d808bf-8414-4e4d-9dd4-cda24c19367d.png" 
+                  alt="Von Poll" 
+                  className="h-8 max-w-[120px] object-contain filter brightness-0 invert"
+                />
               </div>
             </div>
             <div className="text-center">
