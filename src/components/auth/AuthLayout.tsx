@@ -54,15 +54,9 @@ const AuthLayout = ({
           }} className="space-y-6">
               {/* Main Headline */}
               <div className="space-y-4">
-                <h1 className="text-4xl font-bold leading-tight">
-                  Minimaler Aufwand
-                </h1>
-                <h2 className="text-3xl font-bold text-accent">
-                  Maximale Aufmerksamkeit
-                </h2>
-                <p className="text-xl text-white/90 leading-relaxed">
-                  Professionelle Immobilienbilder in Studioqualität – 48h Lieferzeit garantiert
-                </p>
+                <h1 className="text-4xl font-bold leading-tight">Willkommen bei Renovirt</h1>
+                <h2 className="text-3xl font-bold text-accent">Professionelle Bildbearbeitung für Immobilien – in 48 Stunden.</h2>
+                <p className="text-xl text-white/90 leading-relaxed">Melden Sie sich an, um neue Aufträge zu starten oder Ihre Projekte zu verwalten.</p>
               </div>
               
               {/* Key Benefits Grid */}
@@ -76,12 +70,12 @@ const AuthLayout = ({
                   <span className="text-sm font-medium">30.000+ Bilder</span>
                 </div>
                 <div className="flex items-center space-x-3 text-white/95">
-                  <Star className="w-5 h-5 text-accent flex-shrink-0" />
-                  <span className="text-sm font-medium">Studioqualität</span>
+                  
+                  
                 </div>
                 <div className="flex items-center space-x-3 text-white/95">
-                  <Clock className="w-5 h-5 text-accent flex-shrink-0" />
-                  <span className="text-sm font-medium">Zuverlässig</span>
+                  
+                  
                 </div>
               </div>
             </motion.div>
