@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Star, CheckCircle, Users, Clock } from 'lucide-react';
@@ -99,7 +98,7 @@ const AuthLayout = ({
               <div className="flex items-center space-x-1 mb-4">
                 {[1, 2, 3, 4, 5].map(star => <Star key={star} className="w-5 h-5 fill-accent text-accent" />)}
                 <span className="text-sm font-medium text-white/90 ml-2">4.6/5</span>
-                <span className="text-xs text-white/70 ml-1">(2.847 Bewertungen)</span>
+                <span className="text-xs text-white/70 ml-1">(1.847 Bewertungen)</span>
               </div>
               <p className="text-white/90 italic text-lg leading-relaxed mb-4">
                 "Renovirt hat unsere Immobilienvermarktung revolutioniert. Die Bildqualität ist außergewöhnlich und die Bearbeitungszeit unschlagbar!"
@@ -110,7 +109,7 @@ const AuthLayout = ({
                 </div>
                 <div>
                   <p className="text-white font-semibold text-sm">Maria Schmidt</p>
-                  <p className="text-white/70 text-xs">Immobilienmaklerin, RE/MAX</p>
+                  <p className="text-white/70 text-xs">Immobilienmaklerin</p>
                 </div>
               </div>
             </motion.div>
