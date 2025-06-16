@@ -28,78 +28,124 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
         </motion.div>
       </div>
 
-      {/* Right side - Enhanced Marketing Content */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary/60 via-accent/70 to-primary/80 relative overflow-hidden">
-        {/* Floating background elements */}
-        <div className="absolute top-20 right-20 w-32 h-32 bg-accent/20 rounded-full blur-2xl animate-pulse"></div>
-        <div className="absolute bottom-32 left-16 w-24 h-24 bg-primary/30 rounded-full blur-xl"></div>
+      {/* Right side - Enhanced Marketing Content with Background Image */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        {/* Background Image with 10-degree rotation */}
+        <div 
+          className="absolute inset-0 transform rotate-[10deg] scale-110 origin-center"
+          style={{
+            backgroundImage: 'url(/lovable-uploads/d6ac9ba9-7ad2-408b-a2b0-5f31c269dd53.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        ></div>
         
-        {/* Additional gradient overlay for more depth */}
-        <div className="absolute inset-0 bg-gradient-to-t from-accent/50 via-transparent to-primary/30"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-accent/20 to-primary/40"></div>
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/50 to-black/70"></div>
         
-        <div className="relative z-10 flex flex-col justify-center items-center p-12 text-foreground h-full w-full">
-          <div className="flex flex-col justify-center items-center h-full max-w-lg text-center space-y-8">
+        {/* Additional gradient overlays for depth */}
+        <div className="absolute inset-0 bg-gradient-to-t from-primary/30 via-transparent to-transparent"></div>
+        
+        <div className="relative z-10 flex flex-col justify-between p-12 text-white h-full w-full">
+          {/* Top Section - Main Content */}
+          <div className="flex flex-col justify-center flex-1 max-w-lg">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               className="space-y-6"
             >
-              {/* Enhanced Value Proposition */}
-              <h1 className="text-4xl font-bold leading-tight text-foreground">
-                Immobilienbilder die verkaufen
-              </h1>
-              <p className="text-xl text-foreground/80 leading-relaxed">
-                Professionelle Bildbearbeitung in Studioqualität – 48h Lieferzeit garantiert
-              </p>
+              {/* Main Headline */}
+              <div className="space-y-4">
+                <h1 className="text-4xl font-bold leading-tight">
+                  Minimaler Aufwand
+                </h1>
+                <h2 className="text-3xl font-bold text-accent">
+                  Maximale Aufmerksamkeit
+                </h2>
+                <p className="text-xl text-white/90 leading-relaxed">
+                  Professionelle Immobilienbilder in Studioqualität – 48h Lieferzeit garantiert
+                </p>
+              </div>
               
-              {/* Key Benefits */}
+              {/* Key Benefits Grid */}
               <div className="grid grid-cols-2 gap-4 mt-8">
-                <div className="flex items-center space-x-2 text-foreground/90">
-                  <CheckCircle className="w-5 h-5 text-accent" />
+                <div className="flex items-center space-x-3 text-white/95">
+                  <CheckCircle className="w-5 h-5 text-accent flex-shrink-0" />
                   <span className="text-sm font-medium">48h Lieferzeit</span>
                 </div>
-                <div className="flex items-center space-x-2 text-foreground/90">
-                  <Users className="w-5 h-5 text-accent" />
+                <div className="flex items-center space-x-3 text-white/95">
+                  <Users className="w-5 h-5 text-accent flex-shrink-0" />
                   <span className="text-sm font-medium">30.000+ Bilder</span>
                 </div>
-                <div className="flex items-center space-x-2 text-foreground/90">
-                  <Star className="w-5 h-5 text-accent" />
+                <div className="flex items-center space-x-3 text-white/95">
+                  <Star className="w-5 h-5 text-accent flex-shrink-0" />
                   <span className="text-sm font-medium">Studioqualität</span>
                 </div>
-                <div className="flex items-center space-x-2 text-foreground/90">
-                  <Clock className="w-5 h-5 text-accent" />
+                <div className="flex items-center space-x-3 text-white/95">
+                  <Clock className="w-5 h-5 text-accent flex-shrink-0" />
                   <span className="text-sm font-medium">Zuverlässig</span>
                 </div>
               </div>
             </motion.div>
 
-            {/* Social Proof */}
+            {/* Testimonial Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="bg-foreground/10 backdrop-blur-sm rounded-lg p-6 border border-foreground/20"
+              className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 mt-8"
             >
-              <div className="flex items-center space-x-1 mb-3">
+              <div className="flex items-center space-x-1 mb-4">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <Star key={star} className="w-4 h-4 fill-accent text-accent" />
+                  <Star key={star} className="w-5 h-5 fill-accent text-accent" />
                 ))}
-                <span className="text-sm font-medium text-foreground/90 ml-2">4.9/5</span>
+                <span className="text-sm font-medium text-white/90 ml-2">4.9/5</span>
+                <span className="text-xs text-white/70 ml-1">(2.847 Bewertungen)</span>
               </div>
-              <p className="text-sm text-foreground/80 italic">
-                "Renovirt hat unsere Immobilienvermarktung revolutioniert. Die Bildqualität ist außergewöhnlich!"
+              <p className="text-white/90 italic text-lg leading-relaxed mb-4">
+                "Renovirt hat unsere Immobilienvermarktung revolutioniert. Die Bildqualität ist außergewöhnlich und die Bearbeitungszeit unschlagbar!"
               </p>
-              <p className="text-xs text-foreground/60 mt-2 font-medium">
-                - Maria Schmidt, Immobilienmaklerin
-              </p>
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-accent to-primary rounded-full flex items-center justify-center text-white font-bold text-sm">
+                  MS
+                </div>
+                <div>
+                  <p className="text-white font-semibold text-sm">Maria Schmidt</p>
+                  <p className="text-white/70 text-xs">Immobilienmaklerin, RE/MAX</p>
+                </div>
+              </div>
             </motion.div>
           </div>
           
-          <div className="absolute bottom-12 text-sm text-foreground/70">
-            Made with love in Augsburg.
-          </div>
+          {/* Bottom Section - Partner Logos */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="space-y-4"
+          >
+            <p className="text-white/70 text-sm text-center">
+              Vertraut von führenden Immobilienunternehmen
+            </p>
+            <div className="flex items-center justify-center space-x-8 opacity-70">
+              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
+                <span className="text-white font-semibold text-sm">RE/MAX</span>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
+                <span className="text-white font-semibold text-sm">Century 21</span>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
+                <span className="text-white font-semibold text-sm">Engel & Völkers</span>
+              </div>
+            </div>
+            <div className="text-center">
+              <p className="text-white/60 text-xs">
+                Made with love in Augsburg.
+              </p>
+            </div>
+          </motion.div>
         </div>
       </div>
     </div>
