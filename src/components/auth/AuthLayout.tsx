@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Star, CheckCircle, Users, Clock } from 'lucide-react';
@@ -156,21 +157,21 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
                 <img 
                   src="/lovable-uploads/4127c5fe-1b1e-427e-bd36-ef661e04f853.png" 
                   alt="Bricks & Mortar" 
-                  className="h-8 max-w-[120px] object-contain filter brightness-0 invert"
+                  className="h-8 max-w-[120px] object-contain filter brightness-200 contrast-200"
                 />
               </div>
               <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 flex items-center justify-center h-12">
                 <img 
                   src="/lovable-uploads/5c28de02-7e7b-4dfa-9009-20e385d6295a.png" 
                   alt="McMakler" 
-                  className="h-8 max-w-[120px] object-contain filter brightness-0 invert"
+                  className="h-8 max-w-[120px] object-contain filter brightness-200 contrast-150"
                 />
               </div>
               <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 flex items-center justify-center h-12">
                 <img 
                   src="/lovable-uploads/34d808bf-8414-4e4d-9dd4-cda24c19367d.png" 
                   alt="Von Poll" 
-                  className="h-8 max-w-[120px] object-contain filter brightness-0 invert"
+                  className="h-8 max-w-[120px] object-contain filter brightness-200 contrast-200"
                 />
               </div>
             </div>
