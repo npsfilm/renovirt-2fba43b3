@@ -2,13 +2,11 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
-import ReferralCodeInput from './ReferralCodeInput';
 import RegisterHeader from './register/RegisterHeader';
 import GoogleAuthButton from './register/GoogleAuthButton';
 import RegisterFormFields from './register/RegisterFormFields';
 import TermsAcceptance from './register/TermsAcceptance';
 import { useFormValidation } from './register/FormValidation';
-import { useReferralProcessing } from './register/ReferralProcessing';
 import { useRegistrationToastHelper } from './RegistrationToastHelper';
 
 interface RegisterFormProps {
@@ -23,14 +21,11 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
     firstName: '',
     lastName: '',
   });
-  const [referralCode, setReferralCode] = useState('');
-  const [isReferralValid, setIsReferralValid] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPasswordValidation, setShowPasswordValidation] = useState(false);
 
   const { signUp, signInWithGoogle } = useAuth();
   const { validateForm, getPasswordValidationErrors } = useFormValidation();
-  const { processReferralReward } = useReferralProcessing();
   const { 
     showRegistrationSuccess, 
     showRegistrationError, 
@@ -47,11 +42,6 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
     if (name === 'password') {
       setShowPasswordValidation(value.length > 0);
     }
-  };
-
-  const handleReferralCodeChange = (code: string, isValid: boolean) => {
-    setReferralCode(code);
-    setIsReferralValid(isValid);
   };
 
   const getDetailedErrorMessage = (error: any): string => {
@@ -88,7 +78,7 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm(formData, referralCode, isReferralValid)) {
+    if (!validateForm(formData)) {
       return;
     }
 
@@ -99,7 +89,6 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
         email: formData.email, 
         firstName: formData.firstName, 
         lastName: formData.lastName,
-        hasReferralCode: !!referralCode,
         passwordLength: formData.password.length
       });
       
@@ -121,13 +110,8 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
       } else if (data?.user) {
         console.log('Registration successful for user:', data.user.email);
         
-        // Process referral reward if applicable
-        if (referralCode && isReferralValid) {
-          await processReferralReward(data.user.id, referralCode, isReferralValid);
-        }
-        
-        // Show success message with referral info
-        showRegistrationSuccess(!!referralCode && isReferralValid);
+        // Show success message
+        showRegistrationSuccess(false);
         
         // Call success callback
         onSuccess();
@@ -188,8 +172,6 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
           showPasswordValidation={showPasswordValidation}
           onInputChange={handleInputChange}
         />
-
-        <ReferralCodeInput onReferralCodeChange={handleReferralCodeChange} />
         
         <Button 
           type="submit" 

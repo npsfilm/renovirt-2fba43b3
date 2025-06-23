@@ -18,8 +18,7 @@ import {
   Users, 
   BarChart3, 
   Settings, 
-  HelpCircle,
-  Gift
+  HelpCircle
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -42,11 +41,6 @@ const AdminSidebar = () => {
       name: 'Kunden', 
       href: '/admin/customers', 
       icon: Users 
-    },
-    { 
-      name: 'Empfehlungen', 
-      href: '/admin/referrals', 
-      icon: Gift 
     },
     { 
       name: 'Analytics', 
