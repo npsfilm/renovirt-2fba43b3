@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -90,18 +89,26 @@ export const useCustomerProfile = () => {
       const sanitizedData = sanitizeProfileData(data);
       console.log('useCustomerProfile: Data sanitized:', sanitizedData);
       
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) {
-        console.log('useCustomerProfile: User not authenticated');
-        logSecurityEvent('profile_save_unauthorized');
-        throw new Error('User not authenticated');
+      // Improved session retrieval
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error('useCustomerProfile: Session error:', sessionError);
+        throw new Error('Fehler beim Abrufen der Session');
       }
       
-      console.log('useCustomerProfile: User authenticated:', user.user.id);
-      logSecurityEvent('profile_save_started', { userId: user.user.id });
+      if (!sessionData.session?.user) {
+        console.log('useCustomerProfile: No active session found');
+        logSecurityEvent('profile_save_no_session');
+        throw new Error('Keine aktive Sitzung gefunden. Bitte melden Sie sich erneut an.');
+      }
+      
+      const user = sessionData.session.user;
+      console.log('useCustomerProfile: User authenticated:', user.id);
+      logSecurityEvent('profile_save_started', { userId: user.id });
       
       const profilePayload = {
-        user_id: user.user.id,
+        user_id: user.id,
         role: sanitizedData.role,
         salutation: sanitizedData.salutation,
         first_name: sanitizedData.firstName,
@@ -112,7 +119,7 @@ export const useCustomerProfile = () => {
         address: sanitizedData.address,
         phone: sanitizedData.phone,
         data_source: sanitizedData.dataSource,
-        app_role: 'client' as const, // Expliziter Typ für app_role
+        app_role: 'client' as const,
         updated_at: new Date().toISOString(),
       };
       
@@ -130,7 +137,7 @@ export const useCustomerProfile = () => {
       if (error) {
         console.error('useCustomerProfile: Database error:', error);
         logSecurityEvent('profile_save_failed', { 
-          userId: user.user.id, 
+          userId: user.id, 
           error: error.message 
         });
         
@@ -143,7 +150,7 @@ export const useCustomerProfile = () => {
       }
 
       console.log('useCustomerProfile: Profile saved successfully:', profileData);
-      logSecurityEvent('profile_saved_successfully', { userId: user.user.id });
+      logSecurityEvent('profile_saved_successfully', { userId: user.id });
       
       toast({
         title: 'Profil gespeichert',
@@ -154,6 +161,16 @@ export const useCustomerProfile = () => {
     } catch (error) {
       console.error('useCustomerProfile: Error in saveCustomerProfile:', error);
       secureLog('Error in saveCustomerProfile:', error);
+      
+      // Show user-friendly error message
+      if (error instanceof Error) {
+        toast({
+          title: 'Fehler',
+          description: error.message,
+          variant: 'destructive',
+        });
+      }
+      
       throw error;
     } finally {
       setLoading(false);

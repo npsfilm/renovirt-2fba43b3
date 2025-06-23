@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -121,6 +120,16 @@ const ProfileForm = () => {
     
     console.log('ProfileForm: Submit started with data:', formData);
     
+    // Check user authentication first
+    if (!user) {
+      toast({
+        title: 'Authentifizierung erforderlich',
+        description: 'Bitte melden Sie sich an, um Ihr Profil zu speichern.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     // Validierung vor dem Speichern
     if (!formData.role) {
       toast({
@@ -161,46 +170,16 @@ const ProfileForm = () => {
       
       console.log('ProfileForm: Saving profile data:', profileData);
       
-      // Optimistisches Update - setze die Daten sofort im Cache
-      const optimisticData = {
-        user_id: user?.id,
-        role: formData.role,
-        salutation: formData.salutation,
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        company: formData.company,
-        billing_email: formData.billingEmail,
-        vat_id: formData.vatId,
-        address: address,
-        phone: formData.phone,
-        updated_at: new Date().toISOString(),
-      };
-      
-      // Setze die Daten optimistisch im Cache
-      queryClient.setQueryData(['customer-profile', user?.id], optimisticData);
-      
       await saveCustomerProfile(profileData);
       
-      // Invalidiere und refetche die Query
+      // Invalidate and refetch the query after successful save
       await queryClient.invalidateQueries({ queryKey: ['customer-profile', user?.id] });
       
       console.log('ProfileForm: Profile saved successfully');
       
-      toast({
-        title: 'Profil aktualisiert',
-        description: 'Ihre Profildaten wurden erfolgreich gespeichert.',
-      });
     } catch (error) {
       console.error('ProfileForm: Error saving profile:', error);
-      
-      // Rollback des optimistischen Updates bei Fehler
-      queryClient.invalidateQueries({ queryKey: ['customer-profile', user?.id] });
-      
-      toast({
-        title: 'Fehler',
-        description: 'Beim Speichern Ihrer Profildaten ist ein Fehler aufgetreten.',
-        variant: 'destructive',
-      });
+      // Error handling is now done in useCustomerProfile hook
     }
   };
 
@@ -242,7 +221,7 @@ const ProfileForm = () => {
             />
 
             <div className="flex justify-end">
-              <Button type="submit" disabled={loading} className="px-8">
+              <Button type="submit" disabled={loading || !user} className="px-8">
                 {loading ? 'Speichern...' : 'Profil speichern'}
               </Button>
             </div>
