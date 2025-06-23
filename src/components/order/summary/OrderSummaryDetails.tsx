@@ -91,9 +91,9 @@ const OrderSummaryDetails = ({ orderData, onUpdateData }: OrderSummaryDetailsPro
   return (
     <div className="space-y-6">
       {/* Contact Information */}
-      <Card>
+      <Card className="border border-gray-200 shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg font-medium text-gray-900">
             <User className="w-5 h-5" />
             Kontaktdaten
           </CardTitle>
@@ -131,9 +131,9 @@ const OrderSummaryDetails = ({ orderData, onUpdateData }: OrderSummaryDetailsPro
       </Card>
 
       {/* Order Details */}
-      <Card>
+      <Card className="border border-gray-200 shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg font-medium text-gray-900">
             <FileImage className="w-5 h-5" />
             Bestelldetails
           </CardTitle>

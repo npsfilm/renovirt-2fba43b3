@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Shield, ExternalLink } from 'lucide-react';
 
@@ -11,8 +11,14 @@ interface TermsAcceptanceProps {
 
 const TermsAcceptance = ({ acceptedTerms, onTermsChange }: TermsAcceptanceProps) => {
   return (
-    <Card className="border-0 shadow-none bg-transparent">
-      <CardContent className="p-4 bg-gray-50 rounded-lg border">
+    <Card className="border border-gray-200 shadow-sm">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-lg font-medium text-gray-900">
+          <Shield className="w-5 h-5" />
+          Allgemeine Geschäftsbedingungen
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
         <div className="flex items-start gap-3">
           <Checkbox
             checked={acceptedTerms}

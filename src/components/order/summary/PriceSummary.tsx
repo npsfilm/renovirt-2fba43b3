@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useOrders } from '@/hooks/useOrders';
 import CreditsApplication from './CreditsApplication';
 import { calculateEffectiveImageCount } from '@/utils/orderValidation';
+import { Receipt } from 'lucide-react';
 import type { OrderData } from '@/utils/orderValidation';
 
 interface PriceSummaryProps {
@@ -49,9 +50,12 @@ const PriceSummary = ({ orderData, creditsToUse = 0, onCreditsChange }: PriceSum
 
   return (
     <div className="space-y-4">
-      <Card>
+      <Card className="border border-gray-200 shadow-sm">
         <CardHeader>
-          <CardTitle>Preisübersicht</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-lg font-medium text-gray-900">
+            <Receipt className="w-5 h-5" />
+            Preisübersicht
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {/* Base Package */}
