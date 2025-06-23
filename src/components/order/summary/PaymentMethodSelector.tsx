@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { PaymentIcons, InvoiceIcon } from '@/components/payment/PaymentIcons';
+import { CreditCard } from 'lucide-react';
 
 interface PaymentMethodSelectorProps {
   paymentMethod: 'stripe' | 'invoice';
@@ -14,7 +15,10 @@ const PaymentMethodSelector = ({ paymentMethod, onPaymentMethodChange }: Payment
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Zahlungsmethode wählen</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <CreditCard className="w-5 h-5" />
+          Zahlungsmethode wählen
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <RadioGroup value={paymentMethod} onValueChange={onPaymentMethodChange}>
