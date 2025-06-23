@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { PaymentIcons, InvoiceIcon } from '@/components/payment/PaymentIcons';
-import { CreditCard } from 'lucide-react';
+import { CreditCard, Shield, Clock } from 'lucide-react';
 
 interface PaymentMethodSelectorProps {
   paymentMethod: 'stripe' | 'invoice';
@@ -13,52 +13,91 @@ interface PaymentMethodSelectorProps {
 
 const PaymentMethodSelector = ({ paymentMethod, onPaymentMethodChange }: PaymentMethodSelectorProps) => {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <Card className="border-0 shadow-none bg-transparent">
+      <CardHeader className="px-0 pb-4">
+        <CardTitle className="flex items-center gap-2 text-lg font-medium">
           <CreditCard className="w-5 h-5" />
-          Zahlungsmethode wählen
+          Zahlungsmethode
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-0 space-y-3">
         <RadioGroup value={paymentMethod} onValueChange={onPaymentMethodChange}>
-          <div className="space-y-4">
-            <Label htmlFor="stripe" className="cursor-pointer">
-              <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-muted/50">
-                <RadioGroupItem value="stripe" id="stripe" />
-                <div className="flex-1">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-5 bg-primary rounded flex items-center justify-center">
-                      <span className="text-xs font-bold text-primary-foreground">S</span>
+          {/* Stripe Payment Option */}
+          <Label htmlFor="stripe" className="cursor-pointer">
+            <div className={`relative flex items-center p-4 border-2 rounded-lg transition-all hover:border-primary/50 ${
+              paymentMethod === 'stripe' 
+                ? 'border-primary bg-primary/5 ring-2 ring-primary/20' 
+                : 'border-gray-200 bg-white hover:bg-gray-50'
+            }`}>
+              <RadioGroupItem value="stripe" id="stripe" className="mr-4" />
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-6 bg-gradient-to-r from-blue-600 to-purple-600 rounded flex items-center justify-center">
+                        <span className="text-xs font-bold text-white">S</span>
+                      </div>
+                      <span className="font-medium text-gray-900">Kreditkarte</span>
                     </div>
-                    <span className="font-medium">Kreditkarte / Online-Zahlung</span>
+                    <div className="flex items-center gap-1 text-green-600">
+                      <Shield className="w-3 h-3" />
+                      <span className="text-xs font-medium">Sicher</span>
+                    </div>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Sichere Zahlung über Stripe
-                  </p>
-                  <div className="mt-3">
-                    <PaymentIcons showSecurity={false} className="scale-90" />
-                  </div>
+                  {paymentMethod === 'stripe' && (
+                    <div className="text-xs text-primary font-medium">Ausgewählt</div>
+                  )}
+                </div>
+                <p className="text-sm text-gray-600 mb-3">
+                  Zahlen Sie sofort und sicher mit Ihrer Kreditkarte oder PayPal
+                </p>
+                <div className="flex justify-between items-center">
+                  <PaymentIcons showSecurity={false} className="scale-75" />
+                  <div className="text-xs text-gray-500">Powered by Stripe</div>
                 </div>
               </div>
-            </Label>
+            </div>
+          </Label>
 
-            <Label htmlFor="invoice" className="cursor-pointer">
-              <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-muted/50">
-                <RadioGroupItem value="invoice" id="invoice" />
-                <div className="flex-1">
-                  <div className="flex items-center space-x-3">
-                    <InvoiceIcon className="w-5 h-5" />
-                    <span className="font-medium">Rechnung</span>
+          {/* Invoice Payment Option */}
+          <Label htmlFor="invoice" className="cursor-pointer">
+            <div className={`relative flex items-center p-4 border-2 rounded-lg transition-all hover:border-primary/50 ${
+              paymentMethod === 'invoice' 
+                ? 'border-primary bg-primary/5 ring-2 ring-primary/20' 
+                : 'border-gray-200 bg-white hover:bg-gray-50'
+            }`}>
+              <RadioGroupItem value="invoice" id="invoice" className="mr-4" />
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <InvoiceIcon className="w-5 h-5 text-gray-700" />
+                      <span className="font-medium text-gray-900">Rechnung</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-blue-600">
+                      <Clock className="w-3 h-3" />
+                      <span className="text-xs font-medium">14 Tage</span>
+                    </div>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Sie erhalten eine Rechnung per E-Mail (Zahlungsziel: 14 Tage)
-                  </p>
+                  {paymentMethod === 'invoice' && (
+                    <div className="text-xs text-primary font-medium">Ausgewählt</div>
+                  )}
                 </div>
+                <p className="text-sm text-gray-600">
+                  Erhalten Sie eine Rechnung per E-Mail mit 14 Tagen Zahlungsziel
+                </p>
               </div>
-            </Label>
-          </div>
+            </div>
+          </Label>
         </RadioGroup>
+        
+        {/* Security Notice */}
+        <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-md border">
+          <Shield className="w-4 h-4 text-green-600" />
+          <span className="text-sm text-gray-700">
+            Ihre Zahlungsdaten sind durch SSL-Verschlüsselung geschützt
+          </span>
+        </div>
       </CardContent>
     </Card>
   );
