@@ -20,7 +20,7 @@ export const createOrderInDatabase = async (
   const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
   const orderNumber = generateOrderNumber();
 
-  // Create order without company field (it's stored in customer_profiles)
+  // Create order with extras stored as JSONB
   const { data: order, error } = await supabase
     .from('orders')
     .insert({
@@ -35,7 +35,7 @@ export const createOrderInDatabase = async (
       payment_intent_id: paymentIntentId,
       customer_email: orderData.email,
       admin_notes: orderData.specialRequests,
-      extras: orderData.extras,
+      extras: orderData.extras, // Now properly stored as JSONB
       status: 'pending'
     })
     .select()

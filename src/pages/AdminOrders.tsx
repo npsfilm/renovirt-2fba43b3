@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { SidebarTrigger } from '@/components/ui/sidebar';
@@ -102,7 +101,7 @@ const AdminOrders = () => {
       }
       
       console.log('Orders fetched:', data?.length || 0);
-      console.log('Sample order with order_number:', data?.[0]?.order_number);
+      console.log('Sample order with extras:', data?.[0]?.extras);
       return data;
     },
     // Reduzierte Stale-Zeit für bessere Reaktivität bei Suche

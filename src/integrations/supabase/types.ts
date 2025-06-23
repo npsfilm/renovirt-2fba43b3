@@ -463,6 +463,7 @@ export type Database = {
           customer_email: string | null
           delivery_status: string | null
           estimated_completion: string | null
+          extras: Json | null
           id: string
           image_count: number
           order_number: string | null
@@ -486,6 +487,7 @@ export type Database = {
           customer_email?: string | null
           delivery_status?: string | null
           estimated_completion?: string | null
+          extras?: Json | null
           id?: string
           image_count?: number
           order_number?: string | null
@@ -509,6 +511,7 @@ export type Database = {
           customer_email?: string | null
           delivery_status?: string | null
           estimated_completion?: string | null
+          extras?: Json | null
           id?: string
           image_count?: number
           order_number?: string | null
