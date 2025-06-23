@@ -127,7 +127,7 @@ const ConfirmationStep = ({
       {/* Header section with success icon */}
       <div className="text-center space-y-4 mb-6">
         <div className="w-20 h-20 bg-success/10 rounded-full flex items-center justify-center mx-auto">
-          <CheckCircle className="w-10 h-10 text-success" />
+          <CheckCircle className="w-10 h-10" style={{ color: '#697a3d' }} />
         </div>
         <h1 className="text-3xl font-bold text-foreground">Vielen Dank für Ihre Bestellung!</h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
