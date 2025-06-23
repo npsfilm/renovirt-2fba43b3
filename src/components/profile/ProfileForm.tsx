@@ -33,10 +33,16 @@ const ProfileForm = () => {
     phone: '',
   });
 
-  const { data: existingProfile } = useQuery({
+  // Verbesserte Query-Konfiguration mit besserer Cache-Verwaltung
+  const { data: existingProfile, isLoading, error } = useQuery({
     queryKey: ['customer-profile', user?.id],
     queryFn: async () => {
-      if (!user?.id) return null;
+      if (!user?.id) {
+        console.log('ProfileForm: No user ID available for profile fetch');
+        return null;
+      }
+      
+      console.log('ProfileForm: Fetching profile for user:', user.id);
       
       const { data, error } = await supabase
         .from('customer_profiles')
@@ -44,13 +50,24 @@ const ProfileForm = () => {
         .eq('user_id', user.id)
         .single();
 
-      if (error && error.code !== 'PGRST116') throw error;
+      if (error && error.code !== 'PGRST116') {
+        console.error('ProfileForm: Error fetching profile:', error);
+        throw error;
+      }
+      
+      console.log('ProfileForm: Profile data fetched:', data);
       return data;
     },
     enabled: !!user?.id,
+    staleTime: 5 * 60 * 1000, // 5 Minuten
+    cacheTime: 10 * 60 * 1000, // 10 Minuten
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
   });
 
   useEffect(() => {
+    console.log('ProfileForm: useEffect triggered with existingProfile:', existingProfile);
+    
     if (existingProfile) {
       // Parse address if it exists
       let addressParts = ['', '', '', 'Deutschland'];
@@ -67,7 +84,7 @@ const ProfileForm = () => {
         }
       }
       
-      setFormData({
+      const newFormData = {
         role: existingProfile.role || '',
         salutation: existingProfile.salutation || '',
         firstName: existingProfile.first_name || '',
@@ -80,34 +97,77 @@ const ProfileForm = () => {
         postalCode: addressParts[2] || '',
         country: addressParts[3] || 'Deutschland',
         phone: existingProfile.phone || '',
-      });
+      };
+      
+      console.log('ProfileForm: Setting form data:', newFormData);
+      setFormData(newFormData);
+    } else {
+      console.log('ProfileForm: No existing profile found, keeping default form data');
     }
   }, [existingProfile]);
 
+  // Debug logging für User-Changes
+  useEffect(() => {
+    console.log('ProfileForm: User changed:', user?.id);
+  }, [user?.id]);
+
   const handleInputChange = (field: string, value: string) => {
+    console.log('ProfileForm: Input changed:', field, value);
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('ProfileForm: Submit started with data:', formData);
+    
     try {
       // Combine address fields
       const address = `${formData.street}, ${formData.city}, ${formData.postalCode}, ${formData.country}`;
       
-      await saveCustomerProfile({
+      const profileData = {
         ...formData,
         address,
         dataSource: 'profile_update',
-      });
+      };
       
-      queryClient.invalidateQueries({ queryKey: ['customer-profile', user?.id] });
+      console.log('ProfileForm: Saving profile data:', profileData);
+      
+      // Optimistisches Update - setze die Daten sofort im Cache
+      const optimisticData = {
+        user_id: user?.id,
+        role: formData.role,
+        salutation: formData.salutation,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        company: formData.company,
+        billing_email: formData.billingEmail,
+        vat_id: formData.vatId,
+        address: address,
+        phone: formData.phone,
+        updated_at: new Date().toISOString(),
+      };
+      
+      // Setze die Daten optimistisch im Cache
+      queryClient.setQueryData(['customer-profile', user?.id], optimisticData);
+      
+      await saveCustomerProfile(profileData);
+      
+      // Invalidiere und refetche die Query
+      await queryClient.invalidateQueries({ queryKey: ['customer-profile', user?.id] });
+      
+      console.log('ProfileForm: Profile saved successfully');
       
       toast({
         title: 'Profil aktualisiert',
         description: 'Ihre Profildaten wurden erfolgreich gespeichert.',
       });
     } catch (error) {
+      console.error('ProfileForm: Error saving profile:', error);
+      
+      // Rollback des optimistischen Updates bei Fehler
+      queryClient.invalidateQueries({ queryKey: ['customer-profile', user?.id] });
+      
       toast({
         title: 'Fehler',
         description: 'Beim Speichern Ihrer Profildaten ist ein Fehler aufgetreten.',
@@ -115,6 +175,15 @@ const ProfileForm = () => {
       });
     }
   };
+
+  // Debug-Informationen anzeigen
+  if (error) {
+    console.error('ProfileForm: Query error:', error);
+  }
+
+  if (isLoading) {
+    console.log('ProfileForm: Loading profile data...');
+  }
 
   return (
     <Card>
@@ -125,28 +194,32 @@ const ProfileForm = () => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <PersonalInformationSection
-            formData={formData}
-            onInputChange={handleInputChange}
-          />
+        {isLoading ? (
+          <div className="text-center py-4">Profildaten werden geladen...</div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <PersonalInformationSection
+              formData={formData}
+              onInputChange={handleInputChange}
+            />
 
-          <BusinessInformationSection
-            formData={formData}
-            onInputChange={handleInputChange}
-          />
+            <BusinessInformationSection
+              formData={formData}
+              onInputChange={handleInputChange}
+            />
 
-          <BillingAddressSection
-            formData={formData}
-            onInputChange={handleInputChange}
-          />
+            <BillingAddressSection
+              formData={formData}
+              onInputChange={handleInputChange}
+            />
 
-          <div className="flex justify-end">
-            <Button type="submit" disabled={loading} className="px-8">
-              {loading ? 'Speichern...' : 'Profil speichern'}
-            </Button>
-          </div>
-        </form>
+            <div className="flex justify-end">
+              <Button type="submit" disabled={loading} className="px-8">
+                {loading ? 'Speichern...' : 'Profil speichern'}
+              </Button>
+            </div>
+          </form>
+        )}
       </CardContent>
     </Card>
   );

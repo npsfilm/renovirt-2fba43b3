@@ -72,9 +72,12 @@ export const useCustomerProfile = () => {
     try {
       setLoading(true);
       
+      console.log('useCustomerProfile: Starting save operation with data:', data);
+      
       // Validate data
       const validation = validateProfileData(data);
       if (!validation.valid) {
+        console.log('useCustomerProfile: Validation failed:', validation.errors);
         toast({
           title: 'Validierungsfehler',
           description: validation.errors.join(', '),
@@ -85,32 +88,39 @@ export const useCustomerProfile = () => {
       
       // Sanitize data
       const sanitizedData = sanitizeProfileData(data);
+      console.log('useCustomerProfile: Data sanitized:', sanitizedData);
       
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) {
+        console.log('useCustomerProfile: User not authenticated');
         logSecurityEvent('profile_save_unauthorized');
         throw new Error('User not authenticated');
       }
       
+      console.log('useCustomerProfile: User authenticated:', user.user.id);
       logSecurityEvent('profile_save_started', { userId: user.user.id });
+      
+      const profilePayload = {
+        user_id: user.user.id,
+        role: sanitizedData.role,
+        salutation: sanitizedData.salutation,
+        first_name: sanitizedData.firstName,
+        last_name: sanitizedData.lastName,
+        company: sanitizedData.company,
+        billing_email: sanitizedData.billingEmail,
+        vat_id: sanitizedData.vatId,
+        address: sanitizedData.address,
+        phone: sanitizedData.phone,
+        data_source: sanitizedData.dataSource,
+        app_role: 'client',
+        updated_at: new Date().toISOString(),
+      };
+      
+      console.log('useCustomerProfile: Payload prepared:', profilePayload);
       
       const { data: profileData, error } = await supabase
         .from('customer_profiles')
-        .upsert({
-          user_id: user.user.id,
-          role: sanitizedData.role,
-          salutation: sanitizedData.salutation,
-          first_name: sanitizedData.firstName,
-          last_name: sanitizedData.lastName,
-          company: sanitizedData.company,
-          billing_email: sanitizedData.billingEmail,
-          vat_id: sanitizedData.vatId,
-          address: sanitizedData.address,
-          phone: sanitizedData.phone,
-          data_source: sanitizedData.dataSource,
-          app_role: 'client',
-          updated_at: new Date().toISOString(),
-        }, { 
+        .upsert(profilePayload, { 
           onConflict: 'user_id',
           ignoreDuplicates: false 
         })
@@ -118,6 +128,7 @@ export const useCustomerProfile = () => {
         .single();
 
       if (error) {
+        console.error('useCustomerProfile: Database error:', error);
         logSecurityEvent('profile_save_failed', { 
           userId: user.user.id, 
           error: error.message 
@@ -131,6 +142,7 @@ export const useCustomerProfile = () => {
         throw error;
       }
 
+      console.log('useCustomerProfile: Profile saved successfully:', profileData);
       logSecurityEvent('profile_saved_successfully', { userId: user.user.id });
       
       toast({
@@ -140,6 +152,7 @@ export const useCustomerProfile = () => {
 
       return profileData;
     } catch (error) {
+      console.error('useCustomerProfile: Error in saveCustomerProfile:', error);
       secureLog('Error in saveCustomerProfile:', error);
       throw error;
     } finally {
@@ -153,9 +166,12 @@ export const useCustomerProfile = () => {
       
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) {
+        console.log('useCustomerProfile: User not authenticated for get operation');
         logSecurityEvent('profile_fetch_unauthorized');
         throw new Error('User not authenticated');
       }
+      
+      console.log('useCustomerProfile: Fetching profile for user:', user.user.id);
       
       const { data: profileData, error } = await supabase
         .from('customer_profiles')
@@ -164,6 +180,7 @@ export const useCustomerProfile = () => {
         .maybeSingle();
 
       if (error) {
+        console.error('useCustomerProfile: Fetch error:', error);
         logSecurityEvent('profile_fetch_failed', { 
           userId: user.user.id, 
           error: error.message 
@@ -171,8 +188,10 @@ export const useCustomerProfile = () => {
         throw error;
       }
 
+      console.log('useCustomerProfile: Profile fetched successfully:', profileData);
       return profileData;
     } catch (error) {
+      console.error('useCustomerProfile: Error in getCustomerProfile:', error);
       secureLog('Error in getCustomerProfile:', error);
       throw error;
     } finally {
