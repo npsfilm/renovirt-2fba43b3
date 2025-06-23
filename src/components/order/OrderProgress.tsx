@@ -28,8 +28,8 @@ const OrderProgress = ({ steps }: OrderProgressProps) => {
                     : 'bg-muted border-muted-foreground/30 text-muted-foreground'
                 }`}
                 style={step.status === 'completed' ? { 
-                  backgroundColor: '#8DA05E', 
-                  borderColor: '#8DA05E' 
+                  backgroundColor: '#697a3d', 
+                  borderColor: '#697a3d' 
                 } : {}}
               >
                 {step.status === 'completed' ? (
@@ -46,7 +46,7 @@ const OrderProgress = ({ steps }: OrderProgressProps) => {
                     ? 'font-medium'
                     : 'text-muted-foreground'
                 }`}
-                style={step.status === 'completed' ? { color: '#8DA05E' } : {}}
+                style={step.status === 'completed' ? { color: '#697a3d' } : {}}
               >
                 {step.title}
               </span>
@@ -57,7 +57,7 @@ const OrderProgress = ({ steps }: OrderProgressProps) => {
                   className={`h-0.5 transition-all duration-500 ${
                     step.status === 'completed' ? '' : 'bg-border'
                   }`}
-                  style={step.status === 'completed' ? { backgroundColor: '#8DA05E' } : {}}
+                  style={step.status === 'completed' ? { backgroundColor: '#697a3d' } : {}}
                 />
               </div>
             )}
