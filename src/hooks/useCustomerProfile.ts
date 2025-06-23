@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -89,21 +90,31 @@ export const useCustomerProfile = () => {
       const sanitizedData = sanitizeProfileData(data);
       console.log('useCustomerProfile: Data sanitized:', sanitizedData);
       
-      // Improved session retrieval
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      // Get current session more reliably
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError) {
         console.error('useCustomerProfile: Session error:', sessionError);
+        toast({
+          title: 'Authentifizierungsfehler',
+          description: 'Fehler beim Abrufen der Sitzung. Bitte melden Sie sich erneut an.',
+          variant: 'destructive',
+        });
         throw new Error('Fehler beim Abrufen der Session');
       }
       
-      if (!sessionData.session?.user) {
+      if (!session?.user) {
         console.log('useCustomerProfile: No active session found');
         logSecurityEvent('profile_save_no_session');
-        throw new Error('Keine aktive Sitzung gefunden. Bitte melden Sie sich erneut an.');
+        toast({
+          title: 'Anmeldung erforderlich',
+          description: 'Sie müssen angemeldet sein, um Ihr Profil zu speichern.',
+          variant: 'destructive',
+        });
+        throw new Error('Keine aktive Sitzung gefunden');
       }
       
-      const user = sessionData.session.user;
+      const user = session.user;
       console.log('useCustomerProfile: User authenticated:', user.id);
       logSecurityEvent('profile_save_started', { userId: user.id });
       
@@ -114,8 +125,8 @@ export const useCustomerProfile = () => {
         first_name: sanitizedData.firstName,
         last_name: sanitizedData.lastName,
         company: sanitizedData.company,
-        billing_email: sanitizedData.billingEmail,
-        vat_id: sanitizedData.vatId,
+        billing_email: sanitizedData.billingEmail || null,
+        vat_id: sanitizedData.vatId || null,
         address: sanitizedData.address,
         phone: sanitizedData.phone,
         data_source: sanitizedData.dataSource,
@@ -143,7 +154,7 @@ export const useCustomerProfile = () => {
         
         toast({
           title: 'Fehler beim Speichern',
-          description: 'Ihre Profildaten konnten nicht gespeichert werden.',
+          description: `Profildaten konnten nicht gespeichert werden: ${error.message}`,
           variant: 'destructive',
         });
         throw error;
@@ -162,8 +173,8 @@ export const useCustomerProfile = () => {
       console.error('useCustomerProfile: Error in saveCustomerProfile:', error);
       secureLog('Error in saveCustomerProfile:', error);
       
-      // Show user-friendly error message
-      if (error instanceof Error) {
+      // Show user-friendly error message only if not already shown
+      if (error instanceof Error && !error.message.includes('Profildaten konnten nicht gespeichert werden')) {
         toast({
           title: 'Fehler',
           description: error.message,

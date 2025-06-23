@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,7 +13,7 @@ import BusinessInformationSection from './BusinessInformationSection';
 import BillingAddressSection from './BillingAddressSection';
 
 const ProfileForm = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { saveCustomerProfile, loading } = useCustomerProfile();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -32,8 +33,8 @@ const ProfileForm = () => {
     phone: '',
   });
 
-  // Verbesserte Query-Konfiguration mit korrekter gcTime anstatt cacheTime
-  const { data: existingProfile, isLoading, error } = useQuery({
+  // Query to fetch existing profile
+  const { data: existingProfile, isLoading: profileLoading, error, refetch } = useQuery({
     queryKey: ['customer-profile', user?.id],
     queryFn: async () => {
       if (!user?.id) {
@@ -57,13 +58,14 @@ const ProfileForm = () => {
       console.log('ProfileForm: Profile data fetched:', data);
       return data;
     },
-    enabled: !!user?.id,
-    staleTime: 5 * 60 * 1000, // 5 Minuten
-    gcTime: 10 * 60 * 1000, // 10 Minuten (gcTime anstatt cacheTime)
+    enabled: !!user?.id && !authLoading,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnMount: true,
   });
 
+  // Update form data when profile is loaded
   useEffect(() => {
     console.log('ProfileForm: useEffect triggered with existingProfile:', existingProfile);
     
@@ -100,15 +102,8 @@ const ProfileForm = () => {
       
       console.log('ProfileForm: Setting form data:', newFormData);
       setFormData(newFormData);
-    } else {
-      console.log('ProfileForm: No existing profile found, keeping default form data');
     }
   }, [existingProfile]);
-
-  // Debug logging für User-Changes
-  useEffect(() => {
-    console.log('ProfileForm: User changed:', user?.id);
-  }, [user?.id]);
 
   const handleInputChange = (field: string, value: string) => {
     console.log('ProfileForm: Input changed:', field, value);
@@ -119,9 +114,20 @@ const ProfileForm = () => {
     e.preventDefault();
     
     console.log('ProfileForm: Submit started with data:', formData);
+    console.log('ProfileForm: Current user:', user);
     
-    // Check user authentication first
-    if (!user) {
+    // Wait for auth to load if still loading
+    if (authLoading) {
+      toast({
+        title: 'Authentifizierung lädt',
+        description: 'Bitte warten Sie, bis die Authentifizierung abgeschlossen ist.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Check user authentication
+    if (!user?.id) {
       toast({
         title: 'Authentifizierung erforderlich',
         description: 'Bitte melden Sie sich an, um Ihr Profil zu speichern.',
@@ -130,7 +136,7 @@ const ProfileForm = () => {
       return;
     }
     
-    // Validierung vor dem Speichern
+    // Client-side validation
     if (!formData.role) {
       toast({
         title: 'Fehlende Rolle',
@@ -149,7 +155,7 @@ const ProfileForm = () => {
       return;
     }
     
-    if (!formData.firstName || !formData.lastName) {
+    if (!formData.firstName?.trim() || !formData.lastName?.trim()) {
       toast({
         title: 'Fehlende Namen',
         description: 'Bitte geben Sie Vor- und Nachname ein.',
@@ -173,23 +179,36 @@ const ProfileForm = () => {
       await saveCustomerProfile(profileData);
       
       // Invalidate and refetch the query after successful save
-      await queryClient.invalidateQueries({ queryKey: ['customer-profile', user?.id] });
+      await queryClient.invalidateQueries({ queryKey: ['customer-profile', user.id] });
+      await refetch();
       
       console.log('ProfileForm: Profile saved successfully');
       
     } catch (error) {
       console.error('ProfileForm: Error saving profile:', error);
-      // Error handling is now done in useCustomerProfile hook
     }
   };
 
-  // Debug-Informationen anzeigen
-  if (error) {
-    console.error('ProfileForm: Query error:', error);
+  // Show loading while auth is loading
+  if (authLoading) {
+    return (
+      <Card>
+        <CardContent className="text-center py-8">
+          <div className="text-gray-600">Authentifizierung wird geladen...</div>
+        </CardContent>
+      </Card>
+    );
   }
 
-  if (isLoading) {
-    console.log('ProfileForm: Loading profile data...');
+  // Show error if not authenticated
+  if (!user) {
+    return (
+      <Card>
+        <CardContent className="text-center py-8">
+          <div className="text-red-600">Sie müssen angemeldet sein, um Ihr Profil zu bearbeiten.</div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
@@ -201,7 +220,7 @@ const ProfileForm = () => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {isLoading ? (
+        {profileLoading ? (
           <div className="text-center py-4">Profildaten werden geladen...</div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -221,7 +240,7 @@ const ProfileForm = () => {
             />
 
             <div className="flex justify-end">
-              <Button type="submit" disabled={loading || !user} className="px-8">
+              <Button type="submit" disabled={loading} className="px-8">
                 {loading ? 'Speichern...' : 'Profil speichern'}
               </Button>
             </div>
