@@ -1,10 +1,8 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Lock } from 'lucide-react';
 import StripeProvider from './StripeProvider';
 import StripePaymentForm from './StripePaymentForm';
-
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -13,18 +11,16 @@ interface PaymentModalProps {
   clientSecret: string;
   amount: number;
 }
-
-const PaymentModal = ({ 
-  isOpen, 
-  onClose, 
-  onSuccess, 
-  onError, 
-  clientSecret, 
-  amount 
+const PaymentModal = ({
+  isOpen,
+  onClose,
+  onSuccess,
+  onError,
+  clientSecret,
+  amount
 }: PaymentModalProps) => {
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+  return <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[800px]">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
             <Lock className="w-5 h-5 text-green-600" />
@@ -35,15 +31,9 @@ const PaymentModal = ({
           </p>
         </DialogHeader>
         <StripeProvider clientSecret={clientSecret}>
-          <StripePaymentForm
-            onSuccess={onSuccess}
-            onError={onError}
-            amount={amount}
-          />
+          <StripePaymentForm onSuccess={onSuccess} onError={onError} amount={amount} />
         </StripeProvider>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>;
 };
-
 export default PaymentModal;
