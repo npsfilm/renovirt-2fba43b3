@@ -112,7 +112,7 @@ export const useCustomerProfile = () => {
         address: sanitizedData.address,
         phone: sanitizedData.phone,
         data_source: sanitizedData.dataSource,
-        app_role: 'client',
+        app_role: 'client' as const, // Expliziter Typ für app_role
         updated_at: new Date().toISOString(),
       };
       

@@ -33,7 +33,7 @@ const ProfileForm = () => {
     phone: '',
   });
 
-  // Verbesserte Query-Konfiguration mit besserer Cache-Verwaltung
+  // Verbesserte Query-Konfiguration mit korrekter gcTime anstatt cacheTime
   const { data: existingProfile, isLoading, error } = useQuery({
     queryKey: ['customer-profile', user?.id],
     queryFn: async () => {
@@ -60,7 +60,7 @@ const ProfileForm = () => {
     },
     enabled: !!user?.id,
     staleTime: 5 * 60 * 1000, // 5 Minuten
-    cacheTime: 10 * 60 * 1000, // 10 Minuten
+    gcTime: 10 * 60 * 1000, // 10 Minuten (gcTime anstatt cacheTime)
     refetchOnWindowFocus: false,
     refetchOnMount: true,
   });
