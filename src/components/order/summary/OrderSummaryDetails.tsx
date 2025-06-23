@@ -80,9 +80,10 @@ const OrderSummaryDetails = ({ orderData, onUpdateData }: OrderSummaryDetailsPro
   };
 
   const getPackageLabel = (pkg?: string) => {
+    // Die Paketnamen aus PackageStep sind 'Basic' und 'Premium', nicht lowercase
     switch (pkg) {
-      case 'basic': return 'Basic';
-      case 'premium': return 'Premium';
+      case 'Basic': return 'Basic';
+      case 'Premium': return 'Premium';
       default: return 'Nicht ausgewählt';
     }
   };
