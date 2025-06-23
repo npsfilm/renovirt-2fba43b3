@@ -24,6 +24,8 @@ const PersonalInformationSection: React.FC<PersonalInformationSectionProps> = ({
 }) => {
   const { user } = useAuth();
 
+  console.log('PersonalInformationSection: Current formData.role:', formData.role);
+
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-medium text-gray-900">Persönliche Daten</h3>
@@ -45,7 +47,13 @@ const PersonalInformationSection: React.FC<PersonalInformationSectionProps> = ({
 
         <div>
           <Label htmlFor="role">Rolle *</Label>
-          <Select value={formData.role} onValueChange={(value) => onInputChange('role', value)}>
+          <Select 
+            value={formData.role || ''} 
+            onValueChange={(value) => {
+              console.log('PersonalInformationSection: Role changed to:', value);
+              onInputChange('role', value);
+            }}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Rolle wählen" />
             </SelectTrigger>

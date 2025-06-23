@@ -121,6 +121,34 @@ const ProfileForm = () => {
     
     console.log('ProfileForm: Submit started with data:', formData);
     
+    // Validierung vor dem Speichern
+    if (!formData.role) {
+      toast({
+        title: 'Fehlende Rolle',
+        description: 'Bitte wählen Sie eine Rolle aus.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    if (!formData.salutation) {
+      toast({
+        title: 'Fehlende Anrede',
+        description: 'Bitte wählen Sie eine Anrede aus.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    if (!formData.firstName || !formData.lastName) {
+      toast({
+        title: 'Fehlende Namen',
+        description: 'Bitte geben Sie Vor- und Nachname ein.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     try {
       // Combine address fields
       const address = `${formData.street}, ${formData.city}, ${formData.postalCode}, ${formData.country}`;
