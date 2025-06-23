@@ -13,14 +13,14 @@ interface PaymentMethodSelectorProps {
 
 const PaymentMethodSelector = ({ paymentMethod, onPaymentMethodChange }: PaymentMethodSelectorProps) => {
   return (
-    <Card className="border-0 shadow-none bg-transparent">
-      <CardHeader className="px-0 pb-4">
-        <CardTitle className="flex items-center gap-2 text-lg font-medium">
+    <Card className="border border-gray-200 shadow-sm">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-lg font-medium text-gray-900">
           <CreditCard className="w-5 h-5" />
-          Zahlungsmethode
+          Zahlungsmethode wählen
         </CardTitle>
       </CardHeader>
-      <CardContent className="px-0 space-y-3">
+      <CardContent className="space-y-3">
         <RadioGroup value={paymentMethod} onValueChange={onPaymentMethodChange}>
           {/* Stripe Payment Option */}
           <Label htmlFor="stripe" className="cursor-pointer">
