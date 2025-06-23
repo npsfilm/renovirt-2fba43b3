@@ -14,7 +14,6 @@ import Settings from '@/pages/Settings';
 import Help from '@/pages/Help';
 import Auth from '@/pages/Auth';
 import OrderFlow from '@/pages/OrderFlow';
-import Referrals from '@/pages/Referrals';
 import Guidelines from '@/pages/Guidelines';
 import Examples from '@/pages/Examples';
 import Admin from '@/pages/Admin';
@@ -22,7 +21,6 @@ import AdminAuth from '@/pages/AdminAuth';
 import AdminDashboard from '@/pages/AdminDashboard';
 import AdminOrders from '@/pages/AdminOrders';
 import AdminCustomers from '@/pages/AdminCustomers';
-import AdminReferrals from '@/pages/AdminReferrals';
 import AdminAnalytics from '@/pages/AdminAnalytics';
 import AdminSettings from '@/pages/AdminSettings';
 import AdminRoute from '@/components/admin/AdminRoute';
@@ -52,7 +50,6 @@ function App() {
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/examples" element={<Examples />} />
               <Route path="/order-flow" element={<OrderFlow />} />
-              <Route path="/referrals" element={<Referrals />} />
               <Route path="/guidelines" element={<Guidelines />} />
 
               {/* Admin Authentication Route */}
@@ -73,11 +70,6 @@ function App() {
               <Route path="/admin/customers" element={
                 <AdminRoute>
                   <AdminCustomers />
-                </AdminRoute>
-              } />
-              <Route path="/admin/referrals" element={
-                <AdminRoute>
-                  <AdminReferrals />
                 </AdminRoute>
               } />
               <Route path="/admin/analytics" element={

@@ -4,7 +4,6 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/s
 import AppSidebar from '@/components/layout/AppSidebar';
 import ModernHeroSection from '@/components/dashboard/ModernHeroSection';
 import ActiveProjectsGrid from '@/components/dashboard/ActiveProjectsGrid';
-import ModernReferralBox from '@/components/dashboard/ModernReferralBox';
 import GlobalAIWidget from '@/components/layout/GlobalAIWidget';
 
 const Dashboard = () => {
@@ -19,9 +18,6 @@ const Dashboard = () => {
             
             {/* Active Projects - Now full width */}
             <ActiveProjectsGrid />
-
-            {/* Modern Referral Box */}
-            <ModernReferralBox />
           </main>
         </SidebarInset>
         <GlobalAIWidget />

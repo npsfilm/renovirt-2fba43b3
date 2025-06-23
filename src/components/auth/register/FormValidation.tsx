@@ -1,34 +1,41 @@
 
+import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+
+interface FormData {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+}
 
 export const useFormValidation = () => {
   const { toast } = useToast();
 
-  const validatePassword = (password: string) => {
-    const hasMinLength = password.length >= 10;
-    const hasLowercase = /[a-z]/.test(password);
-    const hasUppercase = /[A-Z]/.test(password);
-    const hasNumber = /\d/.test(password);
-    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(password);
-    
-    return hasMinLength && hasLowercase && hasUppercase && hasNumber && hasSpecialChar;
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
   const getPasswordValidationErrors = (password: string): string[] => {
     const errors: string[] = [];
     
     if (password.length < 10) {
-      errors.push('Das Passwort muss mindestens 10 Zeichen lang sein');
+      errors.push('Das Passwort muss mindestens 10 Zeichen haben');
     }
+    
     if (!/[a-z]/.test(password)) {
       errors.push('Das Passwort muss mindestens einen Kleinbuchstaben enthalten');
     }
+    
     if (!/[A-Z]/.test(password)) {
       errors.push('Das Passwort muss mindestens einen Großbuchstaben enthalten');
     }
+    
     if (!/\d/.test(password)) {
       errors.push('Das Passwort muss mindestens eine Zahl enthalten');
     }
+    
     if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(password)) {
       errors.push('Das Passwort muss mindestens ein Sonderzeichen enthalten');
     }
@@ -36,45 +43,64 @@ export const useFormValidation = () => {
     return errors;
   };
 
-  const validateForm = (
-    formData: { email: string; password: string; firstName: string; lastName: string },
-    referralCode: string,
-    isReferralValid: boolean
-  ) => {
-    if (!formData.email || !formData.password || !formData.firstName || !formData.lastName) {
+  const validatePassword = (password: string): boolean => {
+    return getPasswordValidationErrors(password).length === 0;
+  };
+
+  const validateForm = (formData: FormData): boolean => {
+    // Email validation
+    if (!formData.email.trim()) {
       toast({
-        title: 'Fehler',
-        description: 'Bitte füllen Sie alle Felder aus.',
+        title: 'E-Mail erforderlich',
+        description: 'Bitte geben Sie eine E-Mail-Adresse ein.',
         variant: 'destructive',
       });
       return false;
     }
 
-    const passwordErrors = getPasswordValidationErrors(formData.password);
-    if (passwordErrors.length > 0) {
+    if (!validateEmail(formData.email)) {
       toast({
-        title: 'Passwort-Anforderungen nicht erfüllt',
-        description: passwordErrors[0], // Zeige den ersten Fehler
-        variant: 'destructive',
-      });
-      return false;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      toast({
-        title: 'Fehler',
+        title: 'Ungültige E-Mail',
         description: 'Bitte geben Sie eine gültige E-Mail-Adresse ein.',
         variant: 'destructive',
       });
       return false;
     }
 
-    // Only validate referral code if one was entered
-    if (referralCode && referralCode.trim() && !isReferralValid) {
+    // Name validation
+    if (!formData.firstName.trim()) {
       toast({
-        title: 'Fehler',
-        description: 'Der eingegebene Empfehlungscode ist ungültig. Lassen Sie das Feld leer oder geben Sie einen gültigen Code ein.',
+        title: 'Vorname erforderlich',
+        description: 'Bitte geben Sie Ihren Vornamen ein.',
+        variant: 'destructive',
+      });
+      return false;
+    }
+
+    if (!formData.lastName.trim()) {
+      toast({
+        title: 'Nachname erforderlich',
+        description: 'Bitte geben Sie Ihren Nachnamen ein.',
+        variant: 'destructive',
+      });
+      return false;
+    }
+
+    // Password validation
+    if (!formData.password) {
+      toast({
+        title: 'Passwort erforderlich',
+        description: 'Bitte geben Sie ein Passwort ein.',
+        variant: 'destructive',
+      });
+      return false;
+    }
+
+    if (!validatePassword(formData.password)) {
+      const errors = getPasswordValidationErrors(formData.password);
+      toast({
+        title: 'Passwort ungültig',
+        description: errors[0], // Show first error
         variant: 'destructive',
       });
       return false;
@@ -85,7 +111,8 @@ export const useFormValidation = () => {
 
   return {
     validateForm,
+    validateEmail,
     validatePassword,
-    getPasswordValidationErrors
+    getPasswordValidationErrors,
   };
 };
