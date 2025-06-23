@@ -74,7 +74,7 @@ export const useCustomerProfile = () => {
       
       console.log('useCustomerProfile: Starting save operation with data:', data);
       
-      // Validate data
+      // Validate data first
       const validation = validateProfileData(data);
       if (!validation.valid) {
         console.log('useCustomerProfile: Validation failed:', validation.errors);
@@ -83,40 +83,46 @@ export const useCustomerProfile = () => {
           description: validation.errors.join(', '),
           variant: 'destructive',
         });
-        return;
+        return false;
       }
       
-      // Sanitize data
-      const sanitizedData = sanitizeProfileData(data);
-      console.log('useCustomerProfile: Data sanitized:', sanitizedData);
+      // Get user session with multiple attempts
+      let session = null;
+      let attempts = 0;
+      const maxAttempts = 3;
       
-      // Get current session more reliably
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError) {
-        console.error('useCustomerProfile: Session error:', sessionError);
-        toast({
-          title: 'Authentifizierungsfehler',
-          description: 'Fehler beim Abrufen der Sitzung. Bitte melden Sie sich erneut an.',
-          variant: 'destructive',
-        });
-        throw new Error('Fehler beim Abrufen der Session');
+      while (!session && attempts < maxAttempts) {
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error('useCustomerProfile: Session error:', sessionError);
+          attempts++;
+          await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms before retry
+          continue;
+        }
+        
+        session = sessionData.session;
+        attempts++;
       }
       
       if (!session?.user) {
-        console.log('useCustomerProfile: No active session found');
+        console.log('useCustomerProfile: No active session found after', maxAttempts, 'attempts');
         logSecurityEvent('profile_save_no_session');
         toast({
           title: 'Anmeldung erforderlich',
-          description: 'Sie müssen angemeldet sein, um Ihr Profil zu speichern.',
+          description: 'Sie müssen angemeldet sein, um Ihr Profil zu speichern. Bitte melden Sie sich erneut an.',
           variant: 'destructive',
         });
-        throw new Error('Keine aktive Sitzung gefunden');
+        return false;
       }
       
       const user = session.user;
       console.log('useCustomerProfile: User authenticated:', user.id);
       logSecurityEvent('profile_save_started', { userId: user.id });
+      
+      // Sanitize data
+      const sanitizedData = sanitizeProfileData(data);
+      console.log('useCustomerProfile: Data sanitized:', sanitizedData);
       
       const profilePayload = {
         user_id: user.id,
@@ -124,32 +130,54 @@ export const useCustomerProfile = () => {
         salutation: sanitizedData.salutation,
         first_name: sanitizedData.firstName,
         last_name: sanitizedData.lastName,
-        company: sanitizedData.company,
+        company: sanitizedData.company || null,
         billing_email: sanitizedData.billingEmail || null,
         vat_id: sanitizedData.vatId || null,
-        address: sanitizedData.address,
-        phone: sanitizedData.phone,
+        address: sanitizedData.address || null,
+        phone: sanitizedData.phone || null,
         data_source: sanitizedData.dataSource,
         app_role: 'client' as const,
         updated_at: new Date().toISOString(),
       };
       
-      console.log('useCustomerProfile: Payload prepared:', profilePayload);
+      console.log('useCustomerProfile: Payload prepared for database:', profilePayload);
       
-      const { data: profileData, error } = await supabase
+      // First try to update existing profile
+      const { data: existingProfile } = await supabase
         .from('customer_profiles')
-        .upsert(profilePayload, { 
-          onConflict: 'user_id',
-          ignoreDuplicates: false 
-        })
-        .select()
+        .select('id, user_id')
+        .eq('user_id', user.id)
         .single();
+      
+      let result;
+      
+      if (existingProfile) {
+        // Update existing profile
+        console.log('useCustomerProfile: Updating existing profile');
+        result = await supabase
+          .from('customer_profiles')
+          .update(profilePayload)
+          .eq('user_id', user.id)
+          .select()
+          .single();
+      } else {
+        // Insert new profile
+        console.log('useCustomerProfile: Creating new profile');
+        result = await supabase
+          .from('customer_profiles')
+          .insert(profilePayload)
+          .select()
+          .single();
+      }
+
+      const { data: profileData, error } = result;
 
       if (error) {
         console.error('useCustomerProfile: Database error:', error);
         logSecurityEvent('profile_save_failed', { 
           userId: user.id, 
-          error: error.message 
+          error: error.message,
+          payload: profilePayload
         });
         
         toast({
@@ -157,7 +185,7 @@ export const useCustomerProfile = () => {
           description: `Profildaten konnten nicht gespeichert werden: ${error.message}`,
           variant: 'destructive',
         });
-        throw error;
+        return false;
       }
 
       console.log('useCustomerProfile: Profile saved successfully:', profileData);
@@ -165,24 +193,21 @@ export const useCustomerProfile = () => {
       
       toast({
         title: 'Profil gespeichert',
-        description: 'Ihre Profildaten wurden erfolgreich gespeichert.',
+        description: 'Ihre Profildaten wurden erfolgreich gespeichert und sind dauerhaft verfügbar.',
       });
 
-      return profileData;
+      return true;
     } catch (error) {
       console.error('useCustomerProfile: Error in saveCustomerProfile:', error);
       secureLog('Error in saveCustomerProfile:', error);
       
-      // Show user-friendly error message only if not already shown
-      if (error instanceof Error && !error.message.includes('Profildaten konnten nicht gespeichert werden')) {
-        toast({
-          title: 'Fehler',
-          description: error.message,
-          variant: 'destructive',
-        });
-      }
+      toast({
+        title: 'Unerwarteter Fehler',
+        description: 'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.',
+        variant: 'destructive',
+      });
       
-      throw error;
+      return false;
     } finally {
       setLoading(false);
     }
@@ -192,25 +217,26 @@ export const useCustomerProfile = () => {
     try {
       setLoading(true);
       
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session?.user) {
         console.log('useCustomerProfile: User not authenticated for get operation');
         logSecurityEvent('profile_fetch_unauthorized');
-        throw new Error('User not authenticated');
+        return null;
       }
       
-      console.log('useCustomerProfile: Fetching profile for user:', user.user.id);
+      console.log('useCustomerProfile: Fetching profile for user:', session.user.id);
       
       const { data: profileData, error } = await supabase
         .from('customer_profiles')
         .select('*')
-        .eq('user_id', user.user.id)
+        .eq('user_id', session.user.id)
         .maybeSingle();
 
       if (error) {
         console.error('useCustomerProfile: Fetch error:', error);
         logSecurityEvent('profile_fetch_failed', { 
-          userId: user.user.id, 
+          userId: session.user.id, 
           error: error.message 
         });
         throw error;

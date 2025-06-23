@@ -33,7 +33,7 @@ const ProfileForm = () => {
     phone: '',
   });
 
-  // Query to fetch existing profile
+  // Query to fetch existing profile with better error handling
   const { data: existingProfile, isLoading: profileLoading, error, refetch } = useQuery({
     queryKey: ['customer-profile', user?.id],
     queryFn: async () => {
@@ -48,9 +48,9 @@ const ProfileForm = () => {
         .from('customer_profiles')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         console.error('ProfileForm: Error fetching profile:', error);
         throw error;
       }
@@ -59,10 +59,11 @@ const ProfileForm = () => {
       return data;
     },
     enabled: !!user?.id && !authLoading,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-    refetchOnWindowFocus: false,
+    staleTime: 0, // Always fetch fresh data
+    gcTime: 0, // Don't cache old data
+    refetchOnWindowFocus: true,
     refetchOnMount: true,
+    retry: 3,
   });
 
   // Update form data when profile is loaded
@@ -102,6 +103,8 @@ const ProfileForm = () => {
       
       console.log('ProfileForm: Setting form data:', newFormData);
       setFormData(newFormData);
+    } else {
+      console.log('ProfileForm: No existing profile found, keeping current form data');
     }
   }, [existingProfile]);
 
@@ -176,16 +179,26 @@ const ProfileForm = () => {
       
       console.log('ProfileForm: Saving profile data:', profileData);
       
-      await saveCustomerProfile(profileData);
+      const success = await saveCustomerProfile(profileData);
       
-      // Invalidate and refetch the query after successful save
-      await queryClient.invalidateQueries({ queryKey: ['customer-profile', user.id] });
-      await refetch();
-      
-      console.log('ProfileForm: Profile saved successfully');
+      if (success) {
+        // Invalidate and refetch the query after successful save
+        console.log('ProfileForm: Profile saved successfully, refreshing data');
+        await queryClient.invalidateQueries({ queryKey: ['customer-profile', user.id] });
+        
+        // Force a refetch to ensure we get the latest data
+        setTimeout(() => {
+          refetch();
+        }, 500);
+      }
       
     } catch (error) {
       console.error('ProfileForm: Error saving profile:', error);
+      toast({
+        title: 'Fehler beim Speichern',
+        description: 'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -241,7 +254,7 @@ const ProfileForm = () => {
 
             <div className="flex justify-end">
               <Button type="submit" disabled={loading} className="px-8">
-                {loading ? 'Speichern...' : 'Profil speichern'}
+                {loading ? 'Speichern...' : 'Profil dauerhaft speichern'}
               </Button>
             </div>
           </form>
