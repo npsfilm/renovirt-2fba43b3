@@ -90,7 +90,7 @@ Beschreiben Sie gerne Ihr Anliegen - ich bin hier, um zu helfen!`;
 
       const { data: orders } = await supabase
         .from('orders')
-        .select('id, status, photo_type, image_count, total_price, created_at')
+        .select('id, order_number, status, photo_type, image_count, total_price, created_at')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(5);
@@ -102,10 +102,24 @@ Beschreiben Sie gerne Ihr Anliegen - ich bin hier, um zu helfen!`;
       }
 
       if (orders && orders.length > 0) {
-        userContext += `Letzte Bestellungen:\n`;
-        orders.forEach(order => {
-          userContext += `- Bestellung ${order.id}: ${order.photo_type}, ${order.image_count} Bilder, Status: ${order.status}, €${order.total_price}\n`;
-        });
+        // Check if user is asking about current/latest order specifically
+        const currentOrderKeywords = ['aktuelle', 'letzte', 'neueste', 'wann fertig', 'wann sind meine bilder fertig', 'status meiner bestellung'];
+        const isAskingAboutCurrentOrder = currentOrderKeywords.some(keyword => questionLower.includes(keyword));
+        
+        if (isAskingAboutCurrentOrder && !questionLower.includes('alle') && !questionLower.includes('übersicht')) {
+          // Show only the latest order
+          const latestOrder = orders[0];
+          const orderNumber = latestOrder.order_number || `RV-${latestOrder.id.slice(0, 8)}`;
+          userContext += `Aktuelle Bestellung:\n`;
+          userContext += `- Bestellung ${orderNumber}: ${latestOrder.photo_type}, ${latestOrder.image_count} Bilder, Status: ${latestOrder.status}, €${latestOrder.total_price}\n`;
+        } else {
+          // Show all recent orders
+          userContext += `Letzte Bestellungen:\n`;
+          orders.forEach(order => {
+            const orderNumber = order.order_number || `RV-${order.id.slice(0, 8)}`;
+            userContext += `- Bestellung ${orderNumber}: ${order.photo_type}, ${order.image_count} Bilder, Status: ${order.status}, €${order.total_price}\n`;
+          });
+        }
       }
     }
 
@@ -136,6 +150,9 @@ WICHTIGE REGELN:
 - Verwende die spezifischen Details aus der Wissensdatenbank (Preise, Lieferzeiten, etc.)
 - Sei besonders hilfreich bei Fragen zu Paketen, Preisen, Lieferzeiten und technischen Anforderungen
 - Wenn du eine Lösung vorschlägst, frage am Ende, ob das Problem gelöst wurde oder ob der Kunde weiteren Support benötigt
+- Verwende IMMER die Bestellnummer (RV-Format) für Kundenanzeige, niemals die interne ID
+- Bei Fragen nach dem Status der "aktuellen" oder "letzten" Bestellung, zeige nur die neueste Bestellung
+- Bei allgemeinen Fragen oder wenn explizit nach "allen" Bestellungen gefragt wird, zeige eine Übersicht
 
 VERFÜGBARE KUNDENINFORMATIONEN:
 ${userContext}
