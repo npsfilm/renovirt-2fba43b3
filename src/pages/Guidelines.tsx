@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/layout/AppSidebar';
@@ -8,42 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Badge } from '@/components/ui/badge';
-import { 
-  ArrowUp, 
-  Download, 
-  Camera, 
-  Settings, 
-  Lightbulb, 
-  Layout, 
-  ClipboardList, 
-  Palette, 
-  Workflow, 
-  HelpCircle, 
-  CheckSquare,
-  ChevronDown,
-  ChevronRight,
-  Smartphone,
-  Aperture,
-  Sun,
-  Grid3X3,
-  FileImage,
-  Brush,
-  PlayCircle,
-  Upload,
-  Moon,
-  Menu,
-  Home
-} from 'lucide-react';
+import { ArrowUp, Download, Camera, Settings, Lightbulb, Layout, ClipboardList, Palette, Workflow, HelpCircle, CheckSquare, ChevronDown, ChevronRight, Smartphone, Aperture, Sun, Grid3X3, FileImage, Brush, PlayCircle, Upload, Moon, Menu, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 const Guidelines = () => {
   const navigate = useNavigate();
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -59,47 +25,66 @@ const Guidelines = () => {
         setShowBackToTop(false);
       }
     };
-
     window.addEventListener('scroll', toggleVisibility);
     return () => window.removeEventListener('scroll', toggleVisibility);
   }, []);
-
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
       behavior: 'smooth'
     });
   };
-
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({
+        behavior: 'smooth'
+      });
       setActiveSection(sectionId);
     }
   };
-
-  const navigationItems = [
-    { id: 'ausruestung', label: 'Ausrüstung', icon: Camera },
-    { id: 'grundeinstellungen', label: 'Grundeinstellungen', icon: Settings },
-    { id: 'licht', label: 'Licht', icon: Lightbulb },
-    { id: 'komposition', label: 'Komposition', icon: Layout },
-    { id: 'shotlisten', label: 'Shotlisten', icon: ClipboardList },
-    { id: 'staging', label: 'Staging', icon: Palette },
-    { id: 'workflow', label: 'Workflow', icon: Workflow },
-    { id: 'faq', label: 'FAQ', icon: HelpCircle },
-    { id: 'checkliste', label: 'Upload-Checkliste', icon: CheckSquare }
-  ];
-
-  return (
-    <SidebarProvider>
+  const navigationItems = [{
+    id: 'ausruestung',
+    label: 'Ausrüstung',
+    icon: Camera
+  }, {
+    id: 'grundeinstellungen',
+    label: 'Grundeinstellungen',
+    icon: Settings
+  }, {
+    id: 'licht',
+    label: 'Licht',
+    icon: Lightbulb
+  }, {
+    id: 'komposition',
+    label: 'Komposition',
+    icon: Layout
+  }, {
+    id: 'shotlisten',
+    label: 'Shotlisten',
+    icon: ClipboardList
+  }, {
+    id: 'staging',
+    label: 'Staging',
+    icon: Palette
+  }, {
+    id: 'workflow',
+    label: 'Workflow',
+    icon: Workflow
+  }, {
+    id: 'faq',
+    label: 'FAQ',
+    icon: HelpCircle
+  }, {
+    id: 'checkliste',
+    label: 'Upload-Checkliste',
+    icon: CheckSquare
+  }];
+  return <SidebarProvider>
       <div className={`min-h-screen flex w-full ${darkMode ? 'dark' : ''}`}>
         <AppSidebar />
         <SidebarInset>
-          <PageHeader 
-            title="Renovirt Immobilien-Fotoguide" 
-            subtitle="Professionelle Aufnahmen mit Smartphone & Kamera"
-          />
+          <PageHeader title="Renovirt Immobilien-Fotoguide" subtitle="Professionelle Aufnahmen mit Smartphone & Kamera" />
           
           <main className="flex-1">
             {/* Hero Section */}
@@ -112,76 +97,22 @@ const Guidelines = () => {
                   Professionelle Aufnahmen mit Smartphone & Kamera – 
                   Ihr kompletter Leitfaden für beeindruckende Immobilienfotos
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button size="lg" className="shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
-                    <Download className="w-5 h-5 mr-2" />
-                    PDF-E-Book herunterladen
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="lg"
-                    onClick={() => scrollToSection('ausruestung')}
-                    className="hover:scale-105 transition-transform duration-200"
-                  >
-                    <PlayCircle className="w-5 h-5 mr-2" />
-                    Guide starten
-                  </Button>
-                </div>
+                
               </div>
             </div>
 
             {/* Breadcrumbs */}
-            <div className="px-6 py-4 border-b">
-              <div className="max-w-4xl mx-auto">
-                <Breadcrumb>
-                  <BreadcrumbList>
-                    <BreadcrumbItem>
-                      <BreadcrumbLink onClick={() => navigate('/dashboard')} className="cursor-pointer">
-                        <Home className="w-4 h-4" />
-                        Dashboard
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                      <BreadcrumbPage>Foto-Guidelines</BreadcrumbPage>
-                    </BreadcrumbItem>
-                  </BreadcrumbList>
-                </Breadcrumb>
-              </div>
-            </div>
+            
 
             {/* Sticky Navigation */}
             <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b px-6 py-3">
               <div className="max-w-4xl mx-auto">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Menu className="w-4 h-4" />
-                    Schnellnavigation:
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setDarkMode(!darkMode)}
-                      className="p-2"
-                    >
-                      {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                    </Button>
-                  </div>
-                </div>
+                
                 <div className="flex flex-wrap gap-2 mt-3">
-                  {navigationItems.map((item) => (
-                    <Button
-                      key={item.id}
-                      variant={activeSection === item.id ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => scrollToSection(item.id)}
-                      className="text-xs hover:scale-105 transition-transform duration-200"
-                    >
+                  {navigationItems.map(item => <Button key={item.id} variant={activeSection === item.id ? "default" : "outline"} size="sm" onClick={() => scrollToSection(item.id)} className="text-xs hover:scale-105 transition-transform duration-200">
                       <item.icon className="w-3 h-3 mr-1" />
                       {item.label}
-                    </Button>
-                  ))}
+                    </Button>)}
                 </div>
               </div>
             </div>
@@ -422,25 +353,19 @@ const Guidelines = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
-                        {[
-                          {
-                            question: "Fenster sind ausgebrannt – was tun?",
-                            answer: "HDR-Modus aktivieren oder 3er-Bracketing verwenden. Bei extremen Kontrasten mehrere Belichtungen manuell kombinieren."
-                          },
-                          {
-                            question: "LED-Flimmern in Videos/Fotos?",
-                            answer: "Verschlusszeit auf 1/50 s einstellen, um Flimmern zu vermeiden."
-                          },
-                          {
-                            question: "Bilder sind zu rauschig?",
-                            answer: "ISO-Wert senken (100-200) und bei Bedarf Stativ verwenden für längere Belichtungszeiten."
-                          },
-                          {
-                            question: "Starke Verzerrung an den Rändern?",
-                            answer: "Brennweite ≥ 14 mm (Vollformat) verwenden oder Korrektur in der Nachbearbeitung."
-                          }
-                        ].map((faq, index) => (
-                          <Collapsible key={index}>
+                        {[{
+                        question: "Fenster sind ausgebrannt – was tun?",
+                        answer: "HDR-Modus aktivieren oder 3er-Bracketing verwenden. Bei extremen Kontrasten mehrere Belichtungen manuell kombinieren."
+                      }, {
+                        question: "LED-Flimmern in Videos/Fotos?",
+                        answer: "Verschlusszeit auf 1/50 s einstellen, um Flimmern zu vermeiden."
+                      }, {
+                        question: "Bilder sind zu rauschig?",
+                        answer: "ISO-Wert senken (100-200) und bei Bedarf Stativ verwenden für längere Belichtungszeiten."
+                      }, {
+                        question: "Starke Verzerrung an den Rändern?",
+                        answer: "Brennweite ≥ 14 mm (Vollformat) verwenden oder Korrektur in der Nachbearbeitung."
+                      }].map((faq, index) => <Collapsible key={index}>
                             <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors">
                               <span className="font-medium text-left">{faq.question}</span>
                               <ChevronDown className="w-4 h-4" />
@@ -448,8 +373,7 @@ const Guidelines = () => {
                             <CollapsibleContent className="p-4 bg-background border border-t-0 rounded-b-lg">
                               <p className="text-sm text-muted-foreground">{faq.answer}</p>
                             </CollapsibleContent>
-                          </Collapsible>
-                        ))}
+                          </Collapsible>)}
                       </div>
                       
                       <div className="mt-8 p-6 bg-gradient-to-r from-primary/5 to-accent/5 rounded-lg text-center">
@@ -479,34 +403,13 @@ const Guidelines = () => {
                     <CardContent>
                       <div className="space-y-4">
                         <div className="grid gap-3">
-                          {[
-                            "Mindestens 2 Winkel pro Raum fotografiert",
-                            "Alle Dateien im RAW/DNG-Format gespeichert",
-                            "Dateinamen korrekt: Objekt_Raum_##",
-                            "Upload-Ordner '0_RAW' erstellt",
-                            "Alle Dateien erfolgreich hochgeladen"
-                          ].map((item, index) => (
-                            <div key={index} className="flex items-center gap-3 p-3 bg-success/5 rounded-lg">
+                          {["Mindestens 2 Winkel pro Raum fotografiert", "Alle Dateien im RAW/DNG-Format gespeichert", "Dateinamen korrekt: Objekt_Raum_##", "Upload-Ordner '0_RAW' erstellt", "Alle Dateien erfolgreich hochgeladen"].map((item, index) => <div key={index} className="flex items-center gap-3 p-3 bg-success/5 rounded-lg">
                               <CheckSquare className="w-5 h-5 text-success" />
                               <span className="text-sm">{item}</span>
-                            </div>
-                          ))}
+                            </div>)}
                         </div>
                         
-                        <div className="mt-6 p-4 bg-primary/5 rounded-lg">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <h4 className="font-semibold">Download-PDF verfügbar</h4>
-                              <p className="text-sm text-muted-foreground">
-                                Komplette Checkliste als PDF zum Ausdrucken
-                              </p>
-                            </div>
-                            <Button variant="outline" size="sm">
-                              <Download className="w-4 h-4 mr-2" />
-                              PDF
-                            </Button>
-                          </div>
-                        </div>
+                        
                       </div>
                     </CardContent>
                   </Card>
@@ -524,22 +427,11 @@ const Guidelines = () => {
                         professionell bearbeiten. Für Ergebnisse, die verkaufen.
                       </p>
                       <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Button 
-                          size="lg"
-                          onClick={() => navigate('/order')}
-                          className="shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
-                        >
+                        <Button size="lg" onClick={() => navigate('/order')} className="shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
                           <Upload className="w-5 h-5 mr-2" />
                           Jetzt Fotos hochladen
                         </Button>
-                        <Button 
-                          variant="outline" 
-                          size="lg"
-                          className="hover:scale-105 transition-transform duration-200"
-                        >
-                          <Download className="w-5 h-5 mr-2" />
-                          Kompletten Guide als PDF
-                        </Button>
+                        
                       </div>
                     </div>
                   </CardContent>
@@ -573,19 +465,11 @@ const Guidelines = () => {
           </main>
 
           {/* Back to Top Button */}
-          {showBackToTop && (
-            <Button
-              onClick={scrollToTop}
-              className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110"
-              size="icon"
-            >
+          {showBackToTop && <Button onClick={scrollToTop} className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110" size="icon">
               <ArrowUp className="w-5 h-5" />
-            </Button>
-          )}
+            </Button>}
         </SidebarInset>
       </div>
-    </SidebarProvider>
-  );
+    </SidebarProvider>;
 };
-
 export default Guidelines;
