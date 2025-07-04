@@ -46,16 +46,57 @@ export const useOrderFileUpload = () => {
   };
 
   const handleOrderFiles = async (orderData: OrderData, orderId: string, userId: string) => {
+    const uploadResults = {
+      regularFiles: { success: false, error: null as string | null },
+      watermarkFile: { success: false, error: null as string | null }
+    };
+
     try {
-      // Upload regular files
-      await uploadFiles(orderData.files, orderId, userId, orderData.photoType);
+      // Upload regular files with detailed error tracking
+      try {
+        await uploadFiles(orderData.files, orderId, userId, orderData.photoType);
+        uploadResults.regularFiles.success = true;
+      } catch (regularError: any) {
+        uploadResults.regularFiles.error = regularError.message;
+        logSecurityEvent('regular_files_upload_failed', { 
+          orderId, 
+          fileCount: orderData.files.length,
+          error: regularError.message 
+        });
+      }
 
       // Upload watermark file if provided
       if (orderData.watermarkFile && orderData.extras.watermark) {
-        await uploadWatermarkFile(orderData.watermarkFile, orderId, userId);
+        try {
+          await uploadWatermarkFile(orderData.watermarkFile, orderId, userId);
+          uploadResults.watermarkFile.success = true;
+        } catch (watermarkError: any) {
+          uploadResults.watermarkFile.error = watermarkError.message;
+          logSecurityEvent('watermark_upload_failed', { 
+            orderId, 
+            fileName: orderData.watermarkFile.name,
+            error: watermarkError.message 
+          });
+        }
       }
-    } catch (error) {
+
+      // If both critical uploads failed, throw error
+      if (!uploadResults.regularFiles.success && orderData.files.length > 0) {
+        throw new Error(`Haupt-Upload fehlgeschlagen: ${uploadResults.regularFiles.error}`);
+      }
+
+      // Log partial failures but don't throw
+      if (uploadResults.watermarkFile.error) {
+        console.warn('Wasserzeichen-Upload fehlgeschlagen:', uploadResults.watermarkFile.error);
+      }
+
+    } catch (error: any) {
       console.error('Fehler beim Datei-Upload:', error);
+      logSecurityEvent('file_upload_critical_failure', { 
+        orderId, 
+        error: error.message,
+        results: uploadResults 
+      });
       throw error;
     }
   };

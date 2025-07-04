@@ -22,15 +22,11 @@ const OrderProgress = ({ steps }: OrderProgressProps) => {
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
                   step.status === 'completed'
-                    ? 'border-2 text-white shadow-sm'
+                    ? 'bg-success border-success text-success-foreground shadow-sm'
                     : step.status === 'current'
                     ? 'bg-primary border-primary text-primary-foreground shadow-sm ring-2 ring-primary/20'
                     : 'bg-muted border-muted-foreground/30 text-muted-foreground'
                 }`}
-                style={step.status === 'completed' ? { 
-                  backgroundColor: '#697a3d', 
-                  borderColor: '#697a3d' 
-                } : {}}
               >
                 {step.status === 'completed' ? (
                   <Check className="w-5 h-5" />
@@ -43,10 +39,9 @@ const OrderProgress = ({ steps }: OrderProgressProps) => {
                   step.status === 'current' 
                     ? 'text-primary font-semibold' 
                     : step.status === 'completed'
-                    ? 'font-medium'
+                    ? 'text-success font-medium'
                     : 'text-muted-foreground'
                 }`}
-                style={step.status === 'completed' ? { color: '#697a3d' } : {}}
               >
                 {step.title}
               </span>
@@ -55,9 +50,8 @@ const OrderProgress = ({ steps }: OrderProgressProps) => {
               <div className="flex-1 mx-4">
                 <div
                   className={`h-0.5 transition-all duration-500 ${
-                    step.status === 'completed' ? '' : 'bg-border'
+                    step.status === 'completed' ? 'bg-success' : 'bg-border'
                   }`}
-                  style={step.status === 'completed' ? { backgroundColor: '#697a3d' } : {}}
                 />
               </div>
             )}
