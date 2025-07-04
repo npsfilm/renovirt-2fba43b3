@@ -34,12 +34,10 @@ export const useEnhancedRegistrationToastHelper = () => {
     });
   };
 
-  const showRegistrationSuccess = (hasReferralCode: boolean = false) => {
+  const showRegistrationSuccess = () => {
     toast({
       title: 'Registrierung erfolgreich',
-      description: hasReferralCode 
-        ? 'Bitte überprüfen Sie Ihre E-Mail für die Bestätigung. Ihre kostenlosen Bilder wurden vorgemerkt und werden nach der ersten Bestellung gutgeschrieben!'
-        : 'Bitte überprüfen Sie Ihre E-Mail für die Bestätigung. Klicken Sie auf den Link in der E-Mail, um Ihr Konto zu aktivieren.',
+      description: 'Bitte überprüfen Sie Ihre E-Mail für die Bestätigung. Klicken Sie auf den Link in der E-Mail, um Ihr Konto zu aktivieren.',
     });
   };
 

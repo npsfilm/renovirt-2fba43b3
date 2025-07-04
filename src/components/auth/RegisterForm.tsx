@@ -95,7 +95,7 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
       const { data, error } = await signUp(formData.email, formData.password, {
         firstName: formData.firstName,
         lastName: formData.lastName,
-        role: 'customer',
+        role: 'unspecified', // Rolle wird im Onboarding festgelegt
       });
 
       console.log('Registration result:', { data, error });
@@ -111,7 +111,7 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
         console.log('Registration successful for user:', data.user.email);
         
         // Show success message
-        showRegistrationSuccess(false);
+        showRegistrationSuccess();
         
         // Call success callback
         onSuccess();

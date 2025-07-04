@@ -16,7 +16,7 @@ export const useProfileDatabase = () => {
       vat_id: sanitizedData.vatId || null,
       address: sanitizedData.address || null,
       phone: sanitizedData.phone || null,
-      data_source: sanitizedData.dataSource,
+      data_source: sanitizedData.dataSource || 'onboarding',
       app_role: 'client' as const,
       updated_at: new Date().toISOString(),
     };
@@ -24,11 +24,19 @@ export const useProfileDatabase = () => {
     console.log('useProfileDatabase: Payload prepared for database:', profilePayload);
     
     // First try to update existing profile
-    const { data: existingProfile } = await supabase
+    const { data: existingProfile, error: fetchError } = await supabase
       .from('customer_profiles')
       .select('id, user_id')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
+    
+    if (fetchError) {
+      console.error('useProfileDatabase: Error checking existing profile:', fetchError);
+      logSecurityEvent('profile_fetch_error', { 
+        userId, 
+        error: fetchError.message
+      });
+    }
     
     let result;
     
@@ -60,7 +68,15 @@ export const useProfileDatabase = () => {
         error: error.message,
         payload: profilePayload
       });
-      throw new Error(`Profildaten konnten nicht gespeichert werden: ${error.message}`);
+      
+      // Provide more specific error messages
+      if (error.code === '23505') {
+        throw new Error('Ein Profil für diesen Benutzer existiert bereits.');
+      } else if (error.code === '23503') {
+        throw new Error('Benutzer nicht gefunden. Bitte melden Sie sich erneut an.');
+      } else {
+        throw new Error(`Profildaten konnten nicht gespeichert werden: ${error.message}`);
+      }
     }
 
     console.log('useProfileDatabase: Profile saved successfully:', profileData);
