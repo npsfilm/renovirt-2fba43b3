@@ -54,7 +54,7 @@
     --sidebar-ring: 78 26% 50%; /* #91A56E */
 
     /* Status colors using your palette */
-    --success: 157 42% 53%; /* #5BB98C */
+    --success: 78 26% 30%; /* #66773b */
     --success-foreground: 0 0% 100%; /* #ffffff */
     --warning: 46 85% 69%; /* #F4C76C */
     --warning-foreground: 145 14% 15%; /* #1E2B20 */
@@ -64,7 +64,7 @@
     /* Chart colors using your palette variations */
     --chart-1: 78 26% 50%; /* Primary green */
     --chart-2: 45 52% 59%; /* Accent gold */
-    --chart-3: 157 42% 53%; /* Success green */
+    --chart-3: 78 26% 30%; /* Success green */
     --chart-4: 4 78% 57%; /* Error red */
     --chart-5: 46 85% 69%; /* Warning yellow */
     --chart-6: 280 60% 60%; /* Purple for variety */
@@ -72,7 +72,7 @@
     /* Status colors for orders */
     --status-pending: 46 85% 69%; /* Warning yellow */
     --status-processing: 210 80% 56%; /* Info blue */
-    --status-completed: 157 42% 53%; /* Success green */
+    --status-completed: 78 26% 30%; /* Success green */
     --status-cancelled: 4 78% 57%; /* Error red */
     --status-quality-check: 280 60% 60%; /* Purple */
 
@@ -120,8 +120,8 @@
     --sidebar-ring: 78 26% 60%;
     
     /* Dark mode status colors */
-    --success: 157 42% 60%;
-    --success-foreground: 0 0% 0%;
+    --success: 78 26% 35%;
+    --success-foreground: 0 0% 100%;
     --warning: 46 85% 75%;
     --warning-foreground: 0 0% 0%;
     --info: 210 80% 65%;
@@ -130,7 +130,7 @@
     /* Dark chart colors */
     --chart-1: 78 26% 60%;
     --chart-2: 45 52% 65%;
-    --chart-3: 157 42% 60%;
+    --chart-3: 78 26% 35%;
     --chart-4: 4 78% 65%;
     --chart-5: 46 85% 75%;
     --chart-6: 280 60% 70%;
