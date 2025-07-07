@@ -150,10 +150,10 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <RegisterHeader onSwitchToLogin={onSwitchToLogin} />
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         <GoogleAuthButton onClick={handleGoogleAuth} loading={loading} />
       </div>
 
@@ -166,7 +166,7 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
         </div>
       </div>
 
-      <form onSubmit={handleRegister} className="space-y-4">
+      <form onSubmit={handleRegister} className="space-y-3">
         <RegisterFormFields 
           formData={formData}
           showPasswordValidation={showPasswordValidation}
@@ -175,7 +175,7 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
         
         <Button 
           type="submit" 
-          className="w-full h-12 font-medium bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow-md" 
+          className="w-full h-11 font-medium bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow-md" 
           disabled={loading}
         >
           {loading ? 'Wird erstellt...' : 'Konto erstellen'}

@@ -68,8 +68,8 @@ const Auth = () => {
   return (
     <AuthLayout>
       {/* Custom Tab Navigation with light mode styling */}
-      <div className="w-full mb-8">
-        <div className="inline-flex h-10 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground w-full">
+      <div className="w-full mb-6">
+        <div className="inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground w-full">
           <button
             onClick={() => setActiveTab('login')}
             className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full ${
