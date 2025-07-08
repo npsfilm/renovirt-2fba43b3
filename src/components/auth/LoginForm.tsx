@@ -124,12 +124,12 @@ const LoginForm = ({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2 sm:space-y-3 lg:space-y-4">
       {/* Enhanced Google Button */}
-      <div className="space-y-3">
+      <div className="space-y-2 sm:space-y-3">
         <Button 
           variant="outline" 
-          className="w-full h-11 border-border bg-background hover:bg-muted text-foreground font-medium transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow-md" 
+          className="w-full h-9 sm:h-10 lg:h-11 border-border bg-background hover:bg-muted text-foreground font-medium transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow-md text-sm" 
           onClick={handleGoogleAuth} 
           disabled={loading} 
           type="button"
@@ -153,14 +153,14 @@ const LoginForm = ({
         </div>
       </div>
 
-      <div className="text-center text-sm text-muted-foreground">
+      <div className="text-center text-xs sm:text-sm text-muted-foreground">
         E-Mail und Passwort eingeben zum Anmelden
       </div>
 
-      <form onSubmit={handleLogin} className="space-y-3">
-        <div className="space-y-2">
+      <form onSubmit={handleLogin} className="space-y-2 sm:space-y-3">
+        <div className="space-y-1 sm:space-y-2">
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Mail className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3 w-3 sm:h-4 sm:w-4" />
             <Input 
               id="email" 
               name="email" 
@@ -169,13 +169,13 @@ const LoginForm = ({
               value={formData.email} 
               onChange={handleInputChange} 
               required 
-              className="bg-input border-border text-foreground placeholder-muted-foreground h-11 pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20" 
+              className="bg-input border-border text-foreground placeholder-muted-foreground h-9 sm:h-10 lg:h-11 pl-8 sm:pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-sm" 
             />
           </div>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-1 sm:space-y-2">
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Lock className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3 w-3 sm:h-4 sm:w-4" />
             <Input 
               id="password" 
               name="password" 
@@ -184,25 +184,25 @@ const LoginForm = ({
               value={formData.password} 
               onChange={handleInputChange} 
               required 
-              className="bg-input border-border text-foreground placeholder-muted-foreground h-11 pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20" 
+              className="bg-input border-border text-foreground placeholder-muted-foreground h-9 sm:h-10 lg:h-11 pl-8 sm:pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-sm" 
             />
           </div>
         </div>
         <Button 
           type="submit" 
-          className="w-full h-11 font-medium bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow-md group" 
+          className="w-full h-9 sm:h-10 lg:h-11 font-medium bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow-md group text-sm" 
           disabled={loading}
         >
           {loading ? 'Wird angemeldet...' : (
             <>
               Anmelden
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              <ArrowRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4 transition-transform group-hover:translate-x-1" />
             </>
           )}
         </Button>
       </form>
       
-      <div className="text-center text-sm text-muted-foreground">
+      <div className="text-center text-xs sm:text-sm text-muted-foreground">
         <Link to="/forgot-password" className="hover:text-foreground transition-colors hover:underline">
           Passwort vergessen?
         </Link>

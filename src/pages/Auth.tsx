@@ -68,11 +68,11 @@ const Auth = () => {
   return (
     <AuthLayout>
       {/* Custom Tab Navigation with light mode styling */}
-      <div className="w-full mb-6">
-        <div className="inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground w-full">
+      <div className="w-full mb-3 sm:mb-4 lg:mb-6">
+        <div className="inline-flex h-8 sm:h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground w-full">
           <button
             onClick={() => setActiveTab('login')}
-            className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full ${
+            className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full ${
               activeTab === 'login'
                 ? 'bg-background text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
@@ -82,7 +82,7 @@ const Auth = () => {
           </button>
           <button
             onClick={() => setActiveTab('register')}
-            className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full ${
+            className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full ${
               activeTab === 'register'
                 ? 'bg-background text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
