@@ -211,110 +211,127 @@ const Onboarding = () => {
   const CurrentStepComponent = steps[currentStep].component;
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+    <div className="h-screen flex flex-col bg-background overflow-hidden">
+      <div className="flex-1 flex flex-col max-w-7xl mx-auto w-full">
+        {/* Compact Header */}
+        <div className="flex items-center justify-between p-4 lg:p-6 shrink-0">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Willkommen bei RenovIrt</h1>
-            <p className="text-muted-foreground mt-1">Richten Sie Ihr Konto in wenigen Schritten ein</p>
+            <h1 className="text-xl lg:text-2xl xl:text-3xl font-bold text-foreground">Willkommen bei RenovIrt</h1>
+            <p className="text-sm text-muted-foreground hidden sm:block">Richten Sie Ihr Konto in wenigen Schritten ein</p>
           </div>
-          <div className="text-sm text-muted-foreground bg-card px-3 py-1 rounded-full border">
-            Schritt {currentStep + 1} von {steps.length}
+          <div className="text-xs lg:text-sm text-muted-foreground bg-card px-2 lg:px-3 py-1 rounded-full border">
+            {currentStep + 1}/{steps.length}
           </div>
         </div>
 
-        <div className="flex gap-8">
+        <div className="flex-1 flex gap-4 lg:gap-8 px-4 lg:px-6 pb-4 lg:pb-6 overflow-hidden">
           {/* Left Sidebar - Progress */}
-          <div className="w-80 bg-card rounded-lg border p-6 h-fit">
-            <h2 className="text-lg font-semibold text-foreground mb-6">Einrichtungsfortschritt</h2>
-            <div className="space-y-6">
-              {steps.map((step, index) => (
-                <div key={index} className="flex items-center space-x-4">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-200 ${
-                    index < currentStep 
-                      ? 'bg-primary border-primary text-primary-foreground' 
-                      : index === currentStep
-                      ? 'border-primary text-primary bg-primary/10'
-                      : 'border-muted text-muted-foreground bg-muted/50'
-                  }`}>
-                    {index < currentStep ? (
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    ) : index === currentStep ? (
-                      <div className="w-3 h-3 bg-primary rounded-full animate-pulse" />
-                    ) : (
-                      <span className="text-sm font-medium">{index + 1}</span>
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <h3 className={`text-sm font-medium transition-colors ${
-                      index <= currentStep ? 'text-foreground' : 'text-muted-foreground'
+          <div className="hidden lg:flex w-64 xl:w-80 bg-card rounded-lg border flex-col overflow-hidden">
+            <div className="p-4 xl:p-6 shrink-0">
+              <h2 className="text-lg font-semibold text-foreground mb-4">Einrichtungsfortschritt</h2>
+            </div>
+            
+            <div className="flex-1 px-4 xl:px-6 overflow-y-auto">
+              <div className="space-y-4">
+                {steps.map((step, index) => (
+                  <div key={index} className="flex items-center space-x-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-200 shrink-0 ${
+                      index < currentStep 
+                        ? 'bg-primary border-primary text-primary-foreground' 
+                        : index === currentStep
+                        ? 'border-primary text-primary bg-primary/10'
+                        : 'border-muted text-muted-foreground bg-muted/50'
                     }`}>
-                      {step.title}
-                    </h3>
-                    {index === 0 && <p className="text-xs text-muted-foreground mt-1">Erfahren Sie mehr über RenovIrt</p>}
-                    {index === 1 && <p className="text-xs text-muted-foreground mt-1">Wählen Sie Ihre berufliche Rolle</p>}
-                    {index === 2 && <p className="text-xs text-muted-foreground mt-1">Ihre persönlichen & Firmendaten</p>}
-                    {index === 3 && <p className="text-xs text-muted-foreground mt-1">Helfen Sie uns, besser zu werden</p>}
-                    {index === 4 && <p className="text-xs text-muted-foreground mt-1">Starten Sie Ihr erstes Projekt</p>}
+                      {index < currentStep ? (
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      ) : index === currentStep ? (
+                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                      ) : (
+                        <span className="text-xs font-medium">{index + 1}</span>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className={`text-sm font-medium transition-colors truncate ${
+                        index <= currentStep ? 'text-foreground' : 'text-muted-foreground'
+                      }`}>
+                        {step.title}
+                      </h3>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
-            <div className="mt-8 pt-6 border-t">
-              <div className="flex items-start space-x-3 text-xs text-muted-foreground">
-                <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="p-4 xl:p-6 border-t shrink-0">
+              <div className="flex items-start space-x-2 text-xs text-muted-foreground">
+                <svg className="w-3 h-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
                 <div>
-                  <p className="font-medium text-foreground mb-1">Datenschutz & Sicherheit</p>
-                  <p>Ihre Daten werden DSGVO-konform verarbeitet und ausschließlich zur Auftragsbearbeitung verwendet. Keine Weitergabe an Dritte.</p>
+                  <p className="font-medium text-foreground mb-1">DSGVO-konform</p>
+                  <p className="leading-tight">Ihre Daten sind bei uns sicher</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Main Content */}
-          <div className="flex-1">
-            <div className="bg-card rounded-lg border p-8 min-h-[600px]">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentStep}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <CurrentStepComponent
-                    data={onboardingData}
-                    updateData={updateData}
-                    nextStep={nextStep}
-                    prevStep={prevStep}
-                    currentStep={currentStep}
-                    totalSteps={steps.length}
-                    completeOnboarding={completeOnboarding}
-                    loading={loading}
-                  />
-                </motion.div>
-              </AnimatePresence>
+          {/* Mobile Progress Bar */}
+          <div className="lg:hidden w-full bg-card rounded-lg border p-3 mb-4 shrink-0">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-foreground">Schritt {currentStep + 1}</span>
+              <span className="text-xs text-muted-foreground">{steps[currentStep].title}</span>
+            </div>
+            <div className="w-full bg-muted rounded-full h-2">
+              <div 
+                className="bg-primary h-2 rounded-full transition-all duration-300"
+                style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+              />
             </div>
           </div>
-        </div>
 
-        {/* Back to login */}
-        <div className="mt-8">
-          <button 
-            onClick={() => navigate('/auth')} 
-            className="flex items-center text-muted-foreground hover:text-foreground transition-colors group"
-          >
-            <svg className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Zurück zur Anmeldung
-          </button>
+          {/* Main Content */}
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 bg-card rounded-lg border flex flex-col overflow-hidden">
+              <div className="flex-1 p-4 lg:p-6 xl:p-8 overflow-y-auto">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentStep}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="h-full flex flex-col"
+                  >
+                    <CurrentStepComponent
+                      data={onboardingData}
+                      updateData={updateData}
+                      nextStep={nextStep}
+                      prevStep={prevStep}
+                      currentStep={currentStep}
+                      totalSteps={steps.length}
+                      completeOnboarding={completeOnboarding}
+                      loading={loading}
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+              
+              {/* Back to login - Fixed at bottom */}
+              <div className="p-4 lg:p-6 border-t shrink-0">
+                <button 
+                  onClick={() => navigate('/auth')} 
+                  className="flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors group"
+                >
+                  <svg className="w-3 h-3 mr-1 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  </svg>
+                  Zurück zur Anmeldung
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

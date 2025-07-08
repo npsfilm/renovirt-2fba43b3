@@ -95,46 +95,51 @@ const SourceStep = ({ data, updateData, nextStep, prevStep }: SourceStepProps) =
   };
 
   return (
-    <div className="max-w-3xl">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-foreground mb-3">Wie sind Sie auf RenovIrt aufmerksam geworden?</h2>
-        <p className="text-muted-foreground text-lg">
+    <div className="h-full flex flex-col max-w-4xl mx-auto">
+      {/* Header */}
+      <div className="shrink-0 mb-4 lg:mb-6">
+        <h2 className="text-lg lg:text-2xl font-bold text-foreground mb-2 lg:mb-3">Wie sind Sie auf RenovIrt aufmerksam geworden?</h2>
+        <p className="text-sm lg:text-base text-muted-foreground">
           Ihre Antwort hilft uns dabei, unseren Service kontinuierlich zu verbessern und noch besser auf die Bedürfnisse unserer Kunden einzugehen.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        {sources.map((source) => {
-          const isSelected = data.source === source.id;
-          
-          return (
-            <button
-              key={source.id}
-              onClick={() => selectSource(source.id)}
-              className={`p-6 rounded-lg border-2 transition-all duration-200 text-left hover:shadow-md ${
-                isSelected
-                  ? 'border-primary bg-primary/5 shadow-md'
-                  : 'border-border hover:border-primary/50 bg-card'
-              }`}
-            >
-              <div className="flex items-center space-x-4">
-                <div className={`p-3 rounded-lg transition-colors ${
-                  isSelected ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-                }`}>
-                  {source.icon}
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
+          {sources.map((source) => {
+            const isSelected = data.source === source.id;
+            
+            return (
+              <button
+                key={source.id}
+                onClick={() => selectSource(source.id)}
+                className={`p-3 lg:p-4 rounded-lg border-2 transition-all duration-200 text-left hover:shadow-md ${
+                  isSelected
+                    ? 'border-primary bg-primary/5 shadow-md'
+                    : 'border-border hover:border-primary/50 bg-card'
+                }`}
+              >
+                <div className="flex items-center space-x-3 lg:space-x-4">
+                  <div className={`p-2 lg:p-3 rounded-lg transition-colors shrink-0 ${
+                    isSelected ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                  }`}>
+                    {source.icon}
+                  </div>
+                  <h3 className="text-sm lg:text-base font-medium text-foreground">{source.title}</h3>
                 </div>
-                <h3 className="font-medium text-foreground">{source.title}</h3>
-              </div>
-            </button>
-          );
-        })}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <div className="flex justify-between pt-6">
-        <Button variant="outline" onClick={prevStep}>
+      {/* Navigation */}
+      <div className="shrink-0 flex justify-between pt-4 lg:pt-6">
+        <Button variant="outline" onClick={prevStep} size="sm" className="text-sm">
           Zurück
         </Button>
-        <Button onClick={nextStep} disabled={!data.source}>
+        <Button onClick={nextStep} disabled={!data.source} size="sm" className="text-sm">
           Weiter
         </Button>
       </div>
