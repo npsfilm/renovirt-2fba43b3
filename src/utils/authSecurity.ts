@@ -1,5 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { logSecurityEvent } from '@/utils/secureLogging';
 
 /**
  * Cleanup authentication state to prevent limbo states
@@ -24,7 +25,7 @@ export const cleanupAuthState = () => {
 };
 
 /**
- * Safely validate and sanitize URL hash parameters
+ * Safely validate and sanitize URL hash parameters with enhanced security
  */
 export const validateUrlTokens = (hash: string) => {
   try {
@@ -52,6 +53,61 @@ export const validateUrlTokens = (hash: string) => {
 };
 
 /**
+ * Secure email confirmation with user validation
+ */
+export const secureEmailConfirmation = async (accessToken: string, refreshToken?: string) => {
+  try {
+    // Clean up any existing auth state first
+    cleanupAuthState();
+    
+    // Attempt to set session with tokens
+    const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken || ''
+    });
+    
+    if (sessionError) {
+      logSecurityEvent('email_confirmation_session_error', { 
+        error: sessionError.message,
+        accessToken: accessToken.substring(0, 10) + '...' // Log only first 10 chars for security
+      });
+      throw new Error(`Session-Fehler: ${sessionError.message}`);
+    }
+    
+    if (!sessionData.session?.user) {
+      logSecurityEvent('email_confirmation_no_user', { accessToken: accessToken.substring(0, 10) + '...' });
+      throw new Error('Keine Benutzerdaten in der Session gefunden');
+    }
+    
+    const user = sessionData.session.user;
+    
+    // Additional security check - verify user is confirmed
+    if (!user.email_confirmed_at) {
+      logSecurityEvent('email_confirmation_user_not_confirmed', { 
+        userId: user.id,
+        email: user.email 
+      });
+      throw new Error('Benutzer ist noch nicht bestätigt');
+    }
+    
+    // Log successful confirmation
+    logSecurityEvent('email_confirmation_success', { 
+      userId: user.id,
+      email: user.email,
+      confirmedAt: user.email_confirmed_at
+    });
+    
+    return sessionData.session;
+  } catch (error: any) {
+    logSecurityEvent('email_confirmation_failed', { 
+      error: error.message,
+      accessToken: accessToken.substring(0, 10) + '...'
+    });
+    throw error;
+  }
+};
+
+/**
  * Secure logging utility
  */
 export const secureLog = (message: string, data?: any) => {
@@ -66,22 +122,6 @@ export const secureLog = (message: string, data?: any) => {
   }
 };
 
-/**
- * Security event logging
- */
-export const logSecurityEvent = (event: string, data?: any) => {
-  const timestamp = new Date().toISOString();
-  const logData = {
-    event,
-    timestamp,
-    userAgent: navigator.userAgent,
-    url: window.location.href,
-    ...data
-  };
-  
-  // In production, you might want to send this to a monitoring service
-  secureLog(`Security Event: ${event}`, logData);
-};
 
 /**
  * Secure sign out with proper cleanup

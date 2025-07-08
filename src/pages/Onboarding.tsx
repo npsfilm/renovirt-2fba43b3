@@ -5,7 +5,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCustomerProfile } from '@/hooks/useCustomerProfile';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
-import { validateUrlTokens, secureLog, logSecurityEvent } from '@/utils/authSecurity';
+import { secureEmailConfirmation } from '@/utils/authSecurity';
+import { logSecurityEvent } from '@/utils/secureLogging';
 import WelcomeStep from '@/components/onboarding/WelcomeStep';
 import RoleSelectionStep from '@/components/onboarding/RoleSelectionStep';
 import CompanyDataStep from '@/components/onboarding/CompanyDataStep';
@@ -51,62 +52,16 @@ const Onboarding = () => {
   const { user, loading: authLoading } = useAuth();
   const { saveCustomerProfile, loading } = useCustomerProfile();
 
-  // Handle email confirmation on page load
+  // Check for URL parameters to handle errors from secure confirmation
   useEffect(() => {
-    const handleEmailConfirmation = async () => {
-      const hash = window.location.hash;
-      const search = window.location.search;
-      
-      if (hash || search) {
-        setIsConfirmingEmail(true);
-        secureLog('Email confirmation detected on onboarding page');
-        
-        try {
-          const hashTokens = validateUrlTokens(hash);
-          const searchParams = new URLSearchParams(search);
-          const accessToken = hashTokens?.accessToken || searchParams.get('access_token');
-          const refreshToken = searchParams.get('refresh_token');
-          const type = hashTokens?.type || searchParams.get('type');
-          
-          if (accessToken && (type === 'signup' || type === 'email_confirmation')) {
-            secureLog('Processing email confirmation with access token');
-            logSecurityEvent('email_confirmation_processing', { type });
-            
-            const { data, error } = await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken || ''
-            });
-            
-            if (error) {
-              throw error;
-            }
-            
-            if (data.session) {
-              secureLog('Email confirmation successful, session established');
-              logSecurityEvent('email_confirmation_success', { userId: data.session.user.id });
-              
-              window.history.replaceState({}, document.title, window.location.pathname);
-              
-              setTimeout(() => {
-                setIsConfirmingEmail(false);
-              }, 1000);
-            } else {
-              throw new Error('Session could not be established');
-            }
-          } else {
-            secureLog('No valid confirmation tokens found in URL');
-            setIsConfirmingEmail(false);
-          }
-        } catch (error: any) {
-          console.error('Error during email confirmation:', error);
-          logSecurityEvent('email_confirmation_error', { error: error.message });
-          setConfirmationError('Es gab ein Problem bei der E-Mail-Bestätigung. Bitte versuchen Sie es erneut.');
-          setIsConfirmingEmail(false);
-        }
-      }
-    };
-
-    handleEmailConfirmation();
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
+    
+    if (error) {
+      setConfirmationError(decodeURIComponent(error));
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
   }, []);
 
   useEffect(() => {

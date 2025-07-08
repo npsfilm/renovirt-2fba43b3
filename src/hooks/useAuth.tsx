@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { validateUrlTokens, cleanupAuthState, secureSignOut, secureSignIn } from '@/utils/authSecurity';
+import { validateUrlTokens, cleanupAuthState, secureSignOut, secureSignIn, secureEmailConfirmation } from '@/utils/authSecurity';
 import { secureLog, logSecurityEvent } from '@/utils/secureLogging';
 
 export const useAuth = () => {
@@ -10,7 +10,7 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Handle email confirmation from URL tokens
+    // Handle email confirmation from URL tokens with security validation
     const handleEmailConfirmation = async () => {
       const hash = window.location.hash;
       const search = window.location.search;
@@ -26,22 +26,15 @@ export const useAuth = () => {
           const type = hashTokens?.type || searchParams.get('type');
           
           if (accessToken && (type === 'signup' || type === 'email_confirmation')) {
-            secureLog('Processing email confirmation with access token in useAuth');
+            secureLog('Processing email confirmation with security validation');
             
-            // Set the session using the tokens from URL
-            const { data, error } = await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken || ''
-            });
+            // Use secure email confirmation with validation
+            const confirmedSession = await secureEmailConfirmation(accessToken, refreshToken || undefined);
             
-            if (error) {
-              throw error;
-            }
-            
-            if (data.session) {
-              secureLog('Email confirmation successful, session established in useAuth');
-              setSession(data.session);
-              setUser(data.session.user);
+            if (confirmedSession) {
+              secureLog('Email confirmation successful, session established securely');
+              setSession(confirmedSession);
+              setUser(confirmedSession.user);
               setLoading(false);
               
               // Clean up the URL for security
@@ -58,7 +51,15 @@ export const useAuth = () => {
             }
           }
         } catch (error: any) {
-          console.error('Error during email confirmation in useAuth:', error);
+          console.error('Error during secure email confirmation:', error);
+          logSecurityEvent('email_confirmation_error', { 
+            error: error.message,
+            url: window.location.href
+          });
+          
+          // Redirect to email verification with error
+          const errorMessage = encodeURIComponent(error.message || 'E-Mail-Bestätigung fehlgeschlagen');
+          window.location.href = `/email-verification?error=${errorMessage}`;
           setLoading(false);
         }
       }
