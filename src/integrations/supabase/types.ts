@@ -776,6 +776,23 @@ export type Database = {
         Args: { order_id_param: string; user_id_param: string }
         Returns: Json
       }
+      audit_admin_action: {
+        Args: {
+          action_type: string
+          table_name: string
+          record_id?: string
+          details?: Json
+        }
+        Returns: string
+      }
+      check_rate_limit: {
+        Args: {
+          identifier: string
+          max_requests?: number
+          window_seconds?: number
+        }
+        Returns: boolean
+      }
       cleanup_abandoned_draft_orders: {
         Args: Record<PropertyKey, never>
         Returns: undefined

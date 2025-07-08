@@ -3,22 +3,32 @@ import { supabase } from '@/integrations/supabase/client';
 import { logSecurityEvent } from '@/utils/secureLogging';
 
 /**
- * Cleanup authentication state to prevent limbo states
+ * Enhanced cleanup authentication state to prevent limbo states
  */
 export const cleanupAuthState = () => {
+  // Import enhanced cleanup function
+  import('./enhancedSessionSecurity').then(({ cleanupAuthStateEnhanced }) => {
+    cleanupAuthStateEnhanced();
+  }).catch(() => {
+    // Fallback to basic cleanup if enhanced module fails
+    basicCleanupAuthState();
+  });
+};
+
+const basicCleanupAuthState = () => {
   // Remove standard auth tokens
   localStorage.removeItem('supabase.auth.token');
   
   // Remove all Supabase auth keys from localStorage
   Object.keys(localStorage).forEach((key) => {
-    if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+    if (key.startsWith('supabase.auth.') || key.includes('sb-') || key.startsWith('renovirt_session')) {
       localStorage.removeItem(key);
     }
   });
   
   // Remove from sessionStorage if in use
   Object.keys(sessionStorage || {}).forEach((key) => {
-    if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+    if (key.startsWith('supabase.auth.') || key.includes('sb-') || key.startsWith('renovirt_session')) {
       sessionStorage.removeItem(key);
     }
   });

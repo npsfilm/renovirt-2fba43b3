@@ -108,10 +108,36 @@ const getTimeframeMs = (timeframe: 'hour' | 'day' | 'week'): number => {
   return timeMap[timeframe];
 };
 
-// Rate Limiting für kritische Aktionen
+// Enhanced rate limiting with database persistence
+export const checkRateLimit = async (
+  key: string, 
+  maxRequests: number, 
+  windowMs: number
+): Promise<boolean> => {
+  try {
+    const { data: canProceed, error } = await supabase.rpc('check_rate_limit', {
+      identifier: key,
+      max_requests: maxRequests,
+      window_seconds: Math.floor(windowMs / 1000)
+    });
+
+    if (error) {
+      secureLog('Database rate limit check failed:', error);
+      // Fallback to memory-based rate limiting
+      return checkMemoryRateLimit(key, maxRequests, windowMs);
+    }
+
+    return canProceed || false;
+  } catch (error) {
+    secureLog('Rate limit check error:', error);
+    return checkMemoryRateLimit(key, maxRequests, windowMs);
+  }
+};
+
+// Fallback memory-based rate limiting
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
-export const checkRateLimit = (key: string, maxRequests: number, windowMs: number): boolean => {
+const checkMemoryRateLimit = (key: string, maxRequests: number, windowMs: number): boolean => {
   const now = Date.now();
   const record = rateLimitStore.get(key);
 
@@ -127,4 +153,65 @@ export const checkRateLimit = (key: string, maxRequests: number, windowMs: numbe
 
   record.count++;
   return true;
+};
+
+// Real-time threat detection
+export const detectSuspiciousActivity = async (
+  userId: string,
+  activityType: string,
+  metadata: any = {}
+): Promise<{ isSuspicious: boolean; riskLevel: 'low' | 'medium' | 'high' | 'critical' }> => {
+  try {
+    const timeWindow = new Date(Date.now() - 3600000); // Last hour
+    
+    const { data: recentEvents, error } = await supabase
+      .from('security_events')
+      .select('event_type, created_at, severity')
+      .eq('user_id', userId)
+      .gte('created_at', timeWindow.toISOString());
+
+    if (error) {
+      secureLog('Failed to check recent security events:', error);
+      return { isSuspicious: false, riskLevel: 'low' };
+    }
+
+    const events = recentEvents || [];
+    
+    // Analyze patterns
+    const failedAttempts = events.filter(e => e.event_type.includes('failed')).length;
+    const criticalEvents = events.filter(e => e.severity === 'critical').length;
+    const highEvents = events.filter(e => e.severity === 'high').length;
+    
+    let riskLevel: 'low' | 'medium' | 'high' | 'critical' = 'low';
+    let isSuspicious = false;
+
+    if (criticalEvents > 0) {
+      riskLevel = 'critical';
+      isSuspicious = true;
+    } else if (highEvents > 2 || failedAttempts > 5) {
+      riskLevel = 'high';
+      isSuspicious = true;
+    } else if (failedAttempts > 3 || events.length > 20) {
+      riskLevel = 'medium';
+      isSuspicious = true;
+    }
+
+    if (isSuspicious) {
+      await trackSecurityEvent('suspicious_activity_detected', {
+        userId,
+        activityType,
+        riskLevel,
+        recentEventCount: events.length,
+        failedAttempts,
+        criticalEvents,
+        highEvents,
+        ...metadata
+      }, riskLevel);
+    }
+
+    return { isSuspicious, riskLevel };
+  } catch (error) {
+    secureLog('Threat detection error:', error);
+    return { isSuspicious: false, riskLevel: 'low' };
+  }
 };

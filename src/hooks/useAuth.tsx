@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { validateUrlTokens, cleanupAuthState, secureSignOut, secureSignIn, secureEmailConfirmation } from '@/utils/authSecurity';
+import { createSecureSession, validateSession } from '@/utils/enhancedSessionSecurity';
 import { secureLog, logSecurityEvent } from '@/utils/secureLogging';
 
 export const useAuth = () => {
@@ -33,6 +34,10 @@ export const useAuth = () => {
             
             if (confirmedSession) {
               secureLog('Email confirmation successful, session established securely');
+              
+              // Create secure session with fingerprinting
+              createSecureSession(confirmedSession.user.id);
+              
               setSession(confirmedSession);
               setUser(confirmedSession.user);
               setLoading(false);
