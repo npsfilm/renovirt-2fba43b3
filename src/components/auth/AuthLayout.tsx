@@ -9,7 +9,7 @@ const AuthLayout = ({
 }: AuthLayoutProps) => {
   return <div className="min-h-screen bg-background flex overflow-hidden">
       {/* Left side - Auth Form */}
-      <div className="w-full xl:w-1/2 flex items-center justify-center p-3 sm:p-4 lg:p-6 bg-background">
+      <div className="w-full lg:w-3/5 xl:w-1/2 flex items-center justify-center p-3 sm:p-4 lg:p-6 bg-background">
         <motion.div initial={{
         opacity: 0,
         x: -20
@@ -25,7 +25,7 @@ const AuthLayout = ({
       </div>
 
       {/* Right side - Enhanced Marketing Content with Immobilien Grid Background */}
-      <div className="hidden xl:flex xl:w-1/2 relative overflow-hidden h-full">
+      <div className="hidden lg:flex lg:w-2/5 xl:w-1/2 relative overflow-hidden h-full">
         {/* Background Image with 10-degree rotation and closer zoom */}
         <div className="absolute inset-0 transform rotate-[10deg] scale-125 origin-center" style={{
         backgroundImage: 'url(/lovable-uploads/fd670a2b-70f6-44eb-89b6-316c7c4280b6.png)',
