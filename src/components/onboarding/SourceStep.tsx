@@ -95,7 +95,7 @@ const SourceStep = ({ data, updateData, nextStep, prevStep }: SourceStepProps) =
   };
 
   return (
-    <div className="h-full flex flex-col max-w-4xl mx-auto">
+    <div className="flex flex-col max-w-4xl mx-auto min-h-0 h-full">
       {/* Header */}
       <div className="shrink-0 mb-4 lg:mb-6">
         <h2 className="text-lg lg:text-2xl font-bold text-foreground mb-2 lg:mb-3">Wie sind Sie auf RenovIrt aufmerksam geworden?</h2>
@@ -105,7 +105,7 @@ const SourceStep = ({ data, updateData, nextStep, prevStep }: SourceStepProps) =
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto min-h-0">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
           {sources.map((source) => {
             const isSelected = data.source === source.id;

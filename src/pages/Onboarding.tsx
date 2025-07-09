@@ -166,7 +166,7 @@ const Onboarding = () => {
   const CurrentStepComponent = steps[currentStep].component;
 
   return (
-    <div className="h-screen flex flex-col bg-background overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-background">
       <div className="flex-1 flex flex-col max-w-7xl mx-auto w-full">
         {/* Compact Header */}
         <div className="flex items-center justify-between p-4 lg:p-6 shrink-0">
@@ -179,9 +179,9 @@ const Onboarding = () => {
           </div>
         </div>
 
-        <div className="flex-1 flex gap-4 lg:gap-8 px-4 lg:px-6 pb-4 lg:pb-6 overflow-hidden">
+        <div className="flex-1 flex gap-4 lg:gap-8 px-4 lg:px-6 pb-4 lg:pb-6 min-h-0">
           {/* Left Sidebar - Progress */}
-          <div className="hidden lg:flex w-64 xl:w-80 bg-card rounded-lg border flex-col overflow-hidden">
+          <div className="hidden lg:flex w-64 xl:w-80 bg-card rounded-lg border flex-col min-h-0">
             <div className="p-4 xl:p-6 shrink-0">
               <h2 className="text-lg font-semibold text-foreground mb-4">Einrichtungsfortschritt</h2>
             </div>
@@ -247,9 +247,9 @@ const Onboarding = () => {
           </div>
 
           {/* Main Content */}
-          <div className="flex-1 flex flex-col overflow-hidden">
-            <div className="flex-1 bg-card rounded-lg border flex flex-col overflow-hidden">
-              <div className="flex-1 p-4 lg:p-6 xl:p-8 overflow-y-auto">
+          <div className="flex-1 flex flex-col min-h-0">
+            <div className="flex-1 bg-card rounded-lg border flex flex-col min-h-0">
+              <div className="flex-1 p-4 lg:p-6 xl:p-8 overflow-y-auto min-h-0">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={currentStep}

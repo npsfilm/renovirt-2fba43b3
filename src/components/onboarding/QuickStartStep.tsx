@@ -32,7 +32,7 @@ const QuickStartStep = ({ data, prevStep, completeOnboarding, loading }: QuickSt
   };
 
   return (
-    <div className="h-full flex flex-col max-w-4xl mx-auto">
+    <div className="flex flex-col max-w-4xl mx-auto min-h-0 h-full">
       {/* Header */}
       <div className="shrink-0 text-center mb-4 lg:mb-6">
         <div className="w-12 h-12 lg:w-20 lg:h-20 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-3 lg:mb-6">
@@ -45,7 +45,7 @@ const QuickStartStep = ({ data, prevStep, completeOnboarding, loading }: QuickSt
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto min-h-0">
         <div className="space-y-3 lg:space-y-4">
           <button
             onClick={handleStartUploading}

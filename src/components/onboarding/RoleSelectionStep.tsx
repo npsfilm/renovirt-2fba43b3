@@ -63,7 +63,7 @@ const RoleSelectionStep = ({ data, updateData, nextStep, prevStep }: RoleSelecti
   };
 
   return (
-    <div className="h-full flex flex-col max-w-4xl mx-auto">
+    <div className="flex flex-col max-w-4xl mx-auto min-h-0 h-full">
       {/* Header */}
       <div className="shrink-0 mb-4 lg:mb-6">
         <h2 className="text-lg lg:text-2xl font-bold text-foreground mb-2">Welche Rolle beschreibt Sie am besten?</h2>
@@ -73,7 +73,7 @@ const RoleSelectionStep = ({ data, updateData, nextStep, prevStep }: RoleSelecti
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto min-h-0">
         <div className="space-y-3 lg:space-y-4">
           {roles.map((role) => {
             const Icon = role.icon;

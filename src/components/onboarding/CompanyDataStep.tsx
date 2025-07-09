@@ -82,7 +82,7 @@ const CompanyDataStep = ({ data, updateData, nextStep, prevStep }: CompanyDataSt
   };
 
   return (
-    <div className="h-full flex flex-col max-w-4xl mx-auto">
+    <div className="flex flex-col max-w-4xl mx-auto min-h-0 h-full">
       {/* Header */}
       <div className="shrink-0 mb-3 lg:mb-6">
         <div className="flex items-center gap-3 lg:gap-4">
@@ -97,7 +97,7 @@ const CompanyDataStep = ({ data, updateData, nextStep, prevStep }: CompanyDataSt
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto min-h-0">
         {errors.length > 0 && (
           <div className="mb-4 p-3 lg:p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
             <div className="text-destructive">

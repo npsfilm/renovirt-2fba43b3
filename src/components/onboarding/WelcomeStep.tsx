@@ -17,7 +17,7 @@ interface WelcomeStepProps {
 
 const WelcomeStep = ({ nextStep }: WelcomeStepProps) => {
   return (
-    <div className="h-full flex flex-col max-w-4xl mx-auto">
+    <div className="flex flex-col max-w-4xl mx-auto min-h-0 h-full">
       {/* Header Section */}
       <div className="shrink-0 mb-4 lg:mb-6">
         <div className="flex items-center gap-3 lg:gap-6">
@@ -32,7 +32,7 @@ const WelcomeStep = ({ nextStep }: WelcomeStepProps) => {
       </div>
 
       {/* Content Section */}
-      <div className="flex-1 flex flex-col space-y-4 lg:space-y-6 overflow-y-auto">
+      <div className="flex-1 flex flex-col space-y-4 lg:space-y-6 overflow-y-auto min-h-0">
         {/* Main Value Proposition */}
         <div className="bg-primary/5 rounded-lg lg:rounded-xl p-4 lg:p-6 border border-primary/20">
           <div className="flex items-start gap-3 lg:gap-4">
