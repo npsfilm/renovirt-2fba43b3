@@ -45,10 +45,10 @@ export const useAuth = () => {
               // Clean up the URL for security
               window.history.replaceState({}, document.title, window.location.pathname);
               
-              // Redirect to onboarding after successful confirmation
-              if (window.location.pathname !== '/onboarding') {
+              // Redirect to auth page to handle profile completeness check
+              if (window.location.pathname !== '/auth') {
                 setTimeout(() => {
-                  window.location.href = '/onboarding';
+                  window.location.href = '/auth';
                 }, 500);
               }
               
@@ -181,7 +181,7 @@ export const useAuth = () => {
       
       // Korrekte redirectTo URL für Google OAuth
       const baseUrl = window.location.origin;
-      const redirectUrl = `${baseUrl}/onboarding`;
+      const redirectUrl = `${baseUrl}/auth`;
       
       console.log('Google signIn with redirect URL:', redirectUrl);
       
@@ -239,7 +239,7 @@ export const useAuth = () => {
           type: 'signup',
           email: email,
           options: {
-            emailRedirectTo: `${window.location.origin}/onboarding`
+            emailRedirectTo: `${window.location.origin}/auth`
           }
         });
         
