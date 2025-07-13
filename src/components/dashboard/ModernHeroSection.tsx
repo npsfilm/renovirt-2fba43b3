@@ -43,15 +43,30 @@ const ModernHeroSection = () => {
   };
   const getGreeting = () => {
     const timeGreeting = getTimeOfDay();
+    
+    // First priority: Customer profile with salutation and last name
     if (customerProfile?.salutation && customerProfile?.last_name) {
       const formattedSalutation = formatSalutation(customerProfile.salutation);
       const formattedLastName = customerProfile.last_name.charAt(0).toUpperCase() + customerProfile.last_name.slice(1).toLowerCase();
       return `${timeGreeting}, ${formattedSalutation} ${formattedLastName}`;
     }
 
-    // Fallback to current behavior
-    const firstName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'dort';
-    return `${timeGreeting}, ${firstName}`;
+    // Second priority: First name from user metadata
+    if (user?.user_metadata?.first_name) {
+      return `${timeGreeting}, ${user.user_metadata.first_name}`;
+    }
+
+    // Third priority: Parse email for username (with validation)
+    if (user?.email) {
+      const emailUsername = user.email.split('@')[0];
+      // Only use email username if it looks like a real name (at least 2 chars, not just numbers)
+      if (emailUsername.length >= 2 && !/^\d+$/.test(emailUsername)) {
+        return `${timeGreeting}, ${emailUsername}`;
+      }
+    }
+
+    // Final fallback: Just time greeting without name
+    return timeGreeting;
   };
   return <div className="relative overflow-hidden">
       {/* Subtle gradient background */}
