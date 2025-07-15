@@ -78,7 +78,7 @@ const RegisterFormFields = ({
             id="registerPassword"
             name="password"
             type="password"
-            placeholder="Sicheres Passwort (z.B. MeinSicheres123!)"
+            placeholder="Sicheres Passwort"
             value={formData.password}
             onChange={onInputChange}
             required
