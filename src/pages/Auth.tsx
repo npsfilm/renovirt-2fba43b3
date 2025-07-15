@@ -121,7 +121,7 @@ const Auth = () => {
         </div>
 
         {/* Right side - Marketing Content (hidden on mobile) */}
-        <div className="hidden lg:flex lg:w-2/5 xl:w-1/2 relative overflow-hidden">
+        <div className="hidden lg:flex lg:w-2/5 xl:w-1/2 relative overflow-hidden h-screen">
           {/* Background Image with 10-degree rotation */}
           <div 
             className="absolute inset-0 transform rotate-[10deg] scale-125 origin-center bg-cover bg-center bg-no-repeat"
