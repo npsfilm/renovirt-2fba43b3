@@ -112,8 +112,7 @@ const Auth = () => {
             <div className="flex flex-col justify-center items-center w-3/5 mx-auto h-full">
               <div className="space-y-[2vh]">
                 <div className="space-y-[1vh]">
-                  <h1 className="text-[clamp(1.5rem,6vw,2.5rem)] font-bold text-accent leading-tight">WIR MACHEN BILDER,
-DIE VERKAUFEN.</h1>
+                  
                   
                 </div>
                 
