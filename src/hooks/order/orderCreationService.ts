@@ -32,6 +32,7 @@ export const createOrderInDatabase = async (
       photo_type: orderData.photoType,
       payment_method: paymentMethod,
       payment_status: paymentMethod === 'stripe' ? 'paid' : 'pending',
+      payment_flow_status: paymentMethod === 'stripe' ? 'payment_completed' : 'payment_pending',
       payment_intent_id: paymentIntentId,
       customer_email: orderData.email,
       admin_notes: orderData.specialRequests,
