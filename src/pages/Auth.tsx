@@ -126,9 +126,11 @@ const Auth = () => {
                 <p className="text-white/90 italic text-[clamp(0.975rem,2.6vw,1.14rem)] leading-relaxed mb-[1vh]">"Renovirt hat wirklich einen Unterschied gemacht. 
 Die Bilder sehen top aus und sind super schnell fertig – für uns als Makler ein echter Gewinn. Die Zusammenarbeit ist unkompliziert und zuverlässig, genau so, wie man sich das wünscht."</p>
                 <div className="flex items-center space-x-[1vw]">
-                  <div className="w-[2rem] h-[2rem] bg-gradient-to-br from-accent to-primary rounded-full flex items-center justify-center text-white font-bold text-[clamp(0.81rem,1.95vw,0.975rem)]">
-                    MS
-                  </div>
+                  <img 
+                    src="/lovable-uploads/38801ff8-4a6b-4143-9948-83774f4e74c2.png" 
+                    alt="Maria Schmidt" 
+                    className="w-[2rem] h-[2rem] rounded-full object-cover"
+                  />
                   <div>
                     <p className="text-white font-semibold text-[clamp(0.975rem,2.6vw,1.14rem)]">Maria Schmidt</p>
                     <p className="text-white/70 text-[clamp(0.81rem,1.95vw,0.975rem)]">Immobilienmaklerin</p>
