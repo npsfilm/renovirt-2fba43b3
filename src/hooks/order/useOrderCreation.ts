@@ -10,6 +10,7 @@ import type { OrderCreationParams, PaymentMethod } from './orderCreationTypes';
 import { createOrderInDatabase } from './orderCreationService';
 import { useOrderFileUpload } from './useOrderFileUpload';
 import { sendOrderConfirmationEmail, prepareOrderEmailDetails } from './orderEmailService';
+import { sendAdminOrderNotification } from './orderAdminNotificationService';
 
 export const useOrderCreation = (packages: any[], addOns: any[]) => {
   const { user } = useAuth();
@@ -90,6 +91,24 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
         console.error('Failed to send confirmation email:', emailError);
         // Don't fail the order for email issues
         secureLog('Email sending failed but order created', { orderId: order.id, error: emailError });
+      }
+
+      // Send admin notification for invoice orders
+      try {
+        await sendAdminOrderNotification(
+          order.order_number,
+          orderData,
+          selectedPackage,
+          imageCount,
+          totalPrice,
+          selectedAddOns,
+          user.id,
+          paymentMethod,
+          'pending' // Invoice orders start as pending
+        );
+      } catch (adminEmailError) {
+        console.error('Failed to send admin notification:', adminEmailError);
+        secureLog('Admin notification failed but order created', { orderId: order.id, error: adminEmailError });
       }
 
       return order;
@@ -175,6 +194,25 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
     } catch (emailError) {
       console.error('Failed to send confirmation email after payment:', emailError);
       secureLog('Email sending failed after payment', { orderId: order.id, error: emailError });
+    }
+
+    // Send admin notification for completed Stripe orders
+    try {
+      await sendAdminOrderNotification(
+        order.order_number,
+        orderData,
+        selectedPackage,
+        imageCount,
+        totalPrice,
+        selectedAddOns,
+        user.id,
+        'stripe',
+        'paid', // Stripe orders are paid after successful payment
+        paymentIntentId
+      );
+    } catch (adminEmailError) {
+      console.error('Failed to send admin notification after payment:', adminEmailError);
+      secureLog('Admin notification failed after payment', { orderId: order.id, error: adminEmailError });
     }
 
     // Invalidate queries to refresh the UI
