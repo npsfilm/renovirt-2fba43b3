@@ -121,17 +121,17 @@ const Auth = () => {
               </div>
 
               {/* Testimonial Section */}
-              <div className="bg-white/10 backdrop-blur-md rounded-lg p-[2vh] border border-white/20 mt-[3vh]">
+              <div className="bg-white/10 backdrop-blur-md rounded-lg p-[2vh] border border-white/20 mt-[3vh] scale-120">
                 
-                <p className="text-white/90 italic text-[clamp(0.75rem,2vw,0.875rem)] leading-relaxed mb-[1vh]">"Renovirt hat wirklich einen Unterschied gemacht. 
+                <p className="text-white/90 italic text-[clamp(0.975rem,2.6vw,1.14rem)] leading-relaxed mb-[1vh]">"Renovirt hat wirklich einen Unterschied gemacht. 
 Die Bilder sehen top aus und sind super schnell fertig – für uns als Makler ein echter Gewinn. Die Zusammenarbeit ist unkompliziert und zuverlässig, genau so, wie man sich das wünscht."</p>
                 <div className="flex items-center space-x-[1vw]">
-                  <div className="w-[2rem] h-[2rem] bg-gradient-to-br from-accent to-primary rounded-full flex items-center justify-center text-white font-bold text-[clamp(0.625rem,1.5vw,0.75rem)]">
+                  <div className="w-[2rem] h-[2rem] bg-gradient-to-br from-accent to-primary rounded-full flex items-center justify-center text-white font-bold text-[clamp(0.81rem,1.95vw,0.975rem)]">
                     MS
                   </div>
                   <div>
-                    <p className="text-white font-semibold text-[clamp(0.75rem,2vw,0.875rem)]">Maria Schmidt</p>
-                    <p className="text-white/70 text-[clamp(0.625rem,1.5vw,0.75rem)]">Immobilienmaklerin</p>
+                    <p className="text-white font-semibold text-[clamp(0.975rem,2.6vw,1.14rem)]">Maria Schmidt</p>
+                    <p className="text-white/70 text-[clamp(0.81rem,1.95vw,0.975rem)]">Immobilienmaklerin</p>
                   </div>
                 </div>
               </div>
