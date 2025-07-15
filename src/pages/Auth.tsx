@@ -64,8 +64,7 @@ const Auth = () => {
   const handleSwitchToLogin = () => {
     setActiveTab('login');
   };
-  return (
-    <div className="min-h-screen w-full bg-background flex items-center justify-center overflow-hidden">
+  return <div className="min-h-screen w-full bg-background flex items-center justify-center overflow-hidden">
       <div className="w-full h-full flex">
         {/* Left side - Auth Form */}
         <div className="w-full lg:w-3/5 xl:w-1/2 flex items-center justify-center p-[2vh] bg-background">
@@ -113,29 +112,13 @@ const Auth = () => {
             <div className="flex flex-col justify-center items-center w-3/5 mx-auto h-full">
               <div className="space-y-[2vh]">
                 <div className="space-y-[1vh]">
-                  <h2 className="text-[clamp(1rem,4vw,1.5rem)] font-bold text-accent leading-tight">
-                    Professionelle Bildbearbeitung für Immobilien – in 48 Stunden.
-                  </h2>
-                  <p className="text-[clamp(0.875rem,2.5vw,1rem)] text-white/90 leading-relaxed">
-                    Melden Sie sich an, um neue Aufträge zu starten oder Ihre Projekte zu verwalten.
-                  </p>
+                  <h2 className="text-[clamp(1rem,4vw,1.5rem)] font-bold text-accent leading-tight">WIR MACHEN BILDER,
+DIE VERKAUFEN.</h2>
+                  
                 </div>
                 
                 {/* Key Benefits */}
-                <div className="space-y-[1vh]">
-                  <div className="flex items-center space-x-[1vw] text-white/95">
-                    <div className="w-[1rem] h-[1rem] text-accent flex-shrink-0">✓</div>
-                    <span className="text-[clamp(0.75rem,2vw,0.875rem)] font-medium">Über 30.000 bearbeitete Bilder</span>
-                  </div>
-                  <div className="flex items-center space-x-[1vw] text-white/95">
-                    <div className="w-[1rem] h-[1rem] text-accent flex-shrink-0">✓</div>
-                    <span className="text-[clamp(0.75rem,2vw,0.875rem)] font-medium">48h Bearbeitungszeit</span>
-                  </div>
-                  <div className="flex items-center space-x-[1vw] text-white/95">
-                    <div className="w-[1rem] h-[1rem] text-accent flex-shrink-0">✓</div>
-                    <span className="text-[clamp(0.75rem,2vw,0.875rem)] font-medium">Bearbeitung durch erfahrene Immobilien-Editor:innen</span>
-                  </div>
-                </div>
+                
               </div>
 
               {/* Testimonial Section */}
@@ -181,8 +164,6 @@ const Auth = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Auth;
