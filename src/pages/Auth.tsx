@@ -141,7 +141,7 @@ Die Bilder sehen top aus und sind super schnell fertig – für uns als Makler e
             
             {/* Bottom Section - Partner Logos */}
             <div className="space-y-[1vh] scale-110">
-              <p className="text-white/70 text-[clamp(0.625rem,1.5vw,0.75rem)] text-center">
+              <p className="text-white/70 text-[clamp(0.75rem,1.8vw,0.9rem)] text-center">
                 Vertraut von führenden Immobilienunternehmen
               </p>
               <div className="flex items-center justify-center space-x-[1vw] opacity-70">
