@@ -62,7 +62,7 @@ const RegisterFormFields = ({
             id="registerEmail"
             name="email"
             type="email"
-            placeholder="ihre.email@beispiel.de"
+            placeholder="Ihre E-Mail Adresse"
             value={formData.email}
             onChange={onInputChange}
             required
