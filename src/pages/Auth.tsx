@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -6,11 +5,14 @@ import { useCustomerProfile } from '@/hooks/useCustomerProfile';
 import AuthLayout from '@/components/auth/AuthLayout';
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
-
 const Auth = () => {
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
-  const { user } = useAuth();
-  const { getCustomerProfile } = useCustomerProfile();
+  const {
+    user
+  } = useAuth();
+  const {
+    getCustomerProfile
+  } = useCustomerProfile();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -25,10 +27,12 @@ const Auth = () => {
         if (user.email_confirmed_at) {
           try {
             const profile = await getCustomerProfile();
-            
+
             // Wenn Profil existiert und erforderliche Felder hat, zur ursprünglich angeforderten Seite oder Dashboard gehen
             if (profile && profile.first_name && profile.last_name && profile.role) {
-              navigate(from, { replace: true });
+              navigate(from, {
+                replace: true
+              });
             } else {
               // Wenn Profil nicht existiert oder unvollständig ist, zum Onboarding gehen
               navigate('/onboarding');
@@ -43,10 +47,8 @@ const Auth = () => {
         }
       }
     };
-
     checkUserProfileAndRedirect();
   }, [user, navigate, getCustomerProfile, from]);
-
   const handleAuthSuccess = (isRegistration = false) => {
     if (isRegistration) {
       // Nach Registrierung zur E-Mail-Verifizierung weiterleiten
@@ -56,17 +58,13 @@ const Auth = () => {
       // Dies wird durch den useEffect oben gehandhabt
     }
   };
-
   const handleSwitchToRegister = () => {
     setActiveTab('register');
   };
-
   const handleSwitchToLogin = () => {
     setActiveTab('login');
   };
-
-  return (
-    <div className="min-h-screen w-full bg-background flex items-center justify-center overflow-hidden">
+  return <div className="min-h-screen w-full bg-background flex items-center justify-center overflow-hidden">
       <div className="w-full h-full flex">
         {/* Left side - Auth Form */}
         <div className="w-full lg:w-3/5 xl:w-1/2 flex items-center justify-center p-[2vh] bg-background">
@@ -78,24 +76,10 @@ const Auth = () => {
             {/* Custom Tab Navigation with responsive sizing */}
             <div className="w-full mb-[2vh]">
               <div className="inline-flex h-[5vh] min-h-[40px] items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground w-full">
-                <button
-                  onClick={() => setActiveTab('login')}
-                  className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-[2vw] py-[1vh] text-[clamp(0.75rem,3.5vw,0.875rem)] font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full ${
-                    activeTab === 'login'
-                      ? 'bg-background text-foreground shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
+                <button onClick={() => setActiveTab('login')} className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-[2vw] py-[1vh] text-[clamp(0.75rem,3.5vw,0.875rem)] font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full ${activeTab === 'login' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>
                   Anmelden
                 </button>
-                <button
-                  onClick={() => setActiveTab('register')}
-                  className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-[2vw] py-[1vh] text-[clamp(0.75rem,3.5vw,0.875rem)] font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full ${
-                    activeTab === 'register'
-                      ? 'bg-background text-foreground shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
+                <button onClick={() => setActiveTab('register')} className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-[2vw] py-[1vh] text-[clamp(0.75rem,3.5vw,0.875rem)] font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full ${activeTab === 'register' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>
                   Registrieren
                 </button>
               </div>
@@ -103,19 +87,9 @@ const Auth = () => {
 
             {/* Forms */}
             <div className="flex-1 min-h-0">
-              {activeTab === 'login' && (
-                <LoginForm 
-                  onSuccess={() => handleAuthSuccess(false)} 
-                  onSwitchToRegister={handleSwitchToRegister}
-                />
-              )}
+              {activeTab === 'login' && <LoginForm onSuccess={() => handleAuthSuccess(false)} onSwitchToRegister={handleSwitchToRegister} />}
 
-              {activeTab === 'register' && (
-                <RegisterForm 
-                  onSuccess={() => handleAuthSuccess(true)}
-                  onSwitchToLogin={handleSwitchToLogin}
-                />
-              )}
+              {activeTab === 'register' && <RegisterForm onSuccess={() => handleAuthSuccess(true)} onSwitchToLogin={handleSwitchToLogin} />}
             </div>
           </div>
         </div>
@@ -123,12 +97,9 @@ const Auth = () => {
         {/* Right side - Marketing Content (hidden on mobile) */}
         <div className="hidden lg:flex lg:w-2/5 xl:w-1/2 relative overflow-hidden h-screen">
           {/* Background Image with 10-degree rotation */}
-          <div 
-            className="absolute inset-0 transform rotate-[10deg] scale-125 origin-center bg-cover bg-center bg-no-repeat"
-            style={{
-              backgroundImage: 'url(/lovable-uploads/fd670a2b-70f6-44eb-89b6-316c7c4280b6.png)'
-            }}
-          />
+          <div className="absolute inset-0 transform rotate-[10deg] scale-125 origin-center bg-cover bg-center bg-no-repeat" style={{
+          backgroundImage: 'url(/lovable-uploads/fd670a2b-70f6-44eb-89b6-316c7c4280b6.png)'
+        }} />
           
           {/* Dark overlay for better text readability */}
           <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/50 to-black/70" />
@@ -168,15 +139,7 @@ const Auth = () => {
 
               {/* Testimonial Section */}
               <div className="bg-white/10 backdrop-blur-md rounded-lg p-[2vh] border border-white/20 mt-[3vh]">
-                <div className="flex items-center space-x-1 mb-[1vh]">
-                  <div className="flex space-x-1">
-                    {[1, 2, 3, 4, 5].map(star => (
-                      <span key={star} className="text-accent text-[clamp(0.75rem,2vw,1rem)]">★</span>
-                    ))}
-                  </div>
-                  <span className="text-[clamp(0.75rem,2vw,0.875rem)] font-medium text-white/90 ml-[1vw]">4.6/5</span>
-                  <span className="text-[clamp(0.625rem,1.5vw,0.75rem)] text-white/70 ml-1">(1.847 Bewertungen)</span>
-                </div>
+                
                 <p className="text-white/90 italic text-[clamp(0.75rem,2vw,0.875rem)] leading-relaxed mb-[1vh]">
                   "Renovirt hat unsere Immobilienvermarktung revolutioniert. Die Bildqualität ist außergewöhnlich und die Bearbeitungszeit unschlagbar!"
                 </p>
@@ -217,8 +180,6 @@ const Auth = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Auth;
