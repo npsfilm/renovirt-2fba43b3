@@ -54,7 +54,7 @@ const AuthLayout = ({
           }} className="space-y-2 lg:space-y-3 xl:space-y-4">
               {/* Main Headline */}
               <div className="space-y-2 lg:space-y-3">
-                <h1 className="text-xl lg:text-2xl xl:text-3xl font-bold leading-tight">Willkommen bei Renovirt</h1>
+                
                 <h2 className="text-lg lg:text-xl xl:text-2xl font-bold text-accent">Professionelle Bildbearbeitung für Immobilien – in 48 Stunden.</h2>
                 <p className="text-sm lg:text-base xl:text-lg text-white/90 leading-relaxed">Melden Sie sich an, um neue Aufträge zu starten oder Ihre Projekte zu verwalten.</p>
               </div>
@@ -74,14 +74,7 @@ const AuthLayout = ({
                   <span className="text-xs lg:text-sm font-medium">Bearbeitung durch erfahrene Immobilien-Editor:innen</span>
                 </div>
                 
-                <div className="mt-2 lg:mt-3 xl:mt-4 pt-2 lg:pt-3 xl:pt-4 border-t border-white/20">
-                  <p className="text-sm lg:text-base font-semibold text-white mb-1">
-                    Effizient. Verlässlich. Hochwertig.
-                  </p>
-                  <p className="text-xs lg:text-sm text-white/80">
-                    Für Makler, Fotografen und Architekten.
-                  </p>
-                </div>
+                
               </div>
             </motion.div>
 
