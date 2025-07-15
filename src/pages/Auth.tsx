@@ -109,7 +109,7 @@ const Auth = () => {
           
           <div className="relative z-10 flex flex-col justify-between p-[3vh] text-white h-full w-full">
             {/* Top Section - Main Content */}
-            <div className="flex flex-col justify-center flex-1">
+            <div className="flex flex-col justify-center w-3/5 mx-auto">
               <div className="space-y-[2vh]">
                 <div className="space-y-[1vh]">
                   <h2 className="text-[clamp(1rem,4vw,1.5rem)] font-bold text-accent leading-tight">
