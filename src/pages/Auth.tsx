@@ -123,9 +123,8 @@ const Auth = () => {
               {/* Testimonial Section */}
               <div className="bg-white/10 backdrop-blur-md rounded-lg p-[2vh] border border-white/20 mt-[3vh]">
                 
-                <p className="text-white/90 italic text-[clamp(0.75rem,2vw,0.875rem)] leading-relaxed mb-[1vh]">
-                  "Renovirt hat unsere Immobilienvermarktung revolutioniert. Die Bildqualität ist außergewöhnlich und die Bearbeitungszeit unschlagbar!"
-                </p>
+                <p className="text-white/90 italic text-[clamp(0.75rem,2vw,0.875rem)] leading-relaxed mb-[1vh]">"Renovirt hat wirklich einen Unterschied gemacht. 
+Die Bilder sehen top aus und sind super schnell fertig – für uns als Makler ein echter Gewinn. Die Zusammenarbeit ist unkompliziert und zuverlässig, genau so, wie man sich das wünscht."</p>
                 <div className="flex items-center space-x-[1vw]">
                   <div className="w-[2rem] h-[2rem] bg-gradient-to-br from-accent to-primary rounded-full flex items-center justify-center text-white font-bold text-[clamp(0.625rem,1.5vw,0.75rem)]">
                     MS
