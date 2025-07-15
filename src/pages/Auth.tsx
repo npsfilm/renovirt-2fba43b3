@@ -163,13 +163,13 @@ const Auth = () => {
               </p>
               <div className="flex items-center justify-center space-x-[1vw] opacity-70">
                 <div className="bg-white/20 backdrop-blur-sm rounded-lg p-[0.5vh] flex items-center justify-center h-[3vh]">
-                  <img src="/lovable-uploads/3edc84fd-1de7-4266-ac80-24a4925dd856.png" alt="Engel & Völkers" className="h-[2vh] max-w-[4vw] object-contain" />
+                  <img src="/lovable-uploads/6f5d0b7d-0757-40c1-b4f9-ff3faeba1a6f.png" alt="Engel & Völkers" className="h-[2vh] max-w-[4vw] object-contain" />
                 </div>
                 <div className="bg-white/20 backdrop-blur-sm rounded-lg p-[0.5vh] flex items-center justify-center h-[3vh]">
-                  <img src="/lovable-uploads/e6bd750d-a87a-45ce-84cf-065e03bd72c7.png" alt="Century 21" className="h-[2vh] max-w-[4vw] object-contain" />
+                  <img src="/lovable-uploads/95c8ab96-0392-4c20-95eb-dc0b0e7c87cc.png" alt="McMakler" className="h-[2vh] max-w-[4vw] object-contain" />
                 </div>
                 <div className="bg-white/20 backdrop-blur-sm rounded-lg p-[0.5vh] flex items-center justify-center h-[3vh]">
-                  <img src="/lovable-uploads/8c510237-f833-4180-8a51-f663f2012aee.png" alt="Volksbank" className="h-[2vh] max-w-[4vw] object-contain" />
+                  <img src="/lovable-uploads/f5668da6-3c08-4577-a69b-08b71019f49e.png" alt="Von Poll Immobilien" className="h-[2vh] max-w-[4vw] object-contain" />
                 </div>
               </div>
               <div className="text-center">
