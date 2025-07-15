@@ -64,7 +64,8 @@ const Auth = () => {
   const handleSwitchToLogin = () => {
     setActiveTab('login');
   };
-  return <div className="min-h-screen w-full bg-background flex items-center justify-center overflow-hidden">
+  return (
+    <div className="min-h-screen w-full bg-background flex items-center justify-center overflow-hidden">
       <div className="w-full h-full flex">
         {/* Left side - Auth Form */}
         <div className="w-full lg:w-3/5 xl:w-1/2 flex items-center justify-center p-[2vh] bg-background">
