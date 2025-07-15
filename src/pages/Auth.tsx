@@ -174,7 +174,7 @@ const Auth = () => {
               </div>
               <div className="text-center">
                 <p className="text-white/60 text-[clamp(0.625rem,1.5vw,0.75rem)]">
-                  Made with love in Augsburg.
+                  Made with ❤️ in Augsburg
                 </p>
               </div>
             </div>
