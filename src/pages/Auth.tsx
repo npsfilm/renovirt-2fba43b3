@@ -157,7 +157,7 @@ const Auth = () => {
             </div>
             
             {/* Bottom Section - Partner Logos */}
-            <div className="space-y-[1vh]">
+            <div className="space-y-[1vh] scale-110">
               <p className="text-white/70 text-[clamp(0.625rem,1.5vw,0.75rem)] text-center">
                 Vertraut von führenden Immobilienunternehmen
               </p>
