@@ -152,33 +152,36 @@ const Auth = () => {
                     <p className="text-white/70 text-[clamp(0.625rem,1.5vw,0.75rem)]">Immobilienmaklerin</p>
                   </div>
                 </div>
-                
-                <div className="space-y-[1vh] mt-[2vh]">
-                  <p className="text-white/70 text-[clamp(0.625rem,1.5vw,0.75rem)] text-center">
-                    Vertraut von führenden Immobilienunternehmen
-                  </p>
-                  <div className="flex items-center justify-center space-x-[1vw] opacity-70">
-                    <div className="bg-white/20 backdrop-blur-sm rounded-lg p-[0.5vh] flex items-center justify-center h-[3vh]">
-                      <img src="/lovable-uploads/3edc84fd-1de7-4266-ac80-24a4925dd856.png" alt="Engel & Völkers" className="h-[2vh] max-w-[4vw] object-contain" />
-                    </div>
-                    <div className="bg-white/20 backdrop-blur-sm rounded-lg p-[0.5vh] flex items-center justify-center h-[3vh]">
-                      <img src="/lovable-uploads/e6bd750d-a87a-45ce-84cf-065e03bd72c7.png" alt="Century 21" className="h-[2vh] max-w-[4vw] object-contain" />
-                    </div>
-                    <div className="bg-white/20 backdrop-blur-sm rounded-lg p-[0.5vh] flex items-center justify-center h-[3vh]">
-                      <img src="/lovable-uploads/8c510237-f833-4180-8a51-f663f2012aee.png" alt="Volksbank" className="h-[2vh] max-w-[4vw] object-contain" />
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-white/60 text-[clamp(0.625rem,1.5vw,0.75rem)]">
-                      Made with love in Augsburg.
-                    </p>
-                  </div>
+              </div>
+            </div>
+            
+            {/* Bottom Section - Partner Logos */}
+            <div className="space-y-[1vh]">
+              <p className="text-white/70 text-[clamp(0.625rem,1.5vw,0.75rem)] text-center">
+                Vertraut von führenden Immobilienunternehmen
+              </p>
+              <div className="flex items-center justify-center space-x-[1vw] opacity-70">
+                <div className="bg-white/20 backdrop-blur-sm rounded-lg p-[0.5vh] flex items-center justify-center h-[3vh]">
+                  <img src="/lovable-uploads/3edc84fd-1de7-4266-ac80-24a4925dd856.png" alt="Engel & Völkers" className="h-[2vh] max-w-[4vw] object-contain" />
                 </div>
+                <div className="bg-white/20 backdrop-blur-sm rounded-lg p-[0.5vh] flex items-center justify-center h-[3vh]">
+                  <img src="/lovable-uploads/e6bd750d-a87a-45ce-84cf-065e03bd72c7.png" alt="Century 21" className="h-[2vh] max-w-[4vw] object-contain" />
+                </div>
+                <div className="bg-white/20 backdrop-blur-sm rounded-lg p-[0.5vh] flex items-center justify-center h-[3vh]">
+                  <img src="/lovable-uploads/8c510237-f833-4180-8a51-f663f2012aee.png" alt="Volksbank" className="h-[2vh] max-w-[4vw] object-contain" />
+                </div>
+              </div>
+              <div className="text-center">
+                <p className="text-white/60 text-[clamp(0.625rem,1.5vw,0.75rem)]">
+                  Made with love in Augsburg.
+                </p>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Auth;
