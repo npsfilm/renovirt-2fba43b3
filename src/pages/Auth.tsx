@@ -97,9 +97,7 @@ const Auth = () => {
         {/* Right side - Marketing Content (hidden on mobile) */}
         <div className="hidden lg:flex lg:w-2/5 xl:w-1/2 relative overflow-hidden h-screen">
           {/* Background Image with 10-degree rotation */}
-          <div className="absolute inset-0 transform rotate-[10deg] scale-125 origin-center bg-cover bg-center bg-no-repeat" style={{
-          backgroundImage: 'url(/lovable-uploads/fd670a2b-70f6-44eb-89b6-316c7c4280b6.png)'
-        }} />
+          <div className="absolute inset-0 transform rotate-[10deg] scale-125 origin-center auth-background" />
           
           {/* Dark overlay for better text readability */}
           <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/50 to-black/70" />
