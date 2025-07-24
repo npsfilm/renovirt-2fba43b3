@@ -148,6 +148,28 @@ export const useAuth = () => {
         logSecurityEvent('signup_success', { email });
         console.log('SignUp successful, redirect URL set to:', redirectUrl);
         console.log('Profile will be created during onboarding process');
+        
+        // Send custom verification email if user is not yet confirmed
+        if (!data.user.email_confirmed_at) {
+          try {
+            console.log('Sending custom verification email for:', email);
+            const { error: emailError } = await supabase.functions.invoke('resend-verification-email', {
+              body: { 
+                email,
+                firstName: userData.firstName,
+                lastName: userData.lastName 
+              }
+            });
+            
+            if (emailError) {
+              console.warn('Custom email sending failed, using default:', emailError);
+            } else {
+              console.log('Custom verification email sent successfully');
+            }
+          } catch (emailError) {
+            console.warn('Custom email error:', emailError);
+          }
+        }
       }
       
       return { data, error };

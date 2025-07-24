@@ -61,12 +61,25 @@ const handler = async (req: Request): Promise<Response> => {
     // Use custom Resend implementation for immediate delivery
     const resend = new Resend(resendApiKey);
     
-    // Generate verification token and hash (simplified approach)
+    // Generate verification token using Supabase auth admin
     const origin = req.headers.get('origin') || 'https://app.renovirt.de';
     const baseUrl = Deno.env.get('SUPABASE_URL')!;
     
-    // Create a verification link that goes through Supabase auth
-    const verificationUrl = `${baseUrl}/auth/v1/verify?token_hash=placeholder&type=email&redirect_to=${encodeURIComponent(origin)}/onboarding`;
+    // Use Supabase's generateLink to create proper verification token
+    const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
+      type: 'signup',
+      email: email,
+      options: {
+        redirectTo: `${origin}/onboarding`
+      }
+    });
+    
+    if (linkError) {
+      console.error('Failed to generate verification link:', linkError);
+      throw linkError;
+    }
+    
+    const verificationUrl = linkData.properties.action_link;
     
     // Send custom email via Resend
     const emailResponse = await resend.emails.send({
@@ -93,7 +106,7 @@ const handler = async (req: Request): Promise<Response> => {
         <body>
           <div class="container">
             <div class="header">
-              <div class="logo">Renovirt</div>
+              <img src="https://app.renovirt.de/lovable-uploads/9ec7c3ad-34b9-4fea-a9e9-0d4a0a5532e9.png" alt="Renovirt Logo" style="height: 40px; margin: 0 auto 20px auto; display: block;" />
               <h1>Willkommen bei Renovirt${firstName ? `, ${firstName}` : ''}!</h1>
             </div>
             
