@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronUp, Star, Phone, User, Clock } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ChevronDown, ChevronUp, CheckCircle, XCircle, Clock, Minus } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 
@@ -13,7 +14,13 @@ interface InteractionData {
   feedback_rating: number | null;
   contacted_support: boolean;
   created_at: string;
-  customer_profiles: any;
+  customer_profiles: {
+    user_id: string;
+    first_name: string | null;
+    last_name: string | null;
+    company: string | null;
+    billing_email: string | null;
+  } | null;
   ip_address: unknown;
   user_id: string | null;
   session_id: string;
@@ -28,46 +35,48 @@ interface CompactInteractionsListProps {
 const CompactInteractionsList = ({ interactions }: CompactInteractionsListProps) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const getStatusBadge = (rating: number | null, contactedSupport: boolean) => {
-    if (contactedSupport) {
-      return <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
-        <Phone className="h-3 w-3 mr-1" />
-        Support
-      </Badge>;
-    }
-    
+  const getSatisfactionDisplay = (rating: number | null) => {
     if (rating === null) {
-      return <Badge variant="secondary">Keine Bewertung</Badge>;
+      return (
+        <div className="flex items-center gap-1">
+          <Minus className="h-4 w-4 text-muted-foreground" />
+          <span className="text-muted-foreground">-</span>
+        </div>
+      );
     }
     
     if (rating <= 2) {
-      return <Badge variant="destructive">
-        <Star className="h-3 w-3 mr-1" />
-        Unzufrieden
-      </Badge>;
+      return (
+        <div className="flex items-center gap-1 text-destructive">
+          <XCircle className="h-4 w-4" />
+          <span>Nein</span>
+        </div>
+      );
     }
     
-    if (rating >= 4) {
-      return <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
-        <Star className="h-3 w-3 mr-1" />
-        Zufrieden
-      </Badge>;
-    }
-    
-    return <Badge variant="secondary">
-      <Star className="h-3 w-3 mr-1" />
-      Neutral
-    </Badge>;
+    return (
+      <div className="flex items-center gap-1 text-green-600">
+        <CheckCircle className="h-4 w-4" />
+        <span>Ja</span>
+      </div>
+    );
   };
 
-  const getCustomerDisplay = (interaction: InteractionData) => {
+  const getCustomerName = (interaction: InteractionData) => {
     if (interaction.customer_profiles) {
       const { first_name, last_name, company } = interaction.customer_profiles;
-      const name = [first_name, last_name].filter(Boolean).join(' ');
-      return company ? `${name} (${company})` : name;
+      const name = [first_name, last_name].filter(Boolean).join(' ').trim();
+      return name || company || 'Unbekannt';
+    }
+    return 'Gast';
+  };
+
+  const getCustomerEmail = (interaction: InteractionData) => {
+    if (interaction.customer_profiles?.billing_email) {
+      return interaction.customer_profiles.billing_email;
     }
     const ipString = typeof interaction.ip_address === 'string' ? interaction.ip_address : 'Unbekannt';
-    return `Gast (${ipString.slice(0, 12)})`;
+    return `IP: ${ipString.slice(0, 15)}`;
   };
 
   const prioritizedInteractions = [...interactions]
@@ -92,94 +101,81 @@ const CompactInteractionsList = ({ interactions }: CompactInteractionsListProps)
           <Badge variant="secondary">{prioritizedInteractions.length}</Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
-        {prioritizedInteractions.length === 0 ? (
-          <p className="text-muted-foreground text-center py-4">
-            Keine Interaktionen verfügbar
-          </p>
-        ) : (
-          prioritizedInteractions.map((interaction) => (
-            <div 
-              key={interaction.id} 
-              className={`border rounded-lg p-3 ${
-                interaction.feedback_rating && interaction.feedback_rating <= 2 
-                  ? 'border-red-200 bg-red-50' 
-                  : interaction.contacted_support 
-                    ? 'border-orange-200 bg-orange-50'
-                    : 'border-border'
-              }`}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <User className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium truncate">
-                      {getCustomerDisplay(interaction)}
-                    </span>
-                    {getStatusBadge(interaction.feedback_rating, interaction.contacted_support)}
-                  </div>
-                  
-                  <p className="text-sm text-foreground mb-2 line-clamp-2">
-                    <strong>Frage:</strong> {interaction.question}
-                  </p>
-                  
-                  <p className="text-xs text-muted-foreground">
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Kunde</TableHead>
+              <TableHead>E-Mail</TableHead>
+              <TableHead>Frage</TableHead>
+              <TableHead>KI-Antwort</TableHead>
+              <TableHead>Zufrieden</TableHead>
+              <TableHead>Zeit</TableHead>
+              <TableHead></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {prioritizedInteractions.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center py-4 text-muted-foreground">
+                  Keine Interaktionen verfügbar
+                </TableCell>
+              </TableRow>
+            ) : (
+              prioritizedInteractions.map((interaction) => (
+                <TableRow 
+                  key={interaction.id}
+                  className={
+                    interaction.feedback_rating && interaction.feedback_rating <= 2 
+                      ? 'bg-red-50 border-red-200' 
+                      : interaction.contacted_support 
+                        ? 'bg-orange-50 border-orange-200'
+                        : ''
+                  }
+                >
+                  <TableCell className="font-medium">
+                    {getCustomerName(interaction)}
+                  </TableCell>
+                  <TableCell className="max-w-[200px] truncate">
+                    {getCustomerEmail(interaction)}
+                  </TableCell>
+                  <TableCell className="max-w-[300px]">
+                    <div className={expandedId === interaction.id ? '' : 'line-clamp-2'}>
+                      {interaction.question}
+                    </div>
+                  </TableCell>
+                  <TableCell className="max-w-[300px]">
+                    <div className={expandedId === interaction.id ? '' : 'line-clamp-2'}>
+                      {interaction.ai_response}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {getSatisfactionDisplay(interaction.feedback_rating)}
+                  </TableCell>
+                  <TableCell className="text-xs text-muted-foreground">
                     {formatDistanceToNow(new Date(interaction.created_at), { 
                       addSuffix: true, 
                       locale: de 
                     })}
-                  </p>
-                </div>
-                
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setExpandedId(expandedId === interaction.id ? null : interaction.id)}
-                >
-                  {expandedId === interaction.id ? (
-                    <ChevronUp className="h-4 w-4" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-              
-              {expandedId === interaction.id && (
-                <div className="mt-3 pt-3 border-t border-border">
-                  <div className="space-y-2">
-                    <div>
-                      <strong className="text-sm">AI-Antwort:</strong>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {interaction.ai_response}
-                      </p>
-                    </div>
-                    
-                    {interaction.feedback_rating && (
-                      <div className="flex items-center gap-2">
-                        <strong className="text-sm">Bewertung:</strong>
-                        <div className="flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <Star 
-                              key={i} 
-                              className={`h-4 w-4 ${
-                                i < interaction.feedback_rating! 
-                                  ? 'text-yellow-400 fill-current' 
-                                  : 'text-gray-300'
-                              }`} 
-                            />
-                          ))}
-                          <span className="ml-2 text-sm text-muted-foreground">
-                            ({interaction.feedback_rating}/5)
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          ))
-        )}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setExpandedId(expandedId === interaction.id ? null : interaction.id)}
+                    >
+                      {expandedId === interaction.id ? (
+                        <ChevronUp className="h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
       </CardContent>
     </Card>
   );

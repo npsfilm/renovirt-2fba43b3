@@ -40,7 +40,7 @@ export const useRecentHelpInteractions = () => {
       if (userIds.length > 0) {
         const { data: profiles } = await supabase
           .from('customer_profiles')
-          .select('user_id, first_name, last_name, company')
+          .select('user_id, first_name, last_name, company, billing_email')
           .in('user_id', userIds);
         customerProfiles = profiles || [];
       }
@@ -76,7 +76,7 @@ export const useDetailedHelpInteractions = () => {
       if (userIds.length > 0) {
         const { data: profiles } = await supabase
           .from('customer_profiles')
-          .select('user_id, first_name, last_name, company')
+          .select('user_id, first_name, last_name, company, billing_email')
           .in('user_id', userIds);
         customerProfiles = profiles || [];
       }
