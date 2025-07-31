@@ -62,6 +62,37 @@ const Help = () => {
                 </div>
               </div>
             </div>
+
+            {/* Footer */}
+            <footer className="border-t bg-gray-50 py-6 px-6">
+              <div className="max-w-4xl mx-auto">
+                <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                  <div className="text-sm text-gray-600">
+                    © 2025 Renovirt - Eine Marke der NPS Media GmbH
+                  </div>
+                  <div className="flex flex-wrap justify-center gap-4 text-sm">
+                    <a 
+                      href="/privacy" 
+                      className="text-[#91A56E] hover:underline transition-colors"
+                    >
+                      Datenschutz
+                    </a>
+                    <a 
+                      href="/impressum" 
+                      className="text-[#91A56E] hover:underline transition-colors"
+                    >
+                      Impressum
+                    </a>
+                    <a 
+                      href="/agb" 
+                      className="text-[#91A56E] hover:underline transition-colors"
+                    >
+                      AGB
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </footer>
           </main>
 
           {/* AI Chat Widget */}
