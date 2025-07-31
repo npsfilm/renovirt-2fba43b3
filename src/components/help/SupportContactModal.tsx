@@ -47,18 +47,31 @@ Vielen Dank für Ihre Unterstützung!`;
 
     setIsSubmitting(true);
     try {
-      // Hier würde normalerweise der API-Call zum Senden der Support-Nachricht stehen
-      console.log('Support message:', { subject, message });
+      const { supabase } = await import('@/integrations/supabase/client');
+      
+      const response = await supabase.functions.invoke('send-support-contact', {
+        body: {
+          subject: subject.trim(),
+          message: message.trim(),
+          searchQuery,
+          aiResult
+        }
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message || 'Fehler beim Senden der Nachricht');
+      }
       
       toast({
         title: "Nachricht gesendet!",
-        description: "Ihr Support-Team wird sich in Kürze bei Ihnen melden.",
+        description: "Ihre Support-Anfrage wurde erfolgreich an unser Team gesendet.",
       });
       
       onClose();
       setSubject('');
       setMessage('');
     } catch (error) {
+      console.error('Support contact error:', error);
       toast({
         title: "Fehler",
         description: "Die Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
