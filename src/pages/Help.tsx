@@ -43,9 +43,7 @@ const Help = () => {
                   <div className="space-y-2">
                     <Mail className="w-6 h-6 mx-auto text-muted-foreground" />
                     <p className="text-sm font-medium">Kontakt</p>
-                    <p className="text-sm text-muted-foreground">
-                      Bitte nutzen Sie die Hilfe oben, danach können Sie uns eine Support Nachricht zukommen lassen.
-                    </p>
+                    <p className="text-sm text-muted-foreground">Bitte nutzen Sie die Hilfe oben, danach können Sie uns eine Support Nachricht z</p>
                   </div>
                   
                   <div className="space-y-2">
@@ -71,22 +69,13 @@ const Help = () => {
                     © 2025 Renovirt - Eine Marke der NPS Media GmbH
                   </div>
                   <div className="flex flex-wrap justify-center gap-4 text-sm">
-                    <a 
-                      href="/privacy" 
-                      className="text-[#91A56E] hover:underline transition-colors"
-                    >
+                    <a href="/privacy" className="text-[#91A56E] hover:underline transition-colors">
                       Datenschutz
                     </a>
-                    <a 
-                      href="/impressum" 
-                      className="text-[#91A56E] hover:underline transition-colors"
-                    >
+                    <a href="/impressum" className="text-[#91A56E] hover:underline transition-colors">
                       Impressum
                     </a>
-                    <a 
-                      href="/agb" 
-                      className="text-[#91A56E] hover:underline transition-colors"
-                    >
+                    <a href="/agb" className="text-[#91A56E] hover:underline transition-colors">
                       AGB
                     </a>
                   </div>
