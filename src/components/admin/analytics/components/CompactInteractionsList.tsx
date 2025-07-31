@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { ChevronDown, ChevronUp, CheckCircle, XCircle, Clock, Minus } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
+import { convertToBerlinTime, formatBerlinTime } from '@/utils/berlinTime';
 import { HelpInteractionData } from '../hooks/useHelpAnalytics';
 
 interface CompactInteractionsListProps {
@@ -129,12 +130,12 @@ const CompactInteractionsList = ({ interactions }: CompactInteractionsListProps)
                   <TableCell>
                     {getSatisfactionDisplay(interaction.feedback_rating)}
                   </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">
-                    {formatDistanceToNow(new Date(interaction.created_at), { 
-                      addSuffix: true, 
-                      locale: de 
-                    })}
-                  </TableCell>
+                <TableCell className="text-xs text-muted-foreground">
+                  {formatDistanceToNow(convertToBerlinTime(interaction.created_at), { 
+                    addSuffix: true,
+                    locale: de 
+                  })}
+                </TableCell>
                   <TableCell>
                     <Button
                       variant="ghost"

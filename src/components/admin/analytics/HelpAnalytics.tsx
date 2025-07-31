@@ -5,6 +5,7 @@ import AlertsSection from './components/AlertsSection';
 import SimpleMetrics from './components/SimpleMetrics';
 import CompactInteractionsList from './components/CompactInteractionsList';
 import ActionableSection from './components/ActionableSection';
+import { getBerlinDayStart, convertToBerlinTime } from '@/utils/berlinTime';
 
 const HelpAnalytics = () => {
   const { analytics, isLoading } = useHelpAnalytics();
@@ -18,26 +19,37 @@ const HelpAnalytics = () => {
     return <div className="p-6">Keine Analytics-Daten verfügbar</div>;
   }
 
-  // Berechne zusätzliche Metriken für das vereinfachte Dashboard
-  const today = new Date();
-  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const weekStart = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+  // Berechne zusätzliche Metriken für das vereinfachte Dashboard (Berlin Zeit)
+  const todayStart = getBerlinDayStart();
+  const weekStart = new Date(todayStart.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-  const interactionsToday = recentInteractions?.filter(i => 
-    new Date(i.created_at) >= todayStart
-  ).length || 0;
+  // Debug: Zeige Zeitzone-Informationen
+  console.log('[DEBUG] Berlin Zeit - Heute:', todayStart);
+  console.log('[DEBUG] Berlin Zeit - Woche:', weekStart);
 
-  const interactionsWeek = recentInteractions?.filter(i => 
-    new Date(i.created_at) >= weekStart
-  ).length || 0;
+  const interactionsToday = recentInteractions?.filter(i => {
+    const berlinTime = convertToBerlinTime(i.created_at);
+    return berlinTime >= todayStart;
+  }).length || 0;
+
+  const interactionsWeek = recentInteractions?.filter(i => {
+    const berlinTime = convertToBerlinTime(i.created_at);
+    return berlinTime >= weekStart;
+  }).length || 0;
+
+  // Debug: Zeige gefilterte Ergebnisse
+  console.log('[DEBUG] Interaktionen heute (Berlin):', interactionsToday);
+  console.log('[DEBUG] Interaktionen Woche (Berlin):', interactionsWeek);
+  console.log('[DEBUG] Gesamt Interaktionen:', recentInteractions?.length || 0);
 
   const negativeCount = recentInteractions?.filter(i => 
     i.feedback_rating && i.feedback_rating <= 2
   ).length || 0;
 
-  const supportContactsToday = recentInteractions?.filter(i => 
-    i.contacted_support && new Date(i.created_at) >= todayStart
-  ).length || 0;
+  const supportContactsToday = recentInteractions?.filter(i => {
+    const berlinTime = convertToBerlinTime(i.created_at);
+    return i.contacted_support && berlinTime >= todayStart;
+  }).length || 0;
 
   return (
     <div className="space-y-6">
