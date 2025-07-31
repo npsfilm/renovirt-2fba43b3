@@ -18,7 +18,7 @@ interface MessageListProps {
   isLoading: boolean;
   onFeedback: (messageId: string, interactionId: string, rating: number) => void;
   onContactSupport: (interactionId: string) => void;
-  onSendChatHistory?: () => void;
+  onSendChatHistory?: (userEmail: string) => void;
   onOpenContactForm?: () => void;
   onSendTranscript?: () => void;
   onProblemSolved?: () => void;

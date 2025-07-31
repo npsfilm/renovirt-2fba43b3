@@ -97,15 +97,15 @@ const AIChatWidget = () => {
     }
   };
 
-  const handleSendChatHistory = async (sendCopyToUser: boolean = false) => {
+  const handleSendChatHistory = async (userEmail: string) => {
     try {
       const { data, error } = await supabase.functions.invoke('send-chat-history', {
         body: {
           messages: messages.filter(m => m.type !== 'support'),
           userId: user?.id || null,
           sessionId: sessionId,
-          userEmail: user?.email || null,
-          sendCopyToUser
+          userEmail: userEmail,
+          sendCopyToUser: true
         }
       });
 
@@ -113,18 +113,14 @@ const AIChatWidget = () => {
 
       toast({
         title: "Chat-Verlauf gesendet",
-        description: sendCopyToUser 
-          ? "Ihr Chat-Verlauf wurde an support@renovirt.de gesendet und Sie erhalten eine Kopie per E-Mail."
-          : "Ihr Chat-Verlauf wurde an support@renovirt.de gesendet. Sie erhalten in Kürze eine Antwort per E-Mail.",
+        description: `Ihr Chat-Verlauf wurde an support@renovirt.de gesendet und Sie erhalten eine Antwort an ${userEmail}.`,
       });
 
       // Add confirmation message
       const confirmationMessage: Message = {
         id: crypto.randomUUID(),
         type: 'ai',
-        content: sendCopyToUser 
-          ? 'Ihr Chat-Verlauf wurde erfolgreich an unser Support-Team gesendet. Sie erhalten sowohl eine Bestätigung als auch die Antwort unseres Teams per E-Mail.'
-          : 'Ihr Chat-Verlauf wurde erfolgreich an unser Support-Team gesendet. Sie erhalten in Kürze eine Antwort per E-Mail an Ihre registrierte E-Mail-Adresse.',
+        content: `Ihr Chat-Verlauf wurde erfolgreich an unser Support-Team gesendet. Sie erhalten in Kürze eine Antwort per E-Mail an ${userEmail}.`,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, confirmationMessage]);
@@ -149,7 +145,7 @@ const AIChatWidget = () => {
   };
 
   const handleSendTranscript = () => {
-    handleSendChatHistory(true);
+    handleSendChatHistory(user?.email || 'support@renovirt.de');
     offerTranscript(user?.email);
   };
 
@@ -223,7 +219,7 @@ const AIChatWidget = () => {
             isLoading={isLoading}
             onFeedback={handleFeedback}
             onContactSupport={handleContactSupport}
-            onSendChatHistory={() => handleSendChatHistory(false)}
+            onSendChatHistory={handleSendChatHistory}
             onOpenContactForm={handleOpenContactForm}
             onSendTranscript={handleSendTranscript}
             onProblemSolved={handleProblemSolved}
