@@ -8,14 +8,13 @@ import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAdminRole } from '@/hooks/useAdminRole';
+import { downloadFile } from '@/utils/fileDownloadService';
 
 const BillingOverview = () => {
-  const {
-    user
-  } = useAuth();
-  const {
-    toast
-  } = useToast();
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const { isAdmin } = useAdminRole();
   const {
     data: billingData
   } = useQuery({
@@ -41,6 +40,15 @@ const BillingOverview = () => {
             file_size,
             file_type,
             storage_path
+          ),
+          order_invoices (
+            id,
+            file_name,
+            file_size,
+            file_type,
+            storage_path,
+            uploaded_by_name,
+            created_at
           ),
           packages (
             name
@@ -82,14 +90,32 @@ const BillingOverview = () => {
     }
   };
   const handleDownloadInvoice = async (order: any) => {
-    // For now, generate a simple receipt
-    toast({
-      title: "Rechnung wird heruntergeladen",
-      description: `Rechnung für Bestellung ${formatOrderId(order)} wird vorbereitet.`
-    });
-    
-    // TODO: Implement actual invoice download logic
-    // This could involve calling an edge function to generate a PDF invoice
+    try {
+      // Get the first available invoice for this order
+      const invoice = order.order_invoices?.[0];
+      if (!invoice) {
+        toast({
+          title: "Fehler",
+          description: "Keine Rechnung für diese Bestellung verfügbar.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      await downloadFile('order-invoices', invoice.storage_path, invoice.file_name);
+      
+      toast({
+        title: "Rechnung heruntergeladen",
+        description: `Rechnung für Bestellung ${formatOrderId(order)} wurde heruntergeladen.`
+      });
+    } catch (error) {
+      console.error('Error downloading invoice:', error);
+      toast({
+        title: "Fehler beim Herunterladen",
+        description: "Die Rechnung konnte nicht heruntergeladen werden.",
+        variant: "destructive"
+      });
+    }
   };
   const handleExportAll = () => {
     toast({
@@ -179,15 +205,21 @@ const BillingOverview = () => {
                       €{parseFloat(order.total_price?.toString() || '0').toFixed(2)}
                     </TableCell>
                     <TableCell>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => handleDownloadInvoice(order)} 
-                        title="Rechnung herunterladen"
-                      >
-                        <Download className="w-4 h-4 mr-1" />
-                        Rechnung
-                      </Button>
+                      {isAdmin || (order.order_invoices && order.order_invoices.length > 0) ? (
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => handleDownloadInvoice(order)} 
+                          title="Rechnung herunterladen"
+                        >
+                          <Download className="w-4 h-4 mr-1" />
+                          Rechnung
+                        </Button>
+                      ) : (
+                        <span className="text-sm text-gray-500">
+                          Rechnung demnächst verfügbar
+                        </span>
+                      )}
                     </TableCell>
                   </TableRow>)}
               </TableBody>
