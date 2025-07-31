@@ -29,6 +29,7 @@ import EmailVerification from '@/pages/EmailVerification';
 import Onboarding from '@/pages/Onboarding';
 import AGB from '@/pages/AGB';
 import Privacy from '@/pages/Privacy';
+import Impressum from '@/pages/Impressum';
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,7 @@ function App() {
               <Route path="/guidelines" element={<Guidelines />} />
               <Route path="/agb" element={<AGB />} />
               <Route path="/privacy" element={<Privacy />} />
+              <Route path="/impressum" element={<Impressum />} />
 
               {/* Admin Authentication Route */}
               <Route path="/admin-auth" element={<AdminAuth />} />
