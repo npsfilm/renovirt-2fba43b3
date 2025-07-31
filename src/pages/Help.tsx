@@ -43,7 +43,7 @@ const Help = () => {
                   <div className="space-y-2">
                     <Mail className="w-6 h-6 mx-auto text-muted-foreground" />
                     <p className="text-sm font-medium">Kontakt</p>
-                    <p className="text-sm text-muted-foreground">Bitte nutzen Sie die Hilfe oben, danach können Sie uns eine Support Nachricht z</p>
+                    <p className="text-sm text-muted-foreground">Bitte nutzen Sie zunächst die Hilfefunktion oben. Sollten Sie dort keine Antwort finden, können Sie uns anschließend eine Nachricht senden.</p>
                   </div>
                   
                   <div className="space-y-2">
