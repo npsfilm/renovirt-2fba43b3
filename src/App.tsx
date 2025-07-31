@@ -28,6 +28,7 @@ import AdminHelpAnalytics from '@/pages/AdminHelpAnalytics';
 import EmailVerification from '@/pages/EmailVerification';
 import Onboarding from '@/pages/Onboarding';
 import AGB from '@/pages/AGB';
+import Privacy from '@/pages/Privacy';
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,7 @@ function App() {
               <Route path="/order-flow" element={<OrderFlow />} />
               <Route path="/guidelines" element={<Guidelines />} />
               <Route path="/agb" element={<AGB />} />
+              <Route path="/privacy" element={<Privacy />} />
 
               {/* Admin Authentication Route */}
               <Route path="/admin-auth" element={<AdminAuth />} />
