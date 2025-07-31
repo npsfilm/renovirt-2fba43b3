@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   Package, 
@@ -15,9 +17,19 @@ import {
 } from 'lucide-react';
 
 
+interface Category {
+  id: string;
+  title: string;
+  icon: any;
+  description: string;
+  questions: Array<{title: string, content: string}>;
+}
+
 const HelpFAQSection = () => {
   const [faqData, setFaqData] = useState<Array<{title: string, content: string}>>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchFAQData = async () => {
@@ -124,6 +136,15 @@ const HelpFAQSection = () => {
     }
   ].filter(category => category.questions.length > 0);
 
+  const openCategoryDialog = (category: Category) => {
+    setSelectedCategory(category);
+    setDialogOpen(true);
+  };
+
+  const getDisplayedQuestions = (questions: Array<{title: string, content: string}>) => {
+    return questions.slice(0, 3);
+  };
+
   if (loading) {
     return (
       <div className="space-y-8">
@@ -165,7 +186,7 @@ const HelpFAQSection = () => {
             </CardHeader>
             <CardContent>
               <Accordion type="single" collapsible className="w-full">
-                {category.questions.map((item, index) => (
+                {getDisplayedQuestions(category.questions).map((item, index) => (
                   <AccordionItem key={index} value={`item-${index}`}>
                     <AccordionTrigger className="text-left text-sm">
                       {item.title}
@@ -176,10 +197,61 @@ const HelpFAQSection = () => {
                   </AccordionItem>
                 ))}
               </Accordion>
+              
+              {category.questions.length > 3 && (
+                <div className="mt-4 text-center">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => openCategoryDialog(category)}
+                    className="text-xs"
+                  >
+                    Alle {category.questions.length} Fragen anzeigen
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}
       </div>
+
+      {/* Category Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          {selectedCategory && (
+            <>
+              <DialogHeader className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <selectedCategory.icon className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="text-left">
+                    <DialogTitle className="text-xl">{selectedCategory.title}</DialogTitle>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {selectedCategory.description}
+                    </p>
+                  </div>
+                </div>
+              </DialogHeader>
+              
+              <div className="mt-6">
+                <Accordion type="single" collapsible className="w-full">
+                  {selectedCategory.questions.map((item, index) => (
+                    <AccordionItem key={index} value={`dialog-item-${index}`}>
+                      <AccordionTrigger className="text-left">
+                        {item.title}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-sm text-muted-foreground">
+                        {item.content}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
