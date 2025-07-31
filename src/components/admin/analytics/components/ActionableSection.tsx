@@ -2,24 +2,10 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { AlertCircle, TrendingDown, MessageSquare, User } from 'lucide-react';
-
-interface InteractionData {
-  id: string;
-  question: string;
-  feedback_rating: number | null;
-  contacted_support: boolean;
-  created_at: string;
-  customer_profiles: any;
-  ip_address: unknown;
-  ai_response: string;
-  user_id: string | null;
-  session_id: string;
-  user_agent: string | null;
-  response_time_ms: number | null;
-}
+import { HelpInteractionData } from '../hooks/useHelpAnalytics';
 
 interface ActionableSectionProps {
-  interactions: InteractionData[];
+  interactions: HelpInteractionData[];
 }
 
 const ActionableSection = ({ interactions }: ActionableSectionProps) => {
@@ -41,7 +27,7 @@ const ActionableSection = ({ interactions }: ActionableSectionProps) => {
     });
     
     return acc;
-  }, {} as Record<string, InteractionData[]>);
+  }, {} as Record<string, HelpInteractionData[]>);
 
   const topProblems = Object.entries(questionPatterns)
     .filter(([_, interactions]) => interactions.length >= 2)
@@ -54,11 +40,14 @@ const ActionableSection = ({ interactions }: ActionableSectionProps) => {
       examples: interactions.slice(0, 2)
     }));
 
-  const getCustomerDisplay = (interaction: InteractionData) => {
-    if (interaction.customer_profiles) {
-      const { first_name, last_name, company } = interaction.customer_profiles;
-      const name = [first_name, last_name].filter(Boolean).join(' ');
-      return company ? `${name} (${company})` : name;
+  const getCustomerDisplay = (interaction: HelpInteractionData) => {
+    const { customer_first_name, customer_last_name, customer_company } = interaction;
+    const name = [customer_first_name, customer_last_name].filter(Boolean).join(' ');
+    if (customer_company) {
+      return name ? `${name} (${customer_company})` : customer_company;
+    }
+    if (name) {
+      return name;
     }
     const ipString = typeof interaction.ip_address === 'string' ? interaction.ip_address : 'Unbekannt';
     return `Gast (${ipString.slice(0, 12)})`;

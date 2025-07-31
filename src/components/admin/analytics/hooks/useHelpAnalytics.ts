@@ -3,6 +3,24 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { transformAnalyticsData } from '../utils/dataTransformers';
 
+export interface HelpInteractionData {
+  id: string;
+  question: string;
+  ai_response: string;
+  feedback_rating: number | null;
+  contacted_support: boolean;
+  created_at: string;
+  customer_first_name: string | null;
+  customer_last_name: string | null;
+  customer_company: string | null;
+  customer_email: string | null;
+  ip_address: unknown;
+  user_id: string | null;
+  session_id: string;
+  user_agent: string | null;
+  response_time_ms: number | null;
+}
+
 export const useHelpAnalytics = () => {
   const { data: rawAnalytics, isLoading } = useQuery({
     queryKey: ['help-analytics'],
@@ -45,11 +63,17 @@ export const useRecentHelpInteractions = () => {
         customerProfiles = profiles || [];
       }
       
-      // Daten zusammenführen
-      return interactions.map(interaction => ({
-        ...interaction,
-        customer_profiles: customerProfiles.find(p => p.user_id === interaction.user_id) || null
-      }));
+      // Daten zusammenführen - flache Struktur für einfache Verwendung
+      return interactions.map(interaction => {
+        const profile = customerProfiles.find(p => p.user_id === interaction.user_id);
+        return {
+          ...interaction,
+          customer_first_name: profile?.first_name || null,
+          customer_last_name: profile?.last_name || null,
+          customer_company: profile?.company || null,
+          customer_email: profile?.billing_email || null
+        };
+      });
     }
   });
 };
@@ -81,11 +105,17 @@ export const useDetailedHelpInteractions = () => {
         customerProfiles = profiles || [];
       }
       
-      // Daten zusammenführen
-      return interactions.map(interaction => ({
-        ...interaction,
-        customer_profiles: customerProfiles.find(p => p.user_id === interaction.user_id) || null
-      }));
+      // Daten zusammenführen - flache Struktur für einfache Verwendung
+      return interactions.map(interaction => {
+        const profile = customerProfiles.find(p => p.user_id === interaction.user_id);
+        return {
+          ...interaction,
+          customer_first_name: profile?.first_name || null,
+          customer_last_name: profile?.last_name || null,
+          customer_company: profile?.company || null,
+          customer_email: profile?.billing_email || null
+        };
+      });
     }
   });
 };

@@ -6,30 +6,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { ChevronDown, ChevronUp, CheckCircle, XCircle, Clock, Minus } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
-
-interface InteractionData {
-  id: string;
-  question: string;
-  ai_response: string;
-  feedback_rating: number | null;
-  contacted_support: boolean;
-  created_at: string;
-  customer_profiles: {
-    user_id: string;
-    first_name: string | null;
-    last_name: string | null;
-    company: string | null;
-    billing_email: string | null;
-  } | null;
-  ip_address: unknown;
-  user_id: string | null;
-  session_id: string;
-  user_agent: string | null;
-  response_time_ms: number | null;
-}
+import { HelpInteractionData } from '../hooks/useHelpAnalytics';
 
 interface CompactInteractionsListProps {
-  interactions: InteractionData[];
+  interactions: HelpInteractionData[];
 }
 
 const CompactInteractionsList = ({ interactions }: CompactInteractionsListProps) => {
@@ -62,18 +42,15 @@ const CompactInteractionsList = ({ interactions }: CompactInteractionsListProps)
     );
   };
 
-  const getCustomerName = (interaction: InteractionData) => {
-    if (interaction.customer_profiles) {
-      const { first_name, last_name, company } = interaction.customer_profiles;
-      const name = [first_name, last_name].filter(Boolean).join(' ').trim();
-      return name || company || 'Unbekannt';
-    }
-    return 'Gast';
+  const getCustomerName = (interaction: HelpInteractionData) => {
+    const { customer_first_name, customer_last_name, customer_company } = interaction;
+    const name = [customer_first_name, customer_last_name].filter(Boolean).join(' ').trim();
+    return name || customer_company || 'Gast';
   };
 
-  const getCustomerEmail = (interaction: InteractionData) => {
-    if (interaction.customer_profiles?.billing_email) {
-      return interaction.customer_profiles.billing_email;
+  const getCustomerEmail = (interaction: HelpInteractionData) => {
+    if (interaction.customer_email) {
+      return interaction.customer_email;
     }
     const ipString = typeof interaction.ip_address === 'string' ? interaction.ip_address : 'Unbekannt';
     return `IP: ${ipString.slice(0, 15)}`;
