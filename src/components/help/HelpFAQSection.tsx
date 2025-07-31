@@ -26,7 +26,7 @@ const HelpFAQSection = () => {
           .from('help_documents')
           .select('title, content')
           .eq('is_active', true)
-          .order('created_at', { ascending: true });
+          .order('upload_date', { ascending: true });
 
         if (error) {
           console.error('Error fetching FAQ data:', error);
