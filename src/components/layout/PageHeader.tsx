@@ -31,12 +31,6 @@ const PageHeader = ({ title, subtitle }: PageHeaderProps) => {
             <p className="text-sm text-gray-600">{subtitle}</p>
           )}
         </div>
-        {!isOrderFlow && (
-          <Button onClick={handlePhotoUpload} className="bg-green-600 hover:bg-green-700">
-            <Upload className="w-4 h-4 mr-2" />
-            Fotos hochladen
-          </Button>
-        )}
       </div>
     </header>
   );
