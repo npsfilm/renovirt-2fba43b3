@@ -87,7 +87,7 @@ const AGB = () => {
                   Die im Bestellformular angezeigte Preisvorschau dient lediglich der Orientierung und ist unverbindlich. Der verbindliche Preis für die Dienstleistung wird erst nach der manuellen Prüfung der Bestellung durch Renovirt festgelegt und in der finalen Rechnung ausgewiesen.
                 </p>
                 <p className="mb-4">
-                  Die Zahlung der Leistungen erfolgt per via Stripe online oder auf Rechnung, eine Vorkasse ist nicht vorgesehen. Die Rechnungen sind innerhalb einer festgelegten Frist, beispielsweise 14 Tage netto, ohne Abzug zur Zahlung fällig. Im Falle eines Zahlungsverzugs gelten die gesetzlichen Bestimmungen. Hinzu kommt die gesetzliche Mwst. von 19 % in Deutschland.
+                  Die Zahlung der Leistungen erfolgt ausschließlich auf Rechnung, eine Vorkasse ist nicht vorgesehen. Die Rechnungen sind innerhalb einer festgelegten Frist, beispielsweise 14 Tage netto, ohne Abzug zur Zahlung fällig. Im Falle eines Zahlungsverzugs gelten die gesetzlichen Bestimmungen.
                 </p>
               </section>
 
@@ -97,10 +97,22 @@ const AGB = () => {
                   § 5 Lieferung und Abnahme der Leistungen
                 </h2>
                 <p className="mb-4">
-                  Die bearbeiteten Bilder werden dem Kunden als Download-Link per E-Mail innerhalb von 48 Stunden nach Vertragsschluss bzw. Zahlungseingang (je nach individueller Vereinbarung) zugesandt.
+                  Die bearbeiteten Bilder werden dem Kunden als Download-Link per E-Mail innerhalb von 48 Stunden nach Vertragsschluss bzw. Zahlungseingang zugesandt. Bei der Berechnung dieser Frist werden Wochenenden (Samstag und Sonntag) und gesetzliche Feiertage am Sitz von Renovirt nicht mitgerechnet. Fällt der Beginn der Frist oder ein Teil der 48-Stunden-Frist auf ein Wochenende oder einen gesetzlichen Feiertag, so wird die Frist unterbrochen und läuft ab dem nächsten Werktag um 9:00 Uhr weiter.
+                </p>
+                <p className="mb-4">
+                  <strong>Beispiele für die Berechnung der Lieferfrist:</strong>
+                </p>
+                <p className="mb-4">
+                  Wenn Sie eine Bestellung am Freitag um 20:00 Uhr aufgeben, läuft die Frist am Freitag noch 4 Stunden (bis 24:00 Uhr). Die verbleibenden 44 Stunden beginnen am darauffolgenden Montag um 9:00 Uhr zu laufen. Die Lieferung der bearbeiteten Bilder erfolgt dann spätestens am Mittwoch um 05:00 Uhr.
+                </p>
+                <p className="mb-4">
+                  Wenn Sie eine Bestellung am Samstag aufgeben, wird die 48-Stunden-Frist ab dem darauffolgenden Montag um 9:00 Uhr berechnet. Die Lieferung der bearbeiteten Bilder erfolgt dann spätestens am Mittwoch um 9:00 Uhr.
                 </p>
                 <p className="mb-4">
                   Die Lieferung der digitalen Leistung erfolgt mit der Bereitstellung des Download-Links. Der Kunde ist grundsätzlich verpflichtet, die gelieferte Leistung unverzüglich auf Mängel zu prüfen und diese Renovirt anzuzeigen. Erfolgt keine fristgerechte Mängelrüge, gelten die Leistungen als abgenommen, es sei denn, Renovirt hat einen Mangel arglistig verschwiegen oder eine bestimmte Eigenschaft zugesichert.
+                </p>
+                <p className="mb-4">
+                  Lieferfristen verlängern sich angemessen bei höherer Gewalt, Arbeitskämpfen, unvorhersehbaren Störungen oder sonstigen von Renovirt nicht zu vertretenden Hindernissen, die nach Vertragsschluss eintreten. Dies gilt auch, wenn solche Umstände bei Subunternehmern von Renovirt eintreten. Renovirt wird den Kunden über solche Verzögerungen unverzüglich informieren. Schadensersatzansprüche des Kunden wegen Lieferverzögerungen sind ausgeschlossen, es sei denn, die Verzögerung beruht auf Vorsatz oder grober Fahrlässigkeit von Renovirt oder der Verletzung wesentlicher Vertragspflichten. Im Übrigen gelten die Regelungen zur Haftung in § 8 dieser AGB.
                 </p>
               </section>
 
@@ -110,7 +122,7 @@ const AGB = () => {
                   § 6 Stornierung und Kündigung
                 </h2>
                 <p className="mb-4">
-                  Renovirt bietet seinen Kunden eine spezifische Stornoregelung an: Eine Stornierung der Bestellung ist bis 30 Minuten nach Bestelleingang kostenlos möglich. Erfolgt die Stornierung nach Ablauf dieser Frist, fallen Stornokosten in Höhe von 70 % des Auftragswertes an, jedoch mindestens 40 €.
+                  Renovirt bietet seinen Kunden eine spezifische Stornoregelung an: Eine Stornierung der Bestellung ist bis 30 Minuten nach Bestelleingang kostenlos möglich. Erfolgt die Stornierung nach Ablauf dieser Frist, fallen Stornokosten in Höhe von 70 % des Auftragswertes an.
                 </p>
                 <p className="mb-4">
                   Dem Kunden wird ausdrücklich das Recht eingeräumt, nachzuweisen, dass Renovirt durch die Stornierung tatsächlich ein wesentlich geringerer Schaden entstanden ist oder gar kein Schaden vorliegt.
