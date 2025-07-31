@@ -1,0 +1,16 @@
+-- Hinzufügen von Vertrauenswürdigkeits-FAQ Einträgen zur help_documents Tabelle
+
+INSERT INTO public.help_documents (title, content, is_active, created_by) VALUES 
+('Ist Renovirt vertrauenswürdig?', 'Ja, Renovirt legt größten Wert auf Vertrauenswürdigkeit, Datensicherheit und die Einhaltung aller relevanten rechtlichen Vorgaben. Als Marke der NPS Media GmbH sind wir bestrebt, Ihnen einen sicheren und transparenten Service zu bieten.', true, null),
+
+('Wie hält Renovirt den Datenschutz ein?', 'Wir arbeiten streng nach den Vorgaben der Datenschutz-Grundverordnung (DSGVO) und des Telekommunikation-Digitale-Dienste-Datenschutz-Gesetzes (TTDSG). Dies bedeutet, dass wir Ihre Daten nur für die Zwecke erheben und verarbeiten, für die sie unbedingt notwendig sind, und dabei stets den Grundsatz der Datensparsamkeit beachten.', true, null),
+
+('Wie sicher ist die Datenverarbeitung bei Renovirt?', 'Ihre hochgeladenen Bilder, Metadaten und alle personenbezogenen Informationen (wie Name, E-Mail, Firma) werden ausschließlich auf sicheren Servern in Deutschland gespeichert. Wir stellen sicher, dass die gesamte Datenverarbeitung innerhalb der Europäischen Union erfolgt, um die hohen Datenschutzstandards der DSGVO zu gewährleisten. Unsere Systeme sind durch geeignete technische und organisatorische Maßnahmen geschützt, darunter Verschlüsselung, strenge Zugriffsbeschränkungen, regelmäßige Datensicherungen und kontinuierliche Sicherheitsupdates.', true, null),
+
+('Wie geht Renovirt mit externen Dienstleistern um?', 'Für bestimmte Verarbeitungstätigkeiten arbeiten wir mit ausgewählten und vertrauenswürdigen externen Dienstleistern zusammen (z.B. lovable, superbase, Make, Mailjet, Google Drive und Stripe). Mit all diesen Dienstleistern haben wir sogenannte Auftragsverarbeitungsverträge (AVV) gemäß Art. 28 DSGVO abgeschlossen, um sicherzustellen, dass Ihre Daten auch bei diesen Partnern datenschutzkonform behandelt werden. Wir kontrollieren regelmäßig die Einhaltung dieser Vorgaben.', true, null),
+
+('Welche Rechte habe ich als Kunde bei Renovirt?', 'Sie haben jederzeit umfassende Rechte bezüglich Ihrer personenbezogenen Daten, darunter das Recht auf Auskunft, Berichtigung, Löschung und Einschränkung der Verarbeitung. Wir reagieren schnell und unbürokratisch auf Ihre Anfragen.', true, null),
+
+('Wie funktionieren die Einwilligungsverfahren bei Renovirt?', 'Für den Versand unseres Newsletters nutzen wir das bewährte Double-Opt-in-Verfahren, das Ihre ausdrückliche und nachweisbare Einwilligung sicherstellt. Auch für nicht-notwendige Tracking-Cookies auf unserer Website holen wir Ihre aktive und informierte Einwilligung über ein Cookie Consent Management Platform (CMP) ein, bevor diese gesetzt werden. Sie können Ihre Einwilligung jederzeit einfach widerrufen und Ihre Einstellungen anpassen.', true, null),
+
+('Sind die rechtlichen Grundlagen von Renovirt solide?', 'Unsere Allgemeinen Geschäftsbedingungen (AGB), Datenschutzerklärung und das Impressum sind sorgfältig ausgearbeitet und entsprechen dem deutschen IT- und Medienrecht. Diese Dokumente schaffen einen klaren und rechtssicheren Rahmen für unsere Geschäftsbeziehungen und tragen maßgeblich zu Ihrer Sicherheit und unserem vertrauenswürdigen Auftreten bei.', true, null);
