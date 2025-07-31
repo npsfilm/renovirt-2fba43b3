@@ -14,7 +14,7 @@ const ChatHeader = ({ onClose }: ChatHeaderProps) => {
       <div className="flex items-center justify-between">
         <CardTitle className="flex items-center gap-2 text-lg">
           <Bot className="w-5 h-5 text-blue-600" />
-          RenoviRT AI-Assistent
+          Renovirt AI-Assistent
         </CardTitle>
         <Button
           variant="ghost"

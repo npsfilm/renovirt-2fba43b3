@@ -51,7 +51,7 @@ const MessageList = ({
           <div className="text-center text-gray-500 mt-8">
             <Bot className="w-12 h-12 mx-auto mb-4 text-blue-600" />
             <p className="text-sm mb-4">
-              Hallo! Ich bin Ihr RenoviRT AI-Assistent und kenne alle Details zu unserem Service.
+              Hallo! Ich bin Ihr Renovirt AI-Assistent und kenne alle Details zu unserem Service.
             </p>
             <p className="text-xs text-gray-400 mb-3">
               Ich kann Ihnen helfen bei Fragen zu:
