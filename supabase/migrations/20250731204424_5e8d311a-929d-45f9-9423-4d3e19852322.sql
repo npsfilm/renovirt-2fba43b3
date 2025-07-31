@@ -1,0 +1,18 @@
+-- Hinzufügen von Datenschutz-FAQ Einträgen zur help_documents Tabelle
+
+INSERT INTO public.help_documents (title, content, is_active, created_by) VALUES 
+('Wie geht Renovirt mit meinen Daten um?', 'Bei Renovirt nehmen wir den Schutz Ihrer Daten sehr ernst. Wir verarbeiten Ihre personenbezogenen Daten ausschließlich zur Abwicklung Ihrer Aufträge und zur Bereitstellung unserer digitalen Dienstleistungen.', true, null),
+
+('Welche Daten werden bei Renovirt erfasst?', 'Wir erfassen Kontaktdaten (Name, E-Mail, Firma), Bestelldaten, die von Ihnen hochgeladenen Bilder und deren Metadaten sowie Nutzungsdaten unserer Web-App (z.B. IP-Adresse, Browsertyp). Diese Daten dienen dazu, Ihre Aufträge zu bearbeiten, die Kommunikation mit Ihnen zu gewährleisten, Rechnungen zu erstellen und unsere Dienste kontinuierlich zu verbessern.', true, null),
+
+('Wo werden meine Daten bei Renovirt gespeichert?', 'Ihre Bild-Uploads, Metadaten und personenbezogenen Daten werden auf deutschen Servern gesichert. Wir stellen sicher, dass die Datenverarbeitung innerhalb der Europäischen Union erfolgt, um die hohen Datenschutzstandards der DSGVO zu erfüllen.', true, null),
+
+('Wer hat Zugriff auf meine Daten bei Renovirt?', 'Ihre Daten werden vertraulich behandelt und ohne Rechtsgrundlage nicht an Dritte weitergegeben. Wir nutzen ausgewählte externe Dienstleister (wie lovable, superbase, Make, Mailjet, Google Drive und Stripe), die uns bei der Auftragsabwicklung unterstützen. Mit diesen Dienstleistern haben wir entsprechende Verträge zur Auftragsverarbeitung abgeschlossen, um den datenschutzkonformen Umgang mit Ihren Daten sicherzustellen. Der Zugriff auf Ihre Daten ist intern auf autorisiertes Personal beschränkt, das diese zur Erfüllung seiner Aufgaben benötigt.', true, null),
+
+('Wie lange werden meine Daten bei Renovirt gespeichert?', 'Fertige, bearbeitete Bilder speichern wir für 365 Tage auf unseren Servern, damit Sie diese bei Bedarf erneut herunterladen können. Rechnungsdaten und andere buchungsrelevante Unterlagen werden gemäß den gesetzlichen Aufbewahrungsfristen (in der Regel 8 bis 10 Jahre) gespeichert. Sonstige personenbezogene Daten werden gelöscht, sobald der Zweck ihrer Speicherung entfällt.', true, null),
+
+('Wie schützt Renovirt meine Daten?', 'Wir setzen umfassende technische und organisatorische Sicherheitsmaßnahmen ein, um Ihre Daten zu schützen. Dazu gehören Verschlüsselung der Daten während der Übertragung und Speicherung, strenge Zugriffsbeschränkungen, regelmäßige Datensicherungen und Sicherheitsupdates unserer Systeme.', true, null),
+
+('Welche Rechte habe ich bezüglich meiner Daten?', 'Sie haben jederzeit das Recht auf Auskunft über Ihre gespeicherten Daten, deren Berichtigung, Löschung oder Einschränkung der Verarbeitung. Sie können der Verarbeitung Ihrer Daten widersprechen und haben ein Recht auf Datenübertragbarkeit. Bei Fragen oder Bedenken können Sie sich auch an die zuständige Datenschutzaufsichtsbehörde wenden.', true, null),
+
+('Wie funktioniert der Newsletter und Cookie-Nutzung bei Renovirt?', 'Wenn Sie unseren Newsletter abonnieren, erfolgt die Anmeldung über ein Double-Opt-in-Verfahren, um Ihre ausdrückliche Einwilligung sicherzustellen. Für nicht-notwendige Tracking-Cookies auf unserer Website holen wir Ihre aktive Einwilligung über ein Cookie Consent Management Platform (CMP) ein, bevor diese gesetzt werden. Sie können Ihre Einwilligung jederzeit widerrufen und Ihre Cookie-Einstellungen anpassen.', true, null);
