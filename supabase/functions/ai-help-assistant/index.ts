@@ -46,7 +46,7 @@ Beschreiben Sie gerne Ihr Anliegen - ich bin hier, um zu helfen!`;
             question: question,
             ai_response: contextResponse,
             response_time_ms: Date.now() - startTime,
-            ip_address: req.headers.get('x-forwarded-for') || 'unknown',
+            ip_address: (req.headers.get('x-forwarded-for') || 'unknown').split(',')[0].trim(),
             user_agent: req.headers.get('user-agent') || 'unknown'
           });
 
@@ -66,7 +66,7 @@ Beschreiben Sie gerne Ihr Anliegen - ich bin hier, um zu helfen!`;
             question: question,
             ai_response: 'SUPPORT_REQUEST',
             response_time_ms: Date.now() - startTime,
-            ip_address: req.headers.get('x-forwarded-for') || 'unknown',
+            ip_address: (req.headers.get('x-forwarded-for') || 'unknown').split(',')[0].trim(),
             user_agent: req.headers.get('user-agent') || 'unknown'
           });
 
@@ -215,7 +215,7 @@ Beantworte die Frage kurz und hilfreich. Biete am Ende nur bei komplexeren Frage
         question: question,
         ai_response: aiResponse,
         response_time_ms: responseTime,
-        ip_address: req.headers.get('x-forwarded-for') || 'unknown',
+        ip_address: (req.headers.get('x-forwarded-for') || 'unknown').split(',')[0].trim(),
         user_agent: req.headers.get('user-agent') || 'unknown'
       });
 
