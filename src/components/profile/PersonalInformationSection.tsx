@@ -1,10 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Mail, Phone } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { EmailChangeModal } from './EmailChangeModal';
 
 interface PersonalInformationSectionProps {
   formData: {
@@ -23,6 +24,7 @@ const PersonalInformationSection: React.FC<PersonalInformationSectionProps> = ({
   onInputChange,
 }) => {
   const { user } = useAuth();
+  const [isEmailChangeModalOpen, setIsEmailChangeModalOpen] = useState(false);
 
   console.log('PersonalInformationSection: Current formData.role:', formData.role);
 
@@ -102,7 +104,12 @@ const PersonalInformationSection: React.FC<PersonalInformationSectionProps> = ({
         </div>
         <p className="text-xs text-gray-500 mt-1">
           E-Mail-Adresse kann nicht geändert werden. Bitte melden Sie sich bei unserem{' '}
-          <a href="/contact" className="text-blue-600 hover:underline">Support</a>.
+          <button 
+            onClick={() => setIsEmailChangeModalOpen(true)}
+            className="text-blue-600 hover:underline"
+          >
+            Support
+          </button>.
         </p>
       </div>
 
@@ -133,6 +140,11 @@ const PersonalInformationSection: React.FC<PersonalInformationSectionProps> = ({
           />
         </div>
       </div>
+      
+      <EmailChangeModal 
+        isOpen={isEmailChangeModalOpen}
+        onClose={() => setIsEmailChangeModalOpen(false)}
+      />
     </div>
   );
 };
