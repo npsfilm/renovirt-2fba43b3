@@ -157,7 +157,8 @@ ${faqContext}
 
 SERVICES & PREISE:
 - Basic-Paket: Farb-/Belichtungskorrektur, Perspektivkorrektur (48h)
-- Premium-Paket: Basic + Objektentfernung, Retusche (24h)
+- Premium-Paket: Basic + Objektentfernung, Retusche (48h, priorisiert bearbeitet)
+- Express-Zusatz: 24h Bearbeitung für 2€ zusätzlich pro Bild
 - Staffelrabatte: 5% ab 10, 10% ab 20, 15% ab 30, 25% ab 40 Bildern
 
 Beantworte die Frage kurz und hilfreich. Biete am Ende nur bei komplexeren Fragen weitere Hilfe an.`;
