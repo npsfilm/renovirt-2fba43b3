@@ -148,9 +148,7 @@ const Settings = () => {
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label htmlFor="order-updates">Bestellbestätigungen</Label>
-                    <p className="text-sm text-gray-500">
-                      Wichtige Updates zu Ihren Bestellungen (verpflichtend)
-                    </p>
+                    <p className="text-sm text-gray-500">Wichtige Updates zu Ihren Bestellungen und Renovirt (verpflichtend)</p>
                   </div>
                   <Switch id="order-updates" checked={notifications.orderUpdates} onCheckedChange={value => handleNotificationChange('orderUpdates', value)} disabled />
                 </div>
