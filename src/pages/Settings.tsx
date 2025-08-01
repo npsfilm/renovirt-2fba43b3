@@ -209,7 +209,7 @@ const Settings = () => {
               <CardHeader>
                 <CardTitle className="text-red-600 flex items-center">
                   <AlertTriangle className="w-5 h-5 mr-2" />
-                  Gefahrenzone
+                  Account löschen
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
