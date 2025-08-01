@@ -45,7 +45,7 @@ const IntelligentHelpSearch = () => {
                 variant="ghost" 
                 size="sm" 
                 onClick={resetSearch}
-                className="text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted"
               >
                 Neue Suche
               </Button>
