@@ -6,6 +6,7 @@ import { Bot, MessageCircle } from 'lucide-react';
 import HelpSearchBar from './HelpSearchBar';
 import SearchResult from './SearchResult';
 import SupportContactModal from './SupportContactModal';
+import LoadingState from '@/components/ui/loading-state';
 import { useHelpSearch } from '@/hooks/useHelpSearch';
 
 const IntelligentHelpSearch = () => {
@@ -53,6 +54,21 @@ const IntelligentHelpSearch = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* AI Loading State */}
+      {searchState === 'searching' && (
+        <div className="animate-in fade-in-50 duration-500">
+          <Card className="border-0 shadow-lg bg-card/90 backdrop-blur-sm">
+            <CardContent className="p-12">
+              <LoadingState 
+                size="lg"
+                text="AI analysiert Ihre Frage..."
+                className="py-8"
+              />
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Search Results */}
       {searchState === 'results' && searchResult && (
