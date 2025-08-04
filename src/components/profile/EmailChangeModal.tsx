@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2, Mail } from 'lucide-react';
 
@@ -40,31 +39,36 @@ export const EmailChangeModal = ({ isOpen, onClose }: EmailChangeModalProps) => 
       return;
     }
 
+    if (newEmail.trim() === user.email) {
+      toast({
+        title: "Fehler",
+        description: "Die neue E-Mail-Adresse ist identisch mit der aktuellen.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.functions.invoke('send-email-change-request', {
-        body: {
-          currentEmail: user.email,
-          newEmail: newEmail.trim(),
-          userId: user.id
-        }
-      });
-
-      if (error) throw error;
+      const { updateEmail } = useAuth();
+      await updateEmail(newEmail.trim());
 
       toast({
-        title: "Anfrage gesendet",
-        description: "Ihre E-Mail-Änderungsanfrage wurde an den Support gesendet. Sie erhalten bald eine Antwort.",
+        title: "E-Mail-Adresse geändert",
+        description: "Bitte überprüfen Sie Ihre neue E-Mail-Adresse für den Bestätigungslink.",
       });
 
       setNewEmail('');
       onClose();
-    } catch (error) {
-      console.error('Error sending email change request:', error);
+      
+      // Seite neu laden, um die neue E-Mail anzuzeigen
+      window.location.reload();
+    } catch (error: any) {
+      console.error('Error updating email:', error);
       toast({
         title: "Fehler",
-        description: "Die Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.",
+        description: error.message || "Die E-Mail-Adresse konnte nicht geändert werden.",
         variant: "destructive"
       });
     } finally {
@@ -108,8 +112,8 @@ export const EmailChangeModal = ({ isOpen, onClose }: EmailChangeModalProps) => 
           
           <div className="text-sm text-muted-foreground">
             <p>
-              Ihre Anfrage wird an unseren Support gesendet. Nach der Prüfung erhalten Sie 
-              eine E-Mail mit weiteren Anweisungen zur Bestätigung der Änderung.
+              Nach der Änderung erhalten Sie eine Bestätigungs-E-Mail an Ihre neue Adresse. 
+              Ihre aktuelle E-Mail-Adresse wird erst nach der Bestätigung ungültig.
             </p>
           </div>
           
@@ -134,7 +138,7 @@ export const EmailChangeModal = ({ isOpen, onClose }: EmailChangeModalProps) => 
                   Wird gesendet...
                 </>
               ) : (
-                'Anfrage senden'
+                'E-Mail ändern'
               )}
             </Button>
           </div>

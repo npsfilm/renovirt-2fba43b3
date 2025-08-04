@@ -6,11 +6,11 @@ import { Mail, RefreshCw, Check, Edit } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useEnhancedEmailVerification } from '@/hooks/useEnhancedEmailVerification';
 import { useEnhancedRegistrationToastHelper } from '@/components/auth/EnhancedRegistrationToastHelper';
-import { useNavigate } from 'react-router-dom';
+import { EmailChangeModal } from '@/components/profile/EmailChangeModal';
 
 const EmailVerification = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
+  const [isEmailChangeModalOpen, setIsEmailChangeModalOpen] = useState(false);
   const {
     enhancedResend,
     attempts,
@@ -55,7 +55,7 @@ const EmailVerification = () => {
   };
 
   const handleCorrectEmail = () => {
-    navigate('/auth?mode=register');
+    setIsEmailChangeModalOpen(true);
   };
 
   const getButtonText = () => {

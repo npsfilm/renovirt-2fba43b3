@@ -239,6 +239,25 @@ export const useAuth = () => {
     }
   };
 
+  // Update email function
+  const updateEmail = async (newEmail: string) => {
+    console.log('useAuth: Starting email update to:', newEmail);
+    
+    try {
+      const { error } = await supabase.auth.updateUser({
+        email: newEmail
+      });
+      
+      if (error) throw error;
+      
+      console.log('useAuth: Email update successful');
+      return { success: true };
+    } catch (error) {
+      console.error('useAuth: Email update failed:', error);
+      throw error;
+    }
+  };
+
   // Enhanced resend verification email function
   const resendVerificationEmail = async (email: string) => {
     try {
@@ -287,6 +306,7 @@ export const useAuth = () => {
     signIn,
     signInWithGoogle,
     signOut,
+    updateEmail,
     resendVerificationEmail,
   };
 };
