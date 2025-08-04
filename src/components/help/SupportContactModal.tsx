@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -24,20 +23,7 @@ const SupportContactModal = ({ isOpen, onClose, searchQuery, aiResult }: Support
   useEffect(() => {
     if (isOpen && searchQuery) {
       setSubject(`Hilfe benötigt: ${searchQuery.slice(0, 50)}${searchQuery.length > 50 ? '...' : ''}`);
-      
-      const prefilledMessage = `Hallo liebes Support-Team,
-
-ich habe nach einer Lösung für mein Problem gesucht:
-"${searchQuery}"
-
-Die AI-Antwort war:
-"${aiResult.slice(0, 200)}${aiResult.length > 200 ? '...' : ''}"
-
-Diese Antwort konnte mir leider nicht vollständig weiterhelfen. Können Sie mir bitte persönlich dabei helfen?
-
-Vielen Dank für Ihre Unterstützung!`;
-
-      setMessage(prefilledMessage);
+      setMessage('');
     }
   }, [isOpen, searchQuery, aiResult]);
 
