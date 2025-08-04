@@ -127,7 +127,9 @@ Die Bilder sehen top aus und sind super schnell fertig – für uns als Makler e
                   <img 
                     src="/lovable-uploads/38801ff8-4a6b-4143-9948-83774f4e74c2.png" 
                     alt="Maria Schmidt" 
-                    className="w-[2.8rem] h-[2.8rem] rounded-full object-cover"
+                    className="w-[2.8rem] h-[2.8rem] rounded-full object-cover pointer-events-none select-none"
+                    draggable="false"
+                    onContextMenu={(e) => e.preventDefault()}
                   />
                   <div>
                     <p className="text-white font-semibold text-[clamp(0.975rem,2.6vw,1.14rem)]">Maria Schmidt</p>
