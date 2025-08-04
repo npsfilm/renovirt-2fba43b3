@@ -23,12 +23,14 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Check for support keywords
+    // Check for support keywords and legal questions
     const supportKeywords = ['mitarbeiter', 'mitarbeiter sprechen', 'support', 'menschliche hilfe', 'persönliche beratung', 'agent', 'berater'];
+    const legalKeywords = ['agb', 'datenschutz', 'impressum', 'geschäftsbedingungen', 'privacy', 'imprint', 'rechtlich', 'legal', 'stornierung', 'kündigung', 'lieferzeit', 'zahlung', 'rechnung', 'haftung', 'gewährleistung', 'urheberrecht', 'nutzungsrecht'];
     const questionLower = question.toLowerCase();
     const needsSupport = supportKeywords.some(keyword => questionLower.includes(keyword));
+    const isLegalQuestion = legalKeywords.some(keyword => questionLower.includes(keyword));
 
-    if (needsSupport) {
+    if (needsSupport && !isLegalQuestion) {
       // If no existing messages, ask for more context first
       if (!hasExistingMessages) {
         const contextResponse = `Ich verstehe, dass Sie gerne mit einem Mitarbeiter sprechen möchten. Um Ihnen bestmöglich zu helfen, können Sie mir zunächst sagen, worum es geht? 
@@ -133,9 +135,14 @@ Beschreiben Sie gerne Ihr Anliegen - ich bin hier, um zu helfen!`;
 
     let faqContext = '';
     if (faqDocs && faqDocs.length > 0) {
-      faqContext = 'RENOVIRT FAQ-WISSENSDATENBANK:\n\n';
+      faqContext = 'RENOVIRT FAQ UND RECHTLICHE WISSENSDATENBANK:\n\n';
       faqDocs.forEach(doc => {
-        faqContext += `FRAGE: ${doc.title}\nANTWORT: ${doc.content}\n\n`;
+        // Mark legal documents specifically
+        if (doc.title.includes('AGB') || doc.title.includes('Datenschutz') || doc.title.includes('Impressum')) {
+          faqContext += `RECHTLICHES DOKUMENT - ${doc.title.toUpperCase()}:\n${doc.content}\n\n`;
+        } else {
+          faqContext += `FAQ - ${doc.title}:\n${doc.content}\n\n`;
+        }
       });
     }
 
@@ -146,13 +153,14 @@ WICHTIGE REGELN:
 - Antworte IMMER auf Deutsch in einem freundlichen, professionellen Ton
 - Halte Antworten kurz und präzise - maximal 2-3 Sätze für einfache Fragen
 - Verwende KEINE Markdown-Formatierung (keine **, *, etc.)
-- Nutze nur die verfügbare FAQ-Wissensdatenbank für Informationen
+- Nutze die verfügbare FAQ-Wissensdatenbank UND rechtliche Dokumente für Informationen
+- Für rechtliche Fragen (AGB, Datenschutz, Impressum) nutze die entsprechenden Dokumentinhalte
 - Bei fehlenden Informationen empfiehl den direkten Support-Kontakt
 
 KUNDENKONTEXT:
 ${userContext}
 
-FAQ-WISSENSDATENBANK:
+FAQ UND RECHTLICHE WISSENSDATENBANK:
 ${faqContext}
 
 SERVICES & PREISE:
@@ -160,6 +168,15 @@ SERVICES & PREISE:
 - Premium-Paket: Basic + Objektentfernung, Retusche (48h, priorisiert bearbeitet)
 - Express-Zusatz: 24h Bearbeitung für 2€ zusätzlich pro Bild
 - Staffelrabatte: 5% ab 10, 10% ab 20, 15% ab 30, 25% ab 40 Bildern
+
+RECHTLICHE FRAGEN:
+Wenn Nutzer nach AGB, Datenschutz, Impressum oder anderen rechtlichen Aspekten fragen, nutze die Informationen aus den entsprechenden Dokumenten in der Wissensdatenbank. Diese enthalten alle relevanten rechtlichen Informationen zu:
+- Geschäftsbedingungen und Vertragskonditionen  
+- Datenschutz und Datenverarbeitung
+- Unternehmensangaben und Kontaktdaten
+- Lieferzeiten, Stornierung und Zahlungsbedingungen
+- Haftung und Gewährleistung
+- Urheberrecht und Nutzungsrechte
 
 Beantworte die Frage kurz und hilfreich. Biete am Ende nur bei komplexeren Fragen weitere Hilfe an.`;
 
