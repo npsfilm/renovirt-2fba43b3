@@ -2,13 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Mail, RefreshCw, Check } from 'lucide-react';
+import { Mail, RefreshCw, Check, Edit } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useEnhancedEmailVerification } from '@/hooks/useEnhancedEmailVerification';
 import { useEnhancedRegistrationToastHelper } from '@/components/auth/EnhancedRegistrationToastHelper';
+import { useNavigate } from 'react-router-dom';
 
 const EmailVerification = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const {
     enhancedResend,
     attempts,
@@ -52,6 +54,10 @@ const EmailVerification = () => {
     }
   };
 
+  const handleCorrectEmail = () => {
+    navigate('/auth?mode=register');
+  };
+
   const getButtonText = () => {
     if (isRetrying) return "Wird gesendet...";
     if (!canResend && countdown > 0) return `Warten Sie ${countdown}s`;
@@ -80,17 +86,20 @@ const EmailVerification = () => {
               <Mail className="w-8 h-8 text-primary" />
             </div>
             <CardTitle className="text-xl font-medium text-foreground">
-              Überprüfen Sie Ihre E-Mails
+              Fast geschafft!
             </CardTitle>
           </CardHeader>
           
           <CardContent className="text-center space-y-6">
-            <div className="space-y-2">
+            <div className="space-y-3">
               <p className="text-muted-foreground">
                 Wir haben einen Bestätigungslink gesendet an
               </p>
               <p className="font-medium text-foreground bg-muted rounded-lg p-3 text-sm">
                 {user?.email}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Bitte klicken Sie auf den Link in der E-Mail, um Ihr Konto zu aktivieren.
               </p>
             </div>
 
@@ -101,6 +110,11 @@ const EmailVerification = () => {
                 <span className="text-sm font-medium">E-Mail gesendet</span>
               </div>
             )}
+
+            {/* Prominenter Spam-Hinweis */}
+            <div className="text-sm text-muted-foreground bg-accent/30 rounded-lg p-3 border border-accent/50">
+              <p>Keine E-Mail erhalten? Überprüfen Sie bitte auch Ihren <strong>Spam-Ordner</strong>.</p>
+            </div>
 
             {/* Intelligenter Hinweis */}
             {smartHint && (
@@ -120,19 +134,29 @@ const EmailVerification = () => {
               {getButtonText()}
             </Button>
 
-            {/* E-Mail-Anbieter-Hilfe */}
-            {emailProviderInfo && (
-              <p className="text-xs text-muted-foreground">
-                Öffnen Sie{' '}
-                <button
-                  onClick={() => window.open(emailProviderInfo.url, '_blank')}
-                  className="text-primary hover:underline"
-                >
-                  {emailProviderInfo.name}
-                </button>{' '}
-                um Ihren Posteingang zu überprüfen
-              </p>
-            )}
+            {/* E-Mail-Korrektur und Anbieter-Hilfe */}
+            <div className="space-y-3">
+              <button
+                onClick={handleCorrectEmail}
+                className="text-sm text-primary hover:underline flex items-center justify-center gap-1"
+              >
+                <Edit className="w-3 h-3" />
+                Falsche E-Mail-Adresse? Hier ändern
+              </button>
+
+              {emailProviderInfo && (
+                <p className="text-xs text-muted-foreground">
+                  Öffnen Sie{' '}
+                  <button
+                    onClick={() => window.open(emailProviderInfo.url, '_blank')}
+                    className="text-primary hover:underline"
+                  >
+                    {emailProviderInfo.name}
+                  </button>{' '}
+                  um Ihren Posteingang zu überprüfen
+                </p>
+              )}
+            </div>
 
             {/* Support kontaktieren */}
             <p className="text-xs text-muted-foreground pt-4 border-t">
