@@ -23,9 +23,20 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Check for support keywords and legal questions
-    const supportKeywords = ['mitarbeiter', 'mitarbeiter sprechen', 'support', 'menschliche hilfe', 'persönliche beratung', 'agent', 'berater'];
-    const legalKeywords = ['agb', 'datenschutz', 'impressum', 'geschäftsbedingungen', 'privacy', 'imprint', 'rechtlich', 'legal', 'stornierung', 'kündigung', 'lieferzeit', 'zahlung', 'rechnung', 'haftung', 'gewährleistung', 'urheberrecht', 'nutzungsrecht'];
+    // Check for support keywords and legal questions with extended coverage
+    const supportKeywords = ['mitarbeiter', 'mitarbeiter sprechen', 'support', 'menschliche hilfe', 'persönliche beratung', 'agent', 'berater', 'contact', 'kontakt'];
+    const legalKeywords = [
+      'agb', 'datenschutz', 'impressum', 'geschäftsbedingungen', 'privacy', 'imprint', 'rechtlich', 'legal',
+      'stornierung', 'storno', 'kündigung', 'lieferzeit', 'lieferung', 'zahlung', 'rechnung', 'haftung', 
+      'gewährleistung', 'urheberrecht', 'nutzungsrecht', 'vertragsschluss', 'vertrag', 'preise',
+      'zahlungsbedingungen', 'bestellvorgang', 'mängel', 'verantwortlicher', 'geschäftsführer',
+      'registereintrag', 'steuer', 'umsatzsteuer', 'cookies', 'tracking', 'newsletter', 'marketing',
+      'einwilligung', 'widerruf', 'löschung', 'auskunft', 'berichtigung', 'datenverarbeitung',
+      'personenbezogene daten', 'speicherdauer', 'auftragsverarbeiter', 'server', 'drittanbieter',
+      'mitwirkungspflichten', 'bereitstellung', 'material', 'datensicherung', 'mängelrüge',
+      'vertraulichkeit', 'sicherheit', 'verschlüsselung', 'zugriffsbeschränkungen', 'backups',
+      'nikolas seymour', 'nps media', 'augsburg', 'klinkerberg', 'hrb', 'de359733225'
+    ];
     const questionLower = question.toLowerCase();
     const needsSupport = supportKeywords.some(keyword => questionLower.includes(keyword));
     const isLegalQuestion = legalKeywords.some(keyword => questionLower.includes(keyword));
@@ -125,13 +136,13 @@ Beschreiben Sie gerne Ihr Anliegen - ich bin hier, um zu helfen!`;
       }
     }
 
-    // Get FAQ context from help_documents - using maybeSingle to avoid errors if table doesn't exist
+    // Get FAQ context from help_documents - increased limit to include all legal documents
     const { data: faqDocs } = await supabase
       .from('help_documents')
       .select('title, content')
       .eq('is_active', true)
       .order('id', { ascending: true })
-      .limit(10);
+      .limit(50); // Increased to accommodate all legal documents
 
     let faqContext = '';
     if (faqDocs && faqDocs.length > 0) {
@@ -169,14 +180,16 @@ SERVICES & PREISE:
 - Express-Zusatz: 24h Bearbeitung für 2€ zusätzlich pro Bild
 - Staffelrabatte: 5% ab 10, 10% ab 20, 15% ab 30, 25% ab 40 Bildern
 
-RECHTLICHE FRAGEN:
-Wenn Nutzer nach AGB, Datenschutz, Impressum oder anderen rechtlichen Aspekten fragen, nutze die Informationen aus den entsprechenden Dokumenten in der Wissensdatenbank. Diese enthalten alle relevanten rechtlichen Informationen zu:
-- Geschäftsbedingungen und Vertragskonditionen  
-- Datenschutz und Datenverarbeitung
-- Unternehmensangaben und Kontaktdaten
-- Lieferzeiten, Stornierung und Zahlungsbedingungen
-- Haftung und Gewährleistung
-- Urheberrecht und Nutzungsrechte
+RECHTLICHE FRAGEN - PRIORITÄRE BEHANDLUNG:
+Bei rechtlichen Fragen nutze AUSSCHLIESSLICH die Informationen aus den RECHTLICHEN DOKUMENTEN in der Wissensdatenbank. Diese sind vollständig und authorisiert:
+
+AGB-THEMEN: Geltungsbereich, Vertragsschluss, Preise, Lieferzeiten (48h Werktage), Stornierung (30 Min kostenlos, danach 70%), Urheberrecht, Haftung, Mitwirkungspflichten
+
+DATENSCHUTZ-THEMEN: Verantwortlicher (NPS Media GmbH, Nikolas Seymour), Datenverarbeitung, Speicherdauer (Bilder 365 Tage), Server (Deutschland), Auftragsverarbeiter, Kundenrechte, Newsletter, Cookies
+
+IMPRESSUM-THEMEN: NPS Media GmbH, Klinkerberg 9, 86152 Augsburg, HRB 38388, DE359733225, Nikolas Seymour (Geschäftsführer)
+
+WICHTIG: Für rechtliche Fragen immer präzise aus den Dokumenten zitieren und keine eigenen Interpretationen hinzufügen. Bei komplexen rechtlichen Fragen auf die vollständigen Dokumente unter /agb, /privacy, /impressum verweisen.
 
 Beantworte die Frage kurz und hilfreich. Biete am Ende nur bei komplexeren Fragen weitere Hilfe an.`;
 
