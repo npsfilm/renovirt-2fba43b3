@@ -85,20 +85,22 @@ const IntelligentHelpSearch = () => {
       {/* Support Contact - Only when needed */}
       {canContactSupport && (
         <div className="animate-in fade-in-50 duration-500">
-          <Card className="border-primary/20 bg-primary/5">
-            <CardContent className="p-6 text-center space-y-4">
-              <MessageCircle className="w-10 h-10 mx-auto text-primary" />
-              <div className="space-y-2">
-                <h3 className="text-lg font-medium text-foreground">
+          <Card className="border-primary/20 bg-gradient-to-r from-primary/5 via-primary/3 to-primary/5 shadow-lg">
+            <CardContent className="p-8 text-center space-y-6">
+              <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
+                <MessageCircle className="w-8 h-8 text-primary" />
+              </div>
+              <div className="space-y-3">
+                <h3 className="text-xl font-semibold text-foreground">
                   Benötigen Sie persönliche Unterstützung?
                 </h3>
-                <p className="text-muted-foreground">
-                  Unser Support-Team hilft Ihnen gerne weiter
+                <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">
+                  Unser Support-Team hilft Ihnen gerne weiter und beantwortet Ihre individuellen Fragen
                 </p>
               </div>
               <Button 
                 onClick={handleSupportContact}
-                className="mt-4"
+                className="mt-6 px-8 py-3 text-lg font-medium shadow-md hover:shadow-lg transition-all"
                 size="lg"
               >
                 Support kontaktieren
