@@ -30,6 +30,7 @@ import Onboarding from '@/pages/Onboarding';
 import AGB from '@/pages/AGB';
 import Privacy from '@/pages/Privacy';
 import Impressum from '@/pages/Impressum';
+import ForgotPassword from '@/pages/ForgotPassword';
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ function App() {
               <Route path="/settings" element={<Settings />} />
               <Route path="/help" element={<Help />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/email-verification" element={<EmailVerification />} />
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/examples" element={<Examples />} />
