@@ -70,7 +70,8 @@ const Auth = () => {
         <div className="w-full lg:w-3/5 xl:w-1/2 flex items-center justify-center p-[2vh] bg-background">
           <div className="w-full max-w-md h-auto flex flex-col justify-center min-h-0">
             <div className="mb-[2vh] text-center">
-              <img src="/lovable-uploads/9ec7c3ad-34b9-4fea-a9e9-0d4a0a5532e9.png" alt="Renovirt Logo" className="h-[3vh] mx-auto mb-[1vh]" />
+              <img src="/lovable-uploads/9ec7c3ad-34b9-4fea-a9e9-0d4a0a5532e9.png" alt="Renovirt Logo" className="h-[2.4vh] mx-auto mb-[1vh]" />
+              <h1 className="text-lg font-medium text-foreground/80 mb-[1vh]">Der erste Eindruck zählt. Machen wir ihn perfekt.</h1>
             </div>
             
             {/* Custom Tab Navigation with responsive sizing */}
