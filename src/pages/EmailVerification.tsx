@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,10 +6,12 @@ import { useAuth } from '@/hooks/useAuth';
 import { useEnhancedEmailVerification } from '@/hooks/useEnhancedEmailVerification';
 import { useEnhancedRegistrationToastHelper } from '@/components/auth/EnhancedRegistrationToastHelper';
 import { EmailChangeModal } from '@/components/profile/EmailChangeModal';
+import SupportContactModal from '@/components/help/SupportContactModal';
 
 const EmailVerification = () => {
   const { user } = useAuth();
   const [isEmailChangeModalOpen, setIsEmailChangeModalOpen] = useState(false);
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const {
     enhancedResend,
     attempts,
@@ -58,6 +59,10 @@ const EmailVerification = () => {
     setIsEmailChangeModalOpen(true);
   };
 
+  const handleSupportContact = () => {
+    setIsSupportModalOpen(true);
+  };
+
   const getButtonText = () => {
     if (isRetrying) return "Wird gesendet...";
     if (!canResend && countdown > 0) return `Warten Sie ${countdown}s`;
@@ -103,7 +108,6 @@ const EmailVerification = () => {
               </p>
             </div>
 
-            {/* Einfacher Status-Indikator */}
             {hasEmailBeenSent && (
               <div className="flex items-center justify-center gap-2 text-success bg-success/10 rounded-lg p-3">
                 <Check className="w-4 h-4" />
@@ -111,19 +115,16 @@ const EmailVerification = () => {
               </div>
             )}
 
-            {/* Prominenter Spam-Hinweis */}
             <div className="text-sm text-muted-foreground bg-accent/30 rounded-lg p-3 border border-accent/50">
               <p>Keine E-Mail erhalten? Überprüfen Sie bitte auch Ihren <strong>Spam-Ordner</strong>.</p>
             </div>
 
-            {/* Intelligenter Hinweis */}
             {smartHint && (
               <div className="text-sm text-muted-foreground bg-accent/50 rounded-lg p-3">
                 💡 {smartHint}
               </div>
             )}
 
-            {/* Aktions-Button */}
             <Button 
               variant="outline" 
               onClick={handleResendEmail}
@@ -134,7 +135,6 @@ const EmailVerification = () => {
               {getButtonText()}
             </Button>
 
-            {/* E-Mail-Korrektur und Anbieter-Hilfe */}
             <div className="space-y-3">
               <div className="flex justify-center">
                 <button
@@ -160,12 +160,14 @@ const EmailVerification = () => {
               )}
             </div>
 
-            {/* Support kontaktieren */}
             <p className="text-xs text-muted-foreground pt-4 border-t">
               Benötigen Sie Hilfe?{' '}
-              <a href="mailto:support@renovirt.de" className="text-primary hover:underline">
+              <button 
+                onClick={handleSupportContact}
+                className="text-primary hover:underline"
+              >
                 Support kontaktieren
-              </a>
+              </button>
             </p>
           </CardContent>
         </Card>
@@ -174,6 +176,13 @@ const EmailVerification = () => {
       <EmailChangeModal 
         isOpen={isEmailChangeModalOpen}
         onClose={() => setIsEmailChangeModalOpen(false)}
+      />
+
+      <SupportContactModal
+        isOpen={isSupportModalOpen}
+        onClose={() => setIsSupportModalOpen(false)}
+        searchQuery="E-Mail-Verifizierung - Problem bei der Aktivierung"
+        aiResult="Der Benutzer hat Probleme mit der E-Mail-Verifizierung und benötigt Unterstützung bei der Kontoaktivierung."
       />
     </div>
   );
