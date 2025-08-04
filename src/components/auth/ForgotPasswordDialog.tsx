@@ -1,15 +1,18 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Link } from 'react-router-dom';
-import { Mail, ArrowLeft } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Mail } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import AuthLayout from '@/components/auth/AuthLayout';
 
-const ForgotPassword = () => {
+interface ForgotPasswordDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+const ForgotPasswordDialog = ({ open, onOpenChange }: ForgotPasswordDialogProps) => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
@@ -43,6 +46,12 @@ const ForgotPassword = () => {
           text: 'Wenn ein Account mit dieser E-Mail existiert, senden wir Ihnen einen Link zum zurücksetzen.',
           type: 'success'
         });
+        // Reset form after success
+        setTimeout(() => {
+          setEmail('');
+          setMessage(null);
+          onOpenChange(false);
+        }, 3000);
       }
     } catch (error) {
       setMessage({
@@ -54,19 +63,25 @@ const ForgotPassword = () => {
     }
   };
 
+  const handleClose = () => {
+    setEmail('');
+    setMessage(null);
+    onOpenChange(false);
+  };
+
   return (
-    <AuthLayout>
-      <div className="space-y-6 sm:space-y-8">
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-semibold text-foreground">
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogContent className="w-full max-w-md bg-background border-border">
+        <DialogHeader className="text-center space-y-2">
+          <DialogTitle className="text-xl font-semibold text-foreground">
             Passwort vergessen
-          </h1>
-          <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+          </DialogTitle>
+          <p className="text-muted-foreground text-sm leading-relaxed">
             Geben Sie Ihre E-Mail-Adresse ein und wir senden Ihnen einen Link zum Zurücksetzen Ihres Passworts.
           </p>
-        </div>
+        </DialogHeader>
 
-        <form onSubmit={handleResetPassword} className="space-y-6">
+        <form onSubmit={handleResetPassword} className="space-y-4 mt-4">
           <div className="space-y-2">
             <Label htmlFor="email" className="text-sm font-medium text-foreground">
               E-Mail-Adresse
@@ -81,14 +96,14 @@ const ForgotPassword = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="pl-10 h-9 sm:h-10 lg:h-11 text-sm sm:text-base"
+                className="pl-10 h-10 bg-input border-border text-foreground placeholder-muted-foreground transition-all duration-200 focus:ring-2 focus:ring-primary/20"
               />
             </div>
           </div>
           
           <Button 
             type="submit" 
-            className="w-full h-9 sm:h-10 lg:h-11 text-sm sm:text-base font-medium" 
+            className="w-full h-10 font-medium bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200" 
             disabled={loading}
           >
             {loading ? 'Wird gesendet...' : 'Passwort zurücksetzen'}
@@ -96,25 +111,15 @@ const ForgotPassword = () => {
         </form>
 
         {message && (
-          <Alert variant={message.type === 'error' ? 'destructive' : 'default'} className="border">
+          <Alert variant={message.type === 'error' ? 'destructive' : 'default'} className="mt-4">
             <AlertDescription className="text-sm">
               {message.text}
             </AlertDescription>
           </Alert>
         )}
-        
-        <div className="text-center">
-          <Link 
-            to="/auth" 
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Zurück zur Anmeldung
-          </Link>
-        </div>
-      </div>
-    </AuthLayout>
+      </DialogContent>
+    </Dialog>
   );
 };
 
-export default ForgotPassword;
+export default ForgotPasswordDialog;

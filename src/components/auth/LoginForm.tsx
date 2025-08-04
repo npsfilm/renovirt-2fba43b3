@@ -2,10 +2,10 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowRight, Mail, Lock } from 'lucide-react';
+import ForgotPasswordDialog from './ForgotPasswordDialog';
 
 interface LoginFormProps {
   onSuccess: () => void;
@@ -21,6 +21,7 @@ const LoginForm = ({
     password: ''
   });
   const [loading, setLoading] = useState(false);
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const {
     signIn,
     signInWithGoogle
@@ -203,10 +204,19 @@ const LoginForm = ({
       </form>
       
       <div className="text-center text-xs sm:text-sm text-muted-foreground">
-        <Link to="/forgot-password" className="hover:text-foreground transition-colors hover:underline">
+        <button 
+          type="button"
+          onClick={() => setForgotPasswordOpen(true)}
+          className="hover:text-foreground transition-colors hover:underline cursor-pointer"
+        >
           Passwort vergessen?
-        </Link>
+        </button>
       </div>
+
+      <ForgotPasswordDialog 
+        open={forgotPasswordOpen} 
+        onOpenChange={setForgotPasswordOpen} 
+      />
     </div>
   );
 };
