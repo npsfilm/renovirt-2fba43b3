@@ -16,7 +16,7 @@ export const EmailChangeModal = ({ isOpen, onClose }: EmailChangeModalProps) => 
   const [newEmail, setNewEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, updateEmail } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +51,6 @@ export const EmailChangeModal = ({ isOpen, onClose }: EmailChangeModalProps) => 
     setIsLoading(true);
 
     try {
-      const { updateEmail } = useAuth();
       await updateEmail(newEmail.trim());
 
       toast({

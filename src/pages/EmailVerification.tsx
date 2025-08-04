@@ -168,6 +168,11 @@ const EmailVerification = () => {
           </CardContent>
         </Card>
       </div>
+
+      <EmailChangeModal 
+        isOpen={isEmailChangeModalOpen}
+        onClose={() => setIsEmailChangeModalOpen(false)}
+      />
     </div>
   );
 };
