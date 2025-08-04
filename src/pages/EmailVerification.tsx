@@ -136,13 +136,15 @@ const EmailVerification = () => {
 
             {/* E-Mail-Korrektur und Anbieter-Hilfe */}
             <div className="space-y-3">
-              <button
-                onClick={handleCorrectEmail}
-                className="text-sm text-primary hover:underline flex items-center justify-center gap-1"
-              >
-                <Edit className="w-3 h-3" />
-                Falsche E-Mail-Adresse? Hier ändern
-              </button>
+              <div className="flex justify-center">
+                <button
+                  onClick={handleCorrectEmail}
+                  className="text-sm text-primary hover:underline flex items-center justify-center gap-1"
+                >
+                  <Edit className="w-3 h-3" />
+                  Falsche E-Mail-Adresse? Hier ändern
+                </button>
+              </div>
 
               {emailProviderInfo && (
                 <p className="text-xs text-muted-foreground">
