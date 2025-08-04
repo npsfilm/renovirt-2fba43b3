@@ -6,7 +6,7 @@ const TermsAcceptance = () => {
     <div className="text-center text-xs text-muted-foreground leading-relaxed">
       Mit der Registrierung stimmen Sie unseren{' '}
       <a
-        href="/terms"
+        href="/agb"
         className="text-primary underline hover:no-underline transition-colors"
       >
         Nutzungsbedingungen
