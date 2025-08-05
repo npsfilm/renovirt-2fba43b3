@@ -22,7 +22,7 @@ const PhotoTypeStep = ({ selectedType, onTypeChange, onNext }: PhotoTypeStepProp
     <div className={`${isMobile ? 'space-y-6' : 'flex flex-col h-full min-h-0'}`}>
       {/* Header - optimized for mobile */}
       {!isMobile && (
-        <div className="text-center space-y-2 px-2 md:px-4 py-4 md:py-8 flex-shrink-0">
+        <div className="text-center space-y-1 px-2 md:px-4 py-2 md:py-4 flex-shrink-0">
           <h1 className="text-xl md:text-3xl font-semibold text-foreground tracking-tight">Wählen Sie Ihren Foto-Typ</h1>
           <p className="text-sm md:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
             Bestimmen Sie die Art Ihrer Fotos für optimale Verarbeitung.
