@@ -30,6 +30,7 @@ import Onboarding from '@/pages/Onboarding';
 import AGB from '@/pages/AGB';
 import Privacy from '@/pages/Privacy';
 import Impressum from '@/pages/Impressum';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 
 
 const queryClient = new QueryClient();
@@ -41,24 +42,78 @@ function App() {
         <TooltipProvider>
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/orders" element={<Orders />} />
-              <Route path="/order" element={<Order />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/billing" element={<Billing />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/help" element={<Help />} />
+              {/* Public Routes */}
               <Route path="/auth" element={<Auth />} />
-              
-              <Route path="/email-verification" element={<EmailVerification />} />
-              <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/examples" element={<Examples />} />
-              <Route path="/order-flow" element={<OrderFlow />} />
-              <Route path="/guidelines" element={<Guidelines />} />
               <Route path="/agb" element={<AGB />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/impressum" element={<Impressum />} />
+              
+              {/* Protected Routes */}
+              <Route path="/" element={
+                <ProtectedRoute>
+                  <Navigate to="/dashboard" />
+                </ProtectedRoute>
+              } />
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/orders" element={
+                <ProtectedRoute>
+                  <Orders />
+                </ProtectedRoute>
+              } />
+              <Route path="/order" element={
+                <ProtectedRoute>
+                  <Order />
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } />
+              <Route path="/billing" element={
+                <ProtectedRoute>
+                  <Billing />
+                </ProtectedRoute>
+              } />
+              <Route path="/settings" element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              } />
+              <Route path="/help" element={
+                <ProtectedRoute>
+                  <Help />
+                </ProtectedRoute>
+              } />
+              <Route path="/email-verification" element={
+                <ProtectedRoute>
+                  <EmailVerification />
+                </ProtectedRoute>
+              } />
+              <Route path="/onboarding" element={
+                <ProtectedRoute>
+                  <Onboarding />
+                </ProtectedRoute>
+              } />
+              <Route path="/examples" element={
+                <ProtectedRoute>
+                  <Examples />
+                </ProtectedRoute>
+              } />
+              <Route path="/order-flow" element={
+                <ProtectedRoute>
+                  <OrderFlow />
+                </ProtectedRoute>
+              } />
+              <Route path="/guidelines" element={
+                <ProtectedRoute>
+                  <Guidelines />
+                </ProtectedRoute>
+              } />
 
               {/* Admin Authentication Route */}
               <Route path="/admin-auth" element={<AdminAuth />} />
