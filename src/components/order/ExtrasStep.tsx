@@ -62,40 +62,42 @@ const ExtrasStep = ({
   };
 
   return (
-    <div className="space-y-8">
-      <div className="text-center space-y-3">
-        <h1 className="text-3xl font-semibold text-foreground tracking-tight">
+    <div className="space-y-4 md:space-y-8">
+      <div className="text-center space-y-2 md:space-y-3 px-3 md:px-0">
+        <h1 className="text-xl md:text-3xl font-semibold text-foreground tracking-tight">
           Zusätzliche Services
         </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+        <p className="text-sm md:text-lg text-muted-foreground max-w-2xl mx-auto leading-tight md:leading-relaxed">
           Erweitern Sie Ihre Bestellung mit unseren professionellen Zusatzservices.
         </p>
       </div>
 
-      <div className="space-y-6 max-w-2xl mx-auto">
-        <div className="grid gap-4">
+      <div className="space-y-4 md:space-y-6 max-w-2xl mx-auto px-3 md:px-0">
+        <div className="grid gap-3 md:gap-4">
           {extras.map(extra => (
             <Card 
               key={extra.id} 
-              className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
-                extra.enabled ? 'ring-2 ring-primary border-primary bg-primary/5' : 'border-border'
-              }`}
+              className={`cursor-pointer transition-all duration-200 rounded-2xl md:rounded-lg ${
+                extra.enabled 
+                  ? 'ring-2 ring-primary border-primary bg-primary/5 shadow-[0_8px_30px_rgb(0,0,0,0.08)]' 
+                  : 'border-border shadow-[0_2px_8px_rgb(0,0,0,0.04)] hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)]'
+              } md:hover:shadow-md`}
               onClick={() => handleExtraToggle(extra.id)}
             >
-              <CardContent className="p-6">
+              <CardContent className="p-4 md:p-6">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4 flex-1">
-                    <div className="w-12 h-12 rounded-lg bg-muted/50 flex items-center justify-center">
-                      <extra.icon className="w-6 h-6 text-foreground stroke-2" />
+                  <div className="flex items-center space-x-3 md:space-x-4 flex-1">
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-lg bg-muted/50 flex items-center justify-center">
+                      <extra.icon className="w-5 h-5 md:w-6 md:h-6 text-foreground stroke-2" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-1">
-                        <h3 className="font-semibold text-foreground">{extra.title}</h3>
-                        <Badge variant="outline" className="text-xs">
+                        <h3 className="text-sm md:text-base font-semibold text-foreground">{extra.title}</h3>
+                        <Badge variant="outline" className="text-xs rounded-full px-2 py-0.5">
                           {extra.price}/pro Bild
                         </Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground">{extra.description}</p>
+                      <p className="text-xs md:text-sm text-muted-foreground leading-tight">{extra.description}</p>
                     </div>
                   </div>
                   <Switch
@@ -110,12 +112,12 @@ const ExtrasStep = ({
         </div>
 
         {orderData.extras.watermark && (
-          <Card className="border-primary/20 bg-primary/5">
-            <CardHeader>
-              <CardTitle className="text-lg">Wasserzeichen-Upload</CardTitle>
+          <Card className="border-primary/20 bg-primary/5 rounded-2xl md:rounded-lg shadow-[0_4px_20px_rgb(0,0,0,0.05)]">
+            <CardHeader className="pb-3 md:pb-4 px-4 md:px-6 pt-4 md:pt-6">
+              <CardTitle className="text-base md:text-lg">Wasserzeichen-Upload</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground">
+            <CardContent className="space-y-3 md:space-y-4 px-4 md:px-6 pb-4 md:pb-6">
+              <p className="text-xs md:text-sm text-muted-foreground">
                 Laden Sie Ihr Logo oder Wasserzeichen hoch (PNG, JPG, max. 5MB)
               </p>
               <div className="space-y-2">
@@ -123,10 +125,10 @@ const ExtrasStep = ({
                   type="file"
                   accept="image/*"
                   onChange={handleWatermarkUpload}
-                  className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+                  className="block w-full text-xs md:text-sm text-muted-foreground file:mr-3 md:file:mr-4 file:py-2 file:px-3 md:file:px-4 file:rounded-xl md:file:rounded-lg file:border-0 file:text-xs md:file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
                 />
                 {orderData.watermarkFile && (
-                  <p className="text-sm text-success">
+                  <p className="text-xs md:text-sm text-success">
                     Datei ausgewählt: {orderData.watermarkFile.name}
                   </p>
                 )}
@@ -136,7 +138,7 @@ const ExtrasStep = ({
         )}
       </div>
 
-      <div className="text-center text-sm text-muted-foreground">
+      <div className="text-center text-xs md:text-sm text-muted-foreground px-3 md:px-0">
         Alle Preise sind zzgl. 19% MwSt.
       </div>
 
