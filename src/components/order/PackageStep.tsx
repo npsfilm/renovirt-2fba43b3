@@ -75,15 +75,15 @@ const PackageStep = ({
     iconColor: 'text-primary'
   }];
   const canProceed = selectedPackage !== undefined;
-  return <div className="space-y-8">
-      <div className="text-center space-y-3">
-        <h1 className="text-3xl font-semibold text-foreground tracking-tight">Wählen Sie Ihr Bearbeitungspaket</h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Wählen Sie das Paket, das Ihren Anforderungen entspricht.
+  return <div className="space-y-5 md:space-y-8">
+      <div className="text-center space-y-2 md:space-y-3 px-4 md:px-0">
+        <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">Wählen Sie Ihr Bearbeitungspaket</h1>
+        <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          Wählen Sie das passende Paket für Ihre Bedürfnisse.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto px-4 md:px-0">
         {packages.map(pkg => {
         const isSelected = selectedPackage === pkg.id;
         const isPopular = pkg.popular;
