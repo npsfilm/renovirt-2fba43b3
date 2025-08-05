@@ -19,12 +19,12 @@ const Dashboard = () => {
 
   if (isMobile) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      <MobileLayout>
         {/* Mobile Status Bar */}
         <MobileStatusBar />
         
-        {/* Content with bottom nav spacing */}
-        <div className="pb-20 space-y-6">
+        {/* Content */}
+        <div className="space-y-6">
           {/* Hero Widget */}
           <div className="pt-4">
             <ModernHeroWidget />
@@ -48,11 +48,11 @@ const Dashboard = () => {
         </div>
         
         <GlobalAIWidget />
-      </div>
+      </MobileLayout>
     );
   }
 
-  // Desktop layout (fallback)
+  // Desktop layout
   return (
     <MobileLayout className="p-6 space-y-8">
       <ModernHeroSection />
