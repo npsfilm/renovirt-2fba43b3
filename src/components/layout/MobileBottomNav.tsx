@@ -102,42 +102,35 @@ const MobileBottomNav = () => {
         )}
       </AnimatePresence>
 
-      {/* More menu overlay */}
+      {/* More menu overlay - Bottom Sheet Style */}
       <AnimatePresence>
         {isMoreMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-20 right-4 left-4 bg-card border border-border rounded-lg shadow-lg z-50 overflow-hidden"
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="fixed bottom-16 left-0 right-0 bg-card border-t border-border rounded-t-xl shadow-2xl z-50 overflow-hidden"
           >
-            <div className="p-2">
-              <div className="flex items-center justify-between p-2 border-b border-border">
-                <h3 className="font-medium text-foreground">Mehr</h3>
-                <button
-                  onClick={() => setIsMoreMenuOpen(false)}
-                  className="p-1 text-muted-foreground hover:text-foreground"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-              
-              <div className="space-y-1 mt-2">
+            <div className="w-12 h-1 bg-muted rounded-full mx-auto mt-3 mb-4" />
+            
+            <div className="px-4 pb-4">
+              <div className="space-y-1">
                 {moreMenuItems.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => handleNavClick(item.path)}
-                    className="w-full flex items-center gap-3 p-3 text-left text-foreground hover:bg-accent rounded-md transition-colors"
+                    className="w-full flex items-center gap-4 p-4 text-left text-foreground active:scale-95 transition-transform"
                   >
                     <item.icon className="h-5 w-5 text-muted-foreground" />
                     <span className="text-sm font-medium">{item.label}</span>
                   </button>
                 ))}
                 
-                <div className="border-t border-border pt-1 mt-2">
+                <div className="border-t border-border pt-2 mt-3">
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-3 p-3 text-left text-destructive hover:bg-destructive/10 rounded-md transition-colors"
+                    className="w-full flex items-center gap-4 p-4 text-left text-destructive active:scale-95 transition-transform"
                   >
                     <LogOut className="h-5 w-5" />
                     <span className="text-sm font-medium">Abmelden</span>
@@ -151,29 +144,30 @@ const MobileBottomNav = () => {
 
       {/* Bottom Navigation Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-30">
-        <div className="flex items-center px-2 py-2">
+        <div className="flex items-center px-1 py-3 min-h-[68px]">
           {/* Main navigation items */}
           {mainNavItems.map((item) => (
             <button
               key={item.id}
               onClick={() => handleNavClick(item.path)}
               className={cn(
-                "flex-1 flex flex-col items-center justify-center px-3 py-2 rounded-lg transition-all duration-200 min-h-[60px]",
+                "flex-1 flex flex-col items-center justify-center px-2 active:scale-95 transition-all duration-150",
                 item.isActive && !item.isProminent
-                  ? "bg-accent text-accent-foreground" 
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                  ? "text-foreground" 
+                  : item.isProminent
+                    ? "text-success"
+                    : "text-muted-foreground"
               )}
             >
-              <item.icon 
-                className={cn(
-                  "h-5 w-5 shrink-0",
-                  item.isProminent ? "text-success" : ""
-                )} 
-              />
+              <item.icon className="h-[18px] w-[18px] shrink-0" />
               <span 
                 className={cn(
-                  "text-xs font-medium mt-1 leading-none",
-                  item.isProminent ? "text-success font-semibold" : ""
+                  "text-[10px] mt-1 leading-none",
+                  item.isActive && !item.isProminent
+                    ? "font-medium text-foreground"
+                    : item.isProminent
+                      ? "font-medium text-success"
+                      : "font-normal text-muted-foreground"
                 )}
               >
                 {item.label}
@@ -185,14 +179,23 @@ const MobileBottomNav = () => {
           <button
             onClick={handleMoreClick}
             className={cn(
-              "flex-1 flex flex-col items-center justify-center px-3 py-2 rounded-lg transition-all duration-200 min-h-[60px]",
+              "flex-1 flex flex-col items-center justify-center px-2 active:scale-95 transition-all duration-150",
               isMoreActive || isMoreMenuOpen
-                ? "bg-accent text-accent-foreground" 
-                : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                ? "text-foreground" 
+                : "text-muted-foreground"
             )}
           >
-            <MoreHorizontal className="h-5 w-5 shrink-0" />
-            <span className="text-xs font-medium mt-1 leading-none">Mehr</span>
+            <MoreHorizontal className="h-[18px] w-[18px] shrink-0" />
+            <span 
+              className={cn(
+                "text-[10px] mt-1 leading-none",
+                isMoreActive || isMoreMenuOpen
+                  ? "font-medium text-foreground"
+                  : "font-normal text-muted-foreground"
+              )}
+            >
+              Mehr
+            </span>
           </button>
         </div>
       </div>
