@@ -14,7 +14,7 @@ interface OrderProgressProps {
 
 const OrderProgress = ({ steps }: OrderProgressProps) => {
   return (
-    <div className="w-full bg-card border rounded-lg p-6 shadow-sm">
+    <div className="w-full bg-card border-0 md:border md:rounded-lg p-3 md:p-6 shadow-sm">
       <div className="flex items-center justify-between">
         {steps.map((step, index) => (
           <React.Fragment key={step.number}>

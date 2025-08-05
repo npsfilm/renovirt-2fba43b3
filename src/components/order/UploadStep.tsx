@@ -103,16 +103,16 @@ const UploadStep = ({
   const canProceed = files.length > 0;
   const effectivePhotos = getEffectivePhotoCount(files.length);
   const bracketingDivisor = getBracketingDivisor();
-  return <div className="space-y-6">
-      <div className="text-center space-y-3">
-        <h1 className="text-3xl font-semibold text-foreground tracking-tight">Laden Sie Ihre Bilder hoch</h1>
+  return <div className="space-y-4 md:space-y-6 px-2 md:px-4">
+      <div className="text-center space-y-2 md:space-y-3">
+        <h1 className="text-xl md:text-3xl font-semibold text-foreground tracking-tight">Laden Sie Ihre Bilder hoch</h1>
         
       </div>
 
       <BracketingInfo photoType={photoType} bracketingDivisor={bracketingDivisor} />
 
-      <Card>
-        <CardContent className="p-8">
+      <Card className="border-0 md:border rounded-none md:rounded-lg">
+        <CardContent className="p-4 md:p-8">
           <UploadZone onFiles={handleFiles} supportedFormats={supportedFormats} maxFileSize={maxFileSize} maxFiles={maxFiles} />
 
           <FileList files={files} onRemoveFile={removeFile} photoType={photoType} bracketingDivisor={bracketingDivisor} effectivePhotos={effectivePhotos} />

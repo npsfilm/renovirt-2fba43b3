@@ -13,7 +13,7 @@ const MobileLayout = ({ children, className = '' }: MobileLayoutProps) => {
   const isMobile = useIsMobile();
 
   if (isMobile) {
-    // Mobile layout - no sidebar, bottom navigation
+    // Mobile layout - edge-to-edge design for 375px viewport
     return (
       <div className="min-h-screen flex flex-col w-full bg-gradient-to-br from-background via-background to-muted/20">
         <main className={`flex-1 pb-20 ${className}`}>

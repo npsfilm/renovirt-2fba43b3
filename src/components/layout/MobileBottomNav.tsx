@@ -142,9 +142,9 @@ const MobileBottomNav = () => {
         )}
       </AnimatePresence>
 
-      {/* Bottom Navigation Bar */}
+      {/* Bottom Navigation Bar - Edge-to-edge */}
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-30">
-        <div className="flex items-stretch px-2 py-2 h-16">
+        <div className="flex items-stretch px-1 py-2 h-16">
           {/* Main navigation items */}
           {mainNavItems.map((item) => (
             <button

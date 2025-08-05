@@ -23,16 +23,16 @@ const Dashboard = () => {
         {/* Mobile Status Bar */}
         <MobileStatusBar />
         
-        {/* Content */}
+        {/* Content - Edge-to-edge mobile design */}
         <div className="space-y-6">
           {/* Hero Widget */}
-          <div className="pt-4">
+          <div className="pt-2">
             <ModernHeroWidget />
           </div>
           
           {/* Quick Stats Cards */}
           <div className="space-y-3">
-            <h2 className="text-lg font-semibold text-foreground px-4">
+            <h2 className="text-lg font-semibold text-foreground px-2">
               Übersicht
             </h2>
             <QuickStatsCards />
@@ -40,7 +40,7 @@ const Dashboard = () => {
           
           {/* Active Projects Carousel */}
           <div className="space-y-3">
-            <h2 className="text-lg font-semibold text-foreground px-4">
+            <h2 className="text-lg font-semibold text-foreground px-2">
               Aktive Projekte
             </h2>
             <ActiveProjectsCarousel />

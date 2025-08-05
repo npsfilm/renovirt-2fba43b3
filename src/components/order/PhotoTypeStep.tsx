@@ -19,15 +19,15 @@ const PhotoTypeStep = ({ selectedType, onTypeChange, onNext }: PhotoTypeStepProp
   return (
     <div className="flex flex-col h-full min-h-0">
       {/* Compact Header - mobile optimized */}
-      <div className="text-center space-y-2 px-4 py-6 md:py-8 flex-shrink-0">
-        <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">Wählen Sie Ihren Foto-Typ</h1>
-        <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
+      <div className="text-center space-y-2 px-2 md:px-4 py-4 md:py-8 flex-shrink-0">
+        <h1 className="text-xl md:text-3xl font-semibold text-foreground tracking-tight">Wählen Sie Ihren Foto-Typ</h1>
+        <p className="text-sm md:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
           Bestimmen Sie die Art Ihrer Fotos für optimale Verarbeitung.
         </p>
       </div>
 
       {/* Scrollable Content Area */}
-      <div className="flex-1 min-h-0 px-4 overflow-y-auto">
+      <div className="flex-1 min-h-0 px-2 md:px-4 overflow-y-auto">
         <RadioGroup
           value={selectedType}
           onValueChange={onTypeChange}
@@ -62,7 +62,7 @@ const PhotoTypeStep = ({ selectedType, onTypeChange, onNext }: PhotoTypeStepProp
       </div>
 
       {/* Sticky Bottom Button Area */}
-      <div className="sticky bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background/95 to-transparent pt-4 pb-6 px-4 flex-shrink-0 md:relative md:bg-none md:pt-6">
+      <div className="sticky bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background/95 to-transparent pt-4 pb-6 px-2 md:px-4 flex-shrink-0 md:relative md:bg-none md:pt-6">
         <Button 
           onClick={onNext} 
           disabled={!canProceed}
