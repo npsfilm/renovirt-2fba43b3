@@ -13,12 +13,17 @@ const PageHeader = ({ title, subtitle }: PageHeaderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Don't show upload button on order flow pages
-  const isOrderFlow = location.pathname.startsWith('/order-flow');
+  // Don't show header on order flow pages
+  const isOrderFlow = location.pathname.startsWith('/order-flow') || location.pathname === '/order';
 
   const handlePhotoUpload = () => {
     navigate('/order-flow');
   };
+
+  // Don't render header on order pages
+  if (isOrderFlow) {
+    return null;
+  }
 
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
