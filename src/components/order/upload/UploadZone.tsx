@@ -29,16 +29,16 @@ const UploadZone = ({ onFiles, supportedFormats, maxFileSize, maxFiles }: Upload
         userId={user?.id}
         className="w-full"
       >
-        <div className="relative border-2 border-dashed border-gray-300 rounded-3xl p-6 text-center hover:border-primary/60 transition-all duration-300 cursor-pointer bg-white hover:bg-primary/5 group">
+        <div className="relative border-2 border-dashed border-gray-300 rounded-3xl p-5 text-center hover:border-primary/60 transition-all duration-300 cursor-pointer bg-white hover:bg-primary/5 group">
           {/* Main content */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Enhanced icon */}
             <div className="flex justify-center">
-              <div className="w-20 h-20 rounded-3xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/15 transition-all duration-300 shadow-lg">
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/15 transition-all duration-300 shadow-sm">
                 <div className="relative">
-                  <Upload className="w-10 h-10 text-primary group-hover:scale-110 transition-transform duration-300" />
-                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg">
-                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <Upload className="w-8 h-8 text-primary group-hover:scale-110 transition-transform duration-300" />
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center shadow-md">
+                    <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                     </svg>
                   </div>
@@ -46,27 +46,27 @@ const UploadZone = ({ onFiles, supportedFormats, maxFileSize, maxFiles }: Upload
               </div>
             </div>
 
-            {/* Enhanced text content */}
-            <div className="space-y-3">
-              <h3 className="text-xl font-semibold text-gray-900">
-                Fotos hinzufügen
+            {/* Enhanced text content - mobile optimized */}
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Bilder hochladen
               </h3>
-              <p className="text-sm text-gray-600 leading-relaxed max-w-xs mx-auto">
-                Tippen Sie hier oder ziehen Sie Ihre Bilder hierher
+              <p className="text-sm text-gray-600 leading-snug px-2">
+                Antippen zum Auswählen
               </p>
               
-              {/* Airbnb-style action button */}
-              <div className="pt-4">
-                <div className="inline-flex items-center px-6 py-3 bg-white border-2 border-gray-900 rounded-xl text-gray-900 font-semibold hover:bg-gray-900 hover:text-white transition-all duration-200 active:scale-95 shadow-sm">
-                  Durchsuchen
+              {/* Compact action button */}
+              <div className="pt-2">
+                <div className="inline-flex items-center px-4 py-2 bg-white border-2 border-gray-900 rounded-xl text-sm text-gray-900 font-medium hover:bg-gray-900 hover:text-white transition-all duration-200 active:scale-95 shadow-sm">
+                  Auswählen
                 </div>
               </div>
             </div>
 
-            {/* Enhanced file info */}
-            <div className="pt-4 border-t border-gray-200">
-              <p className="text-xs text-gray-500 leading-relaxed">
-                {supportedFormats.slice(0, 3).join(', ').toUpperCase()}{supportedFormats.length > 3 ? ' +' : ''} bis {formatFileSize(maxFileSize)}MB
+            {/* Compact file info */}
+            <div className="pt-2 border-t border-gray-200">
+              <p className="text-xs text-gray-500">
+                JPG, PNG, RAW bis {formatFileSize(maxFileSize)}MB
               </p>
             </div>
           </div>
