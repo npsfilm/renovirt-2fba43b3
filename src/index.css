@@ -176,6 +176,25 @@
   .text-subtle { color: hsl(var(--text-subtle)); }
   .text-on-surface { color: hsl(var(--text-on-surface)); }
 
+  /* Scrollbar Styles */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Modern app shadows and effects */
+  .app-shadow {
+    box-shadow: 0 2px 16px -4px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  }
+  
+  .app-shadow-lg {
+    box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  }
+
   /* Optimized background image loading */
   .auth-background {
     background-image: url('/lovable-uploads/fd670a2b-70f6-44eb-89b6-316c7c4280b6.png');
