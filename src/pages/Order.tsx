@@ -4,6 +4,7 @@ import MobileLayout from '@/components/layout/MobileLayout';
 import PageHeader from '@/components/layout/PageHeader';
 import { useIsMobile } from '@/hooks/use-mobile';
 import OrderProgress from '@/components/order/OrderProgress';
+import OrderActionBar from '@/components/order/OrderActionBar';
 import PhotoTypeStep from '@/components/order/PhotoTypeStep';
 import UploadStep from '@/components/order/UploadStep';
 import PackageStep from '@/components/order/PackageStep';
@@ -101,6 +102,24 @@ const Order = () => {
     }
   };
 
+  // Check if current step can proceed
+  const getCanProceed = () => {
+    switch (currentStep) {
+      case 'photo-type':
+        return orderData.photoType !== undefined;
+      case 'upload':
+        return orderData.files.length > 0;
+      case 'package':
+        return orderData.package !== undefined;
+      case 'extras':
+        return true; // No validation needed for extras
+      case 'summary':
+        return orderData.acceptedTerms;
+      default:
+        return false;
+    }
+  };
+
   const renderCurrentStep = () => {
     switch (currentStep) {
       case 'photo-type':
@@ -170,7 +189,7 @@ const Order = () => {
           subtitle="Fotos hochladen und bearbeiten lassen"
         />
       )}
-      <div className="p-6 py-[24px]">
+      <div className={`p-6 py-[24px] ${isMobile ? 'pb-32' : ''}`}>
         <div className="max-w-4xl mx-auto space-y-8">
           {isMobile && (
             <div className="mb-6">
@@ -178,12 +197,21 @@ const Order = () => {
               <p className="text-muted-foreground">Fotos hochladen und bearbeiten lassen</p>
             </div>
           )}
-          {currentStep !== 'confirmation' && (
+          {/* Desktop Progress - hidden on mobile */}
+          {!isMobile && currentStep !== 'confirmation' && (
             <OrderProgress steps={steps} />
           )}
           {renderCurrentStep()}
         </div>
       </div>
+      
+      {/* Mobile Fixed Bottom Action Bar */}
+      <OrderActionBar
+        currentStep={currentStep}
+        canProceed={getCanProceed()}
+        onNext={handleNext}
+        onPrev={handlePrev}
+      />
     </MobileLayout>
   );
 };

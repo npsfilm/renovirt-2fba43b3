@@ -121,7 +121,10 @@ const UploadStep = ({
 
       <UploadInfo />
 
-      <UploadStepActions onPrev={onPrev} onNext={onNext} canProceed={canProceed} />
+      {/* Desktop Actions - hidden on mobile */}
+      <div className="hidden md:block">
+        <UploadStepActions onPrev={onPrev} onNext={onNext} canProceed={canProceed} />
+      </div>
     </div>;
 };
 export default UploadStep;

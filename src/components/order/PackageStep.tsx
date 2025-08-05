@@ -133,7 +133,8 @@ const PackageStep = ({
         Alle Preise sind zzgl. 19% MwSt.
       </div>
 
-      <div className="flex justify-between max-w-4xl mx-auto">
+      {/* Desktop Actions - hidden on mobile */}
+      <div className="hidden md:flex justify-between max-w-4xl mx-auto">
         <Button variant="outline" onClick={onPrev} className="shadow-sm">
           ← Zurück zu Upload
         </Button>

@@ -48,8 +48,8 @@ const SummaryStepActions = ({
 
   return (
     <div className="space-y-4 pt-6 border-t border-gray-200">
-      {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-3">
+      {/* Desktop Action Buttons - hidden on mobile */}
+      <div className="hidden md:flex flex-col sm:flex-row gap-3">
         <Button 
           variant="outline" 
           onClick={onPrev} 

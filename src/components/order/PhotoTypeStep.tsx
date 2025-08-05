@@ -61,8 +61,8 @@ const PhotoTypeStep = ({ selectedType, onTypeChange, onNext }: PhotoTypeStepProp
         <div className="h-20 md:h-0" />
       </div>
 
-      {/* Sticky Bottom Button Area */}
-      <div className="sticky bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background/95 to-transparent pt-4 pb-6 px-2 md:px-4 flex-shrink-0 md:relative md:bg-none md:pt-6">
+      {/* Desktop Button Area - hidden on mobile */}
+      <div className="hidden md:block sticky bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background/95 to-transparent pt-4 pb-6 px-2 md:px-4 flex-shrink-0 md:relative md:bg-none md:pt-6">
         <Button 
           onClick={onNext} 
           disabled={!canProceed}
