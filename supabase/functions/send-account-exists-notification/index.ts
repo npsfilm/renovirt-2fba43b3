@@ -36,6 +36,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const loginUrl = `${Deno.env.get("SUPABASE_URL")?.replace("/rest/v1", "") || "https://app.renovirt.de"}/auth`;
+    const passwordResetUrl = `${Deno.env.get("SUPABASE_URL")?.replace("/rest/v1", "") || "https://app.renovirt.de"}/auth`;
     
     const emailResponse = await resend.emails.send({
       from: "Renovirt <noreply@renovirt.de>",
@@ -50,75 +51,70 @@ const handler = async (req: Request): Promise<Response> => {
           <title>Konto bereits vorhanden</title>
         </head>
         <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8fafc; margin: 0; padding: 20px;">
-          <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); overflow: hidden;">
-            
-            <!-- Header -->
-            <div style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); padding: 40px 30px; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 600;">Renovirt</h1>
+          <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); overflow: hidden; border: 1px solid #e5e7eb;">
+           
+            <div style="padding: 40px 30px; background-color: #ffffff; border-bottom: 1px solid #e5e7eb;">
+              <h1 style="color: #374151; margin: 0; font-size: 28px; font-weight: 600;">Renovirt</h1>
             </div>
-            
-            <!-- Content -->
+           
             <div style="padding: 40px 30px;">
-              <div style="background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+              <div style="border: 1px solid #fbbf24; border-radius: 8px; padding: 20px; margin-bottom: 30px; background-color: #fefce8;">
                 <div style="display: flex; align-items: center; margin-bottom: 15px;">
-                  <div style="width: 24px; height: 24px; background: #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
-                    <span style="color: white; font-weight: bold; font-size: 14px;">!</span>
+                  <div style="width: 24px; height: 24px; background: #fbbf24; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; flex-shrink: 0;">
+                    <span style="color: white; font-weight: bold; font-size: 16px; line-height: 24px;">!</span>
                   </div>
-                  <h2 style="margin: 0; color: #92400e; font-size: 18px; font-weight: 600;">Konto bereits vorhanden</h2>
+                  <h2 style="margin: 0; color: #854d0e; font-size: 18px; font-weight: 600;">Konto bereits vorhanden</h2>
                 </div>
-                <p style="margin: 0; color: #92400e; line-height: 1.5;">
+                <p style="margin: 0; color: #854d0e; line-height: 1.5;">
                   Es wurde versucht, ein neues Konto mit Ihrer E-Mail-Adresse zu erstellen. Es existiert jedoch bereits ein Konto unter dieser E-Mail-Adresse.
                 </p>
               </div>
-              
+             
               <h3 style="color: #1f2937; margin: 0 0 20px 0; font-size: 20px; font-weight: 600;">Was können Sie tun?</h3>
-              
+             
               <div style="margin-bottom: 30px;">
                 <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-                  <h4 style="margin: 0 0 10px 0; color: #374151; font-size: 16px; font-weight: 600;">📧 Anmelden</h4>
+                  <h4 style="margin: 0 0 10px 0; color: #374151; font-size: 16px; font-weight: 600;">✓ Anmelden</h4>
                   <p style="margin: 0 0 15px 0; color: #6b7280; line-height: 1.5; font-size: 14px;">
                     Wenn Sie Ihr Passwort noch kennen, können Sie sich direkt anmelden.
                   </p>
                   <a href="${loginUrl}" 
-                     style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500; font-size: 14px;">
-                    Zur Anmeldung →
+                     style="display: inline-block; background: #B5C1A5; color: #1f2937; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
+                    Zur Anmeldung &rarr;
                   </a>
                 </div>
-                
+               
                 <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px;">
-                  <h4 style="margin: 0 0 10px 0; color: #374151; font-size: 16px; font-weight: 600;">🔒 Passwort vergessen?</h4>
+                  <h4 style="margin: 0 0 10px 0; color: #374151; font-size: 16px; font-weight: 600;">? Passwort vergessen?</h4>
                   <p style="margin: 0 0 15px 0; color: #6b7280; line-height: 1.5; font-size: 14px;">
                     Falls Sie Ihr Passwort vergessen haben, können Sie es zurücksetzen.
                   </p>
-                  <a href="${loginUrl}" 
-                     style="display: inline-block; background: #059669; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500; font-size: 14px;">
-                    Passwort zurücksetzen →
+                  <a href="${passwordResetUrl}" 
+                     style="display: inline-block; background: #B5C1A5; color: #1f2937; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
+                    Passwort zurücksetzen &rarr;
                   </a>
                 </div>
               </div>
-              
-              <!-- Security Note -->
+             
               <div style="background: #f3f4f6; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
-                <h4 style="margin: 0 0 10px 0; color: #374151; font-size: 14px; font-weight: 600;">🔐 Sicherheitshinweis</h4>
+                <h4 style="margin: 0 0 10px 0; color: #374151; font-size: 14px; font-weight: 600;">Sicherheitshinweis</h4>
                 <p style="margin: 0; color: #6b7280; line-height: 1.5; font-size: 13px;">
                   Diese E-Mail wurde automatisch versendet, da jemand versucht hat, ein Konto mit Ihrer E-Mail-Adresse zu erstellen. 
                   Falls Sie dies nicht waren, können Sie diese E-Mail ignorieren. Ihr bestehendes Konto ist sicher.
                 </p>
               </div>
-              
-              <!-- Support -->
+             
               <div style="text-align: center; padding-top: 20px; border-top: 1px solid #e5e7eb;">
                 <p style="margin: 0; color: #9ca3af; font-size: 13px; line-height: 1.5;">
                   Haben Sie Fragen? Kontaktieren Sie uns unter 
-                  <a href="mailto:support@renovirt.de" style="color: #3b82f6; text-decoration: none;">support@renovirt.de</a>
+                  <a href="mailto:support@renovirt.de" style="color: #B5C1A5; text-decoration: underline;">support@renovirt.de</a>
                 </p>
               </div>
             </div>
-            
-            <!-- Footer -->
+           
             <div style="background: #f8fafc; padding: 20px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
               <p style="margin: 0; color: #9ca3af; font-size: 12px;">
-                © 2024 Renovirt. Professionelle Immobilienfotografie.
+                &copy; 2025 Renovirt. Professionelle Immobilienfotografie.
               </p>
             </div>
           </div>
