@@ -44,9 +44,7 @@ const QuickStatsCards = () => {
       return {
         activeOrders,
         completedThisMonth,
-        totalImages,
-        imagesThisMonth,
-        monthlyLimit: 500 // This could come from user profile/subscription
+        totalImages
       };
     },
     enabled: !!user?.id,
@@ -60,7 +58,6 @@ const QuickStatsCards = () => {
       icon: Package,
       color: 'text-primary',
       bgColor: 'bg-primary/10',
-      showProgress: false,
     },
     {
       id: 'completed',
@@ -70,17 +67,6 @@ const QuickStatsCards = () => {
       icon: CheckCircle,
       color: 'text-success',
       bgColor: 'bg-success/10',
-      showProgress: false,
-    },
-    {
-      id: 'quota',
-      label: 'Upload Quota',
-      value: orderStats?.imagesThisMonth || 0,
-      max: orderStats?.monthlyLimit || 500,
-      icon: Upload,
-      color: 'text-accent',
-      bgColor: 'bg-accent/10',
-      showProgress: true,
     },
     {
       id: 'total',
@@ -89,17 +75,16 @@ const QuickStatsCards = () => {
       icon: Clock,
       color: 'text-muted-foreground',
       bgColor: 'bg-muted/50',
-      showProgress: false,
     },
   ];
 
   if (isLoading) {
     return (
       <div className="flex gap-3 overflow-x-auto pb-2 px-4">
-        {[1, 2, 3, 4].map((i) => (
-          <Card key={i} className="min-w-[140px] animate-pulse">
-            <CardContent className="p-4">
-              <div className="h-16 bg-muted rounded" />
+        {[1, 2, 3].map((i) => (
+          <Card key={i} className="min-w-[120px] animate-pulse">
+            <CardContent className="p-3">
+              <div className="h-14 bg-muted rounded" />
             </CardContent>
           </Card>
         ))}
@@ -110,11 +95,11 @@ const QuickStatsCards = () => {
   return (
     <div className="flex gap-3 overflow-x-auto pb-2 px-4 scrollbar-hide">
       {stats.map((stat) => (
-        <Card key={stat.id} className="min-w-[140px] bg-card/50 backdrop-blur-sm border-border/50 shadow-sm hover:shadow-md transition-all duration-300">
-          <CardContent className="p-4">
+        <Card key={stat.id} className="min-w-[120px] bg-card/50 backdrop-blur-sm border-border/50 shadow-sm hover:shadow-md transition-all duration-300">
+          <CardContent className="p-3">
             <div className="flex items-start justify-between mb-2">
               <div className={`p-2 rounded-full ${stat.bgColor}`}>
-                <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                <stat.icon className={`h-3.5 w-3.5 ${stat.color}`} />
               </div>
             </div>
             
@@ -123,11 +108,6 @@ const QuickStatsCards = () => {
                 <span className="text-xl font-bold text-foreground">
                   {stat.value}
                 </span>
-                {stat.max && (
-                  <span className="text-sm text-muted-foreground">
-                    /{stat.max}
-                  </span>
-                )}
               </div>
               
               <p className="text-xs text-muted-foreground font-medium leading-tight">
@@ -138,15 +118,6 @@ const QuickStatsCards = () => {
                 <p className="text-[10px] text-muted-foreground">
                   {stat.sublabel}
                 </p>
-              )}
-              
-              {stat.showProgress && stat.max && (
-                <div className="mt-2">
-                  <Progress 
-                    value={(stat.value / stat.max) * 100} 
-                    className="h-1.5"
-                  />
-                </div>
               )}
             </div>
           </CardContent>
