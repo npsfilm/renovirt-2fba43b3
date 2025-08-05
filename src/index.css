@@ -28,8 +28,8 @@
     --muted: 60 25% 97%; /* #F3F3F0 */
     --muted-foreground: 145 20% 25%; /* #3A4A3C - Darker for better contrast */
 
-    /* Accent (Gold Brush Color) */
-    --accent: 45 52% 59%; /* #D1A760 */
+    /* Accent (Middle Light Grey) */
+    --accent: 220 14% 68%; /* #9CA3AF */
     --accent-foreground: 145 14% 15%; /* #1E2B20 */
 
     /* Destructive */
@@ -100,7 +100,7 @@
     --muted: 145 15% 12%;
     --muted-foreground: 120 15% 70%; /* Lighter for dark mode */
 
-    --accent: 45 52% 65%; /* Lighter gold for dark mode */
+    --accent: 220 14% 72%; /* Lighter grey for dark mode */
     --accent-foreground: 145 20% 8%;
 
     --destructive: 4 78% 65%;
