@@ -4,6 +4,7 @@ import MobileLayout from '@/components/layout/MobileLayout';
 import PageHeader from '@/components/layout/PageHeader';
 import { useIsMobile } from '@/hooks/use-mobile';
 import OrderActionBar from '@/components/order/OrderActionBar';
+import OrderProgressBar from '@/components/order/OrderProgressBar';
 import PhotoTypeStep from '@/components/order/PhotoTypeStep';
 import UploadStep from '@/components/order/UploadStep';
 import PackageStep from '@/components/order/PackageStep';
@@ -175,16 +176,18 @@ const Order = () => {
   
   return (
     <MobileLayout>
+      <OrderProgressBar currentStep={currentStep} />
+      
       {!isMobile && (
         <PageHeader 
           title="Neue Bestellung" 
           subtitle="Fotos hochladen und bearbeiten lassen"
         />
       )}
-      <div className="pb-32">
+      <div className="pb-32 pt-1">
         <div className="max-w-2xl mx-auto">
           {isMobile && (
-            <div className="mb-6 px-4">
+            <div className="mb-6 px-4 pt-2">
               <h1 className="text-2xl font-semibold text-foreground">Neue Bestellung</h1>
               <p className="text-muted-foreground">Fotos hochladen und bearbeiten lassen</p>
             </div>
