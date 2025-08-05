@@ -130,7 +130,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order }: OrderDetailsModalProps) =
         
         <div className="space-y-6">
           <div className="flex items-center justify-between hover:bg-transparent">
-            <Badge className={statusConfig.color}>
+            <Badge className={`${statusConfig.color} hover:bg-current`}>
               {statusConfig.label}
             </Badge>
             <div className="text-sm text-subtle">
