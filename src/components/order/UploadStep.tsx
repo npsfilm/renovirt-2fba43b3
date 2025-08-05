@@ -10,15 +10,11 @@ interface UploadStepProps {
   files: File[];
   photoType?: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5';
   onFilesChange: (files: File[]) => void;
-  onNext: () => void;
-  onPrev: () => void;
 }
 const UploadStep = ({
   files,
   photoType,
-  onFilesChange,
-  onNext,
-  onPrev
+  onFilesChange
 }: UploadStepProps) => {
   const {
     toast
@@ -121,7 +117,7 @@ const UploadStep = ({
 
       <UploadInfo />
 
-      <UploadStepActions onPrev={onPrev} onNext={onNext} canProceed={canProceed} />
+      
     </div>;
 };
 export default UploadStep;

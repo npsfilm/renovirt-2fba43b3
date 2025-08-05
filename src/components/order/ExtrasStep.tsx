@@ -11,16 +11,12 @@ interface ExtrasStepProps {
   orderData: OrderData;
   onExtrasChange: (extras: OrderData['extras']) => void;
   onWatermarkFileChange: (file: File | undefined) => void;
-  onNext: () => void;
-  onPrev: () => void;
 }
 
 const ExtrasStep = ({
   orderData,
   onExtrasChange,
-  onWatermarkFileChange,
-  onNext,
-  onPrev
+  onWatermarkFileChange
 }: ExtrasStepProps) => {
   const extras = [
     {
@@ -140,14 +136,6 @@ const ExtrasStep = ({
         Alle Preise sind zzgl. 19% MwSt.
       </div>
 
-      <div className="flex justify-between max-w-2xl mx-auto">
-        <Button variant="outline" onClick={onPrev} className="shadow-sm">
-          ← Zurück zu Paket
-        </Button>
-        <Button onClick={onNext} className="min-w-[150px] shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02]">
-          Weiter zur Übersicht →
-        </Button>
-      </div>
     </div>
   );
 };
