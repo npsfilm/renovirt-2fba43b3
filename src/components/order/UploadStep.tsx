@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 import UploadZone from './upload/UploadZone';
 import FileList from './upload/FileList';
 import UploadInfo from './upload/UploadInfo';
@@ -103,28 +104,37 @@ const UploadStep = ({
   const canProceed = files.length > 0;
   const effectivePhotos = getEffectivePhotoCount(files.length);
   const bracketingDivisor = getBracketingDivisor();
-  return <div className="space-y-4 md:space-y-6 px-2 md:px-4">
-      <div className="text-center space-y-2 md:space-y-3">
-        <h1 className="text-xl md:text-3xl font-semibold text-foreground tracking-tight">Laden Sie Ihre Bilder hoch</h1>
-        
+  const isMobile = useIsMobile();
+  
+  return (
+    <div className={`${isMobile ? 'space-y-4' : 'space-y-4 md:space-y-6 px-2 md:px-4'}`}>
+      {!isMobile && (
+        <div className="text-center space-y-2 md:space-y-3">
+          <h1 className="text-xl md:text-3xl font-semibold text-foreground tracking-tight">Laden Sie Ihre Bilder hoch</h1>
+        </div>
+      )}
+
+      <div className={`${isMobile ? 'px-4' : ''}`}>
+        <BracketingInfo photoType={photoType} bracketingDivisor={bracketingDivisor} />
       </div>
 
-      <BracketingInfo photoType={photoType} bracketingDivisor={bracketingDivisor} />
-
-      <Card className="border-0 md:border rounded-none md:rounded-lg">
-        <CardContent className="p-4 md:p-8">
+      <Card className={`${isMobile ? 'mx-0 shadow-lg border-0 rounded-none' : 'border-0 md:border rounded-none md:rounded-lg'}`}>
+        <CardContent className={`${isMobile ? 'p-4' : 'p-4 md:p-8'}`}>
           <UploadZone onFiles={handleFiles} supportedFormats={supportedFormats} maxFileSize={maxFileSize} maxFiles={maxFiles} />
 
           <FileList files={files} onRemoveFile={removeFile} photoType={photoType} bracketingDivisor={bracketingDivisor} effectivePhotos={effectivePhotos} />
         </CardContent>
       </Card>
 
-      <UploadInfo />
+      <div className={`${isMobile ? 'px-4' : ''}`}>
+        <UploadInfo />
+      </div>
 
       {/* Desktop Actions - hidden on mobile */}
       <div className="hidden md:block">
         <UploadStepActions onPrev={onPrev} onNext={onNext} canProceed={canProceed} />
       </div>
-    </div>;
+    </div>
+  );
 };
 export default UploadStep;

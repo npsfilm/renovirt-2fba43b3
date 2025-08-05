@@ -1,5 +1,7 @@
 
 import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import PageHeader from '@/components/layout/PageHeader';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -40,8 +42,9 @@ const Order = () => {
     specialRequests: '',
   });
 
+  const stepOrder = ['photo-type', 'upload', 'package', 'extras', 'summary'];
+  
   const getStepStatus = (stepName: Step): 'current' | 'completed' | 'upcoming' => {
-    const stepOrder = ['photo-type', 'upload', 'package', 'extras', 'summary'];
     const currentIndex = stepOrder.indexOf(currentStep);
     const stepIndex = stepOrder.indexOf(stepName);
     
@@ -183,25 +186,62 @@ const Order = () => {
   
   return (
     <MobileLayout>
-      {!isMobile && (
+      {/* Mobile Compact Header with Progress */}
+      {isMobile ? (
+        <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-xl border-b border-border">
+          {/* Thin Progress Bar */}
+          <div className="w-full bg-muted h-1">
+            <div 
+              className="bg-primary h-1 transition-all duration-700 ease-out"
+              style={{ width: `${((stepOrder.indexOf(currentStep) + 1) / stepOrder.length) * 100}%` }}
+            />
+          </div>
+          
+          {/* Compact Header */}
+          <div className="px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {currentStep !== 'photo-type' && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handlePrev}
+                    className="p-2 h-8 w-8"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                  </Button>
+                )}
+                <div>
+                  <h1 className="text-lg font-semibold text-foreground">
+                    {steps.find(step => step.status === 'current')?.title || 'Bestellung'}
+                  </h1>
+                  <p className="text-xs text-muted-foreground">
+                    Schritt {stepOrder.indexOf(currentStep) + 1} von {stepOrder.length}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* Desktop Header */
         <PageHeader 
           title="Neue Bestellung" 
           subtitle="Fotos hochladen und bearbeiten lassen"
         />
       )}
-      <div className={`p-6 py-[24px] ${isMobile ? 'pb-32' : ''}`}>
-        <div className="max-w-4xl mx-auto space-y-8">
-          {isMobile && (
-            <div className="mb-6">
-              <h1 className="text-2xl font-semibold text-foreground">Neue Bestellung</h1>
-              <p className="text-muted-foreground">Fotos hochladen und bearbeiten lassen</p>
-            </div>
-          )}
+
+      <div className={`${isMobile ? '' : 'p-6 py-[24px]'}`}>
+        <div className={`${isMobile ? '' : 'max-w-4xl mx-auto space-y-8'}`}>
           {/* Desktop Progress - hidden on mobile */}
           {!isMobile && currentStep !== 'confirmation' && (
             <OrderProgress steps={steps} />
           )}
-          {renderCurrentStep()}
+          
+          {/* Step Content */}
+          <div className={`${isMobile ? 'pb-32' : ''}`}>
+            {renderCurrentStep()}
+          </div>
         </div>
       </div>
       

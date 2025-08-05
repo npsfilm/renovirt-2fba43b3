@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { RadioGroup } from '@/components/ui/radio-group';
+import { useIsMobile } from '@/hooks/use-mobile';
 import PhotoTypeCard from './photo-type/PhotoTypeCard';
 import BracketingInfoCard from './photo-type/BracketingInfoCard';
 import ProTipCard from './photo-type/ProTipCard';
@@ -15,23 +16,26 @@ interface PhotoTypeStepProps {
 
 const PhotoTypeStep = ({ selectedType, onTypeChange, onNext }: PhotoTypeStepProps) => {
   const canProceed = selectedType !== undefined;
+  const isMobile = useIsMobile();
 
   return (
-    <div className="flex flex-col h-full min-h-0">
-      {/* Compact Header - mobile optimized */}
-      <div className="text-center space-y-2 px-2 md:px-4 py-4 md:py-8 flex-shrink-0">
-        <h1 className="text-xl md:text-3xl font-semibold text-foreground tracking-tight">Wählen Sie Ihren Foto-Typ</h1>
-        <p className="text-sm md:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
-          Bestimmen Sie die Art Ihrer Fotos für optimale Verarbeitung.
-        </p>
-      </div>
+    <div className={`${isMobile ? 'space-y-6' : 'flex flex-col h-full min-h-0'}`}>
+      {/* Header - optimized for mobile */}
+      {!isMobile && (
+        <div className="text-center space-y-2 px-2 md:px-4 py-4 md:py-8 flex-shrink-0">
+          <h1 className="text-xl md:text-3xl font-semibold text-foreground tracking-tight">Wählen Sie Ihren Foto-Typ</h1>
+          <p className="text-sm md:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
+            Bestimmen Sie die Art Ihrer Fotos für optimale Verarbeitung.
+          </p>
+        </div>
+      )}
 
-      {/* Scrollable Content Area */}
-      <div className="flex-1 min-h-0 px-2 md:px-4 overflow-y-auto">
+      {/* Content Area */}
+      <div className={`${isMobile ? 'px-4 py-6' : 'flex-1 min-h-0 px-2 md:px-4 overflow-y-auto'}`}>
         <RadioGroup
           value={selectedType}
           onValueChange={onTypeChange}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-4 mb-8"
+          className={`${isMobile ? 'space-y-4' : 'grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-4 mb-8'}`}
         >
           {photoTypes.map((type) => (
             <PhotoTypeCard
@@ -47,7 +51,7 @@ const PhotoTypeStep = ({ selectedType, onTypeChange, onNext }: PhotoTypeStepProp
 
         {/* Conditional Content */}
         {selectedType?.startsWith('bracketing') && (
-          <div className="mb-4">
+          <div className={`${isMobile ? 'mt-6' : 'mb-4'}`}>
             <BracketingInfoCard selectedType={selectedType as 'bracketing-3' | 'bracketing-5'} />
           </div>
         )}
@@ -58,7 +62,7 @@ const PhotoTypeStep = ({ selectedType, onTypeChange, onNext }: PhotoTypeStepProp
         </div>
 
         {/* Mobile spacing for sticky button */}
-        <div className="h-20 md:h-0" />
+        <div className={`${isMobile ? 'h-0' : 'h-20 md:h-0'}`} />
       </div>
 
       {/* Desktop Button Area - hidden on mobile */}
