@@ -59,7 +59,7 @@ const OrderActionBar = ({
       <div className="px-6 pt-4">
         <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
           <div 
-            className="bg-gradient-to-r from-rose-500 to-pink-500 h-2 rounded-full transition-all duration-700 ease-out shadow-sm"
+            className="bg-primary h-2 rounded-full transition-all duration-700 ease-out shadow-sm"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -83,7 +83,7 @@ const OrderActionBar = ({
         <Button
           onClick={onNext}
           disabled={!canProceed || isProcessing}
-          className="flex-1 min-w-[180px] h-12 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-semibold shadow-lg transition-all duration-200 active:scale-[0.98] disabled:opacity-50"
+          className="flex-1 min-w-[180px] h-12 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg transition-all duration-200 active:scale-[0.98] disabled:opacity-50"
         >
           {isProcessing ? 'Verarbeitung...' : getNextButtonText()}
         </Button>

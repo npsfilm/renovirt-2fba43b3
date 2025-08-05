@@ -24,7 +24,7 @@ const PhotoTypeCard = ({ id, title, description, icon: IconComponent, isSelected
         <Card className={`
           relative overflow-hidden transition-all duration-200 ease-out active:scale-[0.98]
           ${isSelected 
-            ? 'shadow-lg border-rose-200 bg-gradient-to-r from-rose-50 to-pink-50 shadow-rose-100/40'
+            ? 'shadow-lg border-primary/30 bg-primary/5 shadow-primary/20'
             : 'shadow-md border-gray-200 bg-white hover:shadow-lg hover:border-gray-300'
           }
           border rounded-2xl w-full min-h-[80px]
@@ -41,14 +41,14 @@ const PhotoTypeCard = ({ id, title, description, icon: IconComponent, isSelected
               <div className={`
                 w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-200 flex-shrink-0
                 ${isSelected 
-                  ? 'bg-rose-100 shadow-sm' 
+                  ? 'bg-primary/10 shadow-sm' 
                   : 'bg-gray-100'
                 }
               `}>
                 <IconComponent className={`
                   w-7 h-7 transition-all duration-200
                   ${isSelected 
-                    ? 'text-rose-600' 
+                    ? 'text-primary' 
                     : 'text-gray-600'
                   }
                 `} />
@@ -74,7 +74,7 @@ const PhotoTypeCard = ({ id, title, description, icon: IconComponent, isSelected
               <div className={`
                 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 flex-shrink-0
                 ${isSelected 
-                  ? 'bg-rose-600 shadow-sm' 
+                  ? 'bg-primary shadow-sm' 
                   : 'border-2 border-gray-300 bg-white'
                 }
               `}>
