@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { LucideIcon } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface PhotoTypeCardProps {
   id: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5';
@@ -14,6 +15,81 @@ interface PhotoTypeCardProps {
 }
 
 const PhotoTypeCard = ({ id, title, description, icon: IconComponent, isSelected }: PhotoTypeCardProps) => {
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    // Mobile full-width button design
+    return (
+      <Label htmlFor={id} className="cursor-pointer block col-span-2">
+        <Card className={`
+          relative overflow-hidden transition-all duration-300 ease-out transform
+          ${isSelected 
+            ? 'ring-4 ring-primary border-primary bg-primary/10 shadow-xl scale-[1.01]'
+            : 'border-border bg-card hover:shadow-lg hover:border-primary/30'
+          }
+          border-2 w-full
+        `}>
+          <CardContent className="p-6 relative">
+            {/* Hidden radio button for form functionality */}
+            <RadioGroupItem 
+              value={id} 
+              id={id} 
+              className="sr-only"
+            />
+            
+            <div className="flex items-center gap-4">
+              <div className={`
+                w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 flex-shrink-0
+                ${isSelected 
+                  ? 'bg-primary/20 shadow-lg' 
+                  : 'bg-muted'
+                }
+              `}>
+                <IconComponent className={`
+                  w-8 h-8 transition-all duration-300
+                  ${isSelected 
+                    ? 'text-primary' 
+                    : 'text-muted-foreground'
+                  }
+                `} />
+              </div>
+              
+              <div className="flex-1 text-left">
+                <h3 className={`
+                  text-xl font-bold mb-2 transition-colors duration-300
+                  ${isSelected ? 'text-primary' : 'text-foreground'}
+                `}>
+                  {title}
+                </h3>
+                
+                <p className={`
+                  text-sm leading-relaxed transition-colors duration-300
+                  ${isSelected ? 'text-foreground/90' : 'text-muted-foreground'}
+                `}>
+                  {description}
+                </p>
+              </div>
+
+              {/* Visual selection indicator */}
+              <div className={`
+                w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300
+                ${isSelected 
+                  ? 'border-primary bg-primary' 
+                  : 'border-muted-foreground'
+                }
+              `}>
+                {isSelected && (
+                  <div className="w-2 h-2 rounded-full bg-primary-foreground" />
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </Label>
+    );
+  }
+
+  // Desktop design (unchanged)
   return (
     <Label htmlFor={id} className="cursor-pointer group">
       <Card className={`
