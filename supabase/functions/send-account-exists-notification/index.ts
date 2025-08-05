@@ -35,8 +35,10 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    const loginUrl = `${Deno.env.get("SUPABASE_URL")?.replace("/rest/v1", "") || "https://app.renovirt.de"}/auth`;
-    const passwordResetUrl = `${Deno.env.get("SUPABASE_URL")?.replace("/rest/v1", "") || "https://app.renovirt.de"}/reset-password`;
+    // Get the current origin from the request
+    const origin = req.headers.get('origin') || 'https://app.renovirt.de';
+    const loginUrl = `${origin}/auth`;
+    const resetTriggerUrl = `${origin.replace('https://', 'https://zjedwybadmqdcglhflbs.supabase.co/functions/v1/')}/trigger-password-reset`;
     
     const emailResponse = await resend.emails.send({
       from: "Renovirt <noreply@renovirt.de>",
@@ -95,10 +97,13 @@ const handler = async (req: Request): Promise<Response> => {
                 <p style="margin: 0 0 15px 0; color: #6b7280; line-height: 1.5; font-size: 14px;">
                   Kein Problem – hier können Sie ganz einfach ein neues Passwort festlegen.
                 </p>
-                <a href="${passwordResetUrl}" 
-                   style="display: inline-block; background: #B5C1A5; color: #1f2937; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
-                  Passwort zurücksetzen &rarr;
-                </a>
+                <form action="${resetTriggerUrl}" method="POST" style="display: inline;">
+                  <input type="hidden" name="email" value="${email}" />
+                  <button type="submit" 
+                          style="display: inline-block; background: #B5C1A5; color: #1f2937; padding: 12px 24px; border: none; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none;">
+                    Passwort zurücksetzen &rarr;
+                  </button>
+                </form>
               </div>
 
               <!-- Sicherheitshinweis -->

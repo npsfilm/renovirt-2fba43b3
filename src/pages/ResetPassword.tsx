@@ -20,12 +20,24 @@ const ResetPassword = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if we have the required URL parameters
-    const accessToken = searchParams.get('access_token');
-    const refreshToken = searchParams.get('refresh_token');
-    const type = searchParams.get('type');
+    // Check both URL search params and hash for tokens
+    const accessToken = searchParams.get('access_token') || 
+                       new URLSearchParams(window.location.hash.substring(1)).get('access_token');
+    const refreshToken = searchParams.get('refresh_token') || 
+                        new URLSearchParams(window.location.hash.substring(1)).get('refresh_token');
+    const type = searchParams.get('type') || 
+                new URLSearchParams(window.location.hash.substring(1)).get('type');
+    
+    console.log('Reset password page - Parameters:', {
+      searchParams: Object.fromEntries(searchParams),
+      hashParams: Object.fromEntries(new URLSearchParams(window.location.hash.substring(1))),
+      accessToken: accessToken ? 'present' : 'missing',
+      type,
+      fullUrl: window.location.href
+    });
 
     if (!accessToken || type !== 'recovery') {
+      console.log('Invalid reset link - missing token or wrong type');
       setError('Ungültiger oder abgelaufener Reset-Link.');
       return;
     }
@@ -33,15 +45,20 @@ const ResetPassword = () => {
     // Set the session with the tokens from URL
     const setSession = async () => {
       try {
+        console.log('Setting session with tokens...');
         const { error } = await supabase.auth.setSession({
           access_token: accessToken,
           refresh_token: refreshToken || ''
         });
         
         if (error) {
+          console.error('Error setting session:', error);
           setError('Session konnte nicht wiederhergestellt werden.');
+        } else {
+          console.log('Session set successfully');
         }
       } catch (err) {
+        console.error('Exception during session setup:', err);
         setError('Ein Fehler ist aufgetreten.');
       }
     };
