@@ -31,11 +31,11 @@ const PhotoTypeStep = ({ selectedType, onTypeChange, onNext }: PhotoTypeStepProp
       )}
 
       {/* Content Area */}
-      <div className={`${isMobile ? 'px-6 py-8 space-y-6' : 'flex-1 min-h-0 px-2 md:px-4 overflow-y-auto'}`}>
+      <div className={`${isMobile ? 'px-4 py-6 space-y-4' : 'flex-1 min-h-0 px-2 md:px-4 overflow-y-auto'}`}>
         <RadioGroup
           value={selectedType}
           onValueChange={onTypeChange}
-          className={`${isMobile ? 'space-y-5' : 'grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-4 mb-8'}`}
+          className={`${isMobile ? 'space-y-4' : 'grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-4 mb-8'}`}
         >
           {photoTypes.map((type) => (
             <PhotoTypeCard
