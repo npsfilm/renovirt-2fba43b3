@@ -97,21 +97,7 @@ const RoleSelectionStep = ({ data, updateData, nextStep, prevStep }: RoleSelecti
                   </div>
                   <div className="min-w-0">
                     <h3 className="text-sm lg:text-base font-bold text-foreground mb-1">{role.title}</h3>
-                    <p className="text-xs lg:text-sm text-muted-foreground mb-2 leading-relaxed">{role.description}</p>
-                    <div className="flex flex-wrap justify-center gap-1">
-                      {role.benefits.map((benefit, index) => (
-                        <span
-                          key={index}
-                          className={`px-2 py-1 rounded-full text-xs font-medium transition-all duration-300 ${
-                            isSelected
-                              ? 'bg-primary/10 text-primary shadow-sm'
-                              : 'bg-muted text-muted-foreground group-hover:bg-primary/5'
-                          }`}
-                        >
-                          {benefit}
-                        </span>
-                      ))}
-                    </div>
+                    <p className="text-xs lg:text-sm text-muted-foreground leading-relaxed">{role.description}</p>
                   </div>
                 </div>
               </button>
