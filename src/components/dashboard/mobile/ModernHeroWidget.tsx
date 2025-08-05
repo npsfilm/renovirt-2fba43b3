@@ -129,23 +129,13 @@ const ModernHeroWidget = () => {
             ) : (
               <div className="space-y-3">
                 {/* Quick Action Buttons */}
-                <div className="flex gap-2">
-                  <Button 
-                    onClick={() => navigate('/order')} 
-                    className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground shadow-md transition-all duration-300 hover:shadow-lg"
-                  >
-                    <Upload className="w-4 h-4 mr-2" />
-                    Bilder hochladen
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="icon"
-                    onClick={() => navigate('/orders')}
-                    className="border-border bg-background/50 hover:bg-accent/10 transition-all duration-300"
-                  >
-                    <Zap className="w-4 h-4" />
-                  </Button>
-                </div>
+                <Button 
+                  onClick={() => navigate('/order')} 
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-md transition-all duration-300 hover:shadow-lg"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Bilder hochladen
+                </Button>
                 
                 {/* Quick access link */}
                 <Button 
