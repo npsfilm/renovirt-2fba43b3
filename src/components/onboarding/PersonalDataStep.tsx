@@ -3,12 +3,13 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, Building, ArrowLeft, ArrowRight } from 'lucide-react';
+import { AlertCircle, User, ArrowLeft, ArrowRight } from 'lucide-react';
 import { OnboardingData } from '@/pages/Onboarding';
 import { toast } from '@/components/ui/use-toast';
 
-interface CompanyDataStepProps {
+interface PersonalDataStepProps {
   data: OnboardingData;
   updateData: (field: keyof OnboardingData, value: string) => void;
   nextStep: () => void;
@@ -18,7 +19,7 @@ interface CompanyDataStepProps {
   loading?: boolean;
 }
 
-export const CompanyDataStep: React.FC<CompanyDataStepProps> = ({
+export const PersonalDataStep: React.FC<PersonalDataStepProps> = ({
   data,
   updateData,
   nextStep,
@@ -37,7 +38,33 @@ export const CompanyDataStep: React.FC<CompanyDataStepProps> = ({
   };
 
   const handleNext = () => {
-    // Company data is optional, no validation required
+    const validationErrors: string[] = [];
+
+    // Validate required fields
+    if (!data.salutation) {
+      validationErrors.push('Bitte wählen Sie eine Anrede aus');
+    }
+
+    if (!data.firstName?.trim()) {
+      validationErrors.push('Vorname ist erforderlich');
+    }
+
+    if (!data.lastName?.trim()) {
+      validationErrors.push('Nachname ist erforderlich');
+    }
+
+    if (validationErrors.length > 0) {
+      setErrors(validationErrors);
+      validationErrors.forEach(error => {
+        toast({
+          title: "Eingabe erforderlich",
+          description: error,
+          variant: "destructive",
+        });
+      });
+      return;
+    }
+
     nextStep();
   };
 
@@ -53,14 +80,14 @@ export const CompanyDataStep: React.FC<CompanyDataStepProps> = ({
       <div className="mb-8 text-center">
         <div className="flex items-center justify-center mb-4">
           <div className="p-3 bg-primary/10 rounded-full">
-            <Building className="h-8 w-8 text-primary" />
+            <User className="h-8 w-8 text-primary" />
           </div>
         </div>
         <h2 className="text-3xl font-bold text-foreground mb-2">
-          Unternehmensdaten
+          Persönliche Angaben
         </h2>
         <p className="text-muted-foreground text-lg">
-          Bitte geben Sie Ihre Unternehmensdaten ein (optional)
+          Bitte geben Sie Ihre persönlichen Daten ein
         </p>
       </div>
 
@@ -80,48 +107,50 @@ export const CompanyDataStep: React.FC<CompanyDataStepProps> = ({
 
       {/* Form */}
       <div className="space-y-6">
-        {/* Firmenname */}
+        {/* Anrede */}
         <div className="space-y-2">
-          <Label htmlFor="company" className="text-base font-medium">
-            Firmenname
+          <Label htmlFor="salutation" className="text-base font-medium">
+            Anrede *
+          </Label>
+          <Select value={data.salutation} onValueChange={(value) => handleInputChange('salutation', value)}>
+            <SelectTrigger className="h-12 text-base">
+              <SelectValue placeholder="Bitte wählen Sie Ihre Anrede" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Herr">Herr</SelectItem>
+              <SelectItem value="Frau">Frau</SelectItem>
+              <SelectItem value="Divers">Divers</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Vorname */}
+        <div className="space-y-2">
+          <Label htmlFor="firstName" className="text-base font-medium">
+            Vorname *
           </Label>
           <Input
-            id="company"
+            id="firstName"
             type="text"
-            value={data.company}
-            onChange={(e) => handleInputChange('company', e.target.value)}
-            placeholder="Musterfirma GmbH"
+            value={data.firstName}
+            onChange={(e) => handleInputChange('firstName', e.target.value)}
+            placeholder="Ihr Vorname"
             className="h-12 text-base"
             autoFocus
           />
         </div>
 
-        {/* Telefon */}
+        {/* Nachname */}
         <div className="space-y-2">
-          <Label htmlFor="phone" className="text-base font-medium">
-            Telefonnummer
+          <Label htmlFor="lastName" className="text-base font-medium">
+            Nachname *
           </Label>
           <Input
-            id="phone"
-            type="tel"
-            value={data.phone}
-            onChange={(e) => handleInputChange('phone', e.target.value)}
-            placeholder="+49 123 456789"
-            className="h-12 text-base"
-          />
-        </div>
-
-        {/* USt-ID */}
-        <div className="space-y-2">
-          <Label htmlFor="vatId" className="text-base font-medium">
-            USt-ID (optional)
-          </Label>
-          <Input
-            id="vatId"
+            id="lastName"
             type="text"
-            value={data.vatId}
-            onChange={(e) => handleInputChange('vatId', e.target.value)}
-            placeholder="DE123456789"
+            value={data.lastName}
+            onChange={(e) => handleInputChange('lastName', e.target.value)}
+            placeholder="Ihr Nachname"
             className="h-12 text-base"
           />
         </div>
@@ -155,5 +184,3 @@ export const CompanyDataStep: React.FC<CompanyDataStepProps> = ({
     </motion.div>
   );
 };
-
-export default CompanyDataStep;

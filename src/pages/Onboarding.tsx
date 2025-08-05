@@ -8,6 +8,8 @@ import { secureEmailConfirmation } from '@/utils/authSecurity';
 import { logSecurityEvent } from '@/utils/secureLogging';
 import WelcomeStep from '@/components/onboarding/WelcomeStep';
 import RoleSelectionStep from '@/components/onboarding/RoleSelectionStep';
+import { PersonalDataStep } from '@/components/onboarding/PersonalDataStep';
+import { AddressDataStep } from '@/components/onboarding/AddressDataStep';
 import CompanyDataStep from '@/components/onboarding/CompanyDataStep';
 import SourceStep from '@/components/onboarding/SourceStep';
 import QuickStartStep from '@/components/onboarding/QuickStartStep';
@@ -83,8 +85,14 @@ const Onboarding = () => {
     component: RoleSelectionStep,
     title: 'Ihre Rolle'
   }, {
+    component: PersonalDataStep,
+    title: 'Persönliche Daten'
+  }, {
+    component: AddressDataStep,
+    title: 'Adressdaten'
+  }, {
     component: CompanyDataStep,
-    title: 'Ihre Daten'
+    title: 'Unternehmensdaten'
   }, {
     component: SourceStep,
     title: 'Wie haben Sie uns gefunden?'
@@ -105,12 +113,21 @@ const Onboarding = () => {
     }
   };
 
-  const updateData = (data: Partial<OnboardingData>) => {
-    setOnboardingData(prev => ({
-      ...prev,
-      ...data
-    }));
-  };
+  const updateData = ((fieldOrData: keyof OnboardingData | Partial<OnboardingData>, value?: string) => {
+    if (typeof fieldOrData === 'string' && value !== undefined) {
+      // Single field update
+      setOnboardingData(prev => ({
+        ...prev,
+        [fieldOrData]: value
+      }));
+    } else if (typeof fieldOrData === 'object') {
+      // Multiple field update
+      setOnboardingData(prev => ({
+        ...prev,
+        ...fieldOrData
+      }));
+    }
+  }) as ((field: keyof OnboardingData, value: string) => void) & ((data: Partial<OnboardingData>) => void);
 
   const completeOnboarding = async () => {
     try {
@@ -245,7 +262,7 @@ const Onboarding = () => {
                   duration: 0.4,
                   ease: "easeInOut"
                 }} className="h-full flex flex-col">
-                    <CurrentStepComponent data={onboardingData} updateData={updateData} nextStep={nextStep} prevStep={prevStep} currentStep={currentStep} totalSteps={steps.length} completeOnboarding={completeOnboarding} loading={loading} />
+                    <CurrentStepComponent data={onboardingData} updateData={updateData} nextStep={nextStep} prevStep={prevStep} currentStep={currentStep + 1} totalSteps={steps.length} completeOnboarding={completeOnboarding} loading={loading} />
                   </motion.div>
                 </AnimatePresence>
               </div>
