@@ -9,11 +9,11 @@ interface FloatingButtonProps {
 
 const FloatingButton = ({ onClick }: FloatingButtonProps) => {
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed bottom-24 right-4 z-60 md:bottom-4">
       <Button
         onClick={onClick}
         size="lg"
-        className="rounded-full h-14 w-14 bg-blue-600 hover:bg-blue-700 shadow-lg"
+        className="rounded-full h-14 w-14 bg-primary hover:bg-primary/90 shadow-lg"
       >
         <MessageCircle className="w-6 h-6" />
       </Button>

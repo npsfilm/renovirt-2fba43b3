@@ -209,7 +209,7 @@ const AIChatWidget = () => {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed bottom-24 right-4 z-60 md:bottom-4">
       <Card className="w-96 h-[500px] shadow-2xl">
         <ChatHeader onClose={() => setIsOpen(false)} />
         

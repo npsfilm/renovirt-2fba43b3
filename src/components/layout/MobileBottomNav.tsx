@@ -151,31 +151,29 @@ const MobileBottomNav = () => {
 
       {/* Bottom Navigation Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-30">
-        <div className="flex items-center justify-around px-2 py-2 max-w-sm mx-auto">
+        <div className="flex items-center px-2 py-2">
           {/* Main navigation items */}
           {mainNavItems.map((item) => (
             <button
               key={item.id}
               onClick={() => handleNavClick(item.path)}
               className={cn(
-                "flex flex-col items-center justify-center min-w-0 px-2 py-2 rounded-lg transition-all duration-200",
-                item.isProminent 
-                  ? "bg-success text-success-foreground px-4 shadow-sm scale-105"
-                  : item.isActive 
-                    ? "bg-accent text-accent-foreground" 
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                "flex-1 flex flex-col items-center justify-center px-3 py-2 rounded-lg transition-all duration-200 min-h-[60px]",
+                item.isActive && !item.isProminent
+                  ? "bg-accent text-accent-foreground" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
               )}
             >
               <item.icon 
                 className={cn(
-                  "shrink-0",
-                  item.isProminent ? "h-6 w-6" : "h-5 w-5"
+                  "h-5 w-5 shrink-0",
+                  item.isProminent ? "text-success" : ""
                 )} 
               />
               <span 
                 className={cn(
                   "text-xs font-medium mt-1 leading-none",
-                  item.isProminent ? "font-semibold" : ""
+                  item.isProminent ? "text-success font-semibold" : ""
                 )}
               >
                 {item.label}
@@ -187,7 +185,7 @@ const MobileBottomNav = () => {
           <button
             onClick={handleMoreClick}
             className={cn(
-              "flex flex-col items-center justify-center min-w-0 px-2 py-2 rounded-lg transition-all duration-200",
+              "flex-1 flex flex-col items-center justify-center px-3 py-2 rounded-lg transition-all duration-200 min-h-[60px]",
               isMoreActive || isMoreMenuOpen
                 ? "bg-accent text-accent-foreground" 
                 : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
