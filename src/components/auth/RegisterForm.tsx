@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import RegisterHeader from './register/RegisterHeader';
 import GoogleAuthButton from './register/GoogleAuthButton';
 import RegisterFormFields from './register/RegisterFormFields';
@@ -109,15 +110,21 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
         console.error('Registration error:', error);
         
         // Check if user already exists
-        if (error.message?.includes('User already registered')) {
+        if (error.message?.includes('User already registered') || 
+            error.message?.includes('already been registered') ||
+            error.message?.includes('already exists')) {
+          console.log('User already exists, showing alert and sending notification email');
           setShowAccountExistsAlert(true);
           // Send background notification email
           try {
-            await fetch('/api/send-account-exists-notification', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email: formData.email })
+            const { error: emailError } = await supabase.functions.invoke('send-account-exists-notification', {
+              body: { email: formData.email }
             });
+            if (emailError) {
+              console.error('Failed to send account exists notification:', emailError);
+            } else {
+              console.log('Account exists notification email sent successfully');
+            }
           } catch (emailError) {
             console.error('Failed to send account exists notification:', emailError);
           }
