@@ -29,7 +29,7 @@ const UploadZone = ({ onFiles, supportedFormats, maxFileSize, maxFiles }: Upload
         userId={user?.id}
         className="w-full"
       >
-        <div className="relative border-2 border-dashed border-gray-300 rounded-3xl p-8 text-center hover:border-primary/60 transition-all duration-300 cursor-pointer bg-white hover:bg-primary/5 group">
+        <div className="relative border-2 border-dashed border-gray-300 rounded-3xl p-6 text-center hover:border-primary/60 transition-all duration-300 cursor-pointer bg-white hover:bg-primary/5 group">
           {/* Main content */}
           <div className="space-y-6">
             {/* Enhanced icon */}
