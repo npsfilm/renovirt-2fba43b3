@@ -1,13 +1,16 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/hooks/useAuth';
 import RegisterHeader from './register/RegisterHeader';
 import GoogleAuthButton from './register/GoogleAuthButton';
 import RegisterFormFields from './register/RegisterFormFields';
 import TermsAcceptance from './register/TermsAcceptance';
+import ForgotPasswordDialog from './ForgotPasswordDialog';
 import { useFormValidation } from './register/FormValidation';
 import { useRegistrationToastHelper } from './RegistrationToastHelper';
+import { AlertTriangle, LogIn, Lock } from 'lucide-react';
 
 interface RegisterFormProps {
   onSuccess: () => void;
@@ -23,6 +26,8 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
   });
   const [loading, setLoading] = useState(false);
   const [showPasswordValidation, setShowPasswordValidation] = useState(false);
+  const [showAccountExistsAlert, setShowAccountExistsAlert] = useState(false);
+  const [showForgotPasswordDialog, setShowForgotPasswordDialog] = useState(false);
 
   const { signUp, signInWithGoogle } = useAuth();
   const { validateForm, getPasswordValidationErrors } = useFormValidation();
@@ -102,11 +107,27 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
 
       if (error) {
         console.error('Registration error:', error);
-        const detailedMessage = getDetailedErrorMessage(error);
-        showRegistrationError({
-          message: detailedMessage,
-          error_description: detailedMessage
-        });
+        
+        // Check if user already exists
+        if (error.message?.includes('User already registered')) {
+          setShowAccountExistsAlert(true);
+          // Send background notification email
+          try {
+            await fetch('/api/send-account-exists-notification', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: formData.email })
+            });
+          } catch (emailError) {
+            console.error('Failed to send account exists notification:', emailError);
+          }
+        } else {
+          const detailedMessage = getDetailedErrorMessage(error);
+          showRegistrationError({
+            message: detailedMessage,
+            error_description: detailedMessage
+          });
+        }
       } else if (data?.user) {
         console.log('Registration successful for user:', data.user.email);
         
@@ -166,6 +187,48 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
         </div>
       </div>
 
+{showAccountExistsAlert && (
+        <Alert className="border-amber-200 bg-amber-50">
+          <AlertTriangle className="h-4 w-4 text-amber-600" />
+          <AlertDescription className="text-sm">
+            <div className="space-y-3">
+              <p className="text-amber-800 font-medium">
+                Ein Konto mit dieser E-Mail-Adresse existiert bereits.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setShowAccountExistsAlert(false);
+                    onSwitchToLogin();
+                  }}
+                  className="text-amber-700 border-amber-300 hover:bg-amber-100"
+                >
+                  <LogIn className="h-3 w-3 mr-2" />
+                  Zur Anmeldung
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setShowAccountExistsAlert(false);
+                    setShowForgotPasswordDialog(true);
+                  }}
+                  className="text-amber-700 border-amber-300 hover:bg-amber-100"
+                >
+                  <Lock className="h-3 w-3 mr-2" />
+                  Passwort vergessen
+                </Button>
+              </div>
+              <p className="text-xs text-amber-600">
+                Eine Sicherheitsbenachrichtigung wurde an Ihre E-Mail-Adresse gesendet.
+              </p>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
+
       <form onSubmit={handleRegister} className="space-y-2 sm:space-y-3">
         <RegisterFormFields 
           formData={formData}
@@ -183,6 +246,11 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
       </form>
       
       <TermsAcceptance />
+
+      <ForgotPasswordDialog
+        open={showForgotPasswordDialog}
+        onOpenChange={setShowForgotPasswordDialog}
+      />
     </div>
   );
 };
