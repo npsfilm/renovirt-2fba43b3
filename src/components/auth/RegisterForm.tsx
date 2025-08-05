@@ -106,36 +106,34 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
 
       console.log('Registration result:', { data, error });
 
+      // Check if user already exists (repeated signup) - Supabase returns user but no session
+      if (data?.user && !data?.session) {
+        console.log('User already exists (repeated signup), showing alert and sending notification email');
+        setShowAccountExistsAlert(true);
+        // Send background notification email
+        try {
+          const { error: emailError } = await supabase.functions.invoke('send-account-exists-notification', {
+            body: { email: formData.email }
+          });
+          if (emailError) {
+            console.error('Failed to send account exists notification:', emailError);
+          } else {
+            console.log('Account exists notification email sent successfully');
+          }
+        } catch (emailError) {
+          console.error('Failed to send account exists notification:', emailError);
+        }
+        return; // Don't proceed with success flow
+      }
+
       if (error) {
         console.error('Registration error:', error);
-        
-        // Check if user already exists
-        if (error.message?.includes('User already registered') || 
-            error.message?.includes('already been registered') ||
-            error.message?.includes('already exists')) {
-          console.log('User already exists, showing alert and sending notification email');
-          setShowAccountExistsAlert(true);
-          // Send background notification email
-          try {
-            const { error: emailError } = await supabase.functions.invoke('send-account-exists-notification', {
-              body: { email: formData.email }
-            });
-            if (emailError) {
-              console.error('Failed to send account exists notification:', emailError);
-            } else {
-              console.log('Account exists notification email sent successfully');
-            }
-          } catch (emailError) {
-            console.error('Failed to send account exists notification:', emailError);
-          }
-        } else {
-          const detailedMessage = getDetailedErrorMessage(error);
-          showRegistrationError({
-            message: detailedMessage,
-            error_description: detailedMessage
-          });
-        }
-      } else if (data?.user) {
+        const detailedMessage = getDetailedErrorMessage(error);
+        showRegistrationError({
+          message: detailedMessage,
+          error_description: detailedMessage
+        });
+      } else if (data?.user && data?.session) {
         console.log('Registration successful for user:', data.user.email);
         
         // Show success message
