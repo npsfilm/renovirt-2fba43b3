@@ -28,7 +28,7 @@ const MobileBottomNav = () => {
     },
     {
       id: 'orders',
-      label: 'Meine Bestellungen',
+      label: 'Bestellungen',
       icon: Package,
       path: '/orders',
       isActive: currentPath === '/orders',
@@ -144,14 +144,14 @@ const MobileBottomNav = () => {
 
       {/* Bottom Navigation Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-30">
-        <div className="flex items-center px-1 py-3 min-h-[68px]">
+        <div className="flex items-stretch px-2 py-2 h-16">
           {/* Main navigation items */}
           {mainNavItems.map((item) => (
             <button
               key={item.id}
               onClick={() => handleNavClick(item.path)}
               className={cn(
-                "flex-1 flex flex-col items-center justify-center px-2 active:scale-95 transition-all duration-150",
+                "flex-1 flex flex-col items-center justify-center gap-1 active:scale-95 transition-all duration-150",
                 item.isActive && !item.isProminent
                   ? "text-foreground" 
                   : item.isProminent
@@ -159,10 +159,12 @@ const MobileBottomNav = () => {
                     : "text-muted-foreground"
               )}
             >
-              <item.icon className="h-[18px] w-[18px] shrink-0" />
+              <div className="flex items-center justify-center h-5">
+                <item.icon className="h-[18px] w-[18px]" />
+              </div>
               <span 
                 className={cn(
-                  "text-[10px] mt-1 leading-none",
+                  "text-[10px] leading-tight text-center",
                   item.isActive && !item.isProminent
                     ? "font-medium text-foreground"
                     : item.isProminent
@@ -179,16 +181,18 @@ const MobileBottomNav = () => {
           <button
             onClick={handleMoreClick}
             className={cn(
-              "flex-1 flex flex-col items-center justify-center px-2 active:scale-95 transition-all duration-150",
+              "flex-1 flex flex-col items-center justify-center gap-1 active:scale-95 transition-all duration-150",
               isMoreActive || isMoreMenuOpen
                 ? "text-foreground" 
                 : "text-muted-foreground"
             )}
           >
-            <MoreHorizontal className="h-[18px] w-[18px] shrink-0" />
+            <div className="flex items-center justify-center h-5">
+              <MoreHorizontal className="h-[18px] w-[18px]" />
+            </div>
             <span 
               className={cn(
-                "text-[10px] mt-1 leading-none",
+                "text-[10px] leading-tight text-center",
                 isMoreActive || isMoreMenuOpen
                   ? "font-medium text-foreground"
                   : "font-normal text-muted-foreground"
