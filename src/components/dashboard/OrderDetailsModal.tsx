@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -129,8 +128,8 @@ const OrderDetailsModal = ({ isOpen, onClose, order }: OrderDetailsModalProps) =
         </DialogHeader>
         
         <div className="space-y-6">
-          <div className="flex items-center justify-between hover:bg-transparent">
-            <Badge className={`${statusConfig.color} hover:bg-current`}>
+          <div className="flex items-center justify-between">
+            <Badge className={`${statusConfig.color} hover:bg-current hover:text-current`}>
               {statusConfig.label}
             </Badge>
             <div className="text-sm text-subtle">
