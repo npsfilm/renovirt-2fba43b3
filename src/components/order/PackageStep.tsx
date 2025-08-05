@@ -75,52 +75,52 @@ const PackageStep = ({
     iconColor: 'text-primary'
   }];
   const canProceed = selectedPackage !== undefined;
-  return <div className="space-y-5 md:space-y-8">
-      <div className="text-center space-y-2 md:space-y-3 px-4 md:px-0">
-        <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">Wählen Sie Ihr Bearbeitungspaket</h1>
-        <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+  return <div className="space-y-4 md:space-y-8">
+      <div className="text-center space-y-2 md:space-y-3 px-3 md:px-0">
+        <h1 className="text-xl md:text-3xl font-semibold text-foreground tracking-tight">Wählen Sie Ihr Bearbeitungspaket</h1>
+        <p className="text-sm md:text-lg text-muted-foreground max-w-2xl mx-auto leading-tight md:leading-relaxed">
           Wählen Sie das passende Paket für Ihre Bedürfnisse.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto px-4 md:px-0">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6 max-w-4xl mx-auto px-3 md:px-0">
         {packages.map(pkg => {
         const isSelected = selectedPackage === pkg.id;
         const isPopular = pkg.popular;
-        return <Card key={pkg.id} className={`relative cursor-pointer transition-all duration-300 ease-out transform flex flex-col ${isSelected ? 'ring-2 ring-primary border-primary shadow-lg scale-[1.02] bg-gradient-to-br ' + pkg.gradient : 'hover:shadow-md hover:scale-[1.01] border-border bg-card'} ${isPopular ? 'border-primary/30' : ''}`} onClick={() => onPackageChange(pkg.id)}>
-              {isPopular && <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                  <Badge className="bg-warning text-warning-foreground px-3 py-1 shadow-sm">
+        return <Card key={pkg.id} className={`relative cursor-pointer transition-all duration-300 ease-out transform flex flex-col rounded-2xl md:rounded-lg ${isSelected ? 'ring-2 ring-primary border-primary shadow-[0_8px_30px_rgb(0,0,0,0.12)] md:shadow-lg scale-[1.02] bg-gradient-to-br ' + pkg.gradient : 'hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] md:hover:shadow-md hover:scale-[1.01] border-border bg-card shadow-[0_2px_8px_rgb(0,0,0,0.04)]'} ${isPopular ? 'border-primary/30' : ''}`} onClick={() => onPackageChange(pkg.id)}>
+              {isPopular && <div className="absolute -top-2 md:-top-3 left-1/2 transform -translate-x-1/2 z-10">
+                  <Badge className="bg-warning text-warning-foreground px-2 py-0.5 md:px-3 md:py-1 shadow-sm text-xs md:text-sm rounded-full">
                     ⭐ BESTSELLER
                   </Badge>
                 </div>}
               
-              <CardHeader className="text-center pb-4 pt-6">
-                <div className="flex items-center justify-center mb-3">
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${pkg.iconBg}`}>
-                    {pkg.id === 'Basic' ? <Zap className={`w-6 h-6 ${pkg.iconColor}`} /> : <Crown className={`w-6 h-6 ${pkg.iconColor}`} />}
+              <CardHeader className="text-center pb-3 md:pb-4 pt-5 md:pt-6 px-4 md:px-6">
+                <div className="flex items-center justify-center mb-2 md:mb-3">
+                  <div className={`w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center ${pkg.iconBg}`}>
+                    {pkg.id === 'Basic' ? <Zap className={`w-5 h-5 md:w-6 md:h-6 ${pkg.iconColor}`} /> : <Crown className={`w-5 h-5 md:w-6 md:h-6 ${pkg.iconColor}`} />}
                   </div>
                 </div>
-                <CardTitle className="text-xl font-semibold">{pkg.name}</CardTitle>
-                <div className="text-3xl font-bold text-foreground">
+                <CardTitle className="text-lg md:text-xl font-semibold">{pkg.name}</CardTitle>
+                <div className="text-2xl md:text-3xl font-bold text-foreground">
                   {pkg.price}
-                  <span className="text-sm font-normal text-muted-foreground ml-1">/ {pkg.priceUnit}</span>
+                  <span className="text-xs md:text-sm font-normal text-muted-foreground ml-1">/ {pkg.priceUnit}</span>
                 </div>
                 
-                <p className="text-muted-foreground text-sm leading-relaxed">{pkg.description}</p>
+                <p className="text-muted-foreground text-xs md:text-sm leading-tight md:leading-relaxed">{pkg.description}</p>
               </CardHeader>
 
-              <CardContent className="space-y-4 pt-0 flex-1 flex flex-col">
-                <div className="space-y-3 flex-1">
-                  {pkg.features.map((feature, index) => <div key={index} className="flex items-center space-x-3">
-                      <div className="w-5 h-5 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0">
-                        <feature.icon className="w-3 h-3 text-success" />
+              <CardContent className="space-y-3 md:space-y-4 pt-0 flex-1 flex flex-col px-4 md:px-6 pb-4 md:pb-6">
+                <div className="space-y-2 md:space-y-3 flex-1">
+                  {pkg.features.map((feature, index) => <div key={index} className="flex items-center space-x-2 md:space-x-3">
+                      <div className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0">
+                        <feature.icon className="w-2.5 h-2.5 md:w-3 md:h-3 text-success" />
                       </div>
-                      <span className="text-sm text-foreground/80">{feature.text}</span>
+                      <span className="text-xs md:text-sm text-foreground/80 leading-tight">{feature.text}</span>
                     </div>)}
                 </div>
 
-                <div className="mt-auto pt-4">
-                  <Button className={`w-full transition-all duration-200 ${isSelected ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-md' : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground border border-border'}`} onClick={() => onPackageChange(pkg.id)}>
+                <div className="mt-auto pt-3 md:pt-4">
+                  <Button className={`w-full transition-all duration-200 h-9 md:h-10 text-sm rounded-xl md:rounded-md ${isSelected ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-md' : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground border border-border'}`} onClick={() => onPackageChange(pkg.id)}>
                     {isSelected ? 'Ausgewählt' : 'Auswählen'}
                   </Button>
                 </div>
