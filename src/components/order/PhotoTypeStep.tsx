@@ -10,9 +10,10 @@ import { photoTypes } from './photo-type/photoTypeData';
 interface PhotoTypeStepProps {
   selectedType?: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5';
   onTypeChange: (type: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5') => void;
+  onNext: () => void;
 }
 
-const PhotoTypeStep = ({ selectedType, onTypeChange }: PhotoTypeStepProps) => {
+const PhotoTypeStep = ({ selectedType, onTypeChange, onNext }: PhotoTypeStepProps) => {
   const canProceed = selectedType !== undefined;
 
   return (
@@ -60,6 +61,17 @@ const PhotoTypeStep = ({ selectedType, onTypeChange }: PhotoTypeStepProps) => {
         <div className="h-20 md:h-0" />
       </div>
 
+      {/* Sticky Bottom Button Area */}
+      <div className="sticky bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background/95 to-transparent pt-4 pb-6 px-2 md:px-4 flex-shrink-0 md:relative md:bg-none md:pt-6">
+        <Button 
+          onClick={onNext} 
+          disabled={!canProceed}
+          size="lg"
+          className="w-full md:w-auto md:min-w-[180px] md:ml-auto md:flex shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02]"
+        >
+          Weiter zum Upload →
+        </Button>
+      </div>
     </div>
   );
 };

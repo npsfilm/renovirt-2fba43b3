@@ -3,8 +3,7 @@ import React, { useState } from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import PageHeader from '@/components/layout/PageHeader';
 import { useIsMobile } from '@/hooks/use-mobile';
-import OrderActionBar from '@/components/order/OrderActionBar';
-import OrderProgressBar from '@/components/order/OrderProgressBar';
+import OrderProgress from '@/components/order/OrderProgress';
 import PhotoTypeStep from '@/components/order/PhotoTypeStep';
 import UploadStep from '@/components/order/UploadStep';
 import PackageStep from '@/components/order/PackageStep';
@@ -62,24 +61,6 @@ const Order = () => {
     setOrderData(prev => ({ ...prev, ...updates }));
   };
 
-  // Calculate if we can proceed (for action bar)
-  const canProceed = () => {
-    switch (currentStep) {
-      case 'photo-type':
-        return !!orderData.photoType;
-      case 'upload':
-        return orderData.files.length > 0;
-      case 'package':
-        return !!orderData.package;
-      case 'extras':
-        return true; // Extras are optional
-      case 'summary':
-        return !!(orderData.photoType && orderData.files.length > 0 && orderData.package && orderData.email && orderData.acceptedTerms);
-      default:
-        return false;
-    }
-  };
-
   const handleNext = () => {
     switch (currentStep) {
       case 'photo-type':
@@ -127,6 +108,7 @@ const Order = () => {
           <PhotoTypeStep
             selectedType={orderData.photoType}
             onTypeChange={(type) => updateOrderData({ photoType: type })}
+            onNext={handleNext}
           />
         );
       case 'upload':
@@ -135,6 +117,8 @@ const Order = () => {
             files={orderData.files}
             photoType={orderData.photoType}
             onFilesChange={(files) => updateOrderData({ files })}
+            onNext={handleNext}
+            onPrev={handlePrev}
           />
         );
       case 'package':
@@ -142,6 +126,8 @@ const Order = () => {
           <PackageStep
             selectedPackage={orderData.package}
             onPackageChange={(pkg) => updateOrderData({ package: pkg })}
+            onNext={handleNext}
+            onPrev={handlePrev}
           />
         );
       case 'extras':
@@ -150,6 +136,8 @@ const Order = () => {
             orderData={orderData}
             onExtrasChange={(extras) => updateOrderData({ extras })}
             onWatermarkFileChange={(watermarkFile) => updateOrderData({ watermarkFile })}
+            onNext={handleNext}
+            onPrev={handlePrev}
           />
         );
       case 'summary':
@@ -176,32 +164,26 @@ const Order = () => {
   
   return (
     <MobileLayout>
-      <OrderProgressBar currentStep={currentStep} />
-      
       {!isMobile && (
         <PageHeader 
           title="Neue Bestellung" 
           subtitle="Fotos hochladen und bearbeiten lassen"
         />
       )}
-      <div className="pb-32 pt-1">
-        <div className="max-w-2xl mx-auto">
+      <div className="p-6 py-[24px]">
+        <div className="max-w-4xl mx-auto space-y-8">
           {isMobile && (
-            <div className="mb-6 px-4 pt-2">
+            <div className="mb-6">
               <h1 className="text-2xl font-semibold text-foreground">Neue Bestellung</h1>
               <p className="text-muted-foreground">Fotos hochladen und bearbeiten lassen</p>
             </div>
           )}
+          {currentStep !== 'confirmation' && (
+            <OrderProgress steps={steps} />
+          )}
           {renderCurrentStep()}
         </div>
       </div>
-
-      <OrderActionBar
-        currentStep={currentStep}
-        canProceed={canProceed()}
-        onNext={handleNext}
-        onPrev={handlePrev}
-      />
     </MobileLayout>
   );
 };

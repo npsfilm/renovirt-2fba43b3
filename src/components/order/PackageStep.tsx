@@ -7,10 +7,14 @@ import { Zap, Crown, Clock, Palette, Eye, Wand2, Sparkles } from 'lucide-react';
 interface PackageStepProps {
   selectedPackage?: 'Basic' | 'Premium';
   onPackageChange: (pkg: 'Basic' | 'Premium') => void;
+  onNext: () => void;
+  onPrev: () => void;
 }
 const PackageStep = ({
   selectedPackage,
-  onPackageChange
+  onPackageChange,
+  onNext,
+  onPrev
 }: PackageStepProps) => {
   // Preselect Premium if nothing is selected
   React.useEffect(() => {
@@ -129,6 +133,14 @@ const PackageStep = ({
         Alle Preise sind zzgl. 19% MwSt.
       </div>
 
+      <div className="flex justify-between max-w-4xl mx-auto">
+        <Button variant="outline" onClick={onPrev} className="shadow-sm">
+          ← Zurück zu Upload
+        </Button>
+        <Button onClick={onNext} disabled={!canProceed} className="min-w-[150px] shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02]">
+          Weiter zur Übersicht →
+        </Button>
+      </div>
     </div>;
 };
 export default PackageStep;
