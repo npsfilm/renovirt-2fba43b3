@@ -47,7 +47,7 @@ const SummaryStepActions = ({
   };
 
   return (
-    <div className="space-y-4 pt-6 border-t border-gray-200">
+    <div className="space-y-3 md:space-y-4 pt-4 md:pt-6 border-t border-gray-200 px-3 md:px-0">
       {/* Desktop Action Buttons - hidden on mobile */}
       <div className="hidden md:flex flex-col sm:flex-row gap-3">
         <Button 
@@ -77,8 +77,8 @@ const SummaryStepActions = ({
       
       {/* Security Notice */}
       <div className="text-center">
-        <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
-          <Lock className="w-3 h-3" />
+        <div className="flex items-center justify-center gap-2 text-xs md:text-sm text-gray-500">
+          <Lock className="w-3 h-3 md:w-4 md:h-4" />
           <span>Sichere Bestellung • SSL-verschlüsselt</span>
         </div>
         {paymentMethod === 'stripe' && finalPrice > 0 && (

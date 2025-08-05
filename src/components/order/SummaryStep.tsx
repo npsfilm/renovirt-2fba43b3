@@ -32,7 +32,7 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
   } = useSummaryStepLogic(orderData, onNext);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <SummaryStepHeader />
 
       <SummaryStepContent
