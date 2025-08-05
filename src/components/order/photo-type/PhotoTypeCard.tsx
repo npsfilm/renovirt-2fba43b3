@@ -18,16 +18,16 @@ const PhotoTypeCard = ({ id, title, description, icon: IconComponent, isSelected
   const isMobile = useIsMobile();
 
   if (isMobile) {
-    // Mobile full-width button design
+    // Airbnb-style mobile design
     return (
-      <Label htmlFor={id} className="cursor-pointer block col-span-2">
+      <Label htmlFor={id} className="cursor-pointer block">
         <Card className={`
-          relative overflow-hidden transition-all duration-300 ease-out transform
+          relative overflow-hidden transition-all duration-200 ease-out active:scale-[0.98]
           ${isSelected 
-            ? 'ring-4 ring-primary border-primary bg-primary/10 shadow-xl scale-[1.01]'
-            : 'border-border bg-card hover:shadow-lg hover:border-primary/30'
+            ? 'shadow-lg border-rose-200 bg-gradient-to-r from-rose-50 to-pink-50 shadow-rose-100/40'
+            : 'shadow-md border-gray-200 bg-white hover:shadow-lg hover:border-gray-300'
           }
-          border-2 w-full
+          border rounded-2xl w-full min-h-[80px]
         `}>
           <CardContent className="p-6 relative">
             {/* Hidden radio button for form functionality */}
@@ -37,49 +37,61 @@ const PhotoTypeCard = ({ id, title, description, icon: IconComponent, isSelected
               className="sr-only"
             />
             
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-5">
               <div className={`
-                w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 flex-shrink-0
+                w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-200 flex-shrink-0
                 ${isSelected 
-                  ? 'bg-primary/20 shadow-lg' 
-                  : 'bg-muted'
+                  ? 'bg-rose-100 shadow-sm' 
+                  : 'bg-gray-100'
                 }
               `}>
                 <IconComponent className={`
-                  w-8 h-8 transition-all duration-300
+                  w-7 h-7 transition-all duration-200
                   ${isSelected 
-                    ? 'text-primary' 
-                    : 'text-muted-foreground'
+                    ? 'text-rose-600' 
+                    : 'text-gray-600'
                   }
                 `} />
               </div>
               
               <div className="flex-1 text-left">
                 <h3 className={`
-                  text-xl font-bold mb-2 transition-colors duration-300
-                  ${isSelected ? 'text-primary' : 'text-foreground'}
+                  text-lg font-semibold mb-1 transition-colors duration-200
+                  ${isSelected ? 'text-gray-900' : 'text-gray-800'}
                 `}>
                   {title}
                 </h3>
                 
                 <p className={`
-                  text-sm leading-relaxed transition-colors duration-300
-                  ${isSelected ? 'text-foreground/90' : 'text-muted-foreground'}
+                  text-sm leading-relaxed transition-colors duration-200
+                  ${isSelected ? 'text-gray-700' : 'text-gray-600'}
                 `}>
                   {description}
                 </p>
               </div>
 
-              {/* Visual selection indicator */}
+              {/* Airbnb-style checkmark indicator */}
               <div className={`
-                w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300
+                w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 flex-shrink-0
                 ${isSelected 
-                  ? 'border-primary bg-primary' 
-                  : 'border-muted-foreground'
+                  ? 'bg-rose-600 shadow-sm' 
+                  : 'border-2 border-gray-300 bg-white'
                 }
               `}>
                 {isSelected && (
-                  <div className="w-2 h-2 rounded-full bg-primary-foreground" />
+                  <svg 
+                    className="w-4 h-4 text-white" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2.5} 
+                      d="M5 13l4 4L19 7" 
+                    />
+                  </svg>
                 )}
               </div>
             </div>
