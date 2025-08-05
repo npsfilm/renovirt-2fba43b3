@@ -188,34 +188,34 @@ const Order = () => {
     <MobileLayout>
       {/* Mobile Compact Header with Progress */}
       {isMobile ? (
-        <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-xl border-b border-border">
+        <div className="sticky top-0 z-30 bg-white/98 backdrop-blur-xl border-b border-gray-100 shadow-sm">
           {/* Thin Progress Bar */}
-          <div className="w-full bg-muted h-1">
+          <div className="w-full bg-gray-100 h-1.5">
             <div 
-              className="bg-primary h-1 transition-all duration-700 ease-out"
+              className="bg-primary h-1.5 transition-all duration-700 ease-out shadow-sm"
               style={{ width: `${((stepOrder.indexOf(currentStep) + 1) / stepOrder.length) * 100}%` }}
             />
           </div>
           
           {/* Compact Header */}
-          <div className="px-4 py-3">
+          <div className="px-6 py-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 {currentStep !== 'photo-type' && (
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={handlePrev}
-                    className="p-2 h-8 w-8"
+                    className="p-2 h-9 w-9 rounded-full hover:bg-gray-100 transition-all duration-200"
                   >
-                    <ArrowLeft className="w-4 h-4" />
+                    <ArrowLeft className="w-5 h-5 text-gray-700" />
                   </Button>
                 )}
                 <div>
-                  <h1 className="text-lg font-semibold text-foreground">
+                  <h1 className="text-lg font-semibold text-gray-900 tracking-tight">
                     {steps.find(step => step.status === 'current')?.title || 'Bestellung'}
                   </h1>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-sm text-gray-500 font-medium">
                     Schritt {stepOrder.indexOf(currentStep) + 1} von {stepOrder.length}
                   </p>
                 </div>

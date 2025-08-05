@@ -18,16 +18,16 @@ const PhotoTypeCard = ({ id, title, description, icon: IconComponent, isSelected
   const isMobile = useIsMobile();
 
   if (isMobile) {
-    // Airbnb-style mobile design
+    // Airbnb-style mobile design with enhanced styling
     return (
       <Label htmlFor={id} className="cursor-pointer block">
         <Card className={`
-          relative overflow-hidden transition-all duration-200 ease-out active:scale-[0.98]
+          relative overflow-hidden transition-all duration-300 ease-out
           ${isSelected 
-            ? 'shadow-lg border-primary/30 bg-primary/5 shadow-primary/20'
-            : 'shadow-md border-gray-200 bg-white hover:shadow-lg hover:border-gray-300'
+            ? 'shadow-xl border-primary/30 bg-primary/5 shadow-primary/15 scale-[1.02]'
+            : 'shadow-lg border-gray-200 bg-white hover:shadow-xl hover:border-gray-300 active:scale-[0.98]'
           }
-          border rounded-2xl w-full min-h-[80px]
+          border-2 rounded-3xl w-full min-h-[110px]
         `}>
           <CardContent className="p-6 relative">
             {/* Hidden radio button for form functionality */}
@@ -37,16 +37,17 @@ const PhotoTypeCard = ({ id, title, description, icon: IconComponent, isSelected
               className="sr-only"
             />
             
-            <div className="flex items-center gap-5">
+            <div className="flex items-start gap-5">
+              {/* Enhanced Icon */}
               <div className={`
-                w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-200 flex-shrink-0
+                w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 flex-shrink-0 shadow-sm
                 ${isSelected 
-                  ? 'bg-primary/10 shadow-sm' 
-                  : 'bg-gray-100'
+                  ? 'bg-primary/15 shadow-lg shadow-primary/20' 
+                  : 'bg-gray-50'
                 }
               `}>
                 <IconComponent className={`
-                  w-7 h-7 transition-all duration-200
+                  w-8 h-8 transition-all duration-300
                   ${isSelected 
                     ? 'text-primary' 
                     : 'text-gray-600'
@@ -54,33 +55,31 @@ const PhotoTypeCard = ({ id, title, description, icon: IconComponent, isSelected
                 `} />
               </div>
               
-              <div className="flex-1 text-left">
+              {/* Enhanced Content */}
+              <div className="flex-1 text-left min-w-0">
                 <h3 className={`
-                  text-lg font-semibold mb-1 transition-colors duration-200
-                  ${isSelected ? 'text-gray-900' : 'text-gray-800'}
+                  text-lg font-semibold mb-2 transition-colors duration-300 leading-tight
+                  ${isSelected ? 'text-primary' : 'text-gray-900'}
                 `}>
                   {title}
                 </h3>
                 
-                <p className={`
-                  text-sm leading-relaxed transition-colors duration-200
-                  ${isSelected ? 'text-gray-700' : 'text-gray-600'}
-                `}>
+                <p className="text-sm text-gray-600 leading-relaxed">
                   {description}
                 </p>
               </div>
 
-              {/* Airbnb-style checkmark indicator */}
+              {/* Enhanced Airbnb-style checkmark indicator */}
               <div className={`
-                w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 flex-shrink-0
+                w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 mt-1
                 ${isSelected 
-                  ? 'bg-primary shadow-sm' 
+                  ? 'bg-primary shadow-lg' 
                   : 'border-2 border-gray-300 bg-white'
                 }
               `}>
                 {isSelected && (
                   <svg 
-                    className="w-4 h-4 text-white" 
+                    className="w-5 h-5 text-white" 
                     fill="none" 
                     stroke="currentColor" 
                     viewBox="0 0 24 24"
@@ -88,13 +87,18 @@ const PhotoTypeCard = ({ id, title, description, icon: IconComponent, isSelected
                     <path 
                       strokeLinecap="round" 
                       strokeLinejoin="round" 
-                      strokeWidth={2.5} 
+                      strokeWidth={3} 
                       d="M5 13l4 4L19 7" 
                     />
                   </svg>
                 )}
               </div>
             </div>
+
+            {/* Airbnb-style subtle border highlight */}
+            {isSelected && (
+              <div className="absolute inset-0 rounded-3xl border-2 border-primary/40 pointer-events-none"></div>
+            )}
           </CardContent>
         </Card>
       </Label>

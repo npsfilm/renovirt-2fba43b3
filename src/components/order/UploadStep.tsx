@@ -114,19 +114,19 @@ const UploadStep = ({
         </div>
       )}
 
-      <div className={`${isMobile ? 'px-4' : ''}`}>
+      <div className={`${isMobile ? 'px-6' : ''}`}>
         <BracketingInfo photoType={photoType} bracketingDivisor={bracketingDivisor} />
       </div>
 
-      <Card className={`${isMobile ? 'mx-0 shadow-lg border-0 rounded-none' : 'border-0 md:border rounded-none md:rounded-lg'}`}>
-        <CardContent className={`${isMobile ? 'p-4' : 'p-4 md:p-8'}`}>
+      <Card className={`${isMobile ? 'mx-0 shadow-2xl border-0 rounded-none' : 'border-0 md:border rounded-none md:rounded-lg'}`}>
+        <CardContent className={`${isMobile ? 'p-6' : 'p-4 md:p-8'}`}>
           <UploadZone onFiles={handleFiles} supportedFormats={supportedFormats} maxFileSize={maxFileSize} maxFiles={maxFiles} />
 
           <FileList files={files} onRemoveFile={removeFile} photoType={photoType} bracketingDivisor={bracketingDivisor} effectivePhotos={effectivePhotos} />
         </CardContent>
       </Card>
 
-      <div className={`${isMobile ? 'px-4' : ''}`}>
+      <div className={`${isMobile ? 'px-6' : ''}`}>
         <UploadInfo />
       </div>
 
