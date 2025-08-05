@@ -124,9 +124,9 @@ const CompanyDataStep = ({ data, updateData, nextStep, prevStep }: CompanyDataSt
                     <SelectValue placeholder="Anrede wählen" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="herr">Herr</SelectItem>
-                    <SelectItem value="frau">Frau</SelectItem>
-                    <SelectItem value="divers">Divers</SelectItem>
+                    <SelectItem value="Herr">Herr</SelectItem>
+                    <SelectItem value="Frau">Frau</SelectItem>
+                    <SelectItem value="Divers">Divers</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
