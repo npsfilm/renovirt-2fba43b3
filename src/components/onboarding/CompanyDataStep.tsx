@@ -82,10 +82,10 @@ const CompanyDataStep = ({ data, updateData, nextStep, prevStep }: CompanyDataSt
   };
 
   return (
-    <div className="flex flex-col max-w-4xl mx-auto min-h-0 h-full">
+    <div className="flex flex-col max-w-6xl mx-auto min-h-0 h-full">
       {/* Header */}
-      <div className="shrink-0 mb-2 lg:mb-4">
-        <div className="flex items-center gap-2 lg:gap-3">
+      <div className="shrink-0 mb-2">
+        <div className="flex items-center gap-2">
           <div className="w-6 h-6 lg:w-8 lg:h-8 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
             <Building className="w-3 h-3 lg:w-4 lg:h-4 text-primary" />
           </div>
@@ -97,11 +97,11 @@ const CompanyDataStep = ({ data, updateData, nextStep, prevStep }: CompanyDataSt
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto min-h-0">
+      <div className="flex-1 min-h-0">
         {errors.length > 0 && (
-          <div className="mb-3 p-2 lg:p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+          <div className="mb-2 p-2 bg-destructive/10 border border-destructive/20 rounded-lg">
             <div className="text-destructive">
-              <h3 className="font-medium mb-1 text-xs lg:text-sm">Bitte korrigieren Sie folgende Fehler:</h3>
+              <h3 className="font-medium mb-1 text-xs">Bitte korrigieren Sie folgende Fehler:</h3>
               <ul className="list-disc list-inside space-y-0.5">
                 {errors.map((error, index) => (
                   <li key={index} className="text-xs">{error}</li>
@@ -111,120 +111,13 @@ const CompanyDataStep = ({ data, updateData, nextStep, prevStep }: CompanyDataSt
           </div>
         )}
 
-        <div className="space-y-3 lg:space-y-4">
-          {/* Personal Information */}
-          <div className="space-y-2 lg:space-y-3">
-            <h3 className="text-sm lg:text-base font-medium text-foreground">Persönliche Angaben</h3>
+        {/* Three Column Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
+          {/* Company Information - First for business optimization */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-foreground border-b border-border pb-1">Unternehmen</h3>
             
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-3">
-              <div>
-                <Label htmlFor="salutation" className="text-xs">Anrede *</Label>
-                <Select value={data.salutation} onValueChange={(value) => handleInputChange('salutation', value)}>
-                  <SelectTrigger className="h-8 text-xs">
-                    <SelectValue placeholder="Anrede wählen" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Herr">Herr</SelectItem>
-                    <SelectItem value="Frau">Frau</SelectItem>
-                    <SelectItem value="Divers">Divers</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div></div>
-
-              <div>
-                <Label htmlFor="firstName" className="text-xs">Vorname *</Label>
-                <Input
-                  id="firstName"
-                  value={data.firstName}
-                  onChange={(e) => handleInputChange('firstName', e.target.value)}
-                  placeholder="Ihr Vorname"
-                  className="h-8 text-xs"
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="lastName" className="text-xs">Nachname *</Label>
-                <Input
-                  id="lastName"
-                  value={data.lastName}
-                  onChange={(e) => handleInputChange('lastName', e.target.value)}
-                  placeholder="Ihr Nachname"
-                  className="h-8 text-xs"
-                  required
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Address Information */}
-          <div className="space-y-2 lg:space-y-3">
-            <h3 className="text-sm lg:text-base font-medium text-foreground">Adresse *</h3>
-            
-            <div className="space-y-2 lg:space-y-3">
-              <div>
-                <Label htmlFor="street" className="text-xs">Straße und Hausnummer *</Label>
-                <Input
-                  id="street"
-                  value={data.street}
-                  onChange={(e) => handleInputChange('street', e.target.value)}
-                  placeholder="Musterstraße 123"
-                  className="h-8 text-xs"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 lg:gap-3">
-                <div>
-                  <Label htmlFor="postalCode" className="text-xs">Postleitzahl *</Label>
-                  <Input
-                    id="postalCode"
-                    value={data.postalCode}
-                    onChange={(e) => handleInputChange('postalCode', e.target.value)}
-                    placeholder="12345"
-                    className="h-8 text-xs"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="city" className="text-xs">Stadt *</Label>
-                  <Input
-                    id="city"
-                    value={data.city}
-                    onChange={(e) => handleInputChange('city', e.target.value)}
-                    placeholder="Musterstadt"
-                    className="h-8 text-xs"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="country" className="text-xs">Land *</Label>
-                  <Select value={data.country} onValueChange={(value) => handleInputChange('country', value)}>
-                    <SelectTrigger className="h-8 text-xs">
-                      <SelectValue placeholder="Land wählen" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {countries.map((country) => (
-                        <SelectItem key={country.value} value={country.value}>
-                          {country.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Company Information */}
-          <div className="space-y-2 lg:space-y-3">
-            <h3 className="text-sm lg:text-base font-medium text-foreground">Unternehmen</h3>
-            
-            <div className="space-y-2 lg:space-y-3">
+            <div className="space-y-2">
               <div>
                 <Label htmlFor="company" className="text-xs">Firmenname</Label>
                 <Input
@@ -260,6 +153,110 @@ const CompanyDataStep = ({ data, updateData, nextStep, prevStep }: CompanyDataSt
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Optional - verpflichtend bei Unternehmen außerhalb von Deutschland
                 </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Personal Information - Compact */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-foreground border-b border-border pb-1">Persönliche Angaben *</h3>
+            
+            <div className="space-y-2">
+              <div>
+                <Label htmlFor="salutation" className="text-xs">Anrede *</Label>
+                <Select value={data.salutation} onValueChange={(value) => handleInputChange('salutation', value)}>
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue placeholder="Anrede wählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Herr">Herr</SelectItem>
+                    <SelectItem value="Frau">Frau</SelectItem>
+                    <SelectItem value="Divers">Divers</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="firstName" className="text-xs">Vorname *</Label>
+                <Input
+                  id="firstName"
+                  value={data.firstName}
+                  onChange={(e) => handleInputChange('firstName', e.target.value)}
+                  placeholder="Ihr Vorname"
+                  className="h-8 text-xs"
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="lastName" className="text-xs">Nachname *</Label>
+                <Input
+                  id="lastName"
+                  value={data.lastName}
+                  onChange={(e) => handleInputChange('lastName', e.target.value)}
+                  placeholder="Ihr Nachname"
+                  className="h-8 text-xs"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Address Information - Last */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-foreground border-b border-border pb-1">Adresse *</h3>
+            
+            <div className="space-y-2">
+              <div>
+                <Label htmlFor="street" className="text-xs">Straße, Hausnummer *</Label>
+                <Input
+                  id="street"
+                  value={data.street}
+                  onChange={(e) => handleInputChange('street', e.target.value)}
+                  placeholder="Musterstraße 123"
+                  className="h-8 text-xs"
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="postalCode" className="text-xs">PLZ *</Label>
+                <Input
+                  id="postalCode"
+                  value={data.postalCode}
+                  onChange={(e) => handleInputChange('postalCode', e.target.value)}
+                  placeholder="12345"
+                  className="h-8 text-xs"
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="city" className="text-xs">Stadt *</Label>
+                <Input
+                  id="city"
+                  value={data.city}
+                  onChange={(e) => handleInputChange('city', e.target.value)}
+                  placeholder="Musterstadt"
+                  className="h-8 text-xs"
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="country" className="text-xs">Land *</Label>
+                <Select value={data.country} onValueChange={(value) => handleInputChange('country', value)}>
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue placeholder="Land wählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {countries.map((country) => (
+                      <SelectItem key={country.value} value={country.value}>
+                        {country.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
