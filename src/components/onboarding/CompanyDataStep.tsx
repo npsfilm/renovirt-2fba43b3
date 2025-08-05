@@ -84,14 +84,14 @@ const CompanyDataStep = ({ data, updateData, nextStep, prevStep }: CompanyDataSt
   return (
     <div className="flex flex-col max-w-4xl mx-auto min-h-0 h-full">
       {/* Header */}
-      <div className="shrink-0 mb-3 lg:mb-6">
-        <div className="flex items-center gap-3 lg:gap-4">
-          <div className="w-8 h-8 lg:w-12 lg:h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
-            <Building className="w-4 h-4 lg:w-6 lg:h-6 text-primary" />
+      <div className="shrink-0 mb-2 lg:mb-4">
+        <div className="flex items-center gap-2 lg:gap-3">
+          <div className="w-6 h-6 lg:w-8 lg:h-8 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+            <Building className="w-3 h-3 lg:w-4 lg:h-4 text-primary" />
           </div>
           <div>
-            <h1 className="text-lg lg:text-2xl font-bold text-foreground">Unternehmensdaten</h1>
-            <p className="text-sm lg:text-base text-primary font-medium">Für eine rechtssichere Abrechnung benötigen wir Ihre Daten.</p>
+            <h1 className="text-base lg:text-xl font-bold text-foreground">Unternehmensdaten</h1>
+            <p className="text-xs lg:text-sm text-primary font-medium">Für eine rechtssichere Abrechnung benötigen wir Ihre Daten.</p>
           </div>
         </div>
       </div>
@@ -99,28 +99,28 @@ const CompanyDataStep = ({ data, updateData, nextStep, prevStep }: CompanyDataSt
       {/* Content */}
       <div className="flex-1 overflow-y-auto min-h-0">
         {errors.length > 0 && (
-          <div className="mb-4 p-3 lg:p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+          <div className="mb-3 p-2 lg:p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
             <div className="text-destructive">
-              <h3 className="font-medium mb-2 text-sm lg:text-base">Bitte korrigieren Sie folgende Fehler:</h3>
-              <ul className="list-disc list-inside space-y-1">
+              <h3 className="font-medium mb-1 text-xs lg:text-sm">Bitte korrigieren Sie folgende Fehler:</h3>
+              <ul className="list-disc list-inside space-y-0.5">
                 {errors.map((error, index) => (
-                  <li key={index} className="text-xs lg:text-sm">{error}</li>
+                  <li key={index} className="text-xs">{error}</li>
                 ))}
               </ul>
             </div>
           </div>
         )}
 
-        <div className="space-y-4 lg:space-y-6">
+        <div className="space-y-3 lg:space-y-4">
           {/* Personal Information */}
-          <div className="space-y-3 lg:space-y-4">
-            <h3 className="text-base lg:text-lg font-medium text-foreground">Persönliche Angaben</h3>
+          <div className="space-y-2 lg:space-y-3">
+            <h3 className="text-sm lg:text-base font-medium text-foreground">Persönliche Angaben</h3>
             
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-3">
               <div>
-                <Label htmlFor="salutation" className="text-sm">Anrede *</Label>
+                <Label htmlFor="salutation" className="text-xs">Anrede *</Label>
                 <Select value={data.salutation} onValueChange={(value) => handleInputChange('salutation', value)}>
-                  <SelectTrigger className="h-9 text-sm">
+                  <SelectTrigger className="h-8 text-xs">
                     <SelectValue placeholder="Anrede wählen" />
                   </SelectTrigger>
                   <SelectContent>
@@ -134,25 +134,25 @@ const CompanyDataStep = ({ data, updateData, nextStep, prevStep }: CompanyDataSt
               <div></div>
 
               <div>
-                <Label htmlFor="firstName" className="text-sm">Vorname *</Label>
+                <Label htmlFor="firstName" className="text-xs">Vorname *</Label>
                 <Input
                   id="firstName"
                   value={data.firstName}
                   onChange={(e) => handleInputChange('firstName', e.target.value)}
                   placeholder="Ihr Vorname"
-                  className="h-9 text-sm"
+                  className="h-8 text-xs"
                   required
                 />
               </div>
 
               <div>
-                <Label htmlFor="lastName" className="text-sm">Nachname *</Label>
+                <Label htmlFor="lastName" className="text-xs">Nachname *</Label>
                 <Input
                   id="lastName"
                   value={data.lastName}
                   onChange={(e) => handleInputChange('lastName', e.target.value)}
                   placeholder="Ihr Nachname"
-                  className="h-9 text-sm"
+                  className="h-8 text-xs"
                   required
                 />
               </div>
@@ -160,51 +160,51 @@ const CompanyDataStep = ({ data, updateData, nextStep, prevStep }: CompanyDataSt
           </div>
 
           {/* Address Information */}
-          <div className="space-y-3 lg:space-y-4">
-            <h3 className="text-base lg:text-lg font-medium text-foreground">Adresse *</h3>
+          <div className="space-y-2 lg:space-y-3">
+            <h3 className="text-sm lg:text-base font-medium text-foreground">Adresse *</h3>
             
-            <div className="space-y-3 lg:space-y-4">
+            <div className="space-y-2 lg:space-y-3">
               <div>
-                <Label htmlFor="street" className="text-sm">Straße und Hausnummer *</Label>
+                <Label htmlFor="street" className="text-xs">Straße und Hausnummer *</Label>
                 <Input
                   id="street"
                   value={data.street}
                   onChange={(e) => handleInputChange('street', e.target.value)}
                   placeholder="Musterstraße 123"
-                  className="h-9 text-sm"
+                  className="h-8 text-xs"
                   required
                 />
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 lg:gap-3">
                 <div>
-                  <Label htmlFor="postalCode" className="text-sm">Postleitzahl *</Label>
+                  <Label htmlFor="postalCode" className="text-xs">Postleitzahl *</Label>
                   <Input
                     id="postalCode"
                     value={data.postalCode}
                     onChange={(e) => handleInputChange('postalCode', e.target.value)}
                     placeholder="12345"
-                    className="h-9 text-sm"
+                    className="h-8 text-xs"
                     required
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="city" className="text-sm">Stadt *</Label>
+                  <Label htmlFor="city" className="text-xs">Stadt *</Label>
                   <Input
                     id="city"
                     value={data.city}
                     onChange={(e) => handleInputChange('city', e.target.value)}
                     placeholder="Musterstadt"
-                    className="h-9 text-sm"
+                    className="h-8 text-xs"
                     required
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="country" className="text-sm">Land *</Label>
+                  <Label htmlFor="country" className="text-xs">Land *</Label>
                   <Select value={data.country} onValueChange={(value) => handleInputChange('country', value)}>
-                    <SelectTrigger className="h-9 text-sm">
+                    <SelectTrigger className="h-8 text-xs">
                       <SelectValue placeholder="Land wählen" />
                     </SelectTrigger>
                     <SelectContent>
@@ -221,62 +221,64 @@ const CompanyDataStep = ({ data, updateData, nextStep, prevStep }: CompanyDataSt
           </div>
 
           {/* Company Information */}
-          <div className="space-y-3 lg:space-y-4">
-            <h3 className="text-base lg:text-lg font-medium text-foreground">Unternehmen</h3>
+          <div className="space-y-2 lg:space-y-3">
+            <h3 className="text-sm lg:text-base font-medium text-foreground">Unternehmen</h3>
             
-            <div>
-              <Label htmlFor="company" className="text-sm">Firmenname</Label>
-              <Input
-                id="company"
-                value={data.company}
-                onChange={(e) => handleInputChange('company', e.target.value)}
-                placeholder="Ihr Unternehmen"
-                className="h-9 text-sm"
-              />
-            </div>
+            <div className="space-y-2 lg:space-y-3">
+              <div>
+                <Label htmlFor="company" className="text-xs">Firmenname</Label>
+                <Input
+                  id="company"
+                  value={data.company}
+                  onChange={(e) => handleInputChange('company', e.target.value)}
+                  placeholder="Ihr Unternehmen"
+                  className="h-8 text-xs"
+                />
+              </div>
 
-            <div>
-              <Label htmlFor="phone" className="text-sm">Telefonnummer</Label>
-              <Input
-                id="phone"
-                type="tel"
-                value={data.phone}
-                onChange={(e) => handleInputChange('phone', e.target.value)}
-                placeholder="+49 123 456789"
-                className="h-9 text-sm"
-              />
-            </div>
+              <div>
+                <Label htmlFor="phone" className="text-xs">Telefonnummer</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={data.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  placeholder="+49 123 456789"
+                  className="h-8 text-xs"
+                />
+              </div>
 
-            <div>
-              <Label htmlFor="vatId" className="text-sm">Umsatzsteuer-ID</Label>
-              <Input
-                id="vatId"
-                value={data.vatId}
-                onChange={(e) => handleInputChange('vatId', e.target.value)}
-                placeholder="DE123456789"
-                className="h-9 text-sm"
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                Optional - verpflichtend bei Unternehmen außerhalb von Deutschland
-              </p>
+              <div>
+                <Label htmlFor="vatId" className="text-xs">Umsatzsteuer-ID</Label>
+                <Input
+                  id="vatId"
+                  value={data.vatId}
+                  onChange={(e) => handleInputChange('vatId', e.target.value)}
+                  placeholder="DE123456789"
+                  className="h-8 text-xs"
+                />
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Optional - verpflichtend bei Unternehmen außerhalb von Deutschland
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Navigation */}
-      <div className="shrink-0 flex justify-between pt-4 lg:pt-6">
+      <div className="shrink-0 flex justify-between pt-3 lg:pt-4">
         <Button 
           onClick={prevStep}
           variant="outline"
           size="sm"
-          className="text-sm"
+          className="text-xs h-8"
         >
           Zurück
         </Button>
         <Button 
           onClick={handleNext}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs h-8"
           size="sm"
         >
           Weiter

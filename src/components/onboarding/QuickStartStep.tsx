@@ -34,31 +34,31 @@ const QuickStartStep = ({ data, prevStep, completeOnboarding, loading }: QuickSt
   return (
     <div className="flex flex-col max-w-4xl mx-auto min-h-0 h-full">
       {/* Header */}
-      <div className="shrink-0 text-center mb-4 lg:mb-6">
-        <div className="w-12 h-12 lg:w-20 lg:h-20 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-3 lg:mb-6">
-          <CheckCircle className="w-6 h-6 lg:w-10 lg:h-10 text-success" />
+      <div className="shrink-0 text-center mb-3 lg:mb-4">
+        <div className="w-10 h-10 lg:w-16 lg:h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-2 lg:mb-4">
+          <CheckCircle className="w-5 h-5 lg:w-8 lg:h-8 text-success" />
         </div>
-        <h2 className="text-lg lg:text-2xl xl:text-3xl font-bold text-foreground mb-2 lg:mb-3">Perfekt! Sie sind startklar.</h2>
-        <p className="text-sm lg:text-base text-muted-foreground">
+        <h2 className="text-base lg:text-xl xl:text-2xl font-bold text-foreground mb-1 lg:mb-2">Perfekt! Sie sind startklar.</h2>
+        <p className="text-xs lg:text-sm text-muted-foreground">
           Ihr RenovIrt-Konto wurde erfolgreich eingerichtet. Was möchten Sie als Nächstes tun?
         </p>
       </div>
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto min-h-0">
-        <div className="space-y-3 lg:space-y-4">
+        <div className="space-y-2 lg:space-y-3">
           <button
             onClick={handleStartUploading}
             disabled={loading}
-            className="w-full p-3 lg:p-4 rounded-lg border-2 border-primary/30 bg-primary/5 hover:bg-primary/10 hover:border-primary/50 transition-all text-left group"
+            className="w-full p-2 lg:p-3 rounded-lg border-2 border-primary/30 bg-primary/5 hover:bg-primary/10 hover:border-primary/50 transition-all text-left group"
           >
-            <div className="flex items-center space-x-3 lg:space-x-4">
-              <div className="w-10 h-10 lg:w-14 lg:h-14 bg-primary rounded-lg flex items-center justify-center text-primary-foreground group-hover:scale-105 transition-transform shrink-0">
-                <Upload className="w-5 h-5 lg:w-7 lg:h-7" />
+            <div className="flex items-center space-x-2 lg:space-x-3">
+              <div className="w-8 h-8 lg:w-12 lg:h-12 bg-primary rounded-lg flex items-center justify-center text-primary-foreground group-hover:scale-105 transition-transform shrink-0">
+                <Upload className="w-4 h-4 lg:w-6 lg:h-6" />
               </div>
               <div className="min-w-0">
-                <h3 className="font-semibold text-foreground text-sm lg:text-lg mb-1 lg:mb-2">📁 Erste Fotos hochladen</h3>
-                <p className="text-xs lg:text-sm text-muted-foreground">Starten Sie sofort mit Ihrem ersten Projekt und erleben Sie unsere professionelle Bildbearbeitung</p>
+                <h3 className="font-semibold text-foreground text-xs lg:text-sm mb-0.5 lg:mb-1">📁 Erste Fotos hochladen</h3>
+                <p className="text-xs text-muted-foreground">Starten Sie sofort mit Ihrem ersten Projekt und erleben Sie unsere professionelle Bildbearbeitung</p>
               </div>
             </div>
           </button>
@@ -66,15 +66,15 @@ const QuickStartStep = ({ data, prevStep, completeOnboarding, loading }: QuickSt
           <button
             onClick={handleViewExamples}
             disabled={loading}
-            className="w-full p-3 lg:p-4 rounded-lg border-2 border-border hover:bg-primary/5 hover:border-primary/30 transition-all text-left"
+            className="w-full p-2 lg:p-3 rounded-lg border-2 border-border hover:bg-primary/5 hover:border-primary/30 transition-all text-left"
           >
-            <div className="flex items-center space-x-3 lg:space-x-4">
-              <div className="w-10 h-10 lg:w-14 lg:h-14 bg-muted rounded-lg flex items-center justify-center text-muted-foreground shrink-0">
-                <Eye className="w-5 h-5 lg:w-7 lg:h-7" />
+            <div className="flex items-center space-x-2 lg:space-x-3">
+              <div className="w-8 h-8 lg:w-12 lg:h-12 bg-muted rounded-lg flex items-center justify-center text-muted-foreground shrink-0">
+                <Eye className="w-4 h-4 lg:w-6 lg:h-6" />
               </div>
               <div className="min-w-0">
-                <h3 className="font-semibold text-foreground text-sm lg:text-lg mb-1 lg:mb-2">👀 Beispiele ansehen</h3>
-                <p className="text-xs lg:text-sm text-muted-foreground">Entdecken Sie Beispiele unserer Arbeit und erfahren Sie mehr über unsere Bearbeitungsmöglichkeiten</p>
+                <h3 className="font-semibold text-foreground text-xs lg:text-sm mb-0.5 lg:mb-1">👀 Beispiele ansehen</h3>
+                <p className="text-xs text-muted-foreground">Entdecken Sie Beispiele unserer Arbeit und erfahren Sie mehr über unsere Bearbeitungsmöglichkeiten</p>
               </div>
             </div>
           </button>
@@ -82,15 +82,15 @@ const QuickStartStep = ({ data, prevStep, completeOnboarding, loading }: QuickSt
           <button
             onClick={handleVisitHelp}
             disabled={loading}
-            className="w-full p-3 lg:p-4 rounded-lg border-2 border-border hover:bg-primary/5 hover:border-primary/30 transition-all text-left"
+            className="w-full p-2 lg:p-3 rounded-lg border-2 border-border hover:bg-primary/5 hover:border-primary/30 transition-all text-left"
           >
-            <div className="flex items-center space-x-3 lg:space-x-4">
-              <div className="w-10 h-10 lg:w-14 lg:h-14 bg-muted rounded-lg flex items-center justify-center text-muted-foreground shrink-0">
-                <HelpCircle className="w-5 h-5 lg:w-7 lg:h-7" />
+            <div className="flex items-center space-x-2 lg:space-x-3">
+              <div className="w-8 h-8 lg:w-12 lg:h-12 bg-muted rounded-lg flex items-center justify-center text-muted-foreground shrink-0">
+                <HelpCircle className="w-4 h-4 lg:w-6 lg:h-6" />
               </div>
               <div className="min-w-0">
-                <h3 className="font-semibold text-foreground text-sm lg:text-lg mb-1 lg:mb-2">🧠 Hilfe-Center besuchen</h3>
-                <p className="text-xs lg:text-sm text-muted-foreground">Finden Sie Antworten auf häufige Fragen und erhalten Sie Tipps für die beste Bildqualität</p>
+                <h3 className="font-semibold text-foreground text-xs lg:text-sm mb-0.5 lg:mb-1">🧠 Hilfe-Center besuchen</h3>
+                <p className="text-xs text-muted-foreground">Finden Sie Antworten auf häufige Fragen und erhalten Sie Tipps für die beste Bildqualität</p>
               </div>
             </div>
           </button>
@@ -98,13 +98,13 @@ const QuickStartStep = ({ data, prevStep, completeOnboarding, loading }: QuickSt
       </div>
 
       {/* Navigation */}
-      <div className="shrink-0 flex justify-between pt-4 lg:pt-6">
-        <Button variant="outline" onClick={prevStep} disabled={loading} size="sm" className="text-sm">
+      <div className="shrink-0 flex justify-between pt-3 lg:pt-4">
+        <Button variant="outline" onClick={prevStep} disabled={loading} size="sm" className="text-xs h-8">
           Zurück
         </Button>
         <Button 
           onClick={handleStartUploading}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs h-8"
           disabled={loading}
           size="sm"
         >
