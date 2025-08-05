@@ -129,9 +129,9 @@ const OrderDetailsModal = ({ isOpen, onClose, order }: OrderDetailsModalProps) =
         
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <Badge className={`${statusConfig.color} hover:bg-current hover:text-current`}>
+            <div className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${statusConfig.color}`}>
               {statusConfig.label}
-            </Badge>
+            </div>
             <div className="text-sm text-subtle">
               {order.image_count} Bilder
             </div>
