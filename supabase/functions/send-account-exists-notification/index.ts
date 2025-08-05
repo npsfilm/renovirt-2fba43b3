@@ -36,7 +36,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const loginUrl = `${Deno.env.get("SUPABASE_URL")?.replace("/rest/v1", "") || "https://app.renovirt.de"}/auth`;
-    const passwordResetUrl = `${Deno.env.get("SUPABASE_URL")?.replace("/rest/v1", "") || "https://app.renovirt.de"}/auth`;
+    const passwordResetUrl = `${Deno.env.get("SUPABASE_URL")?.replace("/rest/v1", "") || "https://app.renovirt.de"}/reset-password`;
     
     const emailResponse = await resend.emails.send({
       from: "Renovirt <noreply@renovirt.de>",

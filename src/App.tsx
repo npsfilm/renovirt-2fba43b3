@@ -30,6 +30,7 @@ import Onboarding from '@/pages/Onboarding';
 import AGB from '@/pages/AGB';
 import Privacy from '@/pages/Privacy';
 import Impressum from '@/pages/Impressum';
+import ResetPassword from '@/pages/ResetPassword';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 
 
@@ -44,6 +45,7 @@ function App() {
             <Routes>
               {/* Public Routes */}
               <Route path="/auth" element={<Auth />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/agb" element={<AGB />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/impressum" element={<Impressum />} />
