@@ -20,7 +20,7 @@ const PaymentMethodSelector = ({ paymentMethod, onPaymentMethodChange }: Payment
           Zahlungsmethode wählen
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-2 md:space-y-3">
         <RadioGroup value={paymentMethod} onValueChange={onPaymentMethodChange}>
           {/* Stripe Payment Option */}
           <Label htmlFor="stripe" className="cursor-pointer">
