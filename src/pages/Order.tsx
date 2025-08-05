@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
-import AppSidebar from '@/components/layout/AppSidebar';
+import MobileLayout from '@/components/layout/MobileLayout';
 import PageHeader from '@/components/layout/PageHeader';
+import { useIsMobile } from '@/hooks/use-mobile';
 import OrderProgress from '@/components/order/OrderProgress';
 import PhotoTypeStep from '@/components/order/PhotoTypeStep';
 import UploadStep from '@/components/order/UploadStep';
@@ -160,26 +160,31 @@ const Order = () => {
     }
   };
 
+  const isMobile = useIsMobile();
+  
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <AppSidebar />
-        <SidebarInset>
-          <PageHeader 
-            title="Neue Bestellung" 
-            subtitle="Fotos hochladen und bearbeiten lassen"
-          />
-          <main className="flex-1 p-6 py-[24px]">
-            <div className="max-w-4xl mx-auto space-y-8">
-              {currentStep !== 'confirmation' && (
-                <OrderProgress steps={steps} />
-              )}
-              {renderCurrentStep()}
+    <MobileLayout>
+      {!isMobile && (
+        <PageHeader 
+          title="Neue Bestellung" 
+          subtitle="Fotos hochladen und bearbeiten lassen"
+        />
+      )}
+      <div className="p-6 py-[24px]">
+        <div className="max-w-4xl mx-auto space-y-8">
+          {isMobile && (
+            <div className="mb-6">
+              <h1 className="text-2xl font-semibold text-foreground">Neue Bestellung</h1>
+              <p className="text-muted-foreground">Fotos hochladen und bearbeiten lassen</p>
             </div>
-          </main>
-        </SidebarInset>
+          )}
+          {currentStep !== 'confirmation' && (
+            <OrderProgress steps={steps} />
+          )}
+          {renderCurrentStep()}
+        </div>
       </div>
-    </SidebarProvider>
+    </MobileLayout>
   );
 };
 

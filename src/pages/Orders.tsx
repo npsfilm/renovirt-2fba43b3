@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
-import AppSidebar from '@/components/layout/AppSidebar';
+import MobileLayout from '@/components/layout/MobileLayout';
 import PageHeader from '@/components/layout/PageHeader';
 import OrdersOverview from '@/components/dashboard/OrdersOverview';
 import OrderDetailsModal from '@/components/orders/OrderDetailsModal';
 import { useSearchParams } from 'react-router-dom';
 import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Orders = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -38,28 +38,33 @@ const Orders = () => {
     setSelectedOrderId(null);
   };
 
+  const isMobile = useIsMobile();
+
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <AppSidebar />
-        <SidebarInset>
-          <PageHeader 
-            title="Bestellungen" 
-            subtitle="Übersicht über alle Ihre Bestellungen"
-          />
+    <MobileLayout>
+      {!isMobile && (
+        <PageHeader 
+          title="Bestellungen" 
+          subtitle="Übersicht über alle Ihre Bestellungen"
+        />
+      )}
 
-          <main className="flex-1 space-y-6 p-6">
-            <OrdersOverview onOrderSelect={handleOrderSelect} />
-          </main>
-
-          <OrderDetailsModal
-            orderId={selectedOrderId}
-            isOpen={isModalOpen}
-            onClose={handleCloseModal}
-          />
-        </SidebarInset>
+      <div className="space-y-6 p-6">
+        {isMobile && (
+          <div className="mb-6">
+            <h1 className="text-2xl font-semibold text-foreground">Bestellungen</h1>
+            <p className="text-muted-foreground">Übersicht über alle Ihre Bestellungen</p>
+          </div>
+        )}
+        <OrdersOverview onOrderSelect={handleOrderSelect} />
       </div>
-    </SidebarProvider>
+
+      <OrderDetailsModal
+        orderId={selectedOrderId}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
+    </MobileLayout>
   );
 };
 
