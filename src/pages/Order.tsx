@@ -184,11 +184,10 @@ const Order = () => {
 
   const isMobile = useIsMobile();
   
-  if (isMobile) {
-    // Mobile layout - keep existing design
-    return (
-      <MobileLayout>
-        {/* Mobile Compact Header with Progress */}
+  return (
+    <MobileLayout>
+      {/* Mobile Compact Header with Progress */}
+      {isMobile ? (
         <div className="sticky top-0 z-30 bg-white/98 backdrop-blur-xl border-b border-gray-100 shadow-sm">
           {/* Thin Progress Bar */}
           <div className="w-full bg-gray-100 h-1.5">
@@ -224,145 +223,36 @@ const Order = () => {
             </div>
           </div>
         </div>
-
-        {/* Step Content */}
-        <div className="pb-32">
-          {renderCurrentStep()}
-        </div>
-        
-        {/* Mobile Fixed Bottom Action Bar */}
-        <OrderActionBar
-          currentStep={currentStep}
-          canProceed={getCanProceed()}
-          onNext={handleNext}
-          onPrev={handlePrev}
+      ) : (
+        /* Desktop Header */
+        <PageHeader 
+          title="Neue Bestellung" 
+          subtitle="Fotos hochladen und bearbeiten lassen"
         />
-      </MobileLayout>
-    );
-  }
-
-  // Desktop layout - Modern Airbnb-style split screen
-  return (
-    <div className="h-screen flex bg-background overflow-hidden">
-      {/* Left Sidebar - Progress & Navigation */}
-      {currentStep !== 'confirmation' && (
-        <div className="w-80 bg-card border-r border-border flex flex-col">
-          {/* Header */}
-          <div className="p-6 border-b border-border">
-            <div className="flex items-center gap-3">
-              {currentStep !== 'photo-type' && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handlePrev}
-                  className="p-2 h-9 w-9 rounded-full hover:bg-muted transition-all duration-200"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </Button>
-              )}
-              <div>
-                <h1 className="text-xl font-semibold text-foreground tracking-tight">
-                  Neue Bestellung
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  Fotos hochladen und bearbeiten lassen
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Vertical Progress */}
-          <div className="flex-1 p-6">
-            <div className="space-y-4">
-              {steps.map((step, index) => (
-                <div key={step.number} className="flex items-start gap-3">
-                  <div className="flex flex-col items-center">
-                    <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 ${
-                        step.status === 'completed'
-                          ? 'bg-success text-success-foreground'
-                          : step.status === 'current'
-                          ? 'bg-primary text-primary-foreground ring-2 ring-primary/20'
-                          : 'bg-muted text-muted-foreground'
-                      }`}
-                    >
-                      {step.status === 'completed' ? (
-                        <div className="w-4 h-4 rounded-full bg-success-foreground" />
-                      ) : (
-                        <span>{step.number}</span>
-                      )}
-                    </div>
-                    {index < steps.length - 1 && (
-                      <div
-                        className={`w-0.5 h-8 mt-2 transition-all duration-500 ${
-                          step.status === 'completed' ? 'bg-success' : 'bg-border'
-                        }`}
-                      />
-                    )}
-                  </div>
-                  <div className="flex-1 pt-1">
-                    <h3
-                      className={`text-sm font-medium transition-colors duration-300 ${
-                        step.status === 'current' 
-                          ? 'text-primary' 
-                          : step.status === 'completed'
-                          ? 'text-success'
-                          : 'text-muted-foreground'
-                      }`}
-                    >
-                      {step.title}
-                    </h3>
-                    {step.status === 'current' && (
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Aktueller Schritt
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
       )}
 
-      {/* Right Content Area */}
-      <div className={`flex-1 flex flex-col ${currentStep === 'confirmation' ? 'w-full' : ''}`}>
-        {/* Main Content */}
-        <div className="flex-1 overflow-auto">
-          <div className="h-full flex items-center justify-center p-8">
-            <div className="w-full max-w-2xl">
-              {renderCurrentStep()}
-            </div>
+      <div className={`${isMobile ? '' : 'p-6 py-[24px]'}`}>
+        <div className={`${isMobile ? '' : 'max-w-4xl mx-auto space-y-8'}`}>
+          {/* Desktop Progress - hidden on mobile */}
+          {!isMobile && currentStep !== 'confirmation' && (
+            <OrderProgress steps={steps} />
+          )}
+          
+          {/* Step Content */}
+          <div className={`${isMobile ? 'pb-32' : ''}`}>
+            {renderCurrentStep()}
           </div>
         </div>
-
-        {/* Bottom Actions - only show if not confirmation */}
-        {currentStep !== 'confirmation' && (
-          <div className="border-t border-border bg-card p-6">
-            <div className="flex justify-between items-center max-w-2xl mx-auto">
-              <div>
-                {currentStep !== 'photo-type' && (
-                  <Button
-                    variant="outline"
-                    onClick={handlePrev}
-                    className="px-6"
-                  >
-                    Zurück
-                  </Button>
-                )}
-              </div>
-              <Button
-                onClick={handleNext}
-                disabled={!getCanProceed()}
-                className="px-8"
-              >
-                {currentStep === 'summary' ? 'Bestellen' : 'Weiter'}
-              </Button>
-            </div>
-          </div>
-        )}
       </div>
-    </div>
+      
+      {/* Mobile Fixed Bottom Action Bar */}
+      <OrderActionBar
+        currentStep={currentStep}
+        canProceed={getCanProceed()}
+        onNext={handleNext}
+        onPrev={handlePrev}
+      />
+    </MobileLayout>
   );
 };
 
