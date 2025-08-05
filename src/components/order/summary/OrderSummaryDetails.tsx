@@ -139,7 +139,7 @@ const OrderSummaryDetails = ({ orderData, onUpdateData }: OrderSummaryDetailsPro
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 md:grid-cols-3 gap-3 md:gap-4">
             <div>
               <Label>Foto-Typ</Label>
               <div className="mt-1">
