@@ -4,12 +4,11 @@ const MobileStatusBar = () => {
   return (
     <div className="flex items-center justify-center px-4 py-3 bg-background/80 backdrop-blur-md border-b border-border/50">
       {/* Logo */}
-      <div className="flex items-center gap-2">
-        <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
-          <span className="text-primary-foreground font-bold text-sm">L</span>
-        </div>
-        <span className="font-semibold text-foreground">Lovable</span>
-      </div>
+      <img 
+        src="/lovable-uploads/d6ac9ba9-7ad2-408b-a2b0-5f31c269dd53.png" 
+        alt="Renovirt Logo" 
+        className="h-8 w-auto" 
+      />
     </div>
   );
 };
