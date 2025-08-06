@@ -70,6 +70,12 @@ serve(async (req) => {
     } else {
       const customer = await stripe.customers.create({
         email: user.email!,
+        name: user.user_metadata?.first_name && user.user_metadata?.last_name 
+          ? `${user.user_metadata.first_name} ${user.user_metadata.last_name}` 
+          : undefined,
+        address: {
+          country: 'DE', // Deutschland als Standardland für optimale Zahlungsmethoden
+        },
         metadata: {
           user_id: user.id,
         },
@@ -86,9 +92,36 @@ serve(async (req) => {
         orderId: orderId || 'temp-order',
         userId: user.id,
       },
+      // Explizite Konfiguration für alternative Zahlungsmethoden
+      payment_method_types: ['card', 'paypal', 'klarna', 'sepa_debit'],
       automatic_payment_methods: {
         enabled: true,
+        allow_redirects: 'always', // Wichtig für PayPal, Klarna etc.
       },
+      // Optimierte Einstellungen für deutsche/europäische Kunden
+      payment_method_options: {
+        card: {
+          capture_method: 'automatic',
+        },
+        klarna: {
+          preferred_locale: 'de-DE',
+        },
+        sepa_debit: {
+          mandate_options: {},
+        },
+      },
+      // Verbesserte Rechnungsdetails für Klarna
+      shipping: user.user_metadata?.address ? {
+        address: {
+          country: 'DE',
+          line1: user.user_metadata.address || 'N/A',
+          city: user.user_metadata.city || 'N/A',
+          postal_code: user.user_metadata.postal_code || 'N/A',
+        },
+        name: user.user_metadata?.first_name && user.user_metadata?.last_name 
+          ? `${user.user_metadata.first_name} ${user.user_metadata.last_name}` 
+          : user.email!,
+      } : undefined,
     });
 
     console.log("Payment Intent created:", paymentIntent.id);

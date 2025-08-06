@@ -42,36 +42,46 @@ const StripePaymentForm = ({
     setIsProcessing(true);
     try {
       console.log('Bestätige Zahlung...');
-      const {
-        error,
-        paymentIntent
-      } = await stripe.confirmPayment({
+      const result = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: `${window.location.origin}/payment/success`
+          return_url: `${window.location.origin}/payment/success`,
+          payment_method_data: {
+            billing_details: {
+              name: 'auto',
+              email: 'auto',
+            },
+          },
         },
-        redirect: 'if_required'
+        // Entfernung von redirect: 'if_required' für bessere alternative Zahlungsmethoden
       });
-      if (error) {
-        console.error('Zahlungsfehler:', error);
-        onError(error.message || 'Zahlung fehlgeschlagen');
+      
+      if (result.error) {
+        console.error('Zahlungsfehler:', result.error);
+        onError(result.error.message || 'Zahlung fehlgeschlagen');
         toast({
           title: 'Zahlungsfehler',
-          description: error.message || 'Die Zahlung konnte nicht verarbeitet werden.',
+          description: result.error.message || 'Die Zahlung konnte nicht verarbeitet werden.',
           variant: 'destructive'
         });
-      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-        console.log('Zahlung erfolgreich:', paymentIntent.id);
-        try {
-          await verifyPayment(paymentIntent.id);
-        } catch (verifyError) {
-          console.error('Zahlungsverifikation fehlgeschlagen:', verifyError);
+      } else {
+        // Bei erfolgreicher Zahlung oder Redirect wird das PaymentIntent verfügbar
+        const paymentIntent = (result as any).paymentIntent;
+        if (paymentIntent && paymentIntent.status === 'succeeded') {
+          console.log('Zahlung erfolgreich:', paymentIntent.id);
+          try {
+            await verifyPayment(paymentIntent.id);
+          } catch (verifyError) {
+            console.error('Zahlungsverifikation fehlgeschlagen:', verifyError);
+          }
+          onSuccess(paymentIntent.id);
+          toast({
+            title: 'Zahlung erfolgreich!',
+            description: 'Ihre Bestellung wurde erfolgreich bezahlt.'
+          });
         }
-        onSuccess(paymentIntent.id);
-        toast({
-          title: 'Zahlung erfolgreich!',
-          description: 'Ihre Bestellung wurde erfolgreich bezahlt.'
-        });
+        // Für alternative Zahlungsmethoden kann ein Redirect erforderlich sein
+        // In diesem Fall ist kein PaymentIntent sofort verfügbar
       }
     } catch (error: any) {
       // Handle SecurityError from cross-origin restrictions - this is expected for secure payment flows
@@ -122,13 +132,30 @@ const StripePaymentForm = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="min-h-[200px] border rounded-lg p-4">
             {isElementsReady ? <PaymentElement options={{
-            layout: 'tabs',
+            layout: 'accordion', // Bessere Übersicht für multiple Zahlungsmethoden
+            wallets: {
+              applePay: 'auto',
+              googlePay: 'auto',
+            },
+            paymentMethodOrder: ['card', 'paypal', 'klarna', 'sepa_debit'],
             fields: {
               billingDetails: {
                 name: 'auto',
-                email: 'auto'
+                email: 'auto',
+                address: {
+                  country: 'never', // Deutschland wird automatisch erkannt
+                  line1: 'auto',
+                  line2: 'auto',
+                  city: 'auto',
+                  state: 'never',
+                  postalCode: 'auto',
+                },
               }
-            }
+            },
+            terms: {
+              card: 'auto',
+              sepaDebit: 'auto',
+            },
           }} /> : <div className="flex items-center justify-center h-[150px]">
                 <div className="text-center">
                   <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
