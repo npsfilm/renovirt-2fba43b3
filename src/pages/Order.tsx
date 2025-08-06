@@ -184,10 +184,10 @@ const Order = () => {
 
   const isMobile = useIsMobile();
   
-  return (
-    <MobileLayout>
-      {/* Mobile Compact Header with Progress */}
-      {isMobile ? (
+  if (isMobile) {
+    return (
+      <MobileLayout>
+        {/* Mobile Compact Header with Progress */}
         <div className="sticky top-0 z-30 bg-white/98 backdrop-blur-xl border-b border-gray-100 shadow-sm">
           {/* Thin Progress Bar */}
           <div className="w-full bg-gray-100 h-1.5">
@@ -223,36 +223,44 @@ const Order = () => {
             </div>
           </div>
         </div>
-      ) : (
-        /* Desktop Header */
-        <PageHeader 
-          title="Neue Bestellung" 
-          subtitle="Fotos hochladen und bearbeiten lassen"
-        />
-      )}
 
-      <div className={`${isMobile ? '' : 'p-6 py-[24px]'}`}>
-        <div className={`${isMobile ? '' : 'max-w-4xl mx-auto space-y-8'}`}>
-          {/* Desktop Progress - hidden on mobile */}
-          {!isMobile && currentStep !== 'confirmation' && (
+        {/* Step Content */}
+        <div className="pb-32">
+          {renderCurrentStep()}
+        </div>
+        
+        {/* Mobile Fixed Bottom Action Bar */}
+        <OrderActionBar
+          currentStep={currentStep}
+          canProceed={getCanProceed()}
+          onNext={handleNext}
+          onPrev={handlePrev}
+        />
+      </MobileLayout>
+    );
+  }
+
+  // Desktop Layout - Modern Airbnb-style with full viewport height
+  return (
+    <div className="h-screen flex flex-col bg-background">
+      {/* Desktop Progress Header - Compact and Clean */}
+      {currentStep !== 'confirmation' && (
+        <div className="flex-shrink-0 border-b bg-card shadow-sm">
+          <div className="max-w-5xl mx-auto px-8 py-6">
             <OrderProgress steps={steps} />
-          )}
-          
-          {/* Step Content */}
-          <div className={`${isMobile ? 'pb-32' : ''}`}>
+          </div>
+        </div>
+      )}
+      
+      {/* Main Content Area - Scrollable */}
+      <div className="flex-1 overflow-auto">
+        <div className="max-w-5xl mx-auto px-8 py-8">
+          <div className="min-h-full flex flex-col">
             {renderCurrentStep()}
           </div>
         </div>
       </div>
-      
-      {/* Mobile Fixed Bottom Action Bar */}
-      <OrderActionBar
-        currentStep={currentStep}
-        canProceed={getCanProceed()}
-        onNext={handleNext}
-        onPrev={handlePrev}
-      />
-    </MobileLayout>
+    </div>
   );
 };
 
