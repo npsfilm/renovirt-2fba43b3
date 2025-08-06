@@ -13,16 +13,22 @@ const SecurityHeaders = () => {
       }
     };
 
-    // Content Security Policy (basic implementation for SPA)
-    addMetaTag('Content-Security-Policy', 
-      "default-src 'self'; " +
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com; " +
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
-      "font-src 'self' https://fonts.gstatic.com; " +
-      "img-src 'self' data: https:; " +
-      "connect-src 'self' https://*.supabase.co https://api.stripe.com; " +
-      "frame-src https://js.stripe.com;"
-    );
+    // Enhanced Content Security Policy
+    addMetaTag('Content-Security-Policy', [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://checkout.stripe.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' https://fonts.gstatic.com",
+      "img-src 'self' data: https: blob:",
+      "connect-src 'self' https://*.supabase.co https://api.stripe.com https://checkout.stripe.com wss://*.supabase.co",
+      "frame-src 'self' https://js.stripe.com https://checkout.stripe.com",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+      "block-all-mixed-content",
+      "upgrade-insecure-requests"
+    ].join('; '));
 
     // Prevent clickjacking
     addMetaTag('X-Frame-Options', 'DENY');

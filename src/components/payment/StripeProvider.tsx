@@ -3,7 +3,7 @@ import React from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 
-// Get Stripe publishable key from environment
+// Get Stripe publishable key - this is a public key, safe to include
 const stripePromise = loadStripe(
   'pk_live_51RVC15GBJSdVtvnbWNXeloDmabSIjTKHk1E3m6TmAgEhSptSbSorOSqxqFlZf0hERNpMJ18fx3EYhBXoGdwgtkSU00tora2LR4'
 );
