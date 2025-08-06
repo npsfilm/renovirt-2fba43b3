@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import MobileLayout from '@/components/layout/MobileLayout';
+import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
+import AppSidebar from '@/components/layout/AppSidebar';
 import PageHeader from '@/components/layout/PageHeader';
 import { useIsMobile } from '@/hooks/use-mobile';
 import OrderProgress from '@/components/order/OrderProgress';
@@ -240,27 +242,34 @@ const Order = () => {
     );
   }
 
-  // Desktop Layout - Modern Airbnb-style with full viewport height
+  // Desktop Layout - Modern Airbnb-style with full viewport height and sidebar
   return (
-    <div className="h-screen flex flex-col bg-background">
-      {/* Desktop Progress Header - Compact and Clean */}
-      {currentStep !== 'confirmation' && (
-        <div className="flex-shrink-0 border-b bg-card shadow-sm">
-          <div className="max-w-5xl mx-auto px-8 py-6">
-            <OrderProgress steps={steps} />
+    <SidebarProvider>
+      <div className="h-screen flex w-full bg-gradient-to-br from-background via-background to-muted/20">
+        <AppSidebar />
+        <SidebarInset>
+          <div className="h-screen flex flex-col">
+            {/* Desktop Progress Header - Compact and Clean */}
+            {currentStep !== 'confirmation' && (
+              <div className="flex-shrink-0 border-b bg-card/50 backdrop-blur-sm shadow-sm">
+                <div className="max-w-4xl mx-auto px-6 py-3">
+                  <OrderProgress steps={steps} />
+                </div>
+              </div>
+            )}
+            
+            {/* Main Content Area - Scrollable */}
+            <div className="flex-1 overflow-auto">
+              <div className="max-w-4xl mx-auto px-6 py-4">
+                <div className="min-h-full flex flex-col justify-center">
+                  {renderCurrentStep()}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      )}
-      
-      {/* Main Content Area - Scrollable */}
-      <div className="flex-1 overflow-auto">
-        <div className="max-w-5xl mx-auto px-8 py-8">
-          <div className="min-h-full flex flex-col">
-            {renderCurrentStep()}
-          </div>
-        </div>
+        </SidebarInset>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
