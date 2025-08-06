@@ -191,8 +191,6 @@ const StripePaymentForm = ({
                     sepaDebit: 'auto',
                     paypal: 'auto',
                   },
-                  // PayPal-spezifische Konfiguration
-                  paymentMethodTypes: ['card', 'paypal', 'klarna', 'sepa_debit'],
                 }}
               />
             ) : (
