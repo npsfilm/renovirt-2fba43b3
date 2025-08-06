@@ -1,106 +1,91 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { useAdminRole } from '@/hooks/useAdminRole';
-import { supabase } from '@/integrations/supabase/client';
-import { secureLog, logSecurityEvent } from '@/utils/secureLogging';
+import { sanitizeHTML, validateAndSanitizeInput, logXSSAttempt, isRateLimited } from '@/utils/enhancedXSSProtection';
+import { logSecurityEvent } from '@/utils/secureLogging';
 
 interface SecurityContextType {
-  hasAdminAccess: boolean;
-  isSecureSession: boolean;
-  refreshSecurity: () => Promise<void>;
-  checkPermission: (permission: string) => boolean;
+  sanitizeInput: (input: string, options?: any) => string;
+  validateInput: (input: string, options?: any) => { sanitized: string; isValid: boolean; errors: string[] };
+  reportSecurityIncident: (type: string, details: any) => void;
+  isSecurityBlocked: boolean;
 }
 
-const SecurityContext = createContext<SecurityContextType>({
-  hasAdminAccess: false,
-  isSecureSession: false,
-  refreshSecurity: async () => {},
-  checkPermission: () => false,
-});
+const SecurityContext = createContext<SecurityContextType | undefined>(undefined);
 
-export const useSecurity = () => useContext(SecurityContext);
+export const useSecurityContext = () => {
+  const context = useContext(SecurityContext);
+  if (!context) {
+    throw new Error('useSecurityContext must be used within SecurityProvider');
+  }
+  return context;
+};
 
-interface EnhancedSecurityProviderProps {
+interface SecurityProviderProps {
   children: React.ReactNode;
 }
 
-const EnhancedSecurityProvider = ({ children }: EnhancedSecurityProviderProps) => {
+export const EnhancedSecurityProvider: React.FC<SecurityProviderProps> = ({ children }) => {
   const { user } = useAuth();
-  const { isAdmin } = useAdminRole();
-  const [hasAdminAccess, setHasAdminAccess] = useState(false);
-  const [isSecureSession, setIsSecureSession] = useState(false);
-
-  const checkPermission = (permission: string): boolean => {
-    // Basic permission checking - can be extended based on requirements
-    if (!user) return false;
-    
-    switch (permission) {
-      case 'file_upload':
-        return true; // All authenticated users can upload files
-      case 'admin_access':
-        return hasAdminAccess;
-      default:
-        return false;
-    }
-  };
-
-  const verifyAdminAccess = async () => {
-    if (!user || !isAdmin) {
-      setHasAdminAccess(false);
-      setIsSecureSession(false);
-      return;
-    }
-
-    try {
-      // Verify admin role through RPC function
-      const { data, error } = await supabase.rpc('has_admin_role', {
-        user_uuid: user.id
-      });
-
-      if (error) {
-        logSecurityEvent('admin_verification_failed', { 
-          userId: user.id, 
-          error: error.message 
-        });
-        setHasAdminAccess(false);
-        setIsSecureSession(false);
-        return;
-      }
-
-      if (data === true) {
-        setHasAdminAccess(true);
-        setIsSecureSession(true);
-        logSecurityEvent('admin_verification_success', { userId: user.id });
-      } else {
-        logSecurityEvent('admin_verification_denied', { userId: user.id });
-        setHasAdminAccess(false);
-        setIsSecureSession(false);
-      }
-    } catch (error) {
-      logSecurityEvent('admin_verification_error', { userId: user.id, error });
-      setHasAdminAccess(false);
-      setIsSecureSession(false);
-    }
-  };
-
-  const refreshSecurity = async () => {
-    await verifyAdminAccess();
-  };
+  const [isSecurityBlocked, setIsSecurityBlocked] = useState(false);
+  
+  const userIdentifier = user?.id || 'anonymous';
 
   useEffect(() => {
-    verifyAdminAccess();
-  }, [user, isAdmin]);
+    // Check if user is rate limited on mount
+    setIsSecurityBlocked(isRateLimited(userIdentifier));
+  }, [userIdentifier]);
+
+  const sanitizeInput = (input: string, options?: any): string => {
+    if (isSecurityBlocked) {
+      logSecurityEvent('blocked_input_attempt', { userIdentifier });
+      return '';
+    }
+    
+    return sanitizeHTML(input);
+  };
+
+  const validateInput = (input: string, options?: any) => {
+    if (isSecurityBlocked) {
+      logSecurityEvent('blocked_validation_attempt', { userIdentifier });
+      return { sanitized: '', isValid: false, errors: ['Benutzer temporär blockiert'] };
+    }
+
+    const result = validateAndSanitizeInput(input, options);
+    
+    if (!result.isValid) {
+      logXSSAttempt(userIdentifier, input);
+      logSecurityEvent('xss_attempt_detected', {
+        userIdentifier,
+        inputLength: input.length,
+        errors: result.errors
+      });
+      
+      // Check if user should be blocked
+      if (isRateLimited(userIdentifier)) {
+        setIsSecurityBlocked(true);
+        logSecurityEvent('user_security_blocked', { userIdentifier });
+      }
+    }
+    
+    return result;
+  };
+
+  const reportSecurityIncident = (type: string, details: any) => {
+    logSecurityEvent(`security_incident_${type}`, {
+      userIdentifier,
+      details,
+      timestamp: new Date().toISOString()
+    });
+  };
 
   return (
     <SecurityContext.Provider value={{
-      hasAdminAccess,
-      isSecureSession,
-      refreshSecurity,
-      checkPermission
+      sanitizeInput,
+      validateInput,
+      reportSecurityIncident,
+      isSecurityBlocked
     }}>
       {children}
     </SecurityContext.Provider>
   );
 };
-
-export default EnhancedSecurityProvider;

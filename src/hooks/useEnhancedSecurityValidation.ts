@@ -98,8 +98,8 @@ export const useEnhancedSecurityValidation = () => {
     if (!user) return false;
 
     try {
-      // Use the existing is_admin function to check role
-      const { data, error } = await supabase.rpc('is_admin', { user_id: user.id });
+      // Use the existing has_admin_role function to check role
+      const { data, error } = await supabase.rpc('has_admin_role', { user_uuid: user.id });
       
       if (error) {
         logSecurityEvent('admin_check_error', {
@@ -117,7 +117,7 @@ export const useEnhancedSecurityValidation = () => {
         });
       }
 
-      return data || false;
+      return Boolean(data);
     } catch (error) {
       logSecurityEvent('admin_check_exception', {
         userId: user.id,

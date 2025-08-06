@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import { validateFileSecurely, enhancedRateLimit } from '@/utils/securityEnhancement';
 import { logSecurityEvent } from '@/utils/secureLogging';
 import { useToast } from '@/hooks/use-toast';
-import { useSecurity } from './EnhancedSecurityProvider';
+import { useSecurityContext } from './EnhancedSecurityProvider';
 
 interface SecureUploadZoneProps {
   onFiles: (files: FileList) => void;
@@ -21,21 +21,17 @@ const SecureUploadZone = ({
   children 
 }: SecureUploadZoneProps) => {
   const { toast } = useToast();
-  const { checkPermission } = useSecurity();
+  const { reportSecurityIncident } = useSecurityContext();
 
   const handleFileSelect = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
-    // Check permissions
-    if (!checkPermission('file_upload')) {
-      toast({
-        title: "Upload nicht erlaubt",
-        description: "Sie haben keine Berechtigung zum Hochladen von Dateien.",
-        variant: "destructive",
-      });
-      return;
-    }
+    // Log security attempt
+    reportSecurityIncident('file_upload_attempt', { 
+      fileCount: files.length, 
+      userId 
+    });
 
     // Rate limiting
     if (userId && !enhancedRateLimit(`upload_${userId}`, 10, 60000)) {
@@ -106,7 +102,7 @@ const SecureUploadZone = ({
 
     // Clear input
     event.target.value = '';
-  }, [onFiles, maxFiles, userId, toast, checkPermission]);
+  }, [onFiles, maxFiles, userId, toast, reportSecurityIncident]);
 
   const handleDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
