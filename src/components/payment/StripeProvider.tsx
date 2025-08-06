@@ -34,13 +34,6 @@ const StripeProvider = ({ children, clientSecret }: StripeProviderProps) => {
         borderRadius: '6px',
       },
     },
-    // Bessere Konfiguration für alternative Zahlungsmethoden
-    paymentMethodCreation: 'manual',
-    paymentMethodOptions: {
-      klarna: {
-        // Automatische Ländererkennung für optimale Klarna-Konfiguration
-      },
-    },
   };
 
   return (
