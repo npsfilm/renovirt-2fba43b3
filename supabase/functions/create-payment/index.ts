@@ -14,7 +14,14 @@ serve(async (req) => {
   }
 
   try {
-    console.log("Payment creation request received");
+    console.log("=== PAYMENT CREATION START ===");
+    console.log("Request method:", req.method);
+    console.log("Request URL:", req.url);
+    console.log("Request headers:", Object.fromEntries(req.headers.entries()));
+    
+    // Domain-Debugging für PayPal/Apple Pay/Google Pay
+    const origin = req.headers.get("origin") || req.headers.get("referer");
+    console.log("Request origin:", origin);
 
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
@@ -37,14 +44,21 @@ serve(async (req) => {
 
     console.log("User authenticated:", user.id);
 
-    const { amount, orderId } = await req.json();
+    const requestBody = await req.json();
+    console.log("Request body:", requestBody);
+    
+    const { amount, orderId } = requestBody;
 
     if (!amount) {
-      console.error("Missing required parameters");
+      console.error("Missing required parameters - amount is required");
       throw new Error("Missing required parameters: amount");
     }
 
-    console.log("Payment request:", { orderId, amount });
+    console.log("Payment request validated:", { 
+      orderId: orderId || 'temp-order', 
+      amount,
+      amountInCents: Math.round(amount * 100)
+    });
 
     const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeSecretKey) {
@@ -120,12 +134,25 @@ serve(async (req) => {
       } : undefined,
     });
 
-    console.log("Payment Intent created:", paymentIntent.id);
+    console.log("Payment Intent created successfully:", {
+      paymentIntentId: paymentIntent.id,
+      status: paymentIntent.status,
+      amount: paymentIntent.amount,
+      currency: paymentIntent.currency,
+      customerId: paymentIntent.customer
+    });
+    
+    console.log("=== PAYMENT CREATION SUCCESS ===");
 
     return new Response(
       JSON.stringify({ 
         clientSecret: paymentIntent.client_secret,
-        paymentIntentId: paymentIntent.id 
+        paymentIntentId: paymentIntent.id,
+        debug: {
+          origin,
+          allowedDomains: ['renovirt.lovable.app', 'app.renovirt.de', 'localhost'],
+          timestamp: new Date().toISOString()
+        }
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -134,10 +161,36 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error("Payment intent creation error:", error);
+    console.error("=== PAYMENT CREATION ERROR ===");
+    console.error("Error details:", {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      type: typeof error
+    });
+    
+    // Stripe-spezifische Fehlerbehandlung
+    if (error.type === 'StripeCardError') {
+      console.error("Stripe Card Error:", error.code, error.param);
+    } else if (error.type === 'StripeRateLimitError') {
+      console.error("Stripe Rate Limit Error - too many requests");
+    } else if (error.type === 'StripeInvalidRequestError') {
+      console.error("Stripe Invalid Request Error:", error.param);
+    } else if (error.type === 'StripeAPIError') {
+      console.error("Stripe API Error - server side issue");
+    } else if (error.type === 'StripeConnectionError') {
+      console.error("Stripe Connection Error - network issue");
+    }
     
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        debug: {
+          timestamp: new Date().toISOString(),
+          errorType: error.type || 'unknown',
+          errorCode: error.code || 'none'
+        }
+      }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 500,

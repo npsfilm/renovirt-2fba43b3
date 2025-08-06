@@ -9,15 +9,41 @@ export const usePayment = () => {
 
   const initiatePayment = async (amount: number, orderId: string = 'temp-order-id') => {
     setIsLoading(true);
+    
+    console.log('=== PAYMENT INITIATION START ===');
+    console.log('Payment details:', { amount, orderId });
+    console.log('Current origin:', window.location.origin);
+    
     try {
       const { data, error } = await supabase.functions.invoke('create-payment', {
         body: { amount, orderId }
       });
 
-      if (error) throw error;
+      console.log('Supabase function response:', { data, error });
+
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw error;
+      }
+      
+      if (data) {
+        console.log('Payment data received:', data);
+        if (data.debug) {
+          console.log('Debug info:', data.debug);
+        }
+      }
+      
+      console.log('=== PAYMENT INITIATION SUCCESS ===');
       return data;
     } catch (error: any) {
-      console.error('Payment initiation error:', error);
+      console.error('=== PAYMENT INITIATION ERROR ===');
+      console.error('Payment initiation error details:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
+      
       toast({
         title: 'Zahlungsfehler',
         description: error.message || 'Die Zahlung konnte nicht initialisiert werden.',
@@ -30,15 +56,30 @@ export const usePayment = () => {
   };
 
   const verifyPayment = async (paymentIntentId: string) => {
+    console.log('=== PAYMENT VERIFICATION START ===');
+    console.log('Verifying payment:', paymentIntentId);
+    
     try {
       const { data, error } = await supabase.functions.invoke('verify-payment', {
         body: { paymentIntentId }
       });
 
-      if (error) throw error;
+      console.log('Verification response:', { data, error });
+
+      if (error) {
+        console.error('Verification error:', error);
+        throw error;
+      }
+      
+      console.log('=== PAYMENT VERIFICATION SUCCESS ===');
       return data;
     } catch (error: any) {
-      console.error('Payment verification error:', error);
+      console.error('=== PAYMENT VERIFICATION ERROR ===');
+      console.error('Payment verification error details:', {
+        message: error.message,
+        details: error.details,
+        paymentIntentId
+      });
       throw error;
     }
   };

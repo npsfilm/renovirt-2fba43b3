@@ -25,6 +25,7 @@ import AdminAnalytics from '@/pages/AdminAnalytics';
 import AdminSettings from '@/pages/AdminSettings';
 import AdminRoute from '@/components/admin/AdminRoute';
 import AdminHelpAnalytics from '@/pages/AdminHelpAnalytics';
+import PaymentSuccess from '@/pages/PaymentSuccess';
 import EmailVerification from '@/pages/EmailVerification';
 import Onboarding from '@/pages/Onboarding';
 import AGB from '@/pages/AGB';
@@ -151,6 +152,13 @@ function App() {
                 <AdminRoute>
                   <AdminHelpAnalytics />
                 </AdminRoute>
+              } />
+              
+              {/* Payment Success Route */}
+              <Route path="/payment/success" element={
+                <ProtectedRoute>
+                  <PaymentSuccess />
+                </ProtectedRoute>
               } />
             </Routes>
           </BrowserRouter>
