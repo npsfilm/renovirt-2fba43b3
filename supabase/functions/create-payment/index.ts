@@ -92,8 +92,7 @@ serve(async (req) => {
         orderId: orderId || 'temp-order',
         userId: user.id,
       },
-      // Explizite Konfiguration für alternative Zahlungsmethoden
-      payment_method_types: ['card', 'paypal', 'klarna', 'sepa_debit'],
+      // Nur automatic_payment_methods verwenden
       automatic_payment_methods: {
         enabled: true,
         allow_redirects: 'always', // Wichtig für PayPal, Klarna etc.
