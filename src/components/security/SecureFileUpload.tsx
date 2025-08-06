@@ -73,13 +73,11 @@ const SecureFileUpload = ({
     // Rate limiting
     if (userId && !checkRateLimit(`file_upload_${userId}`, 10, 60000)) {
       secureLog('File upload rate limit exceeded', { userId });
-      alert('Zu viele Upload-Versuche. Bitte warten Sie eine Minute.');
       return;
     }
 
     // Validate file count
     if (files.length > maxFiles) {
-      alert(`Maximal ${maxFiles} Dateien erlaubt`);
       return;
     }
 
@@ -88,7 +86,6 @@ const SecureFileUpload = ({
     for (const file of files) {
       // Validate file size
       if (file.size > maxFileSize) {
-        alert(`Datei "${file.name}" ist zu groß (max. ${Math.round(maxFileSize / 1024 / 1024)}MB)`);
         continue;
       }
 
@@ -104,7 +101,6 @@ const SecureFileUpload = ({
 
       // Validate file type
       if (!validateFileType(file)) {
-        alert(`Datei "${file.name}" hat einen ungültigen Dateityp`);
         continue;
       }
 
@@ -116,7 +112,6 @@ const SecureFileUpload = ({
           type: file.type,
           userId 
         });
-        alert(`Datei "${file.name}" ist beschädigt oder ungültig`);
         continue;
       }
 

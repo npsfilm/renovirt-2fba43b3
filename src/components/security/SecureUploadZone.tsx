@@ -1,8 +1,6 @@
-
 import React, { useCallback } from 'react';
 import { validateFileSecurely, enhancedRateLimit } from '@/utils/securityEnhancement';
 import { logSecurityEvent } from '@/utils/secureLogging';
-import { useToast } from '@/hooks/use-toast';
 import { useSecurityContext } from './EnhancedSecurityProvider';
 
 interface SecureUploadZoneProps {
@@ -20,7 +18,6 @@ const SecureUploadZone = ({
   className,
   children 
 }: SecureUploadZoneProps) => {
-  const { toast } = useToast();
   const { reportSecurityIncident } = useSecurityContext();
 
   const handleFileSelect = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,26 +33,15 @@ const SecureUploadZone = ({
     // Rate limiting
     if (userId && !enhancedRateLimit(`upload_${userId}`, 10, 60000)) {
       logSecurityEvent('file_upload_rate_limited', { userId });
-      toast({
-        title: "Zu viele Upload-Versuche",
-        description: "Bitte warten Sie eine Minute vor dem nächsten Upload.",
-        variant: "destructive",
-      });
       return;
     }
 
     // Validate file count
     if (files.length > maxFiles) {
-      toast({
-        title: "Zu viele Dateien",
-        description: `Maximal ${maxFiles} Dateien erlaubt.`,
-        variant: "destructive",
-      });
       return;
     }
 
     const validFiles: File[] = [];
-    const errors: string[] = [];
 
     // Validate each file
     for (const file of Array.from(files)) {
@@ -64,22 +50,12 @@ const SecureUploadZone = ({
       if (validation.valid) {
         validFiles.push(file);
       } else {
-        errors.push(`${file.name}: ${validation.errors.join(', ')}`);
         logSecurityEvent('file_validation_failed', { 
           fileName: file.name, 
           errors: validation.errors,
           userId 
         });
       }
-    }
-
-    // Show errors if any
-    if (errors.length > 0) {
-      toast({
-        title: "Datei-Validierung fehlgeschlagen",
-        description: errors.slice(0, 3).join('\n') + (errors.length > 3 ? '\n...' : ''),
-        variant: "destructive",
-      });
     }
 
     // Process valid files
@@ -93,16 +69,11 @@ const SecureUploadZone = ({
       });
       
       onFiles(fileList.files);
-      
-      toast({
-        title: "Dateien validiert",
-        description: `${validFiles.length} Datei(en) erfolgreich validiert und bereit zum Upload.`,
-      });
     }
 
     // Clear input
     event.target.value = '';
-  }, [onFiles, maxFiles, userId, toast, reportSecurityIncident]);
+  }, [onFiles, maxFiles, userId, reportSecurityIncident]);
 
   const handleDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
