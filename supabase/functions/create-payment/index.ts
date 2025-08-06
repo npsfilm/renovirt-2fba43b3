@@ -100,9 +100,6 @@ serve(async (req) => {
       },
       // Optimierte Einstellungen für deutsche/europäische Kunden
       payment_method_options: {
-        card: {
-          capture_method: 'automatic',
-        },
         klarna: {
           preferred_locale: 'de-DE',
         },
