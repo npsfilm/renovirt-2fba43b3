@@ -107,10 +107,10 @@ const UploadStep = ({
   const isMobile = useIsMobile();
   
   return (
-    <div className={`${isMobile ? 'space-y-4' : 'space-y-4 md:space-y-6 px-2 md:px-4'}`}>
+    <div className={`${isMobile ? 'space-y-4' : 'space-y-3 px-2'}`}>
       {!isMobile && (
-        <div className="text-center space-y-2 md:space-y-3">
-          <h1 className="text-xl md:text-3xl font-semibold text-foreground tracking-tight">Laden Sie Ihre Bilder hoch</h1>
+        <div className="text-center space-y-1">
+          <h1 className="text-2xl font-semibold text-foreground tracking-tight">Laden Sie Ihre Bilder hoch</h1>
         </div>
       )}
 
@@ -119,7 +119,7 @@ const UploadStep = ({
       </div>
 
       <Card className={`${isMobile ? 'mx-0 shadow-2xl border-0 rounded-none' : 'border-0 md:border rounded-none md:rounded-lg'}`}>
-        <CardContent className={`${isMobile ? 'p-6' : 'p-4 md:p-8'}`}>
+        <CardContent className={`${isMobile ? 'p-6' : 'p-3 md:p-6'}`}>
           <UploadZone onFiles={handleFiles} supportedFormats={supportedFormats} maxFileSize={maxFileSize} maxFiles={maxFiles} />
 
           <FileList files={files} onRemoveFile={removeFile} photoType={photoType} bracketingDivisor={bracketingDivisor} effectivePhotos={effectivePhotos} />

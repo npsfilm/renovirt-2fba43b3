@@ -75,15 +75,15 @@ const PackageStep = ({
     iconColor: 'text-primary'
   }];
   const canProceed = selectedPackage !== undefined;
-  return <div className="space-y-4 md:space-y-8">
-      <div className="text-center space-y-2 md:space-y-3 px-3 md:px-0">
-        <h1 className="text-xl md:text-3xl font-semibold text-foreground tracking-tight">Wählen Sie Ihr Bearbeitungspaket</h1>
-        <p className="text-sm md:text-lg text-muted-foreground max-w-2xl mx-auto leading-tight md:leading-relaxed">
+  return <div className="space-y-3 md:space-y-4">
+      <div className="text-center space-y-1 px-3 md:px-0">
+        <h1 className="text-xl md:text-2xl font-semibold text-foreground tracking-tight">Wählen Sie Ihr Bearbeitungspaket</h1>
+        <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
           Wählen Sie das passende Paket für Ihre Bedürfnisse.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6 max-w-4xl mx-auto px-3 md:px-0">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4 max-w-4xl mx-auto px-3 md:px-0">
         {packages.map(pkg => {
         const isSelected = selectedPackage === pkg.id;
         const isPopular = pkg.popular;
@@ -94,10 +94,10 @@ const PackageStep = ({
                   </Badge>
                 </div>}
               
-              <CardHeader className="text-center pb-3 md:pb-4 pt-5 md:pt-6 px-4 md:px-6">
-                <div className="flex items-center justify-center mb-2 md:mb-3">
-                  <div className={`w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center ${pkg.iconBg}`}>
-                    {pkg.id === 'Basic' ? <Zap className={`w-5 h-5 md:w-6 md:h-6 ${pkg.iconColor}`} /> : <Crown className={`w-5 h-5 md:w-6 md:h-6 ${pkg.iconColor}`} />}
+              <CardHeader className="text-center pb-2 md:pb-3 pt-4 md:pt-5 px-4 md:px-6">
+                <div className="flex items-center justify-center mb-1 md:mb-2">
+                  <div className={`w-8 h-8 md:w-10 md:h-10 rounded-2xl flex items-center justify-center ${pkg.iconBg}`}>
+                    {pkg.id === 'Basic' ? <Zap className={`w-4 h-4 md:w-5 md:h-5 ${pkg.iconColor}`} /> : <Crown className={`w-4 h-4 md:w-5 md:h-5 ${pkg.iconColor}`} />}
                   </div>
                 </div>
                 <CardTitle className="text-lg md:text-xl font-semibold">{pkg.name}</CardTitle>
@@ -109,8 +109,8 @@ const PackageStep = ({
                 <p className="text-muted-foreground text-xs md:text-sm leading-tight md:leading-relaxed">{pkg.description}</p>
               </CardHeader>
 
-              <CardContent className="space-y-3 md:space-y-4 pt-0 flex-1 flex flex-col px-4 md:px-6 pb-4 md:pb-6">
-                <div className="space-y-2 md:space-y-3 flex-1">
+              <CardContent className="space-y-2 md:space-y-3 pt-0 flex-1 flex flex-col px-4 md:px-6 pb-3 md:pb-4">
+                <div className="space-y-1 md:space-y-2 flex-1">
                   {pkg.features.map((feature, index) => <div key={index} className="flex items-center space-x-2 md:space-x-3">
                       <div className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0">
                         <feature.icon className="w-2.5 h-2.5 md:w-3 md:h-3 text-success" />
@@ -119,7 +119,7 @@ const PackageStep = ({
                     </div>)}
                 </div>
 
-                <div className="mt-auto pt-3 md:pt-4">
+                <div className="mt-auto pt-2 md:pt-3">
                   <Button className={`w-full transition-all duration-200 h-9 md:h-10 text-sm rounded-xl md:rounded-md ${isSelected ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-md' : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground border border-border'}`} onClick={() => onPackageChange(pkg.id)}>
                     {isSelected ? 'Ausgewählt' : 'Auswählen'}
                   </Button>
