@@ -19,6 +19,6 @@ export const InvoiceIcon = ({
 }: {
   className?: string;
 }) => {
-  return <img src="/lovable-uploads/09b9d373-9bc2-4876-906e-235ccf1b3d30.png" alt="Rechnung" className={className} />;
+  return null;
 };
 export default PaymentIcons;
