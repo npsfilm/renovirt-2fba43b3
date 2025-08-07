@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus } from 'lucide-react';
+import { Plus, Lightbulb } from 'lucide-react';
 import FeatureRequestCard from '@/components/feedback/FeatureRequestCard';
 import SubmitFeatureDialog from '@/components/feedback/SubmitFeatureDialog';
 import LoadingState from '@/components/ui/loading-state';
@@ -61,10 +61,6 @@ const Feedback = () => {
                 <SelectItem value="category_asc">Nach Kategorie (A–Z)</SelectItem>
               </SelectContent>
             </Select>
-            <Button id="new-feature-btn" onClick={() => setIsSubmitDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Feature vorschlagen
-            </Button>
           </div>
         </div>
 
@@ -129,6 +125,35 @@ const Feedback = () => {
             ))}
           </div>
         )}
+
+        <section aria-labelledby="feature-request-info" className="mt-8">
+          <Card className="animate-fade-in">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-4">
+                <div className="mt-1">
+                  <Lightbulb className="h-6 w-6 text-foreground" />
+                </div>
+                <div className="space-y-3">
+                  <h2 id="feature-request-info" className="text-xl font-semibold">Was ist ein Feature‑Request?</h2>
+                  <p className="text-muted-foreground">
+                    Teilen Sie uns Ihre Funktionswünsche mit. Wir priorisieren nach Nutzen, Aufwand und Upvotes.
+                  </p>
+                  <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-1">
+                    <li>Beschreiben Sie den konkreten Anwendungsfall.</li>
+                    <li>Erklären Sie, warum die Funktion wichtig ist.</li>
+                    <li>Ordnen Sie eine passende Kategorie zu.</li>
+                  </ul>
+                  <div>
+                    <Button size="lg" variant="default" onClick={() => setIsSubmitDialogOpen(true)} id="new-feature-btn-bottom">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Feature vorschlagen
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
 
         <SubmitFeatureDialog
           open={isSubmitDialogOpen}
