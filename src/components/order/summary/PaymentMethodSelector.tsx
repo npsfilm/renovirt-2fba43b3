@@ -29,10 +29,6 @@ const PaymentMethodSelector = ({ paymentMethod, onPaymentMethodChange }: Payment
                     <InvoiceIcon className="w-5 h-5 text-gray-700" />
                     <span className="font-medium text-gray-900">Rechnung</span>
                   </div>
-                  <div className="flex items-center gap-1 text-blue-600">
-                    <Clock className="w-3 h-3" />
-                    <span className="text-xs font-medium">14 Tage</span>
-                  </div>
                 </div>
                 <div className="text-xs text-primary font-medium">Standard-Zahlungsmethode</div>
               </div>
