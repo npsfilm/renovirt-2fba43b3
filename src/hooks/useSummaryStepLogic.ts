@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useOrderData } from '@/hooks/useOrderData';
 import { calculateOrderTotal } from '@/utils/orderPricing';
@@ -15,6 +16,7 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
   const { user } = useAuth();
   const { packages, addOns } = useOrderData();
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   const {
     paymentMethod,
@@ -81,7 +83,11 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
   };
 
   const handlePaymentSuccess = (paymentIntentId: string) => {
-    handlePaymentModalSuccess(paymentIntentId, createOrderAfterPayment, onNext, orderData);
+    secureLog('Handling successful non-redirect payment', { paymentIntentId });
+    
+    // Standardize the flow: redirect to success page for all Stripe payments
+    // This ensures both redirect and non-redirect payments follow the same path
+    navigate(`/payment/success?payment_intent=${paymentIntentId}&redirect_status=succeeded`);
   };
 
   return {
