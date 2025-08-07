@@ -8,6 +8,7 @@ import { FeatureRequestModal } from './FeatureRequestModal';
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { FeatureRequest } from '@/types/feedback';
+import { formatNameWithInitial } from '@/utils/nameUtils';
 
 interface FeatureRequestCardProps {
   request: FeatureRequest;
@@ -52,7 +53,10 @@ const FeatureRequestCard = ({ request }: FeatureRequestCardProps) => {
   const statusConfig = getStatusConfig(request.status);
   const priorityConfig = getPriorityConfig(request.priority);
   const authorName = request.customer_profiles
-    ? `${request.customer_profiles.first_name} ${request.customer_profiles.last_name}`
+    ? formatNameWithInitial(
+        request.customer_profiles.first_name, 
+        request.customer_profiles.last_name
+      )
     : 'Anonymer Nutzer';
 
   return (

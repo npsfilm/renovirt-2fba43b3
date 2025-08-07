@@ -17,8 +17,9 @@ import {
   XCircle,
   AlertCircle,
   PlayCircle
-} from 'lucide-react';
+ } from 'lucide-react';
 import type { FeatureRequest } from '@/types/feedback';
+import { formatNameWithInitial } from '@/utils/nameUtils';
 
 interface FeatureRequestModalProps {
   featureRequest: FeatureRequest | null;
@@ -141,7 +142,10 @@ export const FeatureRequestModal: React.FC<FeatureRequestModalProps> = ({
                 <span className="text-muted-foreground">Erstellt von: </span>
                 <span className="font-medium">
                   {featureRequest.customer_profiles 
-                    ? `${featureRequest.customer_profiles.first_name} ${featureRequest.customer_profiles.last_name}`
+                    ? formatNameWithInitial(
+                        featureRequest.customer_profiles.first_name,
+                        featureRequest.customer_profiles.last_name
+                      )
                     : 'Unbekannt'
                   }
                 </span>

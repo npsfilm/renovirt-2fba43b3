@@ -11,6 +11,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { MessageCircle, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { formatNameWithInitial } from '@/utils/nameUtils';
 
 // Temporarily use mock data until database structure is updated
 interface FeatureComment {
@@ -140,7 +141,7 @@ export const FeatureComments: React.FC<FeatureCommentsProps> = ({
   const getDisplayName = (comment: FeatureComment) => {
     const profile = comment.customer_profiles;
     if (profile?.first_name && profile?.last_name) {
-      return `${profile.first_name} ${profile.last_name}`;
+      return formatNameWithInitial(profile.first_name, profile.last_name);
     }
     return 'Benutzer';
   };
