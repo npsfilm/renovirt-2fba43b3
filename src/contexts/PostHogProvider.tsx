@@ -23,6 +23,7 @@ export const PostHogProvider = ({ children }: PostHogProviderProps) => {
         session_recording: {
           maskAllInputs: true,
           maskTextSelector: '[data-sensitive]',
+          recordCrossOriginIframes: false,
         },
         loaded: (posthog) => {
           if (import.meta.env.DEV) posthog.debug();

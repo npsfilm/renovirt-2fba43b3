@@ -5,6 +5,8 @@ import SummaryStepContent from './summary/SummaryStepContent';
 import SummaryStepActions from './summary/SummaryStepActions';
 import { useSummaryStepLogic } from '@/hooks/useSummaryStepLogic';
 import { useOrderStore } from '@/stores/orderStore';
+import { useFeatureFlags } from '@/hooks/useFeatureFlags';
+import { useSessionReplay } from '@/hooks/useSessionReplay';
 
 interface SummaryStepProps {
   onNext: () => void;
@@ -12,6 +14,9 @@ interface SummaryStepProps {
 }
 
 const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
+  const { isEnabled, trackFeatureUsage } = useFeatureFlags();
+  const { markConversionEvent } = useSessionReplay();
+  
   const orderData = useOrderStore((state) => ({
     photoType: state.photoType,
     files: state.files,
@@ -34,7 +39,20 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
     finalPrice,
     isProcessing,
     handleSubmitOrder
-  } = useSummaryStepLogic(orderData, onNext);
+  } = useSummaryStepLogic(orderData, () => {
+    // Track conversion event for session replay
+    markConversionEvent('order_submitted', finalPrice);
+    
+    // Track enhanced order flow feature usage
+    if (isEnabled('enhanced-order-flow')) {
+      trackFeatureUsage('enhanced-order-flow', 'order_completed', {
+        order_value: finalPrice,
+        payment_method: paymentMethod
+      });
+    }
+    
+    onNext();
+  });
 
   return (
     <div className="space-y-3 md:space-y-4">
