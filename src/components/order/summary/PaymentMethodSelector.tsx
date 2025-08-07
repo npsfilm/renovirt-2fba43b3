@@ -31,7 +31,7 @@ const PaymentMethodSelector = ({
                 </div>
                 <div className="text-xs text-primary font-medium">Standard-Zahlungsmethode</div>
               </div>
-              <p className="text-sm text-gray-600">Sie erhalten eine Rechnung per E-Mail mit 14 Tagen Zahlungsziel</p>
+              <p className="text-sm text-gray-600">Sie erhalten eine Rechnung per E-Mail nach Abschluss der Bearbeitung</p>
             </div>
           </div>
         </div>
