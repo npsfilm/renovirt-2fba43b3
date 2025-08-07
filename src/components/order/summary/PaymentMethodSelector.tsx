@@ -13,10 +13,10 @@ const PaymentMethodSelector = ({ paymentMethod, onPaymentMethodChange }: Payment
   return (
     <Card className="border border-gray-200 shadow-sm">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg font-medium text-gray-900">
-          <CreditCard className="w-5 h-5" />
-          Zahlungsmethode wählen
-        </CardTitle>
+          <CardTitle className="flex items-center gap-2 text-lg font-medium text-gray-900">
+            <CreditCard className="w-5 h-5" />
+            Zahlungsmethode
+          </CardTitle>
       </CardHeader>
       <CardContent className="space-y-2 md:space-y-3">
         <div className="space-y-3">
