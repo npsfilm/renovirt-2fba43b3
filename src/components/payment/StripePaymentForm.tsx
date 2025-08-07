@@ -25,12 +25,48 @@ const StripePaymentForm = ({
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isElementsReady, setIsElementsReady] = useState(false);
+  const [paymentMethodSelected, setPaymentMethodSelected] = useState(false);
   const { toast } = useToast();
   const { verifyPayment } = usePayment();
 
   useEffect(() => {
     if (stripe && elements) {
       setIsElementsReady(true);
+      
+      // Add PaymentElement event listeners for better debugging
+      const paymentElement = elements.getElement('payment');
+      if (paymentElement) {
+        console.log('=== PAYMENT ELEMENT READY ===');
+        
+        paymentElement.on('ready', () => {
+          console.log('PaymentElement ready event fired');
+        });
+        
+        paymentElement.on('focus', () => {
+          console.log('PaymentElement focused');
+        });
+        
+        paymentElement.on('blur', () => {
+          console.log('PaymentElement blurred');
+        });
+        
+        paymentElement.on('change', (event) => {
+          console.log('=== PAYMENT ELEMENT CHANGE ===');
+          console.log('Event details:', {
+            complete: event.complete,
+            empty: event.empty,
+            value: event.value,
+            collapsed: event.collapsed
+          });
+          
+          setPaymentMethodSelected(event.complete && !event.empty);
+        });
+        
+        paymentElement.on('loaderror', (event) => {
+          console.error('=== PAYMENT ELEMENT LOAD ERROR ===');
+          console.error('Error details:', event.error);
+        });
+      }
     }
   }, [stripe, elements]);
 
@@ -48,6 +84,7 @@ const StripePaymentForm = ({
       console.log('=== STRIPE PAYMENT SUBMISSION START ===');
       console.log('Current URL:', window.location.href);
       console.log('Return URL will be:', `${window.location.origin}/payment/success`);
+      console.log('Payment method selected:', paymentMethodSelected);
       
       // Check if PaymentElement is ready
       const paymentElement = elements.getElement('payment');
@@ -55,7 +92,17 @@ const StripePaymentForm = ({
         throw new Error('PaymentElement nicht verfügbar');
       }
       
-      console.log('PaymentElement ready, confirming payment...');
+      console.log('PaymentElement ready, submitting elements first...');
+      
+      // CRITICAL FIX: Submit elements first to ensure payment method is attached
+      const submitResult = await elements.submit();
+      if (submitResult.error) {
+        console.error('=== ELEMENTS SUBMIT ERROR ===');
+        console.error('Submit error:', submitResult.error);
+        throw new Error(submitResult.error.message || 'Formularvalidierung fehlgeschlagen');
+      }
+      
+      console.log('Elements submitted successfully, confirming payment...');
       
       const result = await stripe.confirmPayment({
         elements,
@@ -277,7 +324,7 @@ const StripePaymentForm = ({
           
           <Button
             type="submit"
-            disabled={!stripe || !elements || isProcessing || isLoading || !isElementsReady}
+            disabled={!stripe || !elements || isProcessing || isLoading || !isElementsReady || !paymentMethodSelected}
             className="w-full bg-green-600 hover:bg-green-700"
           >
             {isProcessing ? (
