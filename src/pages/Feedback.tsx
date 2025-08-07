@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import MobileLayout from '@/components/layout/MobileLayout';
 import PageHeader from '@/components/layout/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,15 +11,34 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Search, Filter } from 'lucide-react';
 import FeatureRequestCard from '@/components/feedback/FeatureRequestCard';
 import SubmitFeatureDialog from '@/components/feedback/SubmitFeatureDialog';
+import NavigationBreadcrumbs from '@/components/feedback/NavigationBreadcrumbs';
+import QuickFilters from '@/components/feedback/QuickFilters';
+import FeedbackStats from '@/components/feedback/FeedbackStats';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { FeatureRequest, FeatureCategory } from '@/types/feedback';
+import { useAuth } from '@/hooks/useAuth';
 
 const Feedback = () => {
+  const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  
+  // URL-controlled state
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
+  const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || 'all');
+  const [quickFilter, setQuickFilter] = useState(searchParams.get('filter') || '');
+
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchTerm) params.set('search', searchTerm);
+    if (selectedCategory !== 'all') params.set('category', selectedCategory);
+    if (statusFilter !== 'all') params.set('status', statusFilter);
+    if (quickFilter) params.set('filter', quickFilter);
+    setSearchParams(params);
+  }, [searchTerm, selectedCategory, statusFilter, quickFilter, setSearchParams]);
 
   // Fetch feature requests
   const { data: featureRequests = [], isLoading } = useQuery({
@@ -36,8 +56,20 @@ const Feedback = () => {
             first_name,
             last_name
           )
-        `)
-        .order('upvote_count', { ascending: false });
+        `);
+
+      // Apply quick filters
+      if (quickFilter === 'trending') {
+        query = query.order('comment_count', { ascending: false });
+      } else if (quickFilter === 'popular') {
+        query = query.order('upvote_count', { ascending: false });
+      } else if (quickFilter === 'recent') {
+        query = query.order('created_at', { ascending: false });
+      } else if (quickFilter === 'my-requests' && user?.id) {
+        query = query.eq('created_by', user.id).order('created_at', { ascending: false });
+      } else {
+        query = query.order('upvote_count', { ascending: false });
+      }
 
       if (selectedCategory !== 'all') {
         query = query.eq('category_id', selectedCategory);
@@ -68,6 +100,7 @@ const Feedback = () => {
       if (error) throw error;
       return data;
     },
+    enabled: true,
   });
 
   const getStatusCounts = () => {
@@ -79,13 +112,64 @@ const Feedback = () => {
 
   const statusCounts = getStatusCounts();
 
+  // Calculate stats for navigation
+  const stats = {
+    totalRequests: featureRequests.length,
+    totalUpvotes: featureRequests.reduce((sum, req) => sum + req.upvote_count, 0),
+    completedThisMonth: featureRequests.filter(req => 
+      req.status === 'completed' && 
+      new Date(req.updated_at) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    ).length,
+    avgResponseTime: '2-3 Tage',
+    statusBreakdown: statusCounts,
+    categoryBreakdown: categories.reduce((acc, cat) => {
+      const count = featureRequests.filter(req => req.category_id === cat.id).length;
+      if (count > 0) {
+        acc[cat.name] = { count, color: cat.color };
+      }
+      return acc;
+    }, {} as Record<string, { count: number; color: string }>)
+  };
+
+  const requestCounts = {
+    trending: featureRequests.filter(req => req.comment_count > 3).length,
+    recent: featureRequests.filter(req => 
+      new Date(req.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+    ).length,
+    popular: featureRequests.filter(req => req.upvote_count > 10).length,
+    myRequests: user ? featureRequests.filter(req => req.created_by === user.id).length : 0
+  };
+
+  const handleSearchClear = () => {
+    setSearchTerm('');
+    setSelectedCategory('all');
+    setStatusFilter('all');
+    setQuickFilter('');
+  };
+
   return (
     <MobileLayout>
       <div className="container mx-auto p-4 space-y-6">
-        <PageHeader title="Feature Requests" />
-        <p className="text-muted-foreground mb-6">
-          Teilen Sie Ihre Ideen mit und stimmen Sie für Features ab, die Sie sich wünschen.
-        </p>
+        <NavigationBreadcrumbs
+          currentStatus={statusFilter}
+          currentCategory={selectedCategory}
+          searchTerm={searchTerm}
+          statusCounts={statusCounts}
+          categories={categories}
+          onStatusChange={setStatusFilter}
+          onCategoryChange={setSelectedCategory}
+          onSearchClear={handleSearchClear}
+        />
+
+        {/* Stats Dashboard */}
+        <FeedbackStats stats={stats} />
+
+        {/* Quick Filters */}
+        <QuickFilters
+          onFilterChange={setQuickFilter}
+          activeFilter={quickFilter}
+          requestCounts={requestCounts}
+        />
 
         {/* Header Actions */}
         <div className="flex flex-col sm:flex-row justify-between gap-4 animate-fade-in">
@@ -93,6 +177,7 @@ const Feedback = () => {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 transition-colors duration-200" />
               <Input
+                id="search-input"
                 placeholder="Feature-Requests durchsuchen..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -115,6 +200,7 @@ const Feedback = () => {
             </Select>
           </div>
           <Button 
+            id="new-feature-btn"
             onClick={() => setIsSubmitDialogOpen(true)}
             className="hover:scale-105 transition-all duration-200 animate-fade-in"
           >
