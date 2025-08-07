@@ -1,17 +1,16 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { InvoiceIcon } from '@/components/payment/PaymentIcons';
 import { CreditCard, Shield, Clock } from 'lucide-react';
-
 interface PaymentMethodSelectorProps {
   paymentMethod: 'invoice';
   onPaymentMethodChange: (method: 'invoice') => void;
 }
-
-const PaymentMethodSelector = ({ paymentMethod, onPaymentMethodChange }: PaymentMethodSelectorProps) => {
-  return (
-    <Card className="border border-gray-200 shadow-sm">
+const PaymentMethodSelector = ({
+  paymentMethod,
+  onPaymentMethodChange
+}: PaymentMethodSelectorProps) => {
+  return <Card className="border border-gray-200 shadow-sm">
       <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg font-medium text-gray-900">
             <CreditCard className="w-5 h-5" />
@@ -32,9 +31,7 @@ const PaymentMethodSelector = ({ paymentMethod, onPaymentMethodChange }: Payment
                 </div>
                 <div className="text-xs text-primary font-medium">Standard-Zahlungsmethode</div>
               </div>
-              <p className="text-sm text-gray-600">
-                Erhalten Sie eine Rechnung per E-Mail mit 14 Tagen Zahlungsziel
-              </p>
+              <p className="text-sm text-gray-600">Sie erhalten eine Rechnung per E-Mail mit 14 Tagen Zahlungsziel</p>
             </div>
           </div>
         </div>
@@ -47,8 +44,6 @@ const PaymentMethodSelector = ({ paymentMethod, onPaymentMethodChange }: Payment
           </span>
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };
-
 export default PaymentMethodSelector;
