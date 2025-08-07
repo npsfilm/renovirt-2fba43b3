@@ -4,8 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { LogOut } from 'lucide-react';
-import { HomeIcon, CloudArrowUpIcon, DocumentTextIcon, CreditCardIcon, UserIcon, Cog6ToothIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
+import { Home, Upload, FileText, CreditCard, User, Settings, HelpCircle, LogOut } from 'lucide-react';
 import CreditsWidget from './CreditsWidget';
 
 const AppSidebar = () => {
@@ -14,13 +13,13 @@ const AppSidebar = () => {
   const { signOut } = useAuth();
 
   const menuItems = [
-    { title: 'Dashboard', icon: HomeIcon, url: '/dashboard' },
-    { title: 'Neue Bestellung', icon: CloudArrowUpIcon, url: '/order' },
-    { title: 'Meine Bestellungen', icon: DocumentTextIcon, url: '/orders' },
-    { title: 'Rechnungen', icon: CreditCardIcon, url: '/billing' },
-    { title: 'Profil', icon: UserIcon, url: '/profile' },
-    { title: 'Einstellungen', icon: Cog6ToothIcon, url: '/settings' },
-    { title: 'Hilfe & Support', icon: QuestionMarkCircleIcon, url: '/help' }
+    { title: 'Dashboard', icon: Home, url: '/dashboard' },
+    { title: 'Neue Bestellung', icon: Upload, url: '/order' },
+    { title: 'Meine Bestellungen', icon: FileText, url: '/orders' },
+    { title: 'Rechnungen', icon: CreditCard, url: '/billing' },
+    { title: 'Profil', icon: User, url: '/profile' },
+    { title: 'Einstellungen', icon: Settings, url: '/settings' },
+    { title: 'Hilfe & Support', icon: HelpCircle, url: '/help' }
   ];
 
   const handleSignOut = async () => {
