@@ -66,8 +66,20 @@ export const useSummaryOrderCreation = () => {
       });
 
       if (paymentMethod === 'stripe' && finalPrice > 0) {
-        // Store order data for redirect payments (PayPal)
-        sessionStorage.setItem('pendingOrderData', JSON.stringify(secureOrderData));
+        // Store order data in localStorage for redirect payments (PayPal, Klarna, etc.)
+        try {
+          const orderDataForStorage = {
+            ...secureOrderData,
+            creditsUsed: creditsToUse,
+            finalPrice
+          };
+          localStorage.setItem('pendingOrderData', JSON.stringify(orderDataForStorage));
+          console.log('Order data stored in localStorage for redirect payment');
+        } catch (error) {
+          console.error('Failed to save order data to localStorage:', error);
+          // Stop the payment process if saving fails
+          throw new Error('Speichern der Bestelldaten fehlgeschlagen');
+        }
         
         // For Stripe payments, prepare for payment but don't create order yet
         await initiateStripePayment(finalPrice, secureOrderData);

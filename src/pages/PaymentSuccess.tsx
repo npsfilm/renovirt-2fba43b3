@@ -39,9 +39,9 @@ const PaymentSuccess = () => {
         // Stripe has already confirmed the payment was successful
         console.log('Payment successful, proceeding with order creation');
 
-        // Get order data from sessionStorage (set during order creation)
-        const storedOrderData = sessionStorage.getItem('pendingOrderData');
-        console.log('SessionStorage content:', storedOrderData);
+        // Get order data from localStorage (set during order creation)
+        const storedOrderData = localStorage.getItem('pendingOrderData');
+        console.log('LocalStorage content:', storedOrderData);
         
         if (storedOrderData) {
           try {
@@ -61,7 +61,7 @@ const PaymentSuccess = () => {
             await createOrderAfterPayment(orderData, paymentIntentId);
             
             // Clear the stored order data
-            sessionStorage.removeItem('pendingOrderData');
+            localStorage.removeItem('pendingOrderData');
             
             setOrderCreated(true);
             setPaymentStatus('success');
@@ -73,6 +73,8 @@ const PaymentSuccess = () => {
           } catch (orderError) {
             console.error('Failed to create order after payment:', orderError);
             setPaymentStatus('error');
+            // Clean up localStorage on failure to prevent retries with stale data
+            localStorage.removeItem('pendingOrderData');
             toast({
               title: 'Bestellung konnte nicht erstellt werden',
               description: 'Die Zahlung war erfolgreich, aber die Bestellung konnte nicht erstellt werden. Bitte kontaktieren Sie den Support.',
