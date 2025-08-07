@@ -111,6 +111,8 @@ serve(async (req) => {
         enabled: true,
         allow_redirects: 'always', // Wichtig für PayPal, Klarna etc.
       },
+      // Return URL für redirect payments (PayPal etc.)
+      return_url: `${origin}/payment-success`,
       // Optimierte Einstellungen für deutsche/europäische Kunden
       payment_method_options: {
         klarna: {

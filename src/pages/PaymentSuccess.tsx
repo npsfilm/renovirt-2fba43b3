@@ -46,10 +46,21 @@ const PaymentSuccess = () => {
 
         // Get order data from sessionStorage (set during order creation)
         const storedOrderData = sessionStorage.getItem('pendingOrderData');
+        console.log('SessionStorage content:', storedOrderData);
+        
         if (storedOrderData) {
           try {
-            const orderData = JSON.parse(storedOrderData);
-            console.log('Found stored order data, creating order...');
+            const secureOrderData = JSON.parse(storedOrderData);
+            console.log('Found stored order data:', {
+              hasFiles: secureOrderData.files?.length > 0,
+              photoType: secureOrderData.photoType,
+              package: secureOrderData.package,
+              email: secureOrderData.email
+            });
+            
+            // Extract just the OrderData without extra fields
+            const { creditsUsed, finalPrice, ...orderData } = secureOrderData;
+            console.log('Creating order with payment intent:', paymentIntentId);
             
             // Create the order after successful payment
             await createOrderAfterPayment(orderData, paymentIntentId);

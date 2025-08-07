@@ -155,7 +155,7 @@ function App() {
               } />
               
               {/* Payment Success Route */}
-              <Route path="/payment/success" element={
+              <Route path="/payment-success" element={
                 <ProtectedRoute>
                   <PaymentSuccess />
                 </ProtectedRoute>
