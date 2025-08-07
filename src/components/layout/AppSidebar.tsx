@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { Home, Upload, FileText, CreditCard, User, Settings, HelpCircle, LogOut } from 'lucide-react';
+import { Home, Upload, FileText, CreditCard, User, Settings, HelpCircle, LogOut, MessageSquare } from 'lucide-react';
 import CreditsWidget from './CreditsWidget';
 
 const AppSidebar = () => {
@@ -17,6 +17,7 @@ const AppSidebar = () => {
     { title: 'Neue Bestellung', icon: Upload, url: '/order' },
     { title: 'Meine Bestellungen', icon: FileText, url: '/orders' },
     { title: 'Rechnungen', icon: CreditCard, url: '/billing' },
+    { title: 'Feature Requests', icon: MessageSquare, url: '/feedback' },
     { title: 'Profil', icon: User, url: '/profile' },
     { title: 'Einstellungen', icon: Settings, url: '/settings' },
     { title: 'Hilfe & Support', icon: HelpCircle, url: '/help' }

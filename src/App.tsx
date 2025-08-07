@@ -15,6 +15,7 @@ import Profile from '@/pages/Profile';
 import Billing from '@/pages/Billing';
 import Settings from '@/pages/Settings';
 import Help from '@/pages/Help';
+import Feedback from '@/pages/Feedback';
 import Auth from '@/pages/Auth';
 import OrderFlow from '@/pages/OrderFlow';
 import Guidelines from '@/pages/Guidelines';
@@ -100,6 +101,11 @@ function App() {
               <Route path="/help" element={
                 <ProtectedRoute>
                   <Help />
+                </ProtectedRoute>
+              } />
+              <Route path="/feedback" element={
+                <ProtectedRoute>
+                  <Feedback />
                 </ProtectedRoute>
               } />
               <Route path="/email-verification" element={

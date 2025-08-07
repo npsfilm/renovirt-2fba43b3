@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, Package, Upload, HelpCircle, MoreHorizontal, FileText, User, Settings, LogOut, X } from 'lucide-react';
+import { Home, Package, Upload, HelpCircle, MoreHorizontal, FileText, User, Settings, LogOut, X, MessageSquare } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
@@ -42,11 +42,11 @@ const MobileBottomNav = () => {
       isActive: currentPath === '/order'
     },
     {
-      id: 'help',
-      label: 'Hilfe',
-      icon: HelpCircle,
-      path: '/help',
-      isActive: currentPath === '/help'
+      id: 'feedback',
+      label: 'Features',
+      icon: MessageSquare,
+      path: '/feedback',
+      isActive: currentPath === '/feedback'
     }
   ];
 
@@ -62,6 +62,12 @@ const MobileBottomNav = () => {
       label: 'Profil',
       icon: User,
       path: '/profile'
+    },
+    {
+      id: 'help',
+      label: 'Hilfe',
+      icon: HelpCircle,
+      path: '/help'
     },
     {
       id: 'settings',
@@ -85,7 +91,7 @@ const MobileBottomNav = () => {
     setIsMoreMenuOpen(false);
   };
 
-  const isMoreActive = ['/billing', '/profile', '/settings'].includes(currentPath);
+  const isMoreActive = ['/billing', '/profile', '/help', '/settings'].includes(currentPath);
 
   return (
     <>
