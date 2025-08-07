@@ -139,15 +139,8 @@ const StripePaymentForm = ({
         elements,
         confirmParams: {
           return_url: `${window.location.origin}/payment/success`,
-          payment_method_data: {
-            billing_details: {
-              name: 'auto',
-              email: 'auto',
-            },
-          },
         },
-        // CRITICAL FIX: Allow all redirects for PayPal, Apple Pay, Google Pay
-        redirect: 'always', // Changed from 'if_required' to 'always'
+        redirect: 'if_required',
       });
       
       console.log('=== STRIPE PAYMENT RESULT ===');
