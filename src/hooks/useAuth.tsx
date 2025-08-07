@@ -10,7 +10,16 @@ export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const posthog = usePostHog();
+  
+  // Safe PostHog access with error handling
+  const getSafePostHog = () => {
+    try {
+      return usePostHog();
+    } catch (error) {
+      console.warn('PostHog not available:', error);
+      return null;
+    }
+  };
 
   useEffect(() => {
     // Handle email confirmation from URL tokens with security validation
@@ -88,18 +97,25 @@ export const useAuth = () => {
             if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
               logSecurityEvent('user_signed_in', { userId: session.user.id });
               
-              // PostHog: Identify user and track sign in
-              posthog.identify(session.user.id, {
-                email: session.user.email,
-                email_verified: session.user.email_confirmed_at ? true : false,
-                created_at: session.user.created_at,
-                last_sign_in: session.user.last_sign_in_at
-              });
-              
-              posthog.capture('user_signed_in', {
-                provider: session.user.app_metadata?.provider || 'email',
-                method: event === 'SIGNED_IN' ? 'login' : 'signup'
-              });
+              // PostHog: Identify user and track sign in (safe)
+              const posthog = getSafePostHog();
+              if (posthog) {
+                try {
+                  posthog.identify(session.user.id, {
+                    email: session.user.email,
+                    email_verified: session.user.email_confirmed_at ? true : false,
+                    created_at: session.user.created_at,
+                    last_sign_in: session.user.last_sign_in_at
+                  });
+                  
+                  posthog.capture('user_signed_in', {
+                    provider: session.user.app_metadata?.provider || 'email',
+                    method: event === 'SIGNED_IN' ? 'login' : 'signup'
+                  });
+                } catch (error) {
+                  console.warn('PostHog tracking failed:', error);
+                }
+              }
               
               // Don't automatically redirect to onboarding - let the Auth component handle profile checks
               // Only redirect if we're on the auth page
@@ -113,9 +129,16 @@ export const useAuth = () => {
             if (event === 'SIGNED_OUT') {
               logSecurityEvent('user_signed_out');
               
-              // PostHog: Track sign out and reset session
-              posthog.capture('user_signed_out');
-              posthog.reset();
+              // PostHog: Track sign out and reset session (safe)
+              const posthog = getSafePostHog();
+              if (posthog) {
+                try {
+                  posthog.capture('user_signed_out');
+                  posthog.reset();
+                } catch (error) {
+                  console.warn('PostHog sign out tracking failed:', error);
+                }
+              }
               
               cleanupAuthState();
             }
@@ -128,14 +151,21 @@ export const useAuth = () => {
           setUser(session?.user ?? null);
           setLoading(false);
           
-          // PostHog: Identify existing user if session exists
+          // PostHog: Identify existing user if session exists (safe)
           if (session?.user) {
-            posthog.identify(session.user.id, {
-              email: session.user.email,
-              email_verified: session.user.email_confirmed_at ? true : false,
-              created_at: session.user.created_at,
-              last_sign_in: session.user.last_sign_in_at
-            });
+            const posthog = getSafePostHog();
+            if (posthog) {
+              try {
+                posthog.identify(session.user.id, {
+                  email: session.user.email,
+                  email_verified: session.user.email_confirmed_at ? true : false,
+                  created_at: session.user.created_at,
+                  last_sign_in: session.user.last_sign_in_at
+                });
+              } catch (error) {
+                console.warn('PostHog user identification failed:', error);
+              }
+            }
           }
         });
 
