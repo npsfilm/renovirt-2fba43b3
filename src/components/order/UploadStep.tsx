@@ -7,22 +7,18 @@ import FileList from './upload/FileList';
 import UploadInfo from './upload/UploadInfo';
 import BracketingInfo from './upload/BracketingInfo';
 import UploadStepActions from './upload/UploadStepActions';
+import { useOrderStore } from '@/stores/orderStore';
 
 interface UploadStepProps {
-  files: File[];
-  photoType?: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5';
-  onFilesChange: (files: File[]) => void;
   onNext: () => void;
   onPrev: () => void;
 }
 
-const UploadStep = ({
-  files,
-  photoType,
-  onFilesChange,
-  onNext,
-  onPrev
-}: UploadStepProps) => {
+const UploadStep = ({ onNext, onPrev }: UploadStepProps) => {
+  const files = useOrderStore((state) => state.files);
+  const photoType = useOrderStore((state) => state.photoType);
+  const addFiles = useOrderStore((state) => state.addFiles);
+  const removeFile = useOrderStore((state) => state.removeFile);
   const supportedFormats = ['jpg', 'jpeg', 'png', 'cr2', 'cr3', 'nef', 'arw', 'dng', 'zip'];
   const maxFileSize = 25 * 1024 * 1024; // 25MB
   const maxFiles = 100;
@@ -59,24 +55,15 @@ const UploadStep = ({
     const fileArray = Array.from(newFiles);
     const validFiles = fileArray.filter(validateFile);
 
-    // Check for duplicates
-    const existingNames = files.map(f => f.name);
-    const uniqueFiles = validFiles.filter(file => !existingNames.includes(file.name));
-
-    const totalFiles = files.length + uniqueFiles.length;
+    const totalFiles = files.length + validFiles.length;
     if (totalFiles > maxFiles) {
       return;
     }
 
-    if (uniqueFiles.length > 0) {
-      onFilesChange([...files, ...uniqueFiles]);
+    if (validFiles.length > 0) {
+      addFiles(validFiles);
     }
-  }, [files, onFilesChange, validateFile, maxFiles]);
-
-  const removeFile = useCallback((index: number) => {
-    const newFiles = files.filter((_, i) => i !== index);
-    onFilesChange(newFiles);
-  }, [files, onFilesChange]);
+  }, [files.length, addFiles, validateFile, maxFiles]);
 
   const canProceed = files.length > 0;
   const effectivePhotos = getEffectivePhotoCount(files.length);

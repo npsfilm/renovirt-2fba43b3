@@ -5,20 +5,25 @@ import { Badge } from '@/components/ui/badge';
 import { CheckCircle, ArrowRight, Download, Calendar, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useOrders } from '@/hooks/useOrders';
-import { calculateEffectiveImageCount } from '@/utils/orderValidation';
 import { generateOrderNumber } from '@/utils/orderNumberGenerator';
-import type { OrderData } from '@/utils/orderValidation';
+import { useOrderStore } from '@/stores/orderStore';
 
 interface ConfirmationStepProps {
-  orderData: OrderData;
   orderId?: string;
   orderNumber?: string;
 }
 
 const ConfirmationStep = ({
-  orderData,
   orderNumber = generateOrderNumber()
 }: ConfirmationStepProps) => {
+  const orderData = useOrderStore((state) => ({
+    photoType: state.photoType,
+    files: state.files,
+    package: state.package,
+    extras: state.extras,
+    email: state.email,
+  }));
+  const effectiveImageCount = useOrderStore((state) => state.effectiveImageCount);
   const {
     packages,
     addOns
@@ -121,7 +126,7 @@ const ConfirmationStep = ({
   };
   
   const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
-  const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
+  const imageCount = effectiveImageCount;
   
   return <div className="space-y-6">
       {/* Header section with success icon */}

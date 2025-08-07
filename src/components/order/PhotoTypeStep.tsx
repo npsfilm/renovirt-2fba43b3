@@ -7,14 +7,15 @@ import PhotoTypeCard from './photo-type/PhotoTypeCard';
 import BracketingInfoCard from './photo-type/BracketingInfoCard';
 import ProTipCard from './photo-type/ProTipCard';
 import { photoTypes } from './photo-type/photoTypeData';
+import { useOrderStore } from '@/stores/orderStore';
 
 interface PhotoTypeStepProps {
-  selectedType?: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5';
-  onTypeChange: (type: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5') => void;
   onNext: () => void;
 }
 
-const PhotoTypeStep = ({ selectedType, onTypeChange, onNext }: PhotoTypeStepProps) => {
+const PhotoTypeStep = ({ onNext }: PhotoTypeStepProps) => {
+  const selectedType = useOrderStore((state) => state.photoType);
+  const setPhotoType = useOrderStore((state) => state.setPhotoType);
   const canProceed = selectedType !== undefined;
   const isMobile = useIsMobile();
 
@@ -34,7 +35,7 @@ const PhotoTypeStep = ({ selectedType, onTypeChange, onNext }: PhotoTypeStepProp
       <div className={`${isMobile ? 'px-4 py-6 space-y-4' : 'flex-1 min-h-0 px-2 pt-2 overflow-y-auto'}`}>
         <RadioGroup
           value={selectedType}
-          onValueChange={onTypeChange}
+          onValueChange={setPhotoType}
           className={`${isMobile ? 'space-y-4' : 'grid grid-cols-1 md:grid-cols-2 gap-3 mb-4'}`}
         >
           {photoTypes.map((type) => (

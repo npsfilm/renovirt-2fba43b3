@@ -4,24 +4,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Zap, Crown, Clock, Palette, Eye, Wand2, Sparkles } from 'lucide-react';
+import { useOrderStore } from '@/stores/orderStore';
+
 interface PackageStepProps {
-  selectedPackage?: 'Basic' | 'Premium';
-  onPackageChange: (pkg: 'Basic' | 'Premium') => void;
   onNext: () => void;
   onPrev: () => void;
 }
-const PackageStep = ({
-  selectedPackage,
-  onPackageChange,
-  onNext,
-  onPrev
-}: PackageStepProps) => {
+const PackageStep = ({ onNext, onPrev }: PackageStepProps) => {
+  const selectedPackage = useOrderStore((state) => state.package);
+  const setPackage = useOrderStore((state) => state.setPackage);
+
   // Preselect Premium if nothing is selected
   React.useEffect(() => {
     if (!selectedPackage) {
-      onPackageChange('Premium');
+      setPackage('Premium');
     }
-  }, [selectedPackage, onPackageChange]);
+  }, [selectedPackage, setPackage]);
   const packages = [{
     id: 'Basic' as const,
     name: 'Basic',
@@ -87,7 +85,7 @@ const PackageStep = ({
         {packages.map(pkg => {
         const isSelected = selectedPackage === pkg.id;
         const isPopular = pkg.popular;
-        return <Card key={pkg.id} className={`relative cursor-pointer transition-all duration-300 ease-out transform flex flex-col rounded-2xl md:rounded-lg ${isSelected ? 'ring-2 ring-primary border-primary shadow-[0_8px_30px_rgb(0,0,0,0.12)] md:shadow-lg scale-[1.02] bg-gradient-to-br ' + pkg.gradient : 'hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] md:hover:shadow-md hover:scale-[1.01] border-border bg-card shadow-[0_2px_8px_rgb(0,0,0,0.04)]'} ${isPopular ? 'border-primary/30' : ''}`} onClick={() => onPackageChange(pkg.id)}>
+        return <Card key={pkg.id} className={`relative cursor-pointer transition-all duration-300 ease-out transform flex flex-col rounded-2xl md:rounded-lg ${isSelected ? 'ring-2 ring-primary border-primary shadow-[0_8px_30px_rgb(0,0,0,0.12)] md:shadow-lg scale-[1.02] bg-gradient-to-br ' + pkg.gradient : 'hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] md:hover:shadow-md hover:scale-[1.01] border-border bg-card shadow-[0_2px_8px_rgb(0,0,0,0.04)]'} ${isPopular ? 'border-primary/30' : ''}`} onClick={() => setPackage(pkg.id)}>
               {isPopular && <div className="absolute -top-2 md:-top-3 left-1/2 transform -translate-x-1/2 z-10">
                   <Badge className="bg-warning text-warning-foreground px-2 py-0.5 md:px-3 md:py-1 shadow-sm text-xs md:text-sm rounded-full">
                     ⭐ BESTSELLER
@@ -120,7 +118,7 @@ const PackageStep = ({
                 </div>
 
                 <div className="mt-auto pt-2 md:pt-3">
-                  <Button className={`w-full transition-all duration-200 h-9 md:h-10 text-sm rounded-xl md:rounded-md ${isSelected ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-md' : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground border border-border'}`} onClick={() => onPackageChange(pkg.id)}>
+                  <Button className={`w-full transition-all duration-200 h-9 md:h-10 text-sm rounded-xl md:rounded-md ${isSelected ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-md' : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground border border-border'}`} onClick={() => setPackage(pkg.id)}>
                     {isSelected ? 'Ausgewählt' : 'Auswählen'}
                   </Button>
                 </div>

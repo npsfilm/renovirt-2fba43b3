@@ -1,11 +1,10 @@
 
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/layout/AppSidebar';
-import PageHeader from '@/components/layout/PageHeader';
 import { useIsMobile } from '@/hooks/use-mobile';
 import OrderProgress from '@/components/order/OrderProgress';
 import OrderActionBar from '@/components/order/OrderActionBar';
@@ -15,9 +14,8 @@ import PackageStep from '@/components/order/PackageStep';
 import ExtrasStep from '@/components/order/ExtrasStep';
 import SummaryStep from '@/components/order/SummaryStep';
 import ConfirmationStep from '@/components/order/ConfirmationStep';
-import { validateOrderData, type OrderData } from '@/utils/orderValidation';
-
-type Step = 'photo-type' | 'upload' | 'package' | 'extras' | 'summary' | 'confirmation';
+import { useOrderStore } from '@/stores/orderStore';
+import { useOrderMetaStore } from '@/stores/orderMetaStore';
 
 interface ProgressStep {
   number: number;
@@ -26,29 +24,18 @@ interface ProgressStep {
 }
 
 const Order = () => {
-  const [currentStep, setCurrentStep] = useState<Step>('photo-type');
-  const [orderData, setOrderData] = useState<OrderData>({
-    photoType: undefined,
-    files: [],
-    package: undefined,
-    extras: {
-      upscale: false,
-      express: false,
-      watermark: false,
-    },
-    watermarkFile: undefined,
-    email: '',
-    acceptedTerms: false,
-    company: '',
-    objectReference: '',
-    specialRequests: '',
-  });
+  const currentStep = useOrderMetaStore((state) => state.currentStep);
+  const nextStep = useOrderMetaStore((state) => state.nextStep);
+  const prevStep = useOrderMetaStore((state) => state.prevStep);
+  const canProceedToNextStep = useOrderMetaStore((state) => state.canProceedToNextStep);
+  const getStepIndex = useOrderMetaStore((state) => state.getStepIndex);
+  const getProgressPercentage = useOrderMetaStore((state) => state.getProgressPercentage);
 
   const stepOrder = ['photo-type', 'upload', 'package', 'extras', 'summary'];
   
-  const getStepStatus = (stepName: Step): 'current' | 'completed' | 'upcoming' => {
-    const currentIndex = stepOrder.indexOf(currentStep);
-    const stepIndex = stepOrder.indexOf(stepName);
+  const getStepStatus = (stepName: typeof currentStep): 'current' | 'completed' | 'upcoming' => {
+    const currentIndex = getStepIndex(currentStep);
+    const stepIndex = getStepIndex(stepName);
     
     if (stepIndex < currentIndex) return 'completed';
     if (stepIndex === currentIndex) return 'current';
@@ -63,122 +50,30 @@ const Order = () => {
     { number: 5, title: 'Übersicht', status: getStepStatus('summary') },
   ];
 
-  const updateOrderData = (updates: Partial<OrderData>) => {
-    setOrderData(prev => ({ ...prev, ...updates }));
-  };
-
   const handleNext = () => {
-    switch (currentStep) {
-      case 'photo-type':
-        setCurrentStep('upload');
-        break;
-      case 'upload':
-        setCurrentStep('package');
-        break;
-      case 'package':
-        setCurrentStep('extras');
-        break;
-      case 'extras':
-        setCurrentStep('summary');
-        break;
-      case 'summary':
-        setCurrentStep('confirmation');
-        break;
+    if (canProceedToNextStep()) {
+      nextStep();
     }
   };
 
   const handlePrev = () => {
-    switch (currentStep) {
-      case 'upload':
-        setCurrentStep('photo-type');
-        break;
-      case 'package':
-        setCurrentStep('upload');
-        break;
-      case 'extras':
-        setCurrentStep('package');
-        break;
-      case 'summary':
-        setCurrentStep('extras');
-        break;
-      case 'confirmation':
-        setCurrentStep('summary');
-        break;
-    }
-  };
-
-  // Check if current step can proceed
-  const getCanProceed = () => {
-    switch (currentStep) {
-      case 'photo-type':
-        return orderData.photoType !== undefined;
-      case 'upload':
-        return orderData.files.length > 0;
-      case 'package':
-        return orderData.package !== undefined;
-      case 'extras':
-        return true; // No validation needed for extras
-      case 'summary':
-        return orderData.acceptedTerms;
-      default:
-        return false;
-    }
+    prevStep();
   };
 
   const renderCurrentStep = () => {
     switch (currentStep) {
       case 'photo-type':
-        return (
-          <PhotoTypeStep
-            selectedType={orderData.photoType}
-            onTypeChange={(type) => updateOrderData({ photoType: type })}
-            onNext={handleNext}
-          />
-        );
+        return <PhotoTypeStep onNext={handleNext} />;
       case 'upload':
-        return (
-          <UploadStep
-            files={orderData.files}
-            photoType={orderData.photoType}
-            onFilesChange={(files) => updateOrderData({ files })}
-            onNext={handleNext}
-            onPrev={handlePrev}
-          />
-        );
+        return <UploadStep onNext={handleNext} onPrev={handlePrev} />;
       case 'package':
-        return (
-          <PackageStep
-            selectedPackage={orderData.package}
-            onPackageChange={(pkg) => updateOrderData({ package: pkg })}
-            onNext={handleNext}
-            onPrev={handlePrev}
-          />
-        );
+        return <PackageStep onNext={handleNext} onPrev={handlePrev} />;
       case 'extras':
-        return (
-          <ExtrasStep
-            orderData={orderData}
-            onExtrasChange={(extras) => updateOrderData({ extras })}
-            onWatermarkFileChange={(watermarkFile) => updateOrderData({ watermarkFile })}
-            onNext={handleNext}
-            onPrev={handlePrev}
-          />
-        );
+        return <ExtrasStep onNext={handleNext} onPrev={handlePrev} />;
       case 'summary':
-        return (
-          <SummaryStep
-            orderData={orderData}
-            onUpdateData={updateOrderData}
-            onNext={handleNext}
-            onPrev={handlePrev}
-          />
-        );
+        return <SummaryStep onNext={handleNext} onPrev={handlePrev} />;
       case 'confirmation':
-        return (
-          <ConfirmationStep
-            orderData={orderData}
-          />
-        );
+        return <ConfirmationStep />;
       default:
         return null;
     }
@@ -195,7 +90,7 @@ const Order = () => {
           <div className="w-full bg-gray-100 h-1.5">
             <div 
               className="bg-primary h-1.5 transition-all duration-700 ease-out shadow-sm"
-              style={{ width: `${((stepOrder.indexOf(currentStep) + 1) / stepOrder.length) * 100}%` }}
+              style={{ width: `${getProgressPercentage()}%` }}
             />
           </div>
           
@@ -218,7 +113,7 @@ const Order = () => {
                     {steps.find(step => step.status === 'current')?.title || 'Bestellung'}
                   </h1>
                   <p className="text-sm text-gray-500 font-medium">
-                    Schritt {stepOrder.indexOf(currentStep) + 1} von {stepOrder.length}
+                    Schritt {getStepIndex(currentStep) + 1} von {stepOrder.length}
                   </p>
                 </div>
               </div>
@@ -234,7 +129,7 @@ const Order = () => {
         {/* Mobile Fixed Bottom Action Bar */}
         <OrderActionBar
           currentStep={currentStep}
-          canProceed={getCanProceed()}
+          canProceed={canProceedToNextStep()}
           onNext={handleNext}
           onPrev={handlePrev}
         />

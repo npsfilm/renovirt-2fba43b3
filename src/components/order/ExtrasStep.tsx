@@ -5,26 +5,23 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Upload, Zap, Image } from 'lucide-react';
-import type { OrderData } from '@/utils/orderValidation';
+import { useOrderStore } from '@/stores/orderStore';
 
 interface ExtrasStepProps {
-  orderData: OrderData;
-  onExtrasChange: (extras: OrderData['extras']) => void;
-  onWatermarkFileChange: (file: File | undefined) => void;
   onNext: () => void;
   onPrev: () => void;
 }
 
-const ExtrasStep = ({
-  orderData,
-  onExtrasChange,
-  onWatermarkFileChange,
-  onNext,
-  onPrev
-}: ExtrasStepProps) => {
+const ExtrasStep = ({ onNext, onPrev }: ExtrasStepProps) => {
+  const orderData = useOrderStore((state) => ({
+    extras: state.extras,
+    watermarkFile: state.watermarkFile,
+  }));
+  const setExtras = useOrderStore((state) => state.setExtras);
+  const setWatermarkFile = useOrderStore((state) => state.setWatermarkFile);
   const extras = [
     {
-      id: 'upscale' as keyof OrderData['extras'],
+      id: 'upscale' as const,
       icon: Image,
       title: 'Upscaling',
       description: 'Vergrößerung der Bildauflösung um das 2-fache',
@@ -32,7 +29,7 @@ const ExtrasStep = ({
       enabled: orderData.extras.upscale
     },
     {
-      id: 'express' as keyof OrderData['extras'],
+      id: 'express' as const,
       icon: Zap,
       title: 'Express-Bearbeitung',
       description: 'Prioritäre Bearbeitung innerhalb von 24 Stunden',
@@ -40,7 +37,7 @@ const ExtrasStep = ({
       enabled: orderData.extras.express
     },
     {
-      id: 'watermark' as keyof OrderData['extras'],
+      id: 'watermark' as const,
       icon: Upload,
       title: 'Eigenes Wasserzeichen',
       description: 'Upload Ihres eigenen Logos/Wasserzeichens',
@@ -49,16 +46,15 @@ const ExtrasStep = ({
     }
   ];
 
-  const handleExtraToggle = (extraId: keyof OrderData['extras']) => {
-    onExtrasChange({
-      ...orderData.extras,
+  const handleExtraToggle = (extraId: 'upscale' | 'express' | 'watermark') => {
+    setExtras({
       [extraId]: !orderData.extras[extraId]
     });
   };
 
   const handleWatermarkUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    onWatermarkFileChange(file);
+    setWatermarkFile(file);
   };
 
   return (

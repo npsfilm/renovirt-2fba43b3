@@ -3,18 +3,29 @@ import React from 'react';
 import SummaryStepHeader from './summary/SummaryStepHeader';
 import SummaryStepContent from './summary/SummaryStepContent';
 import SummaryStepActions from './summary/SummaryStepActions';
-
 import { useSummaryStepLogic } from '@/hooks/useSummaryStepLogic';
-import type { OrderData } from '@/utils/orderValidation';
+import { useOrderStore } from '@/stores/orderStore';
 
 interface SummaryStepProps {
-  orderData: OrderData;
-  onUpdateData: (updates: Partial<OrderData>) => void;
   onNext: () => void;
   onPrev: () => void;
 }
 
-const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepProps) => {
+const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
+  const orderData = useOrderStore((state) => ({
+    photoType: state.photoType,
+    files: state.files,
+    package: state.package,
+    extras: state.extras,
+    watermarkFile: state.watermarkFile,
+    email: state.email,
+    acceptedTerms: state.acceptedTerms,
+    company: state.company,
+    objectReference: state.objectReference,
+    specialRequests: state.specialRequests,
+  }));
+  const updateOrderData = useOrderStore((state) => state.updateOrderData);
+
   const {
     paymentMethod,
     creditsToUse,
@@ -31,7 +42,7 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
 
       <SummaryStepContent
         orderData={orderData}
-        onUpdateData={onUpdateData}
+        onUpdateData={updateOrderData}
         paymentMethod={paymentMethod}
         creditsToUse={creditsToUse}
         onCreditsChange={setCreditsToUse}
