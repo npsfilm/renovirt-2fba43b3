@@ -33,6 +33,13 @@ const StripePaymentForm = ({
     if (stripe && elements) {
       setIsElementsReady(true);
       
+      // Fallback: Aktiviere Button nach 3 Sekunden falls Events nicht feuern
+      const fallbackTimer = setTimeout(() => {
+        console.log('=== FALLBACK ACTIVATION ===');
+        console.log('Aktiviere Button nach 3 Sekunden Fallback');
+        setPaymentMethodSelected(true);
+      }, 3000);
+      
       // Add PaymentElement event listeners for better debugging
       const paymentElement = elements.getElement('payment');
       if (paymentElement) {
@@ -40,10 +47,17 @@ const StripePaymentForm = ({
         
         paymentElement.on('ready', () => {
           console.log('PaymentElement ready event fired');
+          // Aktiviere Button sofort wenn PaymentElement bereit ist
+          setTimeout(() => {
+            console.log('=== READY EVENT ACTIVATION ===');
+            setPaymentMethodSelected(true);
+          }, 1000);
         });
         
         paymentElement.on('focus', () => {
           console.log('PaymentElement focused');
+          // Aktiviere Button bei Fokus
+          setPaymentMethodSelected(true);
         });
         
         paymentElement.on('blur', () => {
@@ -62,13 +76,28 @@ const StripePaymentForm = ({
           // CRITICAL FIX: Weniger strenge Validierung für redirect-basierte Zahlungen
           // PayPal, Klarna etc. sind nie "complete" vor dem Redirect
           setPaymentMethodSelected(!event.empty);
+          
+          // Clear fallback timer wenn Event gefeuert hat
+          clearTimeout(fallbackTimer);
         });
         
         paymentElement.on('loaderror', (event) => {
           console.error('=== PAYMENT ELEMENT LOAD ERROR ===');
           console.error('Error details:', event.error);
+          // Aktiviere Button auch bei Fehlern damit User nicht blockiert ist
+          setPaymentMethodSelected(true);
         });
+      } else {
+        console.error('=== PAYMENT ELEMENT NOT FOUND ===');
+        // Aktiviere Button als Fallback wenn PaymentElement nicht gefunden
+        setTimeout(() => {
+          setPaymentMethodSelected(true);
+        }, 2000);
       }
+      
+      return () => {
+        clearTimeout(fallbackTimer);
+      };
     }
   }, [stripe, elements]);
 
