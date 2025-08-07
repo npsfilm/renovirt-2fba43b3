@@ -8,10 +8,7 @@ const SummaryStepHeader = () => {
         Bestellung abschließen
       </h1>
       
-      <p className="text-sm md:text-base text-gray-600 max-w-2xl mx-auto leading-tight md:leading-relaxed">
-        Überprüfen Sie Ihre Bestellung und wählen Sie Ihre bevorzugte Zahlungsmethode. 
-        Nach der Bestätigung beginnen wir sofort mit der professionellen Bearbeitung Ihrer Bilder.
-      </p>
+      <p className="text-sm md:text-base text-gray-600 max-w-2xl mx-auto leading-tight md:leading-relaxed">Bitte überprüfen Sie Ihre Bestellung. Nach der Bestätigung beginnen wir sofort mit der professionellen Bearbeitung Ihrer Bilder.</p>
       
       <div className="flex items-center justify-center gap-2 text-xs md:text-sm text-gray-500">
         <Shield className="w-3 h-3 md:w-4 md:h-4" />
