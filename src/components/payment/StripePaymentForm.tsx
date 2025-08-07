@@ -59,7 +59,9 @@ const StripePaymentForm = ({
             collapsed: event.collapsed
           });
           
-          setPaymentMethodSelected(event.complete && !event.empty);
+          // CRITICAL FIX: Weniger strenge Validierung für redirect-basierte Zahlungen
+          // PayPal, Klarna etc. sind nie "complete" vor dem Redirect
+          setPaymentMethodSelected(!event.empty);
         });
         
         paymentElement.on('loaderror', (event) => {
