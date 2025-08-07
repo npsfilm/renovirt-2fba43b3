@@ -3,9 +3,11 @@ import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Plus } from 'lucide-react';
 import FeatureRequestCard from '@/components/feedback/FeatureRequestCard';
 import SubmitFeatureDialog from '@/components/feedback/SubmitFeatureDialog';
+import LoadingState from '@/components/ui/loading-state';
 import { useAuth } from '@/hooks/useAuth';
 import { useFeatureRequests, useFeatureCategories } from '@/hooks/useFeatureRequests';
 
@@ -68,13 +70,30 @@ const Feedback = () => {
 
         {isLoading ? (
           <div className="grid gap-4">
-            {[...Array(5)].map((_, i) => (
-              <Card key={i} className="animate-pulse">
+            {[...Array(3)].map((_, i) => (
+              <Card key={i} className="animate-fade-in" style={{ animationDelay: `${i * 100}ms` }}>
                 <CardContent className="p-6">
                   <div className="space-y-4">
-                    <div className="h-4 bg-muted rounded w-3/4"></div>
-                    <div className="h-3 bg-muted rounded w-1/2"></div>
-                    <div className="h-3 bg-muted rounded w-1/4"></div>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 space-y-2">
+                        <Skeleton className="h-5 w-3/4" />
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-2/3" />
+                      </div>
+                      <div className="ml-4 flex flex-col items-center gap-1">
+                        <Skeleton className="h-8 w-12" />
+                        <Skeleton className="h-3 w-8" />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 pt-2">
+                      <Skeleton className="h-6 w-16" />
+                      <Skeleton className="h-6 w-20" />
+                      <Skeleton className="h-6 w-14" />
+                    </div>
+                    <div className="flex items-center justify-between pt-2">
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-8 w-24" />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
