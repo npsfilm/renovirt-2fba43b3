@@ -45,7 +45,17 @@ const StripePaymentForm = ({
     setIsProcessing(true);
 
     try {
-      console.log('Bestätige Zahlung...');
+      console.log('=== STRIPE PAYMENT SUBMISSION START ===');
+      console.log('Current URL:', window.location.href);
+      console.log('Return URL will be:', `${window.location.origin}/payment/success`);
+      
+      // Check if PaymentElement is ready
+      const paymentElement = elements.getElement('payment');
+      if (!paymentElement) {
+        throw new Error('PaymentElement nicht verfügbar');
+      }
+      
+      console.log('PaymentElement ready, confirming payment...');
       
       const result = await stripe.confirmPayment({
         elements,
@@ -58,67 +68,120 @@ const StripePaymentForm = ({
             },
           },
         },
-        redirect: 'if_required', // Wichtig für PayPal und andere Redirect-Methoden
+        // CRITICAL FIX: Allow all redirects for PayPal, Apple Pay, Google Pay
+        redirect: 'always', // Changed from 'if_required' to 'always'
       });
       
+      console.log('=== STRIPE PAYMENT RESULT ===');
+      console.log('Result:', result);
+      
       if (result.error) {
-        console.error('Zahlungsfehler:', result.error);
+        console.error('=== PAYMENT ERROR ===');
+        console.error('Error details:', {
+          code: result.error.code,
+          type: result.error.type,
+          message: result.error.message,
+          decline_code: result.error.decline_code,
+          payment_method: result.error.payment_method,
+          full_error: result.error
+        });
         
-        // PayPal-spezifische Fehlerbehandlung
-        if (result.error.code === 'payment_intent_authentication_failure' && 
-            result.error.message?.includes('paypal')) {
-          onError('PayPal-Zahlung wurde abgebrochen oder ist fehlgeschlagen. Bitte versuchen Sie es erneut.');
-        } else if (result.error.code === 'card_declined' && 
-                   result.error.decline_code === 'generic_decline' &&
-                   result.error.payment_method?.type === 'paypal') {
-          onError('PayPal-Zahlung wurde abgelehnt. Bitte überprüfen Sie Ihr PayPal-Konto oder wählen Sie eine andere Zahlungsmethode.');
-        } else if (result.error.type === 'validation_error' && 
-                   result.error.message?.includes('paypal')) {
-          onError('PayPal-Validierungsfehler. Bitte überprüfen Sie Ihre PayPal-Anmeldedaten.');
-        } else {
-          onError(result.error.message || 'Zahlung fehlgeschlagen');
+        // Enhanced error handling with more specific messages
+        let errorMessage = result.error.message || 'Zahlung fehlgeschlagen';
+        
+        if (result.error.code === 'payment_intent_authentication_failure') {
+          errorMessage = 'Zahlungsauthentifizierung fehlgeschlagen. Bitte versuchen Sie es erneut oder wählen Sie eine andere Zahlungsmethode.';
+        } else if (result.error.code === 'card_declined') {
+          if (result.error.decline_code === 'generic_decline') {
+            errorMessage = 'Ihre Karte wurde abgelehnt. Bitte überprüfen Sie Ihre Kartendaten oder verwenden Sie eine andere Karte.';
+          } else {
+            errorMessage = `Karte wurde abgelehnt: ${result.error.decline_code}`;
+          }
+        } else if (result.error.type === 'validation_error') {
+          errorMessage = 'Validierungsfehler. Bitte überprüfen Sie Ihre Eingaben.';
+        } else if (result.error.code === 'payment_method_not_available') {
+          errorMessage = 'Diese Zahlungsmethode ist nicht verfügbar. Bitte wählen Sie eine andere Option.';
         }
+        
+        onError(errorMessage);
         
         toast({
           title: 'Zahlungsfehler',
-          description: result.error.message || 'Die Zahlung konnte nicht verarbeitet werden.',
+          description: errorMessage,
           variant: 'destructive'
         });
-      } else if (result.paymentIntent) {
-        // Direkter Erfolg (meist bei Kreditkarten)
-        if (result.paymentIntent.status === 'succeeded') {
-          console.log('Zahlung erfolgreich:', result.paymentIntent.id);
+      } else if ('paymentIntent' in result && result.paymentIntent) {
+        const paymentIntent = result.paymentIntent as any;
+        console.log('=== PAYMENT INTENT RECEIVED ===');
+        console.log('PaymentIntent status:', paymentIntent.status);
+        console.log('PaymentIntent ID:', paymentIntent.id);
+        
+        // Direct success (usually for credit cards without 3D Secure)
+        if (paymentIntent.status === 'succeeded') {
+          console.log('=== DIRECT PAYMENT SUCCESS ===');
           try {
-            await verifyPayment(result.paymentIntent.id);
+            await verifyPayment(paymentIntent.id);
+            console.log('Payment verification successful');
           } catch (verifyError) {
-            console.error('Zahlungsverifikation fehlgeschlagen:', verifyError);
+            console.error('Payment verification failed:', verifyError);
+            // Continue anyway as payment succeeded on Stripe side
           }
-          onSuccess(result.paymentIntent.id);
+          onSuccess(paymentIntent.id);
           toast({
             title: 'Zahlung erfolgreich!',
             description: 'Ihre Bestellung wurde erfolgreich bezahlt.'
           });
+        } else if (paymentIntent.status === 'requires_action') {
+          console.log('=== PAYMENT REQUIRES ACTION ===');
+          // This should trigger additional authentication
+          toast({
+            title: 'Zusätzliche Authentifizierung erforderlich',
+            description: 'Bitte folgen Sie den Anweisungen zur Zahlungsbestätigung.'
+          });
+        } else {
+          console.log('=== UNEXPECTED PAYMENT STATUS ===');
+          console.log('Status:', paymentIntent.status);
         }
+      } else {
+        // No error and no paymentIntent = redirect happening (PayPal, Apple Pay, Google Pay)
+        console.log('=== REDIRECT PAYMENT INITIATED ===');
+        console.log('User will be redirected to payment provider...');
+        
+        toast({
+          title: 'Weiterleitung zur Zahlung',
+          description: 'Sie werden zur Zahlungsseite weitergeleitet...'
+        });
       }
-      // Wenn kein Error und kein PaymentIntent, dann erfolgt ein Redirect (z.B. PayPal)
-      // In diesem Fall wird der Benutzer zu PayPal weitergeleitet und kommt über die return_url zurück
       
     } catch (error: any) {
-      console.error('Unerwarteter Zahlungsfehler:', error);
+      console.error('=== UNEXPECTED PAYMENT ERROR ===');
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+        full_error: error
+      });
       
-      // PayPal-spezifische Fehlerbehandlung auch im catch
-      if (error.message?.includes('paypal') || error.message?.includes('PayPal')) {
-        onError('PayPal-Integration-Fehler. Bitte versuchen Sie es erneut oder wählen Sie eine andere Zahlungsmethode.');
-      } else {
-        onError(error.message || 'Ein unerwarteter Fehler ist aufgetreten');
+      let errorMessage = error.message || 'Ein unerwarteter Fehler ist aufgetreten';
+      
+      // Enhanced error categorization
+      if (error.name === 'IntegrationError') {
+        errorMessage = 'Integrationsfehler. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.';
+      } else if (error.message?.toLowerCase().includes('network')) {
+        errorMessage = 'Netzwerkfehler. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.';
+      } else if (error.message?.toLowerCase().includes('timeout')) {
+        errorMessage = 'Zeitüberschreitung. Bitte versuchen Sie es erneut.';
       }
       
+      onError(errorMessage);
+      
       toast({
-        title: 'Fehler',
-        description: 'Ein unerwarteter Fehler ist aufgetreten.',
+        title: 'Unerwarteter Fehler',
+        description: errorMessage,
         variant: 'destructive'
       });
     } finally {
+      console.log('=== PAYMENT SUBMISSION END ===');
       setIsProcessing(false);
     }
   };
