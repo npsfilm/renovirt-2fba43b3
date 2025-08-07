@@ -20,84 +20,83 @@ const PaymentSuccess = () => {
 
   useEffect(() => {
     const processPaymentSuccess = async () => {
-      try {
-        const paymentIntentId = searchParams.get('payment_intent');
-        const paymentIntentClientSecret = searchParams.get('payment_intent_client_secret');
-        
-        if (!paymentIntentId) {
-          console.error('No payment_intent found in URL parameters');
-          setPaymentStatus('error');
-          setIsProcessing(false);
-          return;
-        }
+      const paymentIntentId = searchParams.get('payment_intent');
+      const clientSecret = searchParams.get('payment_intent_client_secret');
+      
+      if (paymentIntentId && clientSecret) {
+        const handleStripeRedirect = async () => {
+          // Retrieve and parse the pendingOrderData from localStorage
+          const pendingOrderDataString = localStorage.getItem('pendingOrderData');
+          
+          // Always clean up immediately to prevent refresh issues
+          localStorage.removeItem('pendingOrderData'); 
 
-        console.log('=== PROCESSING REDIRECT PAYMENT SUCCESS ===');
-        console.log('Payment Intent ID:', paymentIntentId);
-        console.log('Client Secret:', paymentIntentClientSecret);
-
-        // Skip payment verification since we're on the success page
-        // Stripe has already confirmed the payment was successful
-        console.log('Payment successful, proceeding with order creation');
-
-        // Get order data from localStorage (set during order creation)
-        const storedOrderData = localStorage.getItem('pendingOrderData');
-        console.log('LocalStorage content:', storedOrderData);
-        
-        if (storedOrderData) {
-          try {
-            const secureOrderData = JSON.parse(storedOrderData);
-            console.log('Found stored order data:', {
-              hasFiles: secureOrderData.files?.length > 0,
-              photoType: secureOrderData.photoType,
-              package: secureOrderData.package,
-              email: secureOrderData.email
-            });
-            
-            // Extract just the OrderData without extra fields
-            const { creditsUsed, finalPrice, ...orderData } = secureOrderData;
-            console.log('Creating order with payment intent:', paymentIntentId);
-            
-            // Create the order after successful payment
-            await createOrderAfterPayment(orderData, paymentIntentId);
-            
-            // Clear the stored order data
-            localStorage.removeItem('pendingOrderData');
-            
-            setOrderCreated(true);
-            setPaymentStatus('success');
-            
-            toast({
-              title: 'Zahlung erfolgreich!',
-              description: 'Ihre Bestellung wurde erfolgreich erstellt.',
-            });
-          } catch (orderError) {
-            console.error('Failed to create order after payment:', orderError);
+          if (!pendingOrderDataString) {
             setPaymentStatus('error');
-            // Clean up localStorage on failure to prevent retries with stale data
-            localStorage.removeItem('pendingOrderData');
             toast({
-              title: 'Bestellung konnte nicht erstellt werden',
-              description: 'Die Zahlung war erfolgreich, aber die Bestellung konnte nicht erstellt werden. Bitte kontaktieren Sie den Support.',
+              title: 'Fehler',
+              description: 'Bestelldaten nach der Zahlung nicht gefunden.',
               variant: 'destructive',
             });
+            setIsProcessing(false);
+            return;
           }
-        } else {
-          console.log('No stored order data found');
-          setPaymentStatus('success');
-          toast({
-            title: 'Zahlung erfolgreich!',
-            description: 'Ihre Zahlung wurde erfolgreich verarbeitet.',
-          });
-        }
-      } catch (error) {
-        console.error('Error processing payment success:', error);
+
+          try {
+            const orderData = JSON.parse(pendingOrderDataString);
+            console.log('=== PROCESSING REDIRECT PAYMENT SUCCESS ===');
+            console.log('Payment Intent ID:', paymentIntentId);
+            console.log('Found stored order data:', {
+              hasFiles: orderData.files?.length > 0,
+              photoType: orderData.photoType,
+              package: orderData.package,
+              email: orderData.email
+            });
+            
+            // Verify payment was successful (optional - Stripe already confirmed)
+            const isPaymentSuccessful = await verifyPayment(paymentIntentId);
+
+            if (isPaymentSuccessful) {
+              // Extract order data without extra fields
+              const { creditsUsed, finalPrice, paymentMethod, userId, totalAmount, ...cleanOrderData } = orderData;
+              
+              console.log('Creating order with payment intent:', paymentIntentId);
+              
+              // Create the order after successful payment
+              await createOrderAfterPayment(cleanOrderData, paymentIntentId);
+              
+              setOrderCreated(true);
+              setPaymentStatus('success');
+              
+              toast({
+                title: 'Zahlung erfolgreich!',
+                description: 'Ihre Bestellung wurde erfolgreich erstellt.',
+              });
+            } else {
+              setPaymentStatus('error');
+              toast({
+                title: 'Zahlung fehlgeschlagen',
+                description: 'Zahlung wurde nicht erfolgreich abgeschlossen.',
+                variant: 'destructive',
+              });
+            }
+          } catch (err) {
+            console.error('Error processing Stripe redirect:', err);
+            setPaymentStatus('error');
+            toast({
+              title: 'Unerwarteter Fehler',
+              description: 'Ein unerwarteter Fehler ist bei der Verarbeitung Ihrer Bestellung aufgetreten.',
+              variant: 'destructive',
+            });
+          } finally {
+            setIsProcessing(false);
+          }
+        };
+
+        await handleStripeRedirect();
+      } else {
+        console.error('No payment_intent found in URL parameters');
         setPaymentStatus('error');
-        toast({
-          title: 'Fehler bei der Verarbeitung',
-          description: 'Es gab einen Fehler bei der Verarbeitung Ihrer Zahlung.',
-          variant: 'destructive',
-        });
-      } finally {
         setIsProcessing(false);
       }
     };

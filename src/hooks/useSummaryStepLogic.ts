@@ -40,6 +40,27 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
   );
 
   const handleSubmit = () => {
+    // Enhanced order handling with localStorage persistence for redirect payments
+    if (paymentMethod === 'stripe' && finalPrice > 0) {
+      // Store order context before initiating Stripe payment
+      try {
+        const orderDataForStorage = {
+          ...orderData,
+          creditsUsed: creditsToUse,
+          finalPrice,
+          paymentMethod: 'stripe',
+          userId: user?.id,
+          totalAmount: finalPrice
+        };
+        localStorage.setItem('pendingOrderData', JSON.stringify(orderDataForStorage));
+        console.log('Order data stored in localStorage for redirect payment');
+      } catch (error) {
+        console.error('Failed to save pending order data to localStorage:', error);
+        // Notify the user of the error and stop the process
+        return;
+      }
+    }
+
     handleSubmitOrder(
       orderData,
       paymentMethod,
