@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { calculateEffectiveImageCount, validateOrderData, type OrderData } from '@/utils/orderValidation';
+import posthog from 'posthog-js';
 
 export type OrderStep = 'photo-type' | 'upload' | 'package' | 'extras' | 'summary' | 'confirmation';
 
@@ -67,11 +68,26 @@ export const useOrderStore = create<OrderState>()(
       setPhotoType: (photoType) => {
         set({ photoType });
         get()._computeValues();
+        
+        // PostHog: Track photo type selection
+        posthog.capture('order_step_completed', {
+          step: 'photo_type',
+          photo_type: photoType,
+          step_number: 1
+        });
       },
 
       setFiles: (files) => {
         set({ files });
         get()._computeValues();
+        
+        // PostHog: Track file upload completion
+        posthog.capture('order_step_completed', {
+          step: 'upload',
+          file_count: files.length,
+          step_number: 2,
+          total_file_size: files.reduce((sum, file) => sum + file.size, 0)
+        });
       },
 
       addFiles: (newFiles) => {
@@ -83,6 +99,15 @@ export const useOrderStore = create<OrderState>()(
         );
         set({ files: [...currentFiles, ...uniqueNewFiles] });
         get()._computeValues();
+        
+        // PostHog: Track files added during upload
+        if (uniqueNewFiles.length > 0) {
+          posthog.capture('files_added_to_order', {
+            new_files_count: uniqueNewFiles.length,
+            total_files_count: currentFiles.length + uniqueNewFiles.length,
+            file_types: uniqueNewFiles.map(f => f.type).filter(Boolean)
+          });
+        }
       },
 
       removeFile: (index) => {
@@ -94,12 +119,30 @@ export const useOrderStore = create<OrderState>()(
       setPackage: (pkg) => {
         set({ package: pkg });
         get()._computeValues();
+        
+        // PostHog: Track package selection
+        if (pkg) {
+          posthog.capture('order_step_completed', {
+            step: 'package',
+            package_selected: pkg,
+            step_number: 3
+          });
+        }
       },
 
       setExtras: (newExtras) => {
         const currentExtras = get().extras;
-        set({ extras: { ...currentExtras, ...newExtras } });
+        const updatedExtras = { ...currentExtras, ...newExtras };
+        set({ extras: updatedExtras });
         get()._computeValues();
+        
+        // PostHog: Track extras selection
+        posthog.capture('order_step_completed', {
+          step: 'extras',
+          extras_selected: Object.keys(newExtras).filter(key => newExtras[key]),
+          total_extras: Object.values(updatedExtras).filter(Boolean).length,
+          step_number: 4
+        });
       },
 
       setWatermarkFile: (watermarkFile) => {
@@ -138,6 +181,18 @@ export const useOrderStore = create<OrderState>()(
       },
 
       resetOrder: () => {
+        // PostHog: Track order reset/abandonment
+        const currentState = get();
+        posthog.capture('order_abandoned', {
+          last_step: currentState.photoType ? 
+            (currentState.files.length > 0 ? 
+              (currentState.package ? 'package_selected' : 'files_uploaded') 
+              : 'photo_type_selected') 
+            : 'not_started',
+          files_count: currentState.files.length,
+          had_package: !!currentState.package
+        });
+        
         set({
           ...initialOrderData,
           effectiveImageCount: 0,

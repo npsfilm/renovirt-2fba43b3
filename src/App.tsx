@@ -6,6 +6,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { EnhancedSecurityProvider } from '@/components/security/EnhancedSecurityProvider';
 import { PostHogProvider } from '@/contexts/PostHogProvider';
+import { usePageTracking } from '@/hooks/usePageTracking';
 import ErrorBoundary from '@/components/error/ErrorBoundary';
 import Dashboard from '@/pages/Dashboard';
 import Orders from '@/pages/Orders';
@@ -39,6 +40,11 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 
 const queryClient = new QueryClient();
 
+function AppContent() {
+  usePageTracking();
+  return null;
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -46,6 +52,7 @@ function App() {
         <EnhancedSecurityProvider>
           <TooltipProvider>
           <BrowserRouter>
+            <AppContent />
             <Routes>
               {/* Public Routes */}
               <Route path="/auth" element={<Auth />} />

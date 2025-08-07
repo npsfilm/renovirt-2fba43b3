@@ -4,11 +4,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { validateUrlTokens, cleanupAuthState, secureSignOut, secureSignIn, secureEmailConfirmation } from '@/utils/authSecurity';
 import { createSecureSession, validateSession } from '@/utils/enhancedSessionSecurity';
 import { secureLog, logSecurityEvent } from '@/utils/secureLogging';
+import { usePostHog } from '@/contexts/PostHogProvider';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const posthog = usePostHog();
 
   useEffect(() => {
     // Handle email confirmation from URL tokens with security validation
@@ -86,6 +88,19 @@ export const useAuth = () => {
             if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
               logSecurityEvent('user_signed_in', { userId: session.user.id });
               
+              // PostHog: Identify user and track sign in
+              posthog.identify(session.user.id, {
+                email: session.user.email,
+                email_verified: session.user.email_confirmed_at ? true : false,
+                created_at: session.user.created_at,
+                last_sign_in: session.user.last_sign_in_at
+              });
+              
+              posthog.capture('user_signed_in', {
+                provider: session.user.app_metadata?.provider || 'email',
+                method: event === 'SIGNED_IN' ? 'login' : 'signup'
+              });
+              
               // Don't automatically redirect to onboarding - let the Auth component handle profile checks
               // Only redirect if we're on the auth page
               if (window.location.pathname === '/auth') {
@@ -97,6 +112,11 @@ export const useAuth = () => {
             
             if (event === 'SIGNED_OUT') {
               logSecurityEvent('user_signed_out');
+              
+              // PostHog: Track sign out and reset session
+              posthog.capture('user_signed_out');
+              posthog.reset();
+              
               cleanupAuthState();
             }
           }
@@ -107,6 +127,16 @@ export const useAuth = () => {
           setSession(session);
           setUser(session?.user ?? null);
           setLoading(false);
+          
+          // PostHog: Identify existing user if session exists
+          if (session?.user) {
+            posthog.identify(session.user.id, {
+              email: session.user.email,
+              email_verified: session.user.email_confirmed_at ? true : false,
+              created_at: session.user.created_at,
+              last_sign_in: session.user.last_sign_in_at
+            });
+          }
         });
 
         return () => subscription.unsubscribe();
