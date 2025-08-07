@@ -3,7 +3,7 @@ import React from 'react';
 import SummaryStepHeader from './summary/SummaryStepHeader';
 import SummaryStepContent from './summary/SummaryStepContent';
 import SummaryStepActions from './summary/SummaryStepActions';
-import PaymentModal from '@/components/payment/PaymentModal';
+
 import { useSummaryStepLogic } from '@/hooks/useSummaryStepLogic';
 import type { OrderData } from '@/utils/orderValidation';
 
@@ -17,18 +17,12 @@ interface SummaryStepProps {
 const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepProps) => {
   const {
     paymentMethod,
-    setPaymentMethod,
     creditsToUse,
     setCreditsToUse,
-    showPaymentModal,
-    setShowPaymentModal,
     canProceed,
     finalPrice,
     isProcessing,
-    clientSecret,
-    handleSubmitOrder,
-    handlePaymentModalSuccess,
-    handlePaymentModalError
+    handleSubmitOrder
   } = useSummaryStepLogic(orderData, onNext);
 
   return (
@@ -39,7 +33,6 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
         orderData={orderData}
         onUpdateData={onUpdateData}
         paymentMethod={paymentMethod}
-        onPaymentMethodChange={setPaymentMethod}
         creditsToUse={creditsToUse}
         onCreditsChange={setCreditsToUse}
       />
@@ -53,17 +46,7 @@ const SummaryStep = ({ orderData, onUpdateData, onNext, onPrev }: SummaryStepPro
         paymentMethod={paymentMethod}
       />
 
-      {/* In-App Payment Modal */}
-      {showPaymentModal && clientSecret && (
-        <PaymentModal
-          isOpen={showPaymentModal}
-          onClose={() => setShowPaymentModal(false)}
-          onSuccess={handlePaymentModalSuccess}
-          onError={handlePaymentModalError}
-          clientSecret={clientSecret}
-          amount={finalPrice}
-        />
-      )}
+      {/* No payment modal needed for invoice-only payments */}
     </div>
   );
 };

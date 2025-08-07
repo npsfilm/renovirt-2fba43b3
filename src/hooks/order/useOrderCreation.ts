@@ -33,25 +33,7 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
         throw new Error('Add-ons konnten nicht geladen werden');
       }
       
-      // For Stripe payments, we only create a temporary order reference and return it
-      // The actual order will be created after successful payment
-      if (paymentMethod === 'stripe') {
-        const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
-        if (!selectedPackage) throw new Error('Paket nicht gefunden');
-
-        const totalPrice = calculateOrderTotal(orderData, packages, addOns);
-        
-        // Return order data for payment processing without creating in database
-        return {
-          id: 'temp-stripe-order', // Temporary ID for payment processing
-          orderData,
-          totalPrice,
-          selectedPackage,
-          isTemporaryOrder: true // Flag to identify temporary orders
-        };
-      }
-      
-      // For invoice payments, create the order immediately as before
+      // Only invoice payments are supported now
       const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
       if (!selectedPackage) throw new Error('Paket nicht gefunden');
 
@@ -113,24 +95,15 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
 
       return order;
     },
-    onSuccess: (order, { paymentMethod }) => {
-      // Check if this is a temporary order (Stripe payment pending)
-      const isTemporaryOrder = 'isTemporaryOrder' in order && order.isTemporaryOrder;
+    onSuccess: () => {
+      // Always invalidate queries for invoice payments
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
       
-      // Only invalidate queries for invoice payments (immediately visible)
-      if (paymentMethod === 'invoice') {
-        queryClient.invalidateQueries({ queryKey: ['orders'] });
-        queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
-        
-        toast({
-          title: "Bestellung erfolgreich erstellt!",
-          description: "Ihre Bestellung wurde erfolgreich übermittelt.",
-        });
-      } else if (paymentMethod === 'stripe' && !isTemporaryOrder) {
-        // This is for completed Stripe orders (called after payment success)
-        queryClient.invalidateQueries({ queryKey: ['orders'] });
-        queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
-      }
+      toast({
+        title: "Bestellung erfolgreich erstellt!",
+        description: "Ihre Bestellung wurde erfolgreich übermittelt.",
+      });
     },
     onError: (error: any) => {
       secureLog('Order creation error:', error);
@@ -145,81 +118,10 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
     },
   });
 
-  // New method to create order after successful Stripe payment
-  const createOrderAfterPayment = async (orderData: OrderData, paymentIntentId: string) => {
-    if (!user) {
-      throw new Error('Benutzer nicht authentifiziert');
-    }
-
-    const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
-    if (!selectedPackage) throw new Error('Paket nicht gefunden');
-
-    const totalPrice = calculateOrderTotal(orderData, packages, addOns);
-    const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
-    
-    // Create order in database with payment already completed
-    const order = await createOrderInDatabase(
-      { orderData, paymentMethod: 'stripe' }, 
-      packages, 
-      addOns, 
-      user.id,
-      paymentIntentId
-    );
-
-    // Upload files
-    try {
-      await handleOrderFiles(orderData, order.id, user.id);
-    } catch (fileError) {
-      console.error('File upload error after payment:', fileError);
-      secureLog('File upload failed after payment', { orderId: order.id, error: fileError });
-    }
-    
-    // Get selected add-ons for email
-    const selectedAddOns = addOns.filter(addon => 
-      orderData.extras[addon.name as keyof typeof orderData.extras]
-    );
-    
-    // Send confirmation email
-    try {
-      const orderDetails = await prepareOrderEmailDetails(
-        orderData,
-        selectedPackage,
-        imageCount,
-        totalPrice,
-        selectedAddOns,
-        user.id
-      );
-
-      await sendOrderConfirmationEmail(order.order_number, orderData.email || '', orderDetails);
-    } catch (emailError) {
-      console.error('Failed to send confirmation email after payment:', emailError);
-      secureLog('Email sending failed after payment', { orderId: order.id, error: emailError });
-    }
-
-    // Send admin notification for completed Stripe orders
-    try {
-      await sendAdminOrderNotification(
-        order.order_number,
-        orderData,
-        selectedPackage,
-        imageCount,
-        totalPrice,
-        selectedAddOns,
-        user.id,
-        'stripe',
-        'paid', // Stripe orders are paid after successful payment
-        paymentIntentId
-      );
-    } catch (adminEmailError) {
-      console.error('Failed to send admin notification after payment:', adminEmailError);
-      secureLog('Admin notification failed after payment', { orderId: order.id, error: adminEmailError });
-    }
-
-    // Invalidate queries to refresh the UI
-    queryClient.invalidateQueries({ queryKey: ['orders'] });
-    queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
-
-    return order;
+  // Simplified method for invoice orders (no payment processing needed)
+  const createOrderAfterPayment = async (orderData: OrderData) => {
+    // For invoice payments, just use the regular createOrder flow
+    return createOrderMutation.mutateAsync({ orderData, paymentMethod: 'invoice' });
   };
 
   return {

@@ -15,12 +15,12 @@ export const useSummaryOrderCreation = () => {
 
   const handleSubmitOrder = async (
     orderData: OrderData,
-    paymentMethod: 'stripe' | 'invoice',
+    paymentMethod: 'invoice',
     creditsToUse: number,
     finalPrice: number,
     canProceed: boolean,
     setIsProcessing: (processing: boolean) => void,
-    initiateStripePayment: (finalPrice: number, secureOrderData: any) => Promise<void>,
+    initiateStripePayment: null,
     onNext: () => void
   ) => {
     if (!user) {
@@ -65,34 +65,16 @@ export const useSummaryOrderCreation = () => {
         paymentMethod
       });
 
-      if (paymentMethod === 'stripe' && finalPrice > 0) {
-        // Store order data in localStorage for redirect payments (PayPal, Klarna, etc.)
-        try {
-          const orderDataForStorage = {
-            ...secureOrderData,
-            creditsUsed: creditsToUse,
-            finalPrice
-          };
-          localStorage.setItem('pendingOrderData', JSON.stringify(orderDataForStorage));
-          console.log('Order data stored in localStorage for redirect payment');
-        } catch (error) {
-          console.error('Failed to save order data to localStorage:', error);
-          // Stop the payment process if saving fails
-          throw new Error('Speichern der Bestelldaten fehlgeschlagen');
-        }
-        
-        // For Stripe payments, prepare for payment but don't create order yet
-        await initiateStripePayment(finalPrice, secureOrderData);
-      } else {
-        // For invoice payment or zero amount, create the order immediately
+      // For invoice payment, create the order immediately
+      {
         await createOrder({
           orderData: secureOrderData,
-          paymentMethod: paymentMethod as 'stripe' | 'invoice'
+          paymentMethod: paymentMethod
         });
 
         toast({
           title: 'Bestellung erfolgreich!',
-          description: paymentMethod === 'invoice' 
+          description: finalPrice > 0 
             ? 'Ihre Bestellung wurde aufgegeben. Sie erhalten eine Rechnung per E-Mail.' 
             : 'Ihre kostenlose Bestellung wurde aufgegeben.',
         });

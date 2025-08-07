@@ -6,7 +6,6 @@ import { useOrderData } from '@/hooks/useOrderData';
 import { calculateOrderTotal } from '@/utils/orderPricing';
 import { calculateEffectiveImageCount } from '@/utils/orderValidation';
 import { useSummaryOrderCreation } from '@/hooks/summary/useSummaryOrderCreation';
-import { useSummaryPayment } from '@/hooks/summary/useSummaryPayment';
 import { secureLog } from '@/utils/secureLogging';
 import { useToast } from '@/hooks/use-toast';
 import type { OrderData } from '@/utils/orderValidation';
@@ -18,18 +17,8 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
   const { toast } = useToast();
   const navigate = useNavigate();
   
-  const {
-    paymentMethod,
-    setPaymentMethod,
-    showPaymentModal,
-    setShowPaymentModal,
-    isProcessing,
-    setIsProcessing,
-    clientSecret,
-    handlePaymentModalSuccess,
-    handlePaymentModalError,
-    initiateStripePayment
-  } = useSummaryPayment();
+  const [paymentMethod] = useState<'invoice'>('invoice');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const { handleSubmitOrder, createOrderAfterPayment } = useSummaryOrderCreation();
 
@@ -45,31 +34,7 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
   );
 
   const handleSubmit = () => {
-    // Enhanced order handling with localStorage persistence for redirect payments
-    if (paymentMethod === 'stripe' && finalPrice > 0) {
-      // Store order context before initiating Stripe payment
-      try {
-        const orderDataForStorage = {
-          ...orderData,
-          creditsUsed: creditsToUse,
-          finalPrice,
-          paymentMethod: 'stripe',
-          userId: user?.id,
-          totalAmount: finalPrice
-        };
-        localStorage.setItem('pendingOrderData', JSON.stringify(orderDataForStorage));
-        secureLog('Order data stored in localStorage for redirect payment', orderDataForStorage);
-      } catch (error) {
-        console.error('Failed to save pending order data to localStorage:', error);
-        toast({ 
-          variant: 'destructive', 
-          title: 'Ein Fehler ist aufgetreten', 
-          description: 'Bestelldaten konnten nicht für die Zahlung vorbereitet werden.' 
-        });
-        return;
-      }
-    }
-
+    // Simplified order handling for invoice-only payment
     handleSubmitOrder(
       orderData,
       paymentMethod,
@@ -77,32 +42,20 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
       finalPrice,
       canProceed,
       setIsProcessing,
-      initiateStripePayment,
+      null, // No Stripe payment function needed
       onNext
     );
   };
 
-  const handlePaymentSuccess = (paymentIntentId: string) => {
-    secureLog('Handling successful non-redirect payment', { paymentIntentId });
-    
-    // Standardize the flow: redirect to success page for all Stripe payments
-    // This ensures both redirect and non-redirect payments follow the same path
-    navigate(`/payment/success?payment_intent=${paymentIntentId}&redirect_status=succeeded`);
-  };
+  // No payment success handler needed for invoice payments
 
   return {
     paymentMethod,
-    setPaymentMethod,
     creditsToUse,
     setCreditsToUse,
-    showPaymentModal,
-    setShowPaymentModal,
     canProceed,
     finalPrice,
     isProcessing,
-    clientSecret,
-    handleSubmitOrder: handleSubmit,
-    handlePaymentModalSuccess: handlePaymentSuccess,
-    handlePaymentModalError
+    handleSubmitOrder: handleSubmit
   };
 };

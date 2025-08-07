@@ -9,7 +9,7 @@ interface SummaryStepActionsProps {
   canProceed: boolean;
   isProcessing: boolean;
   finalPrice: number;
-  paymentMethod: 'stripe' | 'invoice';
+  paymentMethod: 'invoice';
 }
 
 const SummaryStepActions = ({ 
@@ -22,13 +22,11 @@ const SummaryStepActions = ({
 }: SummaryStepActionsProps) => {
   const getButtonText = () => {
     if (isProcessing) {
-      return paymentMethod === 'stripe' ? 'Weiterleitung zur Zahlung...' : 'Bestellung wird verarbeitet...';
+      return 'Bestellung wird verarbeitet...';
     }
     
     if (finalPrice > 0) {
-      return paymentMethod === 'stripe' 
-        ? `Jetzt bezahlen • ${finalPrice.toFixed(2)} €`
-        : `Kostenpflichtig bestellen • ${finalPrice.toFixed(2)} €`;
+      return `Kostenpflichtig bestellen • ${finalPrice.toFixed(2)} €`;
     } else {
       return 'Kostenlos bestellen';
     }
@@ -37,10 +35,6 @@ const SummaryStepActions = ({
   const getButtonIcon = () => {
     if (isProcessing) {
       return <Loader2 className="w-4 h-4 animate-spin" />;
-    }
-    
-    if (finalPrice > 0 && paymentMethod === 'stripe') {
-      return <CreditCard className="w-4 h-4" />;
     }
     
     return <Lock className="w-4 h-4" />;
@@ -81,11 +75,6 @@ const SummaryStepActions = ({
           <Lock className="w-3 h-3 md:w-4 md:h-4" />
           <span>Sichere Bestellung • SSL-verschlüsselt</span>
         </div>
-        {paymentMethod === 'stripe' && finalPrice > 0 && (
-          <p className="text-xs text-gray-400 mt-1">
-            Sie werden zur sicheren Stripe-Zahlungsseite weitergeleitet
-          </p>
-        )}
       </div>
     </div>
   );

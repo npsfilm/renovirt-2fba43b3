@@ -9,8 +9,7 @@ import type { OrderData } from '@/utils/orderValidation';
 interface SummaryStepContentProps {
   orderData: OrderData;
   onUpdateData: (updates: Partial<OrderData>) => void;
-  paymentMethod: 'stripe' | 'invoice';
-  onPaymentMethodChange: (method: 'stripe' | 'invoice') => void;
+  paymentMethod: 'invoice';
   creditsToUse: number;
   onCreditsChange: (credits: number) => void;
 }
@@ -19,7 +18,6 @@ const SummaryStepContent = ({
   orderData,
   onUpdateData,
   paymentMethod,
-  onPaymentMethodChange,
   creditsToUse,
   onCreditsChange
 }: SummaryStepContentProps) => {
@@ -27,7 +25,7 @@ const SummaryStepContent = ({
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 px-3 md:px-0">
       <div className="lg:col-span-2 space-y-4 md:space-y-6">
         <OrderSummaryDetails orderData={orderData} onUpdateData={onUpdateData} />
-        <PaymentMethodSelector paymentMethod={paymentMethod} onPaymentMethodChange={onPaymentMethodChange} />
+        <PaymentMethodSelector paymentMethod={paymentMethod} onPaymentMethodChange={() => {}} />
         <TermsAcceptance 
           acceptedTerms={orderData.acceptedTerms} 
           onTermsChange={(accepted) => onUpdateData({ acceptedTerms: accepted })} 

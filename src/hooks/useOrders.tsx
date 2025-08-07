@@ -36,7 +36,7 @@ export const useOrders = () => {
   };
 
   // Wrapper to include payment method
-  const createOrder = async (orderData: OrderData, paymentMethod: 'stripe' | 'invoice' = 'stripe') => {
+  const createOrder = async (orderData: OrderData, paymentMethod: 'invoice' = 'invoice') => {
     return createOrderBase({ orderData, paymentMethod });
   };
 

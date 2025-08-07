@@ -9,7 +9,7 @@ export const sendAdminOrderNotification = async (
   totalPrice: number,
   selectedAddOns: any[],
   userId: string,
-  paymentMethod: 'stripe' | 'invoice',
+  paymentMethod: 'invoice',
   paymentStatus: string = 'pending',
   paymentIntentId?: string
 ) => {
