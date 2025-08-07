@@ -51,7 +51,7 @@ const TermsAcceptance = ({ acceptedTerms, onTermsChange }: TermsAcceptanceProps)
             {!acceptedTerms && (
               <div className="flex items-center gap-2 mt-3 text-red-600">
                 <span className="text-sm font-medium">
-                  Bitte akzeptieren Sie die Bedingungen, um fortzufahren
+                  Bitte akzeptieren Sie die AGBs, um fortzufahren
                 </span>
               </div>
             )}
