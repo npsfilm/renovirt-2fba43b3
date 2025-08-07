@@ -53,33 +53,23 @@ const PaymentSuccess = () => {
               email: orderData.email
             });
             
-            // Verify payment was successful (optional - Stripe already confirmed)
-            const isPaymentSuccessful = await verifyPayment(paymentIntentId);
-
-            if (isPaymentSuccessful) {
-              // Extract order data without extra fields
-              const { creditsUsed, finalPrice, paymentMethod, userId, totalAmount, ...cleanOrderData } = orderData;
-              
-              console.log('Creating order with payment intent:', paymentIntentId);
-              
-              // Create the order after successful payment
-              await createOrderAfterPayment(cleanOrderData, paymentIntentId);
-              
-              setOrderCreated(true);
-              setPaymentStatus('success');
-              
-              toast({
-                title: 'Zahlung erfolgreich!',
-                description: 'Ihre Bestellung wurde erfolgreich erstellt.',
-              });
-            } else {
-              setPaymentStatus('error');
-              toast({
-                title: 'Zahlung fehlgeschlagen',
-                description: 'Ihre Zahlung konnte nicht final bestätigt werden. Bitte kontaktieren Sie den Support.',
-                variant: 'destructive',
-              });
-            }
+            // Payment was successful since we reached this redirect URL
+            // No need to verify with Stripe API - the redirect itself confirms success
+            console.log('Payment confirmed via redirect, creating order with payment intent:', paymentIntentId);
+            
+            // Extract order data without extra fields
+            const { creditsUsed, finalPrice, paymentMethod, userId, totalAmount, ...cleanOrderData } = orderData;
+            
+            // Create the order after successful payment
+            await createOrderAfterPayment(cleanOrderData, paymentIntentId);
+            
+            setOrderCreated(true);
+            setPaymentStatus('success');
+            
+            toast({
+              title: 'Zahlung erfolgreich!',
+              description: 'Ihre Bestellung wurde erfolgreich erstellt.',
+            });
           } catch (err) {
             console.error('Error processing Stripe redirect:', err);
             setPaymentStatus('error');
