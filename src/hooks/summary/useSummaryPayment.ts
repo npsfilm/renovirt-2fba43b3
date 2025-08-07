@@ -12,14 +12,14 @@ export const useSummaryPayment = () => {
   const { initiatePayment } = usePayment();
   const { toast } = useToast();
 
-  const handlePaymentModalSuccess = (paymentIntentId: string, createOrderAfterPayment: any, onNext: () => void) => {
+  const handlePaymentModalSuccess = (paymentIntentId: string, createOrderAfterPayment: any, onNext: () => void, orderData: any) => {
     toast({
       title: 'Zahlung erfolgreich!',
       description: 'Ihre Bestellung wird jetzt verarbeitet.',
     });
     setShowPaymentModal(false);
     setIsProcessing(false);
-    createOrderAfterPayment(paymentIntentId);
+    createOrderAfterPayment(orderData, paymentIntentId);
     onNext();
   };
 

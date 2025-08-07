@@ -218,6 +218,9 @@ const StripePaymentForm = ({
         console.log('=== REDIRECT PAYMENT INITIATED ===');
         console.log('User will be redirected to payment provider...');
         
+        // For redirect payments like PayPal, we need to handle success on return
+        // The payment completion will be handled on the return URL
+        
         toast({
           title: 'Weiterleitung zur Zahlung',
           description: 'Sie werden zur Zahlungsseite weitergeleitet...'

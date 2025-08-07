@@ -66,6 +66,9 @@ export const useSummaryOrderCreation = () => {
       });
 
       if (paymentMethod === 'stripe' && finalPrice > 0) {
+        // Store order data for redirect payments (PayPal)
+        sessionStorage.setItem('pendingOrderData', JSON.stringify(secureOrderData));
+        
         // For Stripe payments, prepare for payment but don't create order yet
         await initiateStripePayment(finalPrice, secureOrderData);
       } else {

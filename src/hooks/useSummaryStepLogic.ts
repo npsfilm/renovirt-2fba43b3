@@ -53,7 +53,7 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
   };
 
   const handlePaymentSuccess = (paymentIntentId: string) => {
-    handlePaymentModalSuccess(paymentIntentId, createOrderAfterPayment, onNext);
+    handlePaymentModalSuccess(paymentIntentId, createOrderAfterPayment, onNext, orderData);
   };
 
   return {
