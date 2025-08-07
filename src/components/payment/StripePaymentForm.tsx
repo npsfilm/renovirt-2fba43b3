@@ -315,7 +315,7 @@ const StripePaymentForm = ({
                         line1: 'auto',
                         line2: 'auto',
                         city: 'auto',
-                        state: 'never',
+                        state: 'auto',
                         postalCode: 'auto',
                       },
                     }
