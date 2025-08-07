@@ -18,7 +18,8 @@ import {
   Users, 
   BarChart3, 
   Settings, 
-  HelpCircle
+  HelpCircle,
+  MessageSquare
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -51,6 +52,11 @@ const AdminSidebar = () => {
       name: 'Hilfe Analytics', 
       href: '/admin/help-analytics', 
       icon: HelpCircle 
+    },
+    { 
+      name: 'Feedback', 
+      href: '/admin/feedback', 
+      icon: MessageSquare 
     },
     { 
       name: 'Einstellungen', 

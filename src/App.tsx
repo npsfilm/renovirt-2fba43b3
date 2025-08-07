@@ -29,6 +29,7 @@ import AdminAnalytics from '@/pages/AdminAnalytics';
 import AdminSettings from '@/pages/AdminSettings';
 import AdminRoute from '@/components/admin/AdminRoute';
 import AdminHelpAnalytics from '@/pages/AdminHelpAnalytics';
+import AdminFeedback from '@/pages/AdminFeedback';
 import PaymentSuccess from '@/pages/PaymentSuccess';
 import EmailVerification from '@/pages/EmailVerification';
 import Onboarding from '@/pages/Onboarding';
@@ -167,6 +168,11 @@ function App() {
               <Route path="/admin/help-analytics" element={
                 <AdminRoute>
                   <AdminHelpAnalytics />
+                </AdminRoute>
+              } />
+              <Route path="/admin/feedback" element={
+                <AdminRoute>
+                  <AdminFeedback />
                 </AdminRoute>
               } />
               
