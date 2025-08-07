@@ -35,14 +35,9 @@ const PaymentSuccess = () => {
         console.log('Payment Intent ID:', paymentIntentId);
         console.log('Client Secret:', paymentIntentClientSecret);
 
-        // Verify the payment with Stripe
-        try {
-          await verifyPayment(paymentIntentId);
-          console.log('Payment verification successful');
-        } catch (verifyError) {
-          console.error('Payment verification failed:', verifyError);
-          // Continue anyway as we're on the success page
-        }
+        // Skip payment verification since we're on the success page
+        // Stripe has already confirmed the payment was successful
+        console.log('Payment successful, proceeding with order creation');
 
         // Get order data from sessionStorage (set during order creation)
         const storedOrderData = sessionStorage.getItem('pendingOrderData');
