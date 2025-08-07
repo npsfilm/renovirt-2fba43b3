@@ -125,7 +125,6 @@ const Privacy = () => {
                   <li><strong>Make (Integromat):</strong> Workflow-Automatisierung zwischen Web-App, Mailjet, Google Drive.</li>
                   <li><strong>Mailjet:</strong> E-Mail-Versand (Transaktions- & Marketing-E-Mails).</li>
                   <li><strong>Google Drive:</strong> Cloud-Speicher für fertige Bilder & Projektdateien.</li>
-                  <li><strong>Stripe:</strong> Zahlungsabwickler.</li>
                 </ul>
               </section>
 

@@ -144,16 +144,16 @@ const BillingOverview = () => {
           <div className="border rounded-lg p-4 bg-blue-50">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="font-medium text-gray-900">Sichere Zahlung über Stripe</p>
+                <p className="font-medium text-gray-900">Bezahlung auf Rechnung</p>
                 <p className="text-sm text-gray-600">
-                  Alle Zahlungen werden sicher über Stripe abgewickelt. 
-                  Wir speichern keine Zahlungsdaten auf unseren Servern.
+                  Alle Bestellungen werden auf Rechnung abgewickelt. 
+                  Sie erhalten eine Rechnung nach Abschluss der Bearbeitung.
                 </p>
               </div>
-              <Badge className="bg-green-100 text-green-800">Sicher</Badge>
+              <Badge className="bg-green-100 text-green-800">Standard</Badge>
             </div>
             <p className="text-xs text-gray-500">
-              Bei jeder Bestellung werden Sie zu einem sicheren Stripe-Checkout weitergeleitet.
+              Zahlungsziel: 14 Tage ab Rechnungsdatum.
             </p>
           </div>
         </CardContent>

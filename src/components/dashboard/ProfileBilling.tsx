@@ -65,9 +65,8 @@ const ProfileBilling = () => {
   };
 
   const paymentMethod = {
-    type: 'Kreditkarte',
-    last4: '****1234',
-    expiry: '12/26'
+    type: 'Rechnung',
+    description: 'Bezahlung auf Rechnung mit 14 Tagen Zahlungsziel'
   };
 
   const formatInvoiceId = (orderId: string) => {
@@ -141,13 +140,13 @@ const ProfileBilling = () => {
               <Badge className="bg-green-100 text-green-800">Aktiv</Badge>
             </div>
             <div className="flex items-center space-x-3">
-              <CreditCard className="w-5 h-5 text-gray-400" />
+              <FileText className="w-5 h-5 text-gray-400" />
               <div>
                 <p className="text-sm font-medium text-gray-900">
-                  {paymentMethod.type} {paymentMethod.last4}
+                  {paymentMethod.type}
                 </p>
                 <p className="text-xs text-gray-500">
-                  Läuft ab {paymentMethod.expiry}
+                  {paymentMethod.description}
                 </p>
               </div>
             </div>
