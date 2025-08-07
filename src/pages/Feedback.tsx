@@ -69,35 +69,44 @@ const Feedback = () => {
         </div>
 
         {isLoading ? (
-          <div className="grid gap-4">
-            {[...Array(3)].map((_, i) => (
-              <Card key={i} className="animate-fade-in" style={{ animationDelay: `${i * 100}ms` }}>
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1 space-y-2">
-                        <Skeleton className="h-5 w-3/4" />
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-2/3" />
+          <div className="space-y-6">
+            <div className="flex flex-col items-center justify-center py-12">
+              <LoadingState 
+                size="lg" 
+                text="Feature-Requests werden geladen..." 
+                className="animate-fade-in" 
+              />
+            </div>
+            <div className="grid gap-4 opacity-50">
+              {[...Array(3)].map((_, i) => (
+                <Card key={i} className="animate-fade-in" style={{ animationDelay: `${i * 150}ms` }}>
+                  <CardContent className="p-6">
+                    <div className="space-y-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 space-y-2">
+                          <Skeleton className="h-5 w-3/4" />
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="h-4 w-2/3" />
+                        </div>
+                        <div className="ml-4 flex flex-col items-center gap-1">
+                          <Skeleton className="h-8 w-12" />
+                          <Skeleton className="h-3 w-8" />
+                        </div>
                       </div>
-                      <div className="ml-4 flex flex-col items-center gap-1">
-                        <Skeleton className="h-8 w-12" />
-                        <Skeleton className="h-3 w-8" />
+                      <div className="flex items-center gap-2 pt-2">
+                        <Skeleton className="h-6 w-16" />
+                        <Skeleton className="h-6 w-20" />
+                        <Skeleton className="h-6 w-14" />
+                      </div>
+                      <div className="flex items-center justify-between pt-2">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-8 w-24" />
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 pt-2">
-                      <Skeleton className="h-6 w-16" />
-                      <Skeleton className="h-6 w-20" />
-                      <Skeleton className="h-6 w-14" />
-                    </div>
-                    <div className="flex items-center justify-between pt-2">
-                      <Skeleton className="h-4 w-32" />
-                      <Skeleton className="h-8 w-24" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
         ) : sortedRequests.length === 0 ? (
           <Card>
