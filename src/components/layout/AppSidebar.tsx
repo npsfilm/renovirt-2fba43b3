@@ -17,10 +17,13 @@ const AppSidebar = () => {
     { title: 'Neue Bestellung', icon: Upload, url: '/order' },
     { title: 'Meine Bestellungen', icon: FileText, url: '/orders' },
     { title: 'Rechnungen', icon: CreditCard, url: '/billing' },
-    { title: 'Feature Requests', icon: MessageSquare, url: '/feedback' },
     { title: 'Profil', icon: User, url: '/profile' },
     { title: 'Einstellungen', icon: Settings, url: '/settings' },
     { title: 'Hilfe & Support', icon: HelpCircle, url: '/help' }
+  ];
+
+  const bottomMenuItems = [
+    { title: 'Feature‑Wünsche', icon: MessageSquare, url: '/feedback', description: 'Teilen Sie Ihre Ideen mit uns' }
   ];
 
   const handleSignOut = async () => {
@@ -82,6 +85,29 @@ const AppSidebar = () => {
 
       <SidebarFooter className="border-t border-sidebar-border p-4">
         <div className="space-y-4">
+          {/* Feature Request Section */}
+          <div className="border border-sidebar-border rounded-lg p-3 bg-sidebar-accent/30">
+            <div className="text-xs font-medium text-muted-foreground mb-2">Haben Sie eine Idee?</div>
+            {bottomMenuItems.map((item) => (
+              <SidebarMenuButton
+                key={item.url}
+                onClick={() => navigate(item.url)}
+                isActive={isActivePath(item.url)}
+                className={`w-full justify-start text-sm ${
+                  isActivePath(item.url) 
+                    ? 'bg-primary/10 text-primary border-primary/20' 
+                    : 'hover:bg-sidebar-accent'
+                }`}
+              >
+                <item.icon className="w-4 h-4" />
+                <div className="flex flex-col items-start">
+                  <span className="text-sm">{item.title}</span>
+                  <span className="text-xs text-muted-foreground">{item.description}</span>
+                </div>
+              </SidebarMenuButton>
+            ))}
+          </div>
+          
           <CreditsWidget />
           
           <Button 
