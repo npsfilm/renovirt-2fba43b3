@@ -119,18 +119,18 @@ const UpvoteButton = ({ requestId, initialCount }: UpvoteButtonProps) => {
       size="sm"
       onClick={handleUpvote}
       disabled={toggleUpvoteMutation.isPending}
-      className={`flex flex-col items-center gap-1 h-auto py-2 px-3 min-w-[60px] ${
+      className={`flex flex-col items-center gap-1 h-auto py-2 px-3 min-w-[60px] transition-all duration-300 hover:scale-105 ${
         isUpvoted 
-          ? 'bg-primary text-primary-foreground border-primary' 
+          ? 'bg-primary text-primary-foreground border-primary animate-scale-in' 
           : 'hover:bg-primary/10 hover:border-primary/20'
-      }`}
+      } ${toggleUpvoteMutation.isPending ? 'animate-pulse' : ''}`}
     >
       <ChevronUp 
-        className={`h-4 w-4 transition-transform ${
+        className={`h-4 w-4 transition-all duration-300 ${
           toggleUpvoteMutation.isPending ? 'animate-pulse' : ''
-        } ${isUpvoted ? 'scale-110' : ''}`} 
+        } ${isUpvoted ? 'scale-110 animate-scale-in' : 'hover:scale-110'}`} 
       />
-      <span className="text-xs font-medium">{displayCount}</span>
+      <span className="text-xs font-medium transition-all duration-200">{displayCount}</span>
     </Button>
   );
 };

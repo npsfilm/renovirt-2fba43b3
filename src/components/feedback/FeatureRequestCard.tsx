@@ -54,7 +54,7 @@ const FeatureRequestCard = ({ request }: FeatureRequestCardProps) => {
     : 'Anonymer Nutzer';
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className="hover:shadow-md transition-all duration-300 hover:scale-[1.02] animate-fade-in">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">

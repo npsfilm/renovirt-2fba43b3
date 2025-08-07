@@ -88,19 +88,19 @@ const Feedback = () => {
         </p>
 
         {/* Header Actions */}
-        <div className="flex flex-col sm:flex-row justify-between gap-4">
+        <div className="flex flex-col sm:flex-row justify-between gap-4 animate-fade-in">
           <div className="flex flex-col sm:flex-row gap-2 flex-1">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 transition-colors duration-200" />
               <Input
                 placeholder="Feature-Requests durchsuchen..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20"
               />
             </div>
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="w-full sm:w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px] transition-all duration-200 hover:border-primary/20">
                 <Filter className="h-4 w-4 mr-2" />
                 <SelectValue placeholder="Kategorie" />
               </SelectTrigger>
@@ -114,14 +114,17 @@ const Feedback = () => {
               </SelectContent>
             </Select>
           </div>
-          <Button onClick={() => setIsSubmitDialogOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
+          <Button 
+            onClick={() => setIsSubmitDialogOpen(true)}
+            className="hover:scale-105 transition-all duration-200 animate-fade-in"
+          >
+            <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-200" />
             Feature vorschlagen
           </Button>
         </div>
 
         {/* Status Tabs */}
-        <Tabs value={statusFilter} onValueChange={setStatusFilter}>
+        <Tabs value={statusFilter} onValueChange={setStatusFilter} className="animate-fade-in">
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="all">
               Alle {featureRequests.length > 0 && `(${featureRequests.length})`}
@@ -142,21 +145,21 @@ const Feedback = () => {
 
           <TabsContent value={statusFilter} className="mt-6">
             {isLoading ? (
-              <div className="grid gap-4">
+              <div className="grid gap-4 animate-fade-in">
                 {[...Array(5)].map((_, i) => (
-                  <Card key={i}>
+                  <Card key={i} className="animate-pulse">
                     <CardContent className="p-6">
-                      <div className="animate-pulse space-y-4">
-                        <div className="h-4 bg-muted rounded w-3/4"></div>
-                        <div className="h-3 bg-muted rounded w-1/2"></div>
-                        <div className="h-3 bg-muted rounded w-1/4"></div>
+                      <div className="space-y-4">
+                        <div className="h-4 bg-muted rounded w-3/4 animate-pulse"></div>
+                        <div className="h-3 bg-muted rounded w-1/2 animate-pulse"></div>
+                        <div className="h-3 bg-muted rounded w-1/4 animate-pulse"></div>
                       </div>
                     </CardContent>
                   </Card>
                 ))}
               </div>
             ) : featureRequests.length === 0 ? (
-              <Card>
+              <Card className="animate-fade-in">
                 <CardContent className="p-12 text-center">
                   <div className="text-muted-foreground">
                     {searchTerm || selectedCategory !== 'all' || statusFilter !== 'all'
@@ -165,7 +168,7 @@ const Feedback = () => {
                   </div>
                   <Button 
                     onClick={() => setIsSubmitDialogOpen(true)}
-                    className="mt-4"
+                    className="mt-4 hover:scale-105 transition-all duration-200"
                     variant="outline"
                   >
                     <Plus className="h-4 w-4 mr-2" />
@@ -174,9 +177,15 @@ const Feedback = () => {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-4">
-                {featureRequests.map((request) => (
-                  <FeatureRequestCard key={request.id} request={request} />
+              <div className="grid gap-4 animate-fade-in">
+                {featureRequests.map((request, index) => (
+                  <div
+                    key={request.id}
+                    className="animate-fade-in"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <FeatureRequestCard request={request} />
+                  </div>
                 ))}
               </div>
             )}
