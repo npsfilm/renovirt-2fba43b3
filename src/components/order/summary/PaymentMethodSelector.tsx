@@ -35,14 +35,6 @@ const PaymentMethodSelector = ({
             </div>
           </div>
         </div>
-        
-        {/* Security Notice */}
-        <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-md border">
-          <Shield className="w-4 h-4 text-green-600" />
-          <span className="text-sm text-gray-700">
-            Ihre Zahlungsdaten sind durch SSL-Verschlüsselung geschützt
-          </span>
-        </div>
       </CardContent>
     </Card>;
 };
