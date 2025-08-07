@@ -25,79 +25,13 @@ const StripePaymentForm = ({
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isElementsReady, setIsElementsReady] = useState(false);
-  const [paymentMethodSelected, setPaymentMethodSelected] = useState(false);
+  const [isPaymentElementReady, setIsPaymentElementReady] = useState(false);
   const { toast } = useToast();
   const { verifyPayment } = usePayment();
 
   useEffect(() => {
     if (stripe && elements) {
       setIsElementsReady(true);
-      
-      // Fallback: Aktiviere Button nach 3 Sekunden falls Events nicht feuern
-      const fallbackTimer = setTimeout(() => {
-        console.log('=== FALLBACK ACTIVATION ===');
-        console.log('Aktiviere Button nach 3 Sekunden Fallback');
-        setPaymentMethodSelected(true);
-      }, 3000);
-      
-      // Add PaymentElement event listeners for better debugging
-      const paymentElement = elements.getElement('payment');
-      if (paymentElement) {
-        console.log('=== PAYMENT ELEMENT READY ===');
-        
-        paymentElement.on('ready', () => {
-          console.log('PaymentElement ready event fired');
-          // Aktiviere Button sofort wenn PaymentElement bereit ist
-          setTimeout(() => {
-            console.log('=== READY EVENT ACTIVATION ===');
-            setPaymentMethodSelected(true);
-          }, 1000);
-        });
-        
-        paymentElement.on('focus', () => {
-          console.log('PaymentElement focused');
-          // Aktiviere Button bei Fokus
-          setPaymentMethodSelected(true);
-        });
-        
-        paymentElement.on('blur', () => {
-          console.log('PaymentElement blurred');
-        });
-        
-        paymentElement.on('change', (event) => {
-          console.log('=== PAYMENT ELEMENT CHANGE ===');
-          console.log('Event details:', {
-            complete: event.complete,
-            empty: event.empty,
-            value: event.value,
-            collapsed: event.collapsed
-          });
-          
-          // CRITICAL FIX: Weniger strenge Validierung für redirect-basierte Zahlungen
-          // PayPal, Klarna etc. sind nie "complete" vor dem Redirect
-          setPaymentMethodSelected(!event.empty);
-          
-          // Clear fallback timer wenn Event gefeuert hat
-          clearTimeout(fallbackTimer);
-        });
-        
-        paymentElement.on('loaderror', (event) => {
-          console.error('=== PAYMENT ELEMENT LOAD ERROR ===');
-          console.error('Error details:', event.error);
-          // Aktiviere Button auch bei Fehlern damit User nicht blockiert ist
-          setPaymentMethodSelected(true);
-        });
-      } else {
-        console.error('=== PAYMENT ELEMENT NOT FOUND ===');
-        // Aktiviere Button als Fallback wenn PaymentElement nicht gefunden
-        setTimeout(() => {
-          setPaymentMethodSelected(true);
-        }, 2000);
-      }
-      
-      return () => {
-        clearTimeout(fallbackTimer);
-      };
     }
   }, [stripe, elements]);
 
@@ -115,7 +49,7 @@ const StripePaymentForm = ({
       console.log('=== STRIPE PAYMENT SUBMISSION START ===');
       console.log('Current URL:', window.location.href);
       console.log('Return URL will be:', `${window.location.origin}/payment/success`);
-      console.log('Payment method selected:', paymentMethodSelected);
+      console.log('Payment element ready:', isPaymentElementReady);
       
       // Check if PaymentElement is ready
       const paymentElement = elements.getElement('payment');
@@ -297,6 +231,11 @@ const StripePaymentForm = ({
           <div className="min-h-[200px] border rounded-lg p-4">
             {isElementsReady ? (
               <PaymentElement
+                id="payment-element"
+                onReady={() => {
+                  console.log('Payment Element is now ready.');
+                  setIsPaymentElementReady(true);
+                }}
                 options={{
                   layout: {
                     type: 'accordion',
@@ -351,7 +290,7 @@ const StripePaymentForm = ({
           
           <Button
             type="submit"
-            disabled={!stripe || !elements || isProcessing || isLoading || !isElementsReady || !paymentMethodSelected}
+            disabled={isProcessing || !isPaymentElementReady}
             className="w-full bg-green-600 hover:bg-green-700"
           >
             {isProcessing ? (
