@@ -64,6 +64,35 @@ const Feedback = () => {
           </div>
         </div>
 
+        <section aria-labelledby="feature-request-info" className="mb-6">
+          <Card className="animate-fade-in">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-4">
+                <div className="mt-1">
+                  <Lightbulb className="h-6 w-6 text-foreground" />
+                </div>
+                <div className="space-y-3">
+                  <h2 id="feature-request-info" className="text-xl font-semibold">Was ist ein Feature‑Request?</h2>
+                  <p className="text-muted-foreground">
+                    Teilen Sie uns Ihre Funktionswünsche mit. Wir priorisieren nach Nutzen, Aufwand und Upvotes.
+                  </p>
+                  <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-1">
+                    <li>Beschreiben Sie den konkreten Anwendungsfall.</li>
+                    <li>Erklären Sie, warum die Funktion wichtig ist.</li>
+                    <li>Ordnen Sie eine passende Kategorie zu.</li>
+                  </ul>
+                  <div>
+                    <Button size="lg" variant="default" onClick={() => setIsSubmitDialogOpen(true)} id="new-feature-btn-bottom">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Feature vorschlagen
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
         {isLoading ? (
           <div className="space-y-6">
             <div className="flex flex-col items-center justify-center py-12">
@@ -125,35 +154,6 @@ const Feedback = () => {
             ))}
           </div>
         )}
-
-        <section aria-labelledby="feature-request-info" className="mt-8">
-          <Card className="animate-fade-in">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="mt-1">
-                  <Lightbulb className="h-6 w-6 text-foreground" />
-                </div>
-                <div className="space-y-3">
-                  <h2 id="feature-request-info" className="text-xl font-semibold">Was ist ein Feature‑Request?</h2>
-                  <p className="text-muted-foreground">
-                    Teilen Sie uns Ihre Funktionswünsche mit. Wir priorisieren nach Nutzen, Aufwand und Upvotes.
-                  </p>
-                  <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-1">
-                    <li>Beschreiben Sie den konkreten Anwendungsfall.</li>
-                    <li>Erklären Sie, warum die Funktion wichtig ist.</li>
-                    <li>Ordnen Sie eine passende Kategorie zu.</li>
-                  </ul>
-                  <div>
-                    <Button size="lg" variant="default" onClick={() => setIsSubmitDialogOpen(true)} id="new-feature-btn-bottom">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Feature vorschlagen
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </section>
 
         <SubmitFeatureDialog
           open={isSubmitDialogOpen}
