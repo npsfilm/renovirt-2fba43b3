@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { createOrderNotification } from '@/utils/notificationService';
+import { useAdminTracking } from '@/hooks/useAdminTracking';
 
 interface StatusManagerProps {
   selectedStatus: string;
@@ -15,6 +16,7 @@ interface StatusManagerProps {
   setNotes: (notes: string) => void;
   onStatusUpdate: () => void;
   isUpdating: boolean;
+  orderId?: string;
 }
 
 const StatusManager = ({
@@ -23,10 +25,20 @@ const StatusManager = ({
   notes,
   setNotes,
   onStatusUpdate,
-  isUpdating
-}: StatusManagerProps) => {
+  isUpdating,
+  orderId
+}: StatusManagerProps & { orderId?: string }) => {
+  const { trackOrderAction } = useAdminTracking();
 
   const handleStatusUpdate = async () => {
+    // Track admin status change
+    if (orderId) {
+      trackOrderAction(orderId, 'status_changed', {
+        new_status: selectedStatus,
+        has_notes: notes.length > 0
+      });
+    }
+    
     // Call the parent's update function
     onStatusUpdate();
   };

@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { usePostHog } from '@/contexts/PostHogProvider';
 import OrderStatusBadge from './OrderStatusBadge';
 import { downloadFile } from '@/utils/fileDownloadService';
 import QuickActions from './QuickActions';
@@ -30,6 +31,7 @@ const OrderDetailsModal = ({
     toast
   } = useToast();
   const queryClient = useQueryClient();
+  const posthog = usePostHog();
 
   // Fetch order details with invoices
   const {
@@ -144,15 +146,37 @@ const OrderDetailsModal = ({
   });
 
   const handleStatusUpdate = () => {
+    // PostHog: Track admin order status update
+    posthog.capture('admin_order_status_updated', {
+      order_id: orderId,
+      old_status: order?.status,
+      new_status: selectedStatus,
+      has_notes: notes.length > 0
+    });
+    
     updateStatusMutation.mutate({ status: selectedStatus });
   };
 
   const handlePaymentUpdate = () => {
+    // PostHog: Track admin payment status update
+    posthog.capture('admin_payment_status_updated', {
+      order_id: orderId,
+      payment_status: 'paid'
+    });
+    
     updatePaymentMutation.mutate();
   };
 
   const handleFileDownload = async (image: any) => {
     try {
+      // PostHog: Track admin file download
+      posthog.capture('admin_file_downloaded', {
+        order_id: orderId,
+        file_name: image.file_name,
+        file_size: image.file_size,
+        file_type: image.file_type
+      });
+      
       const bucket = image.storage_path.includes('order-deliverables') ? 'order-deliverables' : 'order-images';
       await downloadFile(bucket, image.storage_path, image.file_name);
       toast({
@@ -160,6 +184,13 @@ const OrderDetailsModal = ({
         description: `${image.file_name} wird heruntergeladen...`
       });
     } catch (error) {
+      // PostHog: Track download error
+      posthog.capture('admin_file_download_error', {
+        order_id: orderId,
+        file_name: image.file_name,
+        error: error
+      });
+      
       toast({
         title: "Download-Fehler",
         description: "Die Datei konnte nicht heruntergeladen werden.",
