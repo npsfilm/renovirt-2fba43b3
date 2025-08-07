@@ -6,9 +6,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
+import { useCreateFeatureRequest } from '@/hooks/useFeatureRequests';
 import { FeatureCategory } from '@/types/feedback';
 import { CheckCircle, Loader2, Lightbulb } from 'lucide-react';
 
@@ -21,7 +20,7 @@ interface SubmitFeatureDialogProps {
 const SubmitFeatureDialog = ({ open, onOpenChange, categories }: SubmitFeatureDialogProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const createFeatureRequest = useCreateFeatureRequest();
 
   const [formData, setFormData] = useState({
     title: '',
@@ -37,52 +36,28 @@ const SubmitFeatureDialog = ({ open, onOpenChange, categories }: SubmitFeatureDi
 
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const submitMutation = useMutation({
-    mutationFn: async (data: typeof formData) => {
-      if (!user?.id) {
-        throw new Error('Sie müssen angemeldet sein, um Features vorzuschlagen.');
-      }
+  const handleCreateFeatureRequest = async (data: typeof formData) => {
+    if (!user?.id) {
+      throw new Error('Sie müssen angemeldet sein, um Features vorzuschlagen.');
+    }
 
-      const { error } = await (supabase as any)
-        .from('feature_requests')
-        .insert({
-          title: data.title.trim(),
-          description: data.description.trim(),
-          category_id: data.category_id,
-          created_by: user.id,
-          status: 'open',
-          priority: 'medium',
-        });
+    await createFeatureRequest.mutateAsync({
+      title: data.title.trim(),
+      description: data.description.trim(),
+      category_id: data.category_id,
+      created_by: user.id,
+    });
 
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      setIsSuccess(true);
-      
-      toast({
-        title: 'Feature erfolgreich eingereicht',
-        description: 'Vielen Dank für Ihren Vorschlag! Wir werden ihn prüfen.',
-      });
-      
-      // Show success state for 2 seconds then close
-      setTimeout(() => {
-        setFormData({ title: '', description: '', category_id: '' });
-        setErrors({ title: '', description: '', category_id: '' });
-        setIsSuccess(false);
-        onOpenChange(false);
-      }, 2000);
-      
-      // Refresh feature requests
-      queryClient.invalidateQueries({ queryKey: ['feature-requests'] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: 'Fehler beim Einreichen',
-        description: error.message || 'Beim Einreichen Ihres Feature-Vorschlags ist ein Fehler aufgetreten.',
-        variant: 'destructive',
-      });
-    },
-  });
+    setIsSuccess(true);
+    
+    // Show success state for 2 seconds then close
+    setTimeout(() => {
+      setFormData({ title: '', description: '', category_id: '' });
+      setErrors({ title: '', description: '', category_id: '' });
+      setIsSuccess(false);
+      onOpenChange(false);
+    }, 2000);
+  };
 
   const validateForm = () => {
     const newErrors = { title: '', description: '', category_id: '' };
@@ -126,7 +101,7 @@ const SubmitFeatureDialog = ({ open, onOpenChange, categories }: SubmitFeatureDi
     }
 
     if (validateForm()) {
-      submitMutation.mutate(formData);
+      handleCreateFeatureRequest(formData);
     }
   };
 
@@ -139,7 +114,7 @@ const SubmitFeatureDialog = ({ open, onOpenChange, categories }: SubmitFeatureDi
   };
 
   const handleOpenChange = (newOpen: boolean) => {
-    if (!newOpen && !submitMutation.isPending) {
+    if (!newOpen && !createFeatureRequest.isPending) {
       setFormData({ title: '', description: '', category_id: '' });
       setErrors({ title: '', description: '', category_id: '' });
       setIsSuccess(false);
@@ -243,17 +218,17 @@ const SubmitFeatureDialog = ({ open, onOpenChange, categories }: SubmitFeatureDi
                 type="button"
                 variant="outline"
                 onClick={() => handleOpenChange(false)}
-                disabled={submitMutation.isPending}
+                disabled={createFeatureRequest.isPending}
                 className="transition-all duration-200 hover:scale-105"
               >
                 Abbrechen
               </Button>
               <Button
                 type="submit"
-                disabled={submitMutation.isPending}
+                disabled={createFeatureRequest.isPending}
                 className="transition-all duration-200 hover:scale-105"
               >
-                {submitMutation.isPending ? (
+                {createFeatureRequest.isPending ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Wird eingereicht...

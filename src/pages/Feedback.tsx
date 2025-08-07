@@ -14,10 +14,8 @@ import SubmitFeatureDialog from '@/components/feedback/SubmitFeatureDialog';
 import NavigationBreadcrumbs from '@/components/feedback/NavigationBreadcrumbs';
 import QuickFilters from '@/components/feedback/QuickFilters';
 import FeedbackStats from '@/components/feedback/FeedbackStats';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { FeatureRequest, FeatureCategory } from '@/types/feedback';
 import { useAuth } from '@/hooks/useAuth';
+import { useFeatureRequests, useFeatureCategories } from '@/hooks/useFeatureRequests';
 
 const Feedback = () => {
   const { user } = useAuth();
@@ -41,67 +39,16 @@ const Feedback = () => {
   }, [searchTerm, selectedCategory, statusFilter, quickFilter, setSearchParams]);
 
   // Fetch feature requests
-  const { data: featureRequests = [], isLoading } = useQuery({
-    queryKey: ['feature-requests', selectedCategory, statusFilter, searchTerm],
-    queryFn: async () => {
-      let query = (supabase as any)
-        .from('feature_requests')
-        .select(`
-          *,
-          feature_categories (
-            name,
-            color
-          ),
-          customer_profiles!feature_requests_created_by_fkey (
-            first_name,
-            last_name
-          )
-        `);
-
-      // Apply quick filters
-      if (quickFilter === 'trending') {
-        query = query.order('comment_count', { ascending: false });
-      } else if (quickFilter === 'popular') {
-        query = query.order('upvote_count', { ascending: false });
-      } else if (quickFilter === 'recent') {
-        query = query.order('created_at', { ascending: false });
-      } else if (quickFilter === 'my-requests' && user?.id) {
-        query = query.eq('created_by', user.id).order('created_at', { ascending: false });
-      } else {
-        query = query.order('upvote_count', { ascending: false });
-      }
-
-      if (selectedCategory !== 'all') {
-        query = query.eq('category_id', selectedCategory);
-      }
-
-      if (statusFilter !== 'all') {
-        query = query.eq('status', statusFilter);
-      }
-
-      if (searchTerm) {
-        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
-      return data;
-    },
-  });
+  const { data: featureRequests = [], isLoading } = useFeatureRequests(
+    selectedCategory,
+    statusFilter,
+    searchTerm,
+    quickFilter,
+    user?.id
+  );
 
   // Fetch categories for filter
-  const { data: categories = [] } = useQuery({
-    queryKey: ['feature-categories'],
-    queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('feature_categories')
-        .select('*')
-        .order('name');
-      if (error) throw error;
-      return data;
-    },
-    enabled: true,
-  });
+  const { data: categories = [] } = useFeatureCategories();
 
   const getStatusCounts = () => {
     return featureRequests.reduce((acc, request) => {
