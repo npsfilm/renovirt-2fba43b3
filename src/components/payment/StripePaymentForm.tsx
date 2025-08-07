@@ -318,7 +318,7 @@ const StripePaymentForm = ({
                       name: 'auto',
                       email: 'auto',
                       address: {
-                        country: 'never',
+                        country: 'auto',
                         line1: 'auto',
                         line2: 'auto',
                         city: 'auto',
