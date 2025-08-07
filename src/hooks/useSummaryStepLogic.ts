@@ -6,12 +6,15 @@ import { calculateOrderTotal } from '@/utils/orderPricing';
 import { calculateEffectiveImageCount } from '@/utils/orderValidation';
 import { useSummaryOrderCreation } from '@/hooks/summary/useSummaryOrderCreation';
 import { useSummaryPayment } from '@/hooks/summary/useSummaryPayment';
+import { secureLog } from '@/utils/secureLogging';
+import { useToast } from '@/hooks/use-toast';
 import type { OrderData } from '@/utils/orderValidation';
 
 export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) => {
   const [creditsToUse, setCreditsToUse] = useState(0);
   const { user } = useAuth();
   const { packages, addOns } = useOrderData();
+  const { toast } = useToast();
   
   const {
     paymentMethod,
@@ -53,10 +56,14 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
           totalAmount: finalPrice
         };
         localStorage.setItem('pendingOrderData', JSON.stringify(orderDataForStorage));
-        console.log('Order data stored in localStorage for redirect payment');
+        secureLog('Order data stored in localStorage for redirect payment', orderDataForStorage);
       } catch (error) {
         console.error('Failed to save pending order data to localStorage:', error);
-        // Notify the user of the error and stop the process
+        toast({ 
+          variant: 'destructive', 
+          title: 'Ein Fehler ist aufgetreten', 
+          description: 'Bestelldaten konnten nicht für die Zahlung vorbereitet werden.' 
+        });
         return;
       }
     }

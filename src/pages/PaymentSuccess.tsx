@@ -35,7 +35,7 @@ const PaymentSuccess = () => {
             setPaymentStatus('error');
             toast({
               title: 'Fehler',
-              description: 'Bestelldaten nach der Zahlung nicht gefunden.',
+              description: 'Wichtige Bestelldaten wurden nicht gefunden. Ihre Zahlung war erfolgreich, aber bitte kontaktieren Sie den Support, um Ihre Bestellung zu bestätigen.',
               variant: 'destructive',
             });
             setIsProcessing(false);
@@ -76,7 +76,7 @@ const PaymentSuccess = () => {
               setPaymentStatus('error');
               toast({
                 title: 'Zahlung fehlgeschlagen',
-                description: 'Zahlung wurde nicht erfolgreich abgeschlossen.',
+                description: 'Ihre Zahlung konnte nicht final bestätigt werden. Bitte kontaktieren Sie den Support.',
                 variant: 'destructive',
               });
             }
