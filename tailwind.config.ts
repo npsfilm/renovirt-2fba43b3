@@ -19,6 +19,15 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'renovirt': ['Renovirt', 'system-ui', '-apple-system', 'sans-serif'],
+				'sans': ['Renovirt', 'system-ui', '-apple-system', 'sans-serif'],
+			},
+			fontWeight: {
+				light: '300',
+				medium: '500',
+				bold: '700',
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
