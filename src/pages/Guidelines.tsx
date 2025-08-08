@@ -43,13 +43,8 @@ const Guidelines = () => {
       setActiveSection(sectionId);
     }
   };
-
   const toggleSection = (sectionId: string) => {
-    setExpandedSections(prev => 
-      prev.includes(sectionId) 
-        ? prev.filter(id => id !== sectionId)
-        : [...prev, sectionId]
-    );
+    setExpandedSections(prev => prev.includes(sectionId) ? prev.filter(id => id !== sectionId) : [...prev, sectionId]);
   };
   const navigationItems = [{
     id: 'equipment',
@@ -143,34 +138,19 @@ const Guidelines = () => {
             <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-xl border-b shadow-sm">
               <div className="max-w-5xl mx-auto px-6 py-4">
                 <div className="flex overflow-x-auto no-scrollbar gap-2">
-                  {navigationItems.map(item => (
-                    <Button 
-                      key={item.id} 
-                      variant={activeSection === item.id ? "default" : "ghost"} 
-                      size="sm" 
-                      onClick={() => scrollToSection(item.id)} 
-                      className={`flex-shrink-0 transition-all duration-200 ${
-                        activeSection === item.id 
-                          ? 'bg-primary text-primary-foreground shadow-sm' 
-                          : 'hover:bg-muted hover-scale'
-                      }`}
-                    >
+                  {navigationItems.map(item => <Button key={item.id} variant={activeSection === item.id ? "default" : "ghost"} size="sm" onClick={() => scrollToSection(item.id)} className={`flex-shrink-0 transition-all duration-200 ${activeSection === item.id ? 'bg-primary text-primary-foreground shadow-sm' : 'hover:bg-muted hover-scale'}`}>
                       <item.icon className="w-4 h-4 mr-2" />
                       {item.label}
-                    </Button>
-                  ))}
+                    </Button>)}
                 </div>
                 {/* Progress indicator */}
                 <div className="flex items-center gap-2 mt-3">
                   <Clock className="w-3 h-3 text-muted-foreground" />
                   <span className="text-xs text-muted-foreground">~15 Min Lesezeit</span>
                   <div className="flex-1 h-1 bg-muted rounded-full ml-2">
-                    <div 
-                      className="h-full bg-primary rounded-full transition-all duration-300"
-                      style={{ 
-                        width: `${((navigationItems.findIndex(item => item.id === activeSection) + 1) / navigationItems.length) * 100}%` 
-                      }}
-                    ></div>
+                    <div className="h-full bg-primary rounded-full transition-all duration-300" style={{
+                    width: `${(navigationItems.findIndex(item => item.id === activeSection) + 1) / navigationItems.length * 100}%`
+                  }}></div>
                   </div>
                 </div>
               </div>
@@ -718,13 +698,27 @@ const Guidelines = () => {
                     <CardContent className="p-8">
                       <div className="space-y-8">
                         <div className="grid gap-6">
-                          {[
-                            { step: 1, title: "Raumvorbereitung", desc: "Staging und Beleuchtung optimieren", icon: Palette },
-                            { step: 2, title: "Shooting-Reihenfolge", desc: "Systematisch durch alle Räume", icon: Camera },
-                            { step: 3, title: "Qualitätskontrolle", desc: "Bilder direkt auf dem Gerät prüfen", icon: Eye },
-                            { step: 4, title: "Upload & Übertragung", desc: "Sichere Übertragung zu Renovirt", icon: Upload }
-                          ].map((item, index) => (
-                            <div key={index} className="group p-6 bg-gradient-to-r from-success/5 to-success/10 rounded-xl border border-success/20 hover:shadow-md transition-all duration-300">
+                          {[{
+                          step: 1,
+                          title: "Raumvorbereitung",
+                          desc: "Staging und Beleuchtung optimieren",
+                          icon: Palette
+                        }, {
+                          step: 2,
+                          title: "Shooting-Reihenfolge",
+                          desc: "Systematisch durch alle Räume",
+                          icon: Camera
+                        }, {
+                          step: 3,
+                          title: "Qualitätskontrolle",
+                          desc: "Bilder direkt auf dem Gerät prüfen",
+                          icon: Eye
+                        }, {
+                          step: 4,
+                          title: "Upload & Übertragung",
+                          desc: "Sichere Übertragung zu Renovirt",
+                          icon: Upload
+                        }].map((item, index) => <div key={index} className="group p-6 bg-gradient-to-r from-success/5 to-success/10 rounded-xl border border-success/20 hover:shadow-md transition-all duration-300">
                               <div className="flex items-start gap-4">
                                 <div className="w-12 h-12 bg-success/20 rounded-lg flex items-center justify-center flex-shrink-0">
                                   <span className="text-lg font-bold text-success">{item.step}</span>
@@ -737,8 +731,7 @@ const Guidelines = () => {
                                   <p className="text-sm text-muted-foreground">{item.desc}</p>
                                 </div>
                               </div>
-                            </div>
-                          ))}
+                            </div>)}
                         </div>
                       </div>
                     </CardContent>
@@ -889,10 +882,7 @@ const Guidelines = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
                   <div className="text-center md:text-left">
                     <h4 className="font-semibold mb-3">Renovirt</h4>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      Professionelle Bildbearbeitung für Immobilienmakler. 
-                      Von Maklern für Makler entwickelt.
-                    </p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">Professionelle Bildbearbeitung für Immobilienmakler. </p>
                   </div>
                   <div className="text-center">
                     <h4 className="font-semibold mb-3">Support</h4>
