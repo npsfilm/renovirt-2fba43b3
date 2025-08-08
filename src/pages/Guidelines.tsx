@@ -919,7 +919,7 @@ const Guidelines = () => {
                 </div>
                 <div className="pt-8 border-t border-border/50 text-center">
                   <p className="text-sm text-muted-foreground">
-                    © 2024 Renovirt. Alle Rechte vorbehalten.
+                    © 2025 Renovirt. Alle Rechte vorbehalten.
                   </p>
                 </div>
               </div>
