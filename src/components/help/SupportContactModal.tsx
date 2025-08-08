@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Mail, Send } from 'lucide-react';
+import { LifeBuoy, Send } from 'lucide-react';
 
 interface SupportContactModalProps {
   isOpen: boolean;
@@ -73,7 +73,7 @@ const SupportContactModal = ({ isOpen, onClose, searchQuery, aiResult }: Support
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Mail className="w-5 h-5" />
+            <LifeBuoy className="w-5 h-5" />
             Support kontaktieren
           </DialogTitle>
         </DialogHeader>

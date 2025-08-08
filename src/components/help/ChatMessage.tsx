@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ThumbsUp, ThumbsDown, MessageCircle, Mail } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import SupportMessage from './SupportMessage';
 
@@ -77,35 +77,30 @@ const ChatMessage = ({
           <span>{formatTime(new Date(message.timestamp))}</span>
           
           {message.type === 'ai' && message.interactionId && !message.feedbackGiven && (
-            <div className="flex items-center ml-2">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-6 px-1 text-gray-500 hover:text-green-600"
-                onClick={() => onFeedback(message.id, message.interactionId!, 5)}
+            <div className="flex items-center ml-2 gap-2">
+              <span className="text-xs text-gray-500">War diese Antwort hilfreich?</span>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="h-6 px-2"
+                onClick={() => {
+                  onFeedback(message.id, message.interactionId!, 5);
+                  onProblemSolved?.();
+                }}
               >
-                <ThumbsUp className="w-3.5 h-3.5" />
+                Ja, gelöst
               </Button>
-              
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-6 px-1 text-gray-500 hover:text-red-600"
-                onClick={() => onFeedback(message.id, message.interactionId!, 1)}
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-6 px-2"
+                onClick={() => {
+                  onFeedback(message.id, message.interactionId!, 1);
+                  onContactSupport(message.interactionId!);
+                }}
               >
-                <ThumbsDown className="w-3.5 h-3.5" />
+                Nein, ich brauche mehr Hilfe
               </Button>
-              
-              {onContactSupport && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="h-6 px-1 ml-1 text-gray-500 hover:text-blue-600"
-                  onClick={() => onContactSupport(message.interactionId!)}
-                >
-                  <MessageCircle className="w-3.5 h-3.5" />
-                </Button>
-              )}
             </div>
           )}
 
@@ -113,26 +108,6 @@ const ChatMessage = ({
             <div className="ml-2 text-xs text-gray-400">Danke für Ihr Feedback</div>
           )}
 
-          {message.content.includes('Problem gelöst?') && onProblemSolved && onSendTranscript && (
-            <div className="flex items-center space-x-2 ml-auto">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-xs h-6 px-2 text-green-600 hover:bg-green-50"
-                onClick={onProblemSolved}
-              >
-                Ja, gelöst
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-xs h-6 px-2 text-blue-600 hover:bg-blue-50"
-                onClick={onSendTranscript}
-              >
-                Transcript senden
-              </Button>
-            </div>
-          )}
         </div>
       </div>
     </div>

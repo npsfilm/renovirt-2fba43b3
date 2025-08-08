@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Mail, MessageCircle } from 'lucide-react';
+import { Mail, LifeBuoy } from 'lucide-react';
 
 interface SupportMessageProps {
   onSendChatHistory: (userEmail: string) => void;
@@ -47,37 +47,37 @@ const SupportMessage = ({ onSendChatHistory, onOpenContactForm }: SupportMessage
 
   return (
     <>
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
         <div className="flex items-center gap-2 mb-3">
-          <span className="font-medium text-blue-900">Direkter Support gewünscht</span>
+          <span className="font-medium text-gray-900">Direkter Support</span>
         </div>
         
-        <p className="text-blue-800 text-sm mb-4">
-          Aktuell bieten wir keinen direkten Support über den Chat an. Möchten Sie Ihren Chatverlauf an unseren Support senden und wir antworten Ihnen per Mail oder möchten Sie uns eine Nachricht zukommen lassen?
+        <p className="text-gray-800 text-sm mb-4">
+          War die Antwort nicht hilfreich? Senden Sie Ihren Chatverlauf an unser Support-Team oder nehmen Sie direkt Kontakt auf.
         </p>
         
         <div className="flex flex-col sm:flex-row gap-2">
           <Button
-            onClick={handleSendChatHistory}
-            className="flex-1 bg-blue-600 hover:bg-blue-700"
+            onClick={onOpenContactForm}
+            className="flex-1"
             size="sm"
           >
-            <Mail className="w-4 h-4 mr-2" />
-            Chatverlauf senden
+            <LifeBuoy className="w-4 h-4 mr-2" />
+            Support kontaktieren
           </Button>
           
           <Button
-            onClick={onOpenContactForm}
+            onClick={handleSendChatHistory}
             variant="outline"
-            className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-50"
+            className="flex-1"
             size="sm"
           >
-            <MessageCircle className="w-4 h-4 mr-2" />
-            Kontaktformular
+            <Mail className="w-4 h-4 mr-2" />
+            Chatverlauf per E-Mail senden
           </Button>
         </div>
         
-        <p className="text-xs text-blue-600 mt-2">
+        <p className="text-xs text-gray-600 mt-2">
           Support-E-Mail: support@renovirt.de
         </p>
       </div>
@@ -116,7 +116,6 @@ const SupportMessage = ({ onSendChatHistory, onOpenContactForm }: SupportMessage
               <Button 
                 onClick={handleConfirmSend}
                 disabled={!isValidEmail}
-                className="bg-blue-600 hover:bg-blue-700"
               >
                 Chatverlauf senden
               </Button>
