@@ -118,16 +118,32 @@ export const secureEmailConfirmation = async (accessToken: string, refreshToken?
 };
 
 /**
- * Secure logging utility
+ * Secure logging utility with proper Vite environment handling
  */
 export const secureLog = (message: string, data?: any) => {
-  // In development, log everything. In production, be more selective
-  if (process.env.NODE_ENV === 'development') {
+  // Use Vite's import.meta.env instead of process.env
+  const isDevelopment = import.meta.env.DEV;
+  const isProduction = import.meta.env.PROD;
+  
+  // In development, log everything with detailed information
+  if (isDevelopment) {
     console.log(`[AUTH] ${message}`, data);
-  } else {
-    // Only log important events in production
-    if (message.includes('error') || message.includes('failed')) {
-      console.error(`[AUTH] ${message}`, data);
+  } else if (isProduction) {
+    // In production, be selective about what gets logged
+    // Only log errors, warnings, and critical security events
+    if (message.includes('error') || 
+        message.includes('failed') || 
+        message.includes('Security Event') ||
+        message.includes('critical') ||
+        message.includes('warning')) {
+      // Use appropriate log level based on message content
+      if (message.includes('error') || message.includes('failed')) {
+        console.error(`[AUTH] ${message}`, data);
+      } else if (message.includes('warning')) {
+        console.warn(`[AUTH] ${message}`, data);
+      } else {
+        console.log(`[AUTH] ${message}`, data);
+      }
     }
   }
 };
