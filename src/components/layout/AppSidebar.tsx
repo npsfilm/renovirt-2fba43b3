@@ -74,7 +74,7 @@ const AppSidebar = () => {
                   }`}
                 >
                   <Upload className="w-4 h-4 text-foreground" />
-                  <span>Neue Bestellung</span>
+                  <span className="text-foreground">Neue Bestellung</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
