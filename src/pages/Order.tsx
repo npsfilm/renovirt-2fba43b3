@@ -16,6 +16,8 @@ import SummaryStep from '@/components/order/SummaryStep';
 import ConfirmationStep from '@/components/order/ConfirmationStep';
 import { useOrderStore } from '@/stores/orderStore';
 import { useOrderMetaStore } from '@/stores/orderMetaStore';
+import { useOrderExitConfirmation } from '@/hooks/useOrderExitConfirmation';
+import { OrderExitConfirmationDialog } from '@/components/order/OrderExitConfirmationDialog';
 
 interface ProgressStep {
   number: number;
@@ -30,6 +32,13 @@ const Order = () => {
   const canProceedToNextStep = useOrderMetaStore((state) => state.canProceedToNextStep);
   const getStepIndex = useOrderMetaStore((state) => state.getStepIndex);
   const getProgressPercentage = useOrderMetaStore((state) => state.getProgressPercentage);
+
+  // Exit confirmation
+  const {
+    showConfirmDialog,
+    handleContinueOrder,
+    handleExitOrder,
+  } = useOrderExitConfirmation();
 
   const stepOrder = ['photo-type', 'upload', 'package', 'extras', 'summary'];
   
@@ -139,32 +148,41 @@ const Order = () => {
 
   // Desktop Layout - Modern Airbnb-style with full viewport height and sidebar
   return (
-    <SidebarProvider>
-      <div className="h-screen flex w-full bg-gradient-to-br from-background via-background to-muted/20">
-        <AppSidebar />
-        <SidebarInset>
-          <div className="h-screen flex flex-col">
-            {/* Desktop Progress Header - Compact and Clean */}
-            {currentStep !== 'confirmation' && (
-              <div className="flex-shrink-0 border-b bg-card/50 backdrop-blur-sm shadow-sm">
-                <div className="max-w-4xl mx-auto px-6 py-3">
-                  <OrderProgress steps={steps} />
+    <>
+      <SidebarProvider>
+        <div className="h-screen flex w-full bg-gradient-to-br from-background via-background to-muted/20">
+          <AppSidebar />
+          <SidebarInset>
+            <div className="h-screen flex flex-col">
+              {/* Desktop Progress Header - Compact and Clean */}
+              {currentStep !== 'confirmation' && (
+                <div className="flex-shrink-0 border-b bg-card/50 backdrop-blur-sm shadow-sm">
+                  <div className="max-w-4xl mx-auto px-6 py-3">
+                    <OrderProgress steps={steps} />
+                  </div>
                 </div>
-              </div>
-            )}
-            
-            {/* Main Content Area - Scrollable */}
-            <div className="flex-1 overflow-auto">
-              <div className="max-w-4xl mx-auto px-6 py-4">
-                <div className="min-h-full flex flex-col justify-center">
-                  {renderCurrentStep()}
+              )}
+              
+              {/* Main Content Area - Scrollable */}
+              <div className="flex-1 overflow-auto">
+                <div className="max-w-4xl mx-auto px-6 py-4">
+                  <div className="min-h-full flex flex-col justify-center">
+                    {renderCurrentStep()}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </SidebarInset>
-      </div>
-    </SidebarProvider>
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
+
+      {/* Exit Confirmation Dialog */}
+      <OrderExitConfirmationDialog
+        open={showConfirmDialog}
+        onContinue={handleContinueOrder}
+        onExit={handleExitOrder}
+      />
+    </>
   );
 };
 
