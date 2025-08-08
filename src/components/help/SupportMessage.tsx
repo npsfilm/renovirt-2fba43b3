@@ -47,39 +47,57 @@ const SupportMessage = ({ onSendChatHistory, onOpenContactForm }: SupportMessage
 
   return (
     <>
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4 min-w-0 w-full max-w-full">
-        <div className="flex items-center gap-2 mb-3">
-          <span className="font-medium text-gray-900">Direkter Support</span>
-        </div>
-        
-        <p className="text-gray-800 text-sm mb-4">
-          War die Antwort nicht hilfreich? Senden Sie Ihren Chatverlauf an unser Support-Team oder nehmen Sie direkt Kontakt auf.
-        </p>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 min-w-0 w-full">
-          <Button
-            onClick={onOpenContactForm}
-            className="w-full justify-center whitespace-normal sm:whitespace-nowrap leading-tight"
-            size="sm"
-          >
-            <LifeBuoy className="w-4 h-4 mr-2" />
-            Support kontaktieren
-          </Button>
+      <div className="w-full mb-4">
+        <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
+          {/* Header with Icon */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <LifeBuoy className="w-4 h-4 text-primary" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-card-foreground text-sm">
+                Direkter Support
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                Professionelle Hilfe anfordern
+              </p>
+            </div>
+          </div>
           
-          <Button
-            onClick={handleSendChatHistory}
-            variant="outline"
-            className="w-full justify-center whitespace-normal sm:whitespace-nowrap leading-tight"
-            size="sm"
-          >
-            <Mail className="w-4 h-4 mr-2" />
-            Chatverlauf per E-Mail senden
-          </Button>
+          {/* Description */}
+          <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
+            War die Antwort nicht hilfreich? Senden Sie Ihren Chatverlauf an unser Support-Team oder nehmen Sie direkt Kontakt auf.
+          </p>
+          
+          {/* Action Buttons */}
+          <div className="space-y-3">
+            <Button
+              onClick={onOpenContactForm}
+              className="w-full h-10 font-medium"
+              size="default"
+            >
+              <LifeBuoy className="w-4 h-4 mr-2" />
+              Support kontaktieren
+            </Button>
+            
+            <Button
+              onClick={handleSendChatHistory}
+              variant="outline"
+              className="w-full h-10 font-medium"
+              size="default"
+            >
+              <Mail className="w-4 h-4 mr-2" />
+              Chatverlauf per E-Mail senden
+            </Button>
+          </div>
+          
+          {/* Contact Info */}
+          <div className="mt-4 pt-4 border-t border-border">
+            <p className="text-xs text-muted-foreground text-center">
+              Support-E-Mail: <span className="font-medium">support@renovirt.de</span>
+            </p>
+          </div>
         </div>
-        
-        <p className="text-xs text-gray-600 mt-2">
-          Support-E-Mail: support@renovirt.de
-        </p>
       </div>
 
       {/* Email Dialog */}
