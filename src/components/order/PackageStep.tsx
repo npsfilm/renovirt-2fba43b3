@@ -19,7 +19,7 @@ const PackageStep = ({ onNext, onPrev }: PackageStepProps) => {
     if (!selectedPackage) {
       setPackage('Premium');
     }
-  }, [selectedPackage, setPackage]);
+  }, [selectedPackage]); // Removed setPackage from dependencies
   const packages = [{
     id: 'Basic' as const,
     name: 'Basic',
