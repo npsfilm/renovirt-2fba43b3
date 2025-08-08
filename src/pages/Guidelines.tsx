@@ -52,25 +52,21 @@ const Guidelines = () => {
     );
   };
   const navigationItems = [{
-    id: 'ausruestung',
+    id: 'equipment',
     label: 'Ausrüstung',
     icon: Camera
   }, {
-    id: 'grundeinstellungen',
+    id: 'settings',
     label: 'Grundeinstellungen',
     icon: Settings
   }, {
-    id: 'licht',
-    label: 'Licht',
+    id: 'lighting',
+    label: 'Licht & Belichtung',
     icon: Lightbulb
   }, {
-    id: 'komposition',
+    id: 'composition',
     label: 'Komposition',
     icon: Layout
-  }, {
-    id: 'shotlisten',
-    label: 'Shotlisten',
-    icon: ClipboardList
   }, {
     id: 'staging',
     label: 'Staging',
@@ -84,7 +80,7 @@ const Guidelines = () => {
     label: 'FAQ',
     icon: HelpCircle
   }, {
-    id: 'checkliste',
+    id: 'checklist',
     label: 'Upload-Checkliste',
     icon: CheckSquare
   }];
@@ -112,7 +108,7 @@ const Guidelines = () => {
                   Ihr kompletter Leitfaden für beeindruckende Immobilienfotos mit Smartphone & Kamera
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button size="lg" onClick={() => scrollToSection('ausruestung')} className="hover-scale">
+                  <Button size="lg" onClick={() => scrollToSection('equipment')} className="hover-scale">
                     <PlayCircle className="w-5 h-5 mr-2" />
                     Guide starten
                   </Button>
@@ -216,7 +212,7 @@ const Guidelines = () => {
                 </div>
                 
                 {/* Ausrüstung */}
-                <section id="ausruestung" className="scroll-mt-24">
+                <section id="equipment" className="scroll-mt-24">
                   <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center gap-4">
                       <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-primary/20 rounded-2xl flex items-center justify-center">
