@@ -48,7 +48,7 @@ const AppSidebar = () => {
 
   return (
     <Sidebar className="border-r border-sidebar-border bg-sidebar">
-      <SidebarHeader className="border-b border-sidebar-border p-4">
+      <SidebarHeader className="p-4">
         <div className="flex items-center gap-2">
           <img 
             src="/lovable-uploads/d6ac9ba9-7ad2-408b-a2b0-5f31c269dd53.png" 
