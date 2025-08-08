@@ -1,6 +1,6 @@
 import React from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
+import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/layout/AppSidebar';
 import MobileBottomNav from '@/components/layout/MobileBottomNav';
 
@@ -30,6 +30,9 @@ const MobileLayout = ({ children, className = '' }: MobileLayoutProps) => {
       <div className="min-h-screen flex w-full bg-gradient-to-br from-background via-background to-muted/20">
         <AppSidebar />
         <SidebarInset>
+          <header className="h-12 flex items-center border-b">
+            <SidebarTrigger className="ml-2" aria-label="Seitenleiste umschalten" />
+          </header>
           <main className={`flex-1 ${className}`}>
             {children}
           </main>

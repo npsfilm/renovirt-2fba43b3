@@ -48,7 +48,7 @@ const AppSidebar = () => {
   };
 
   return (
-    <Sidebar className="border-r border-sidebar-border bg-sidebar">
+    <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-sidebar">
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-2">
           <button
