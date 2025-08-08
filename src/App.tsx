@@ -45,7 +45,139 @@ const queryClient = new QueryClient();
 
 function AppContent() {
   usePageTracking();
-  return null;
+  
+  return (
+    <Routes>
+      {/* Public Routes */}
+      <Route path="/auth" element={<Auth />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/agb" element={<AGB />} />
+      <Route path="/privacy" element={<Privacy />} />
+      <Route path="/impressum" element={<Impressum />} />
+      
+      {/* Protected Routes */}
+      <Route path="/" element={
+        <ProtectedRoute>
+          <Navigate to="/dashboard" />
+        </ProtectedRoute>
+      } />
+      <Route path="/dashboard" element={
+        <ProtectedRoute>
+          <Dashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/orders" element={
+        <ProtectedRoute>
+          <Orders />
+        </ProtectedRoute>
+      } />
+      <Route path="/order" element={
+        <ProtectedRoute>
+          <Order />
+        </ProtectedRoute>
+      } />
+      <Route path="/profile" element={
+        <ProtectedRoute>
+          <Profile />
+        </ProtectedRoute>
+      } />
+      <Route path="/billing" element={
+        <ProtectedRoute>
+          <Billing />
+        </ProtectedRoute>
+      } />
+      <Route path="/settings" element={
+        <ProtectedRoute>
+          <Settings />
+        </ProtectedRoute>
+      } />
+      <Route path="/help" element={
+        <ProtectedRoute>
+          <Help />
+        </ProtectedRoute>
+      } />
+      <Route path="/feedback" element={
+        <ProtectedRoute>
+          <Feedback />
+        </ProtectedRoute>
+      } />
+      <Route path="/email-verification" element={
+        <ProtectedRoute>
+          <EmailVerification />
+        </ProtectedRoute>
+      } />
+      <Route path="/onboarding" element={
+        <ProtectedRoute>
+          <Onboarding />
+        </ProtectedRoute>
+      } />
+      <Route path="/examples" element={
+        <ProtectedRoute>
+          <Examples />
+        </ProtectedRoute>
+      } />
+      <Route path="/order-flow" element={
+        <ProtectedRoute>
+          <OrderFlow />
+        </ProtectedRoute>
+      } />
+      <Route path="/guidelines" element={
+        <ProtectedRoute>
+          <Guidelines />
+        </ProtectedRoute>
+      } />
+
+      {/* Admin Authentication Route */}
+      <Route path="/admin-auth" element={<AdminAuth />} />
+
+      {/* Admin Routes */}
+      <Route path="/admin" element={<Admin />} />
+      <Route path="/admin/dashboard" element={
+        <AdminRoute>
+          <AdminDashboard />
+        </AdminRoute>
+      } />
+      <Route path="/admin/orders" element={
+        <AdminRoute>
+          <AdminOrders />
+        </AdminRoute>
+      } />
+      <Route path="/admin/customers" element={
+        <AdminRoute>
+          <AdminCustomers />
+        </AdminRoute>
+      } />
+      <Route path="/admin/analytics" element={
+        <AdminRoute>
+          <AdminAnalytics />
+        </AdminRoute>
+      } />
+      <Route path="/admin/settings" element={
+        <AdminRoute>
+          <AdminSettings />
+        </AdminRoute>
+      } />
+      <Route path="/admin/help-analytics" element={
+        <AdminRoute>
+          <AdminHelpAnalytics />
+        </AdminRoute>
+      } />
+      <Route path="/admin/feedback" element={
+        <AdminRoute>
+          <AdminFeedback />
+        </AdminRoute>
+      } />
+      
+      {/* Payment Success Route */}
+      <Route path="/payment/success" element={
+        <ProtectedRoute>
+          <ErrorBoundary>
+            <PaymentSuccess />
+          </ErrorBoundary>
+        </ProtectedRoute>
+      } />
+    </Routes>
+  );
 }
 
 function App() {
@@ -57,136 +189,6 @@ function App() {
           <BrowserRouter>
             <NavigationGuardProvider>
               <AppContent />
-              <Routes>
-              {/* Public Routes */}
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/agb" element={<AGB />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/impressum" element={<Impressum />} />
-              
-              {/* Protected Routes */}
-              <Route path="/" element={
-                <ProtectedRoute>
-                  <Navigate to="/dashboard" />
-                </ProtectedRoute>
-              } />
-              <Route path="/dashboard" element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } />
-              <Route path="/orders" element={
-                <ProtectedRoute>
-                  <Orders />
-                </ProtectedRoute>
-              } />
-              <Route path="/order" element={
-                <ProtectedRoute>
-                  <Order />
-                </ProtectedRoute>
-              } />
-              <Route path="/profile" element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              } />
-              <Route path="/billing" element={
-                <ProtectedRoute>
-                  <Billing />
-                </ProtectedRoute>
-              } />
-              <Route path="/settings" element={
-                <ProtectedRoute>
-                  <Settings />
-                </ProtectedRoute>
-              } />
-              <Route path="/help" element={
-                <ProtectedRoute>
-                  <Help />
-                </ProtectedRoute>
-              } />
-              <Route path="/feedback" element={
-                <ProtectedRoute>
-                  <Feedback />
-                </ProtectedRoute>
-              } />
-              <Route path="/email-verification" element={
-                <ProtectedRoute>
-                  <EmailVerification />
-                </ProtectedRoute>
-              } />
-              <Route path="/onboarding" element={
-                <ProtectedRoute>
-                  <Onboarding />
-                </ProtectedRoute>
-              } />
-              <Route path="/examples" element={
-                <ProtectedRoute>
-                  <Examples />
-                </ProtectedRoute>
-              } />
-              <Route path="/order-flow" element={
-                <ProtectedRoute>
-                  <OrderFlow />
-                </ProtectedRoute>
-              } />
-              <Route path="/guidelines" element={
-                <ProtectedRoute>
-                  <Guidelines />
-                </ProtectedRoute>
-              } />
-
-              {/* Admin Authentication Route */}
-              <Route path="/admin-auth" element={<AdminAuth />} />
-
-              {/* Admin Routes */}
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/admin/dashboard" element={
-                <AdminRoute>
-                  <AdminDashboard />
-                </AdminRoute>
-              } />
-              <Route path="/admin/orders" element={
-                <AdminRoute>
-                  <AdminOrders />
-                </AdminRoute>
-              } />
-              <Route path="/admin/customers" element={
-                <AdminRoute>
-                  <AdminCustomers />
-                </AdminRoute>
-              } />
-              <Route path="/admin/analytics" element={
-                <AdminRoute>
-                  <AdminAnalytics />
-                </AdminRoute>
-              } />
-              <Route path="/admin/settings" element={
-                <AdminRoute>
-                  <AdminSettings />
-                </AdminRoute>
-              } />
-              <Route path="/admin/help-analytics" element={
-                <AdminRoute>
-                  <AdminHelpAnalytics />
-                </AdminRoute>
-              } />
-              <Route path="/admin/feedback" element={
-                <AdminRoute>
-                  <AdminFeedback />
-                </AdminRoute>
-              } />
-              
-              {/* Payment Success Route */}
-              <Route path="/payment/success" element={
-                <ProtectedRoute>
-                  <ErrorBoundary>
-                    <PaymentSuccess />
-                  </ErrorBoundary>
-                </ProtectedRoute>
-              } />
-              </Routes>
             </NavigationGuardProvider>
           </BrowserRouter>
           <Toaster />
