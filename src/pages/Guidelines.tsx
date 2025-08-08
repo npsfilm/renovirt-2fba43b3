@@ -116,7 +116,7 @@ const Guidelines = () => {
                     <PlayCircle className="w-5 h-5 mr-2" />
                     Guide starten
                   </Button>
-                  <Button variant="outline" size="lg" onClick={() => navigate('/order')} className="hover-scale">
+                  <Button variant="outline" size="lg" onClick={() => navigate('/order-flow')} className="hover-scale">
                     <Upload className="w-5 h-5 mr-2" />
                     Fotos hochladen
                   </Button>
@@ -670,7 +670,7 @@ const Guidelines = () => {
                         professionell bearbeiten. Für Ergebnisse, die verkaufen.
                       </p>
                       <div className="flex flex-col sm:flex-row gap-6 justify-center pt-4">
-                        <Button size="lg" onClick={() => navigate('/order')} className="text-lg px-8 py-4 hover-scale shadow-lg hover:shadow-2xl">
+                        <Button size="lg" onClick={() => navigate('/order-flow')} className="text-lg px-8 py-4 hover-scale shadow-lg hover:shadow-2xl">
                           <Upload className="w-6 h-6 mr-3" />
                           Jetzt Fotos hochladen
                         </Button>
