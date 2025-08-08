@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Zap, Crown, Clock, Palette, Eye, Wand2, Sparkles, Cloud } from 'lucide-react';
+import { Zap, Crown, Clock, Palette, Eye, Wand2, Sparkles, Cloud, Camera, RotateCw, Eraser, Edit } from 'lucide-react';
 import { useOrderStore } from '@/stores/orderStore';
 
 interface PackageStepProps {
@@ -31,10 +31,10 @@ const PackageStep = ({ onNext, onPrev }: PackageStepProps) => {
       icon: Palette,
       text: 'Farb- & Belichtungskorrektur'
     }, {
-      icon: Eye,
+      icon: RotateCw,
       text: 'Perspektivkorrekturen'
     }, {
-      icon: Wand2,
+      icon: Camera,
       text: 'Objektivkorrektur'
     }, {
       icon: Clock,
@@ -55,16 +55,16 @@ const PackageStep = ({ onNext, onPrev }: PackageStepProps) => {
       icon: Sparkles,
       text: 'Alle Basic-Features enthalten'
     }, {
-      icon: Wand2,
+      icon: Eraser,
       text: 'Entfernung störender Objekte'
     }, {
-      icon: Crown,
+      icon: Edit,
       text: 'Retusche sensibler Details'
     }, {
       icon: Cloud,
       text: 'Himmelaustausch'
     }, {
-      icon: Clock,
+      icon: Zap,
       text: 'Priorisierte Bearbeitung'
     }],
     popular: true,
