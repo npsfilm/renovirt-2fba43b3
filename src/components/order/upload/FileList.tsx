@@ -28,10 +28,12 @@ const FileList = ({ files, onRemoveFile, photoType, bracketingDivisor, effective
   const [infos, setInfos] = useState<ImageInfo[]>([]);
 
 const rawExtensions = new Set(['cr2','nef','arw','raf','dng','rw2','orf','srw','pef','3fr','kdc','erf','heic','heif']);
-const isRawFile = (file: File) => {
-  const ext = file.name.split('.').pop()?.toLowerCase() || '';
-  if (rawExtensions.has(ext)) return true;
-  if (!file.type || !file.type.startsWith('image/')) return true;
+const isRawFile = (file?: File | null) => {
+  const name = (file as any)?.name as string | undefined;
+  const ext = name && name.includes('.') ? name.split('.').pop()!.toLowerCase() : '';
+  const type = (file as any)?.type as string | undefined;
+  if (ext && rawExtensions.has(ext)) return true;
+  if (!type || !type.startsWith?.('image/')) return true;
   return false;
 };
 
@@ -40,7 +42,7 @@ const [previews, setPreviews] = useState<(string | null)[]>([]);
 
 useEffect(() => {
   const urls = files.map((f) =>
-    !isRawFile(f) && f.type?.startsWith('image/') ? URL.createObjectURL(f) : null
+    !isRawFile(f) && (f as any)?.type?.startsWith?.('image/') ? URL.createObjectURL(f) : null
   );
   setPreviews(urls);
   return () => {
@@ -67,21 +69,24 @@ useEffect(() => {
   useEffect(() => {
     let mounted = true;
     (async () => {
-      const results = await Promise.all(files.map(async (file) => {
-        if (isRawFile(file)) {
-          return { longest: null, level: 'unknown' as const, note: 'RAW‑Datei: Beste Datenqualität, Abmessungen können nicht ausgelesen werden.', isRaw: true };
-        }
-        const dims = await getImageDimensions(file);
-        if (!dims) {
-          return { longest: null, level: 'unknown' as const, note: 'Abmessungen konnten nicht ermittelt werden.', isRaw: false };
-        }
-        const longest = Math.max(dims.width, dims.height);
-        let level: ImageInfo['level'] = 'green';
-        let note = `Optimal: längste Seite ${longest}px (≥ 3000px).`;
-        if (longest < 1920) { level = 'red'; note = `Auflösung niedrig: längste Seite ${longest}px (empfohlen ≥ 1920px).`; }
-        else if (longest < 3000) { level = 'orange'; note = `Ausreichend: längste Seite ${longest}px (≥ 1920px).`; }
-        return { longest, level, note, isRaw: false };
-      }));
+        const results = await Promise.all(files.map(async (file) => {
+          if (!file) {
+            return { longest: null, level: 'unknown' as const, note: 'Datei konnte nicht gelesen werden.', isRaw: false };
+          }
+          if (isRawFile(file)) {
+            return { longest: null, level: 'unknown' as const, note: 'RAW‑Datei: Beste Datenqualität, Abmessungen können nicht ausgelesen werden.', isRaw: true };
+          }
+          const dims = await getImageDimensions(file);
+          if (!dims) {
+            return { longest: null, level: 'unknown' as const, note: 'Abmessungen konnten nicht ermittelt werden.', isRaw: false };
+          }
+          const longest = Math.max(dims.width, dims.height);
+          let level: ImageInfo['level'] = 'green';
+          let note = `Optimal: längste Seite ${longest}px (≥ 3000px).`;
+          if (longest < 1920) { level = 'red'; note = `Auflösung niedrig: längste Seite ${longest}px (empfohlen ≥ 1920px).`; }
+          else if (longest < 3000) { level = 'orange'; note = `Ausreichend: längste Seite ${longest}px (≥ 1920px).`; }
+          return { longest, level, note, isRaw: false };
+        }));
       if (mounted) setInfos(results);
     })();
     return () => { mounted = false; };
