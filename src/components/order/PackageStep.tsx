@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Zap, Crown, Clock, Palette, Eye, Wand2, Sparkles } from 'lucide-react';
+import { Zap, Crown, Clock, Palette, Eye, Wand2, Sparkles, Cloud } from 'lucide-react';
 import { useOrderStore } from '@/stores/orderStore';
 
 interface PackageStepProps {
@@ -61,7 +61,7 @@ const PackageStep = ({ onNext, onPrev }: PackageStepProps) => {
       icon: Crown,
       text: 'Retusche sensibler Details'
     }, {
-      icon: Zap,
+      icon: Cloud,
       text: 'Himmelaustausch'
     }, {
       icon: Clock,
