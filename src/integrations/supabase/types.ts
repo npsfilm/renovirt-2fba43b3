@@ -113,6 +113,150 @@ export type Database = {
         }
         Relationships: []
       }
+      feature_categories: {
+        Row: {
+          color: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      feature_comments: {
+        Row: {
+          content: string
+          created_at: string
+          feature_request_id: string
+          id: string
+          is_admin_response: boolean
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          feature_request_id: string
+          id?: string
+          is_admin_response?: boolean
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          feature_request_id?: string
+          id?: string
+          is_admin_response?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_comments_feature_request_id_fkey"
+            columns: ["feature_request_id"]
+            isOneToOne: false
+            referencedRelation: "feature_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feature_requests: {
+        Row: {
+          admin_response: string | null
+          category_id: string
+          comment_count: number
+          created_at: string
+          created_by: string
+          description: string
+          estimated_completion: string | null
+          id: string
+          priority: string
+          status: string
+          title: string
+          updated_at: string
+          upvote_count: number
+        }
+        Insert: {
+          admin_response?: string | null
+          category_id: string
+          comment_count?: number
+          created_at?: string
+          created_by: string
+          description: string
+          estimated_completion?: string | null
+          id?: string
+          priority?: string
+          status?: string
+          title: string
+          updated_at?: string
+          upvote_count?: number
+        }
+        Update: {
+          admin_response?: string | null
+          category_id?: string
+          comment_count?: number
+          created_at?: string
+          created_by?: string
+          description?: string
+          estimated_completion?: string | null
+          id?: string
+          priority?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          upvote_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_requests_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "feature_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feature_upvotes: {
+        Row: {
+          created_at: string
+          feature_request_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feature_request_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feature_request_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_upvotes_feature_request_id_fkey"
+            columns: ["feature_request_id"]
+            isOneToOne: false
+            referencedRelation: "feature_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       help_documents: {
         Row: {
           content: string
