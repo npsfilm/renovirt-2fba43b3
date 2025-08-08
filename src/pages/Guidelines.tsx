@@ -13,7 +13,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 const Guidelines = () => {
   const navigate = useNavigate();
   const [showBackToTop, setShowBackToTop] = useState(false);
-  const [activeSection, setActiveSection] = useState('ausruestung');
+  const [activeSection, setActiveSection] = useState('equipment');
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
 
   // Back to top functionality
@@ -365,7 +365,7 @@ const Guidelines = () => {
                 </section>
 
                 {/* Grundeinstellungen */}
-                <section id="grundeinstellungen" className="scroll-mt-24">
+                <section id="settings" className="scroll-mt-24">
                   <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center gap-4">
                       <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-primary/20 rounded-2xl flex items-center justify-center">
@@ -481,7 +481,7 @@ const Guidelines = () => {
                 {/* For brevity, I'll show the structure for a few more sections */}
 
                 {/* Licht & Belichtung */}
-                <section id="licht" className="scroll-mt-24">
+                <section id="lighting" className="scroll-mt-24">
                   <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center gap-4">
                       <div className="w-16 h-16 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-2xl flex items-center justify-center">
@@ -537,6 +537,208 @@ const Guidelines = () => {
                               </div>
                             </div>
                           </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </section>
+
+                {/* Komposition */}
+                <section id="composition" className="scroll-mt-24">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 bg-gradient-to-br from-accent/10 to-accent/20 rounded-2xl flex items-center justify-center">
+                        <Layout className="w-8 h-8 text-accent" />
+                      </div>
+                      <div>
+                        <h2 className="text-3xl font-bold text-foreground">Komposition & Bildaufbau</h2>
+                        <p className="text-muted-foreground">Perfekte Perspektiven und ansprechende Bildaufteilung</p>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="hidden md:flex">
+                      <Layout className="w-3 h-3 mr-1" />
+                      Kreativ
+                    </Badge>
+                  </div>
+                  
+                  <Card className="border-0 shadow-sm bg-gradient-to-r from-background to-muted/30">
+                    <CardContent className="p-8">
+                      <div className="space-y-8">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                          <div className="space-y-6">
+                            <div className="flex items-center gap-3 mb-4">
+                              <div className="w-8 h-8 bg-accent/20 rounded-lg flex items-center justify-center">
+                                <Grid3X3 className="w-4 h-4 text-accent" />
+                              </div>
+                              <h4 className="font-semibold text-xl">Bildaufteilung</h4>
+                            </div>
+                            <div className="space-y-4">
+                              <div className="group p-5 bg-gradient-to-r from-accent/5 to-accent/10 rounded-xl border border-accent/20 hover:shadow-md transition-all duration-300">
+                                <div className="flex items-start gap-4">
+                                  <div className="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <Grid3X3 className="w-6 h-6 text-accent" />
+                                  </div>
+                                  <div>
+                                    <h5 className="font-semibold text-lg mb-1">Drittel-Regel nutzen</h5>
+                                    <p className="text-sm text-muted-foreground">Wichtige Elemente auf Schnittpunkten positionieren</p>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="group p-5 bg-gradient-to-r from-accent/5 to-accent/10 rounded-xl border border-accent/20 hover:shadow-md transition-all duration-300">
+                                <div className="flex items-start gap-4">
+                                  <div className="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <Eye className="w-6 h-6 text-accent" />
+                                  </div>
+                                  <div>
+                                    <h5 className="font-semibold text-lg mb-1">Symmetrie & Balance</h5>
+                                    <p className="text-sm text-muted-foreground">Ausgewogene Bildkomposition schaffen</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="space-y-6">
+                            <div className="flex items-center gap-3 mb-4">
+                              <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
+                                <Camera className="w-4 h-4 text-primary" />
+                              </div>
+                              <h4 className="font-semibold text-xl">Perspektiven</h4>
+                            </div>
+                            <div className="space-y-4">
+                              <div className="group p-5 bg-gradient-to-r from-primary/5 to-primary/10 rounded-xl border border-primary/20 hover:shadow-md transition-all duration-300">
+                                <div className="flex items-start gap-4">
+                                  <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <span className="text-sm font-bold text-primary">↕</span>
+                                  </div>
+                                  <div>
+                                    <h5 className="font-semibold text-lg mb-1">Kamera-Höhe: 1,40m</h5>
+                                    <p className="text-sm text-muted-foreground">Standard-Blickwinkel für natürliche Raumwirkung</p>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="group p-5 bg-gradient-to-r from-primary/5 to-primary/10 rounded-xl border border-primary/20 hover:shadow-md transition-all duration-300">
+                                <div className="flex items-start gap-4">
+                                  <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <Layout className="w-6 h-6 text-primary" />
+                                  </div>
+                                  <div>
+                                    <h5 className="font-semibold text-lg mb-1">Ecken vermeiden</h5>
+                                    <p className="text-sm text-muted-foreground">Zentrale Positionen für optimale Raumerfassung</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </section>
+
+                {/* Staging */}
+                <section id="staging" className="scroll-mt-24">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 bg-gradient-to-br from-info/10 to-info/20 rounded-2xl flex items-center justify-center">
+                        <Palette className="w-8 h-8 text-info" />
+                      </div>
+                      <div>
+                        <h2 className="text-3xl font-bold text-foreground">Staging & Raumvorbereitung</h2>
+                        <p className="text-muted-foreground">Räume optimal für die Fotografie vorbereiten</p>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="hidden md:flex">
+                      <Palette className="w-3 h-3 mr-1" />
+                      Vorbereitung
+                    </Badge>
+                  </div>
+                  
+                  <Card className="border-0 shadow-sm bg-gradient-to-r from-background to-muted/30">
+                    <CardContent className="p-8">
+                      <div className="space-y-8">
+                        <div className="p-8 bg-gradient-to-br from-info/10 via-success/5 to-success/10 rounded-2xl border border-info/20">
+                          <div className="flex items-center gap-3 mb-6">
+                            <div className="w-10 h-10 bg-info/20 rounded-full flex items-center justify-center">
+                              <CheckSquare className="w-5 h-5 text-info" />
+                            </div>
+                            <h4 className="font-semibold text-xl">Staging-Checkliste</h4>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="flex items-center gap-3 p-3 bg-background/50 rounded-lg hover:bg-background/80 transition-colors">
+                              <CheckSquare className="w-5 h-5 text-success flex-shrink-0" />
+                              <span className="font-medium">Alle Oberflächen reinigen</span>
+                            </div>
+                            <div className="flex items-center gap-3 p-3 bg-background/50 rounded-lg hover:bg-background/80 transition-colors">
+                              <CheckSquare className="w-5 h-5 text-success flex-shrink-0" />
+                              <span className="font-medium">Persönliche Gegenstände entfernen</span>
+                            </div>
+                            <div className="flex items-center gap-3 p-3 bg-background/50 rounded-lg hover:bg-background/80 transition-colors">
+                              <CheckSquare className="w-5 h-5 text-success flex-shrink-0" />
+                              <span className="font-medium">Möbel optimal positionieren</span>
+                            </div>
+                            <div className="flex items-center gap-3 p-3 bg-background/50 rounded-lg hover:bg-background/80 transition-colors">
+                              <CheckSquare className="w-5 h-5 text-success flex-shrink-0" />
+                              <span className="font-medium">Vorhänge und Jalousien öffnen</span>
+                            </div>
+                            <div className="flex items-center gap-3 p-3 bg-background/50 rounded-lg hover:bg-background/80 transition-colors">
+                              <CheckSquare className="w-5 h-5 text-success flex-shrink-0" />
+                              <span className="font-medium">Frische Blumen/Pflanzen</span>
+                            </div>
+                            <div className="flex items-center gap-3 p-3 bg-background/50 rounded-lg hover:bg-background/80 transition-colors">
+                              <CheckSquare className="w-5 h-5 text-success flex-shrink-0" />
+                              <span className="font-medium">Gleichmäßige Beleuchtung</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </section>
+
+                {/* Workflow */}
+                <section id="workflow" className="scroll-mt-24">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 bg-gradient-to-br from-success/10 to-success/20 rounded-2xl flex items-center justify-center">
+                        <Workflow className="w-8 h-8 text-success" />
+                      </div>
+                      <div>
+                        <h2 className="text-3xl font-bold text-foreground">Workflow & Upload-Prozess</h2>
+                        <p className="text-muted-foreground">Effizienter Ablauf von der Aufnahme bis zur Bearbeitung</p>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="hidden md:flex">
+                      <Workflow className="w-3 h-3 mr-1" />
+                      Prozess
+                    </Badge>
+                  </div>
+                  
+                  <Card className="border-0 shadow-sm bg-gradient-to-r from-background to-muted/30">
+                    <CardContent className="p-8">
+                      <div className="space-y-8">
+                        <div className="grid gap-6">
+                          {[
+                            { step: 1, title: "Raumvorbereitung", desc: "Staging und Beleuchtung optimieren", icon: Palette },
+                            { step: 2, title: "Shooting-Reihenfolge", desc: "Systematisch durch alle Räume", icon: Camera },
+                            { step: 3, title: "Qualitätskontrolle", desc: "Bilder direkt auf dem Gerät prüfen", icon: Eye },
+                            { step: 4, title: "Upload & Übertragung", desc: "Sichere Übertragung zu Renovirt", icon: Upload }
+                          ].map((item, index) => (
+                            <div key={index} className="group p-6 bg-gradient-to-r from-success/5 to-success/10 rounded-xl border border-success/20 hover:shadow-md transition-all duration-300">
+                              <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 bg-success/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                  <span className="text-lg font-bold text-success">{item.step}</span>
+                                </div>
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-3 mb-2">
+                                    <item.icon className="w-5 h-5 text-success" />
+                                    <h5 className="font-semibold text-lg">{item.title}</h5>
+                                  </div>
+                                  <p className="text-sm text-muted-foreground">{item.desc}</p>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </CardContent>
@@ -616,7 +818,7 @@ const Guidelines = () => {
                 </section>
 
                 {/* Upload-Checkliste */}
-                <section id="checkliste" className="scroll-mt-24">
+                <section id="checklist" className="scroll-mt-24">
                   <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center gap-4">
                       <div className="w-16 h-16 bg-gradient-to-br from-success/10 to-success/20 rounded-2xl flex items-center justify-center">
