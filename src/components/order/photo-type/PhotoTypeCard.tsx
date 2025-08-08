@@ -38,7 +38,7 @@ const PhotoTypeCard = ({
                 ${isSelected ? 'bg-primary/15 shadow-lg shadow-primary/20' : 'bg-gray-50'}
               `}>
                 <IconComponent className={`
-                  w-8 h-8 transition-all duration-300
+                  w-8 h-8 transition-all duration-300 transform origin-center scale-[1.2]
                   ${isSelected ? 'text-primary' : 'text-gray-600'}
                 `} />
               </div>
@@ -84,7 +84,7 @@ const PhotoTypeCard = ({
             ${isSelected ? 'bg-primary/10 shadow-md' : 'bg-muted group-hover:bg-muted/80'}
           `}>
             <IconComponent className={`
-              w-4 h-4 md:w-6 md:h-6 transition-all duration-300
+              w-4 h-4 md:w-6 md:h-6 transition-all duration-300 transform origin-center scale-[1.2]
               ${isSelected ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'}
             `} />
           </div>
