@@ -6,6 +6,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { EnhancedSecurityProvider } from '@/components/security/EnhancedSecurityProvider';
 import { PostHogProvider } from '@/contexts/PostHogProvider';
+import { NavigationGuardProvider } from '@/contexts/NavigationGuardContext';
 import { usePageTracking } from '@/hooks/usePageTracking';
 import ErrorBoundary from '@/components/error/ErrorBoundary';
 import Dashboard from '@/pages/Dashboard';
@@ -54,8 +55,9 @@ function App() {
         <EnhancedSecurityProvider>
           <TooltipProvider>
           <BrowserRouter>
-            <AppContent />
-            <Routes>
+            <NavigationGuardProvider>
+              <AppContent />
+              <Routes>
               {/* Public Routes */}
               <Route path="/auth" element={<Auth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
@@ -184,7 +186,8 @@ function App() {
                   </ErrorBoundary>
                 </ProtectedRoute>
               } />
-            </Routes>
+              </Routes>
+            </NavigationGuardProvider>
           </BrowserRouter>
           <Toaster />
           </TooltipProvider>

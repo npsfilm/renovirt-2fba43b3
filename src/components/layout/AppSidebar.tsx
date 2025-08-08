@@ -1,14 +1,15 @@
 
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useNavigationGuard } from '@/contexts/NavigationGuardContext';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Home, Upload, FileText, CreditCard, User, Settings, HelpCircle, LogOut, MessageSquare } from 'lucide-react';
 import CreditsWidget from './CreditsWidget';
 
 const AppSidebar = () => {
-  const navigate = useNavigate();
+  const { navigate } = useNavigationGuard();
   const location = useLocation();
   const { signOut } = useAuth();
 

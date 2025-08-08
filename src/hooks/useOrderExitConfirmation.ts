@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useOrderStore } from '@/stores/orderStore';
 import { useOrderMetaStore } from '@/stores/orderMetaStore';
+import { useNavigationGuard } from '@/contexts/NavigationGuardContext';
 
 interface UseOrderExitConfirmationReturn {
   showConfirmDialog: boolean;
@@ -12,11 +13,14 @@ interface UseOrderExitConfirmationReturn {
 }
 
 export const useOrderExitConfirmation = (): UseOrderExitConfirmationReturn => {
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
-  
-  const navigate = useNavigate();
   const location = useLocation();
+  const { 
+    showConfirmDialog, 
+    setShowConfirmDialog, 
+    confirmNavigation, 
+    cancelNavigation, 
+    setNavigationGuard 
+  } = useNavigationGuard();
   
   // Order state
   const { photoType, files, package: orderPackage, extras, resetOrder } = useOrderStore();
@@ -32,6 +36,28 @@ export const useOrderExitConfirmation = (): UseOrderExitConfirmationReturn => {
     );
   }, [photoType, files.length, orderPackage, extras]);
 
+  // Set up navigation guard when on order page with progress
+  useEffect(() => {
+    if (location.pathname === '/order') {
+      const guard = (to: string) => {
+        // Allow navigation if no progress or staying on order page
+        if (!hasOrderProgress() || to === '/order') {
+          return true;
+        }
+        // Block navigation if there's progress
+        return false;
+      };
+      
+      setNavigationGuard(guard);
+      
+      return () => {
+        setNavigationGuard(null);
+      };
+    } else {
+      setNavigationGuard(null);
+    }
+  }, [location.pathname, hasOrderProgress, setNavigationGuard]);
+
   // Handle browser close/refresh
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -46,39 +72,11 @@ export const useOrderExitConfirmation = (): UseOrderExitConfirmationReturn => {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [hasOrderProgress, location.pathname]);
 
-  // Handle programmatic navigation attempts
-  useEffect(() => {
-    const originalNavigate = navigate;
-    
-    // Override navigate function to intercept navigation
-    const interceptNavigate = (to: string | number, options?: any) => {
-      if (typeof to === 'string' && to !== '/order' && hasOrderProgress() && location.pathname === '/order') {
-        setPendingNavigation(to);
-        setShowConfirmDialog(true);
-        return;
-      }
-      
-      // Allow navigation if no progress or not on order page
-      if (typeof to === 'string') {
-        originalNavigate(to, options);
-      } else {
-        originalNavigate(to);
-      }
-    };
-
-    // Store original navigate for cleanup
-    (window as any).__originalNavigate = originalNavigate;
-    
-    return () => {
-      // Cleanup if needed
-    };
-  }, [navigate, hasOrderProgress, location.pathname]);
-
   // Handle back button
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
       if (hasOrderProgress() && location.pathname === '/order') {
-        event.preventDefault();
+        // Push state back to maintain order route
         window.history.pushState(null, '', '/order');
         setShowConfirmDialog(true);
       }
@@ -86,23 +84,15 @@ export const useOrderExitConfirmation = (): UseOrderExitConfirmationReturn => {
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [hasOrderProgress, location.pathname]);
+  }, [hasOrderProgress, location.pathname, setShowConfirmDialog]);
 
   const handleContinueOrder = () => {
-    setShowConfirmDialog(false);
-    setPendingNavigation(null);
+    cancelNavigation();
   };
 
   const handleExitOrder = () => {
     resetOrder();
-    setShowConfirmDialog(false);
-    
-    if (pendingNavigation) {
-      navigate(pendingNavigation);
-      setPendingNavigation(null);
-    } else {
-      navigate('/dashboard');
-    }
+    confirmNavigation();
   };
 
   return {

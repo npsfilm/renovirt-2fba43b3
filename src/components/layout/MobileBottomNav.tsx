@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Home, Package, Upload, HelpCircle, MoreHorizontal, FileText, User, Settings, LogOut, X, MessageSquare } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/hooks/useAuth';
+import { useNavigationGuard } from '@/contexts/NavigationGuardContext';
 import { cn } from '@/lib/utils';
 
 const MobileBottomNav = () => {
   const isMobile = useIsMobile();
-  const navigate = useNavigate();
+  const { navigate } = useNavigationGuard();
   const location = useLocation();
   const { signOut } = useAuth();
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
