@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { OrderStep } from './orderStore';
+import { useOrderStore, type OrderStep } from './orderStore';
 
 interface OrderMetaState {
   currentStep: OrderStep;
@@ -64,8 +64,7 @@ export const useOrderMetaStore = create<OrderMetaState>((set, get) => ({
   canProceedToNextStep: () => {
     const { currentStep } = get();
     
-    // Use dynamic import to avoid circular dependency
-    const { useOrderStore } = require('./orderStore');
+    // Zugriff auf Order-Store ohne require
     const orderState = useOrderStore.getState();
     
     switch (currentStep) {
