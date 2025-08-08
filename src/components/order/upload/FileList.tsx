@@ -129,31 +129,37 @@ useEffect(() => {
                 <FileImage className="w-8 h-8" />
               </div>
             )}
-            <div className="p-3 flex items-center justify-between gap-3">
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
-                <div className="mt-1 flex items-center gap-2">
-                  <p className="text-xs text-muted-foreground">{formatFileSize(file.size)}</p>
-                  <div className={`text-[11px] px-2 py-0.5 rounded-full border ${getBadgeClasses(infos[index]?.level || 'unknown')}`}>
-                    {infos[index]?.isRaw ? 'RAW – beste Daten' : (infos[index]?.note || 'Prüfung läuft…')}
-                  </div>
-                  {photoType?.startsWith('bracketing') && (
-                    <span className="text-xs text-muted-foreground">
-                      Gruppe {Math.floor(index / bracketingDivisor) + 1}
-                    </span>
-                  )}
-                </div>
+            <div className="p-3">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-medium text-foreground truncate pr-2">{file.name}</p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onRemoveFile(index)}
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10 flex-shrink-0"
+                  aria-label="Datei entfernen"
+                  title="Datei entfernen"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onRemoveFile(index)}
-                className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                aria-label="Datei entfernen"
-                title="Datei entfernen"
-              >
-                <X className="w-4 h-4" />
-              </Button>
+              
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">{formatFileSize(file.size)}</p>
+                <div className={`text-[11px] px-2 py-1 rounded-md border w-fit ${getBadgeClasses(infos[index]?.level || 'unknown')}`}>
+                  {infos[index]?.isRaw ? 'RAW-Format (optimal)' : 
+                   infos[index]?.level === 'green' ? `✓ Hochauflösend (${infos[index]?.longest}px)` :
+                   infos[index]?.level === 'orange' ? `Gute Qualität (${infos[index]?.longest}px)` :
+                   infos[index]?.level === 'red' ? `Niedrige Auflösung (${infos[index]?.longest}px)` :
+                   'Wird analysiert...'
+                  }
+                </div>
+                {photoType?.startsWith('bracketing') && (
+                  <div className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-md w-fit">
+                    HDR-Gruppe {Math.floor(index / bracketingDivisor) + 1}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         ))}
