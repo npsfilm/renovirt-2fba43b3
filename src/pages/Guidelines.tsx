@@ -839,7 +839,7 @@ const Guidelines = () => {
                     <CardContent className="p-8">
                       <div className="space-y-6">
                         <div className="grid gap-4">
-                          {["Mindestens 2 Winkel pro Raum fotografiert", "Alle Dateien im RAW/DNG-Format gespeichert", "Dateinamen korrekt: Objekt_Raum_##", "Upload-Ordner '0_RAW' erstellt", "Alle Dateien erfolgreich hochgeladen"].map((item, index) => <div key={index} className="group flex items-center gap-4 p-5 bg-gradient-to-r from-success/5 to-success/10 rounded-xl border border-success/20 hover:shadow-md transition-all duration-300">
+                          {["Mindestens 2 Winkel pro Raum fotografiert", "Alle Dateien im RAW/DNG-Format gespeichert", "Alle Dateien erfolgreich hochgeladen"].map((item, index) => <div key={index} className="group flex items-center gap-4 p-5 bg-gradient-to-r from-success/5 to-success/10 rounded-xl border border-success/20 hover:shadow-md transition-all duration-300">
                               <div className="w-8 h-8 bg-success/20 rounded-lg flex items-center justify-center flex-shrink-0">
                                 <CheckSquare className="w-5 h-5 text-success" />
                               </div>
