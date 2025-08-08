@@ -62,22 +62,41 @@ const AppSidebar = () => {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton
-                    onClick={() => navigate(item.url)}
-                    isActive={isActivePath(item.url)}
-                    className={`w-full justify-start ${
-                      isActivePath(item.url) 
-                        ? 'bg-primary/10 text-primary border-primary/20' 
-                        : 'hover:bg-sidebar-accent'
-                    }`}
-                  >
-                    <item.icon className="w-4 h-4" />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {/* Zentraler CTA: Neue Bestellung */}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={() => navigate('/order')}
+                  isActive={isActivePath('/order')}
+                  className={`w-full justify-start mb-4 rounded-lg font-semibold shadow-md ${
+                    isActivePath('/order')
+                      ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                      : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                  }`}
+                >
+                  <Upload className="w-4 h-4 text-foreground" />
+                  <span>Neue Bestellung</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              {/* Weitere Navigationselemente */}
+              {menuItems
+                .filter((item) => item.url !== '/order')
+                .map((item) => (
+                  <SidebarMenuItem key={item.url}>
+                    <SidebarMenuButton
+                      onClick={() => navigate(item.url)}
+                      isActive={isActivePath(item.url)}
+                      className={`w-full justify-start ${
+                        isActivePath(item.url)
+                          ? 'bg-primary/10 text-primary border-primary/20'
+                          : 'hover:bg-sidebar-accent'
+                      }`}
+                    >
+                      <item.icon className="w-4 h-4 text-foreground" />
+                      <span>{item.title}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
