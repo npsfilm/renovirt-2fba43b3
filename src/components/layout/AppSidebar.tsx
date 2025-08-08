@@ -50,11 +50,19 @@ const AppSidebar = () => {
     <Sidebar className="border-r border-sidebar-border bg-sidebar">
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-2">
-          <img 
-            src="/lovable-uploads/d6ac9ba9-7ad2-408b-a2b0-5f31c269dd53.png" 
-            alt="Renovirt Logo" 
-            className="h-8 w-auto" 
-          />
+          <button
+            type="button"
+            onClick={() => navigate('/dashboard')}
+            className="focus:outline-none"
+            aria-label="Zur Dashboard-Startseite"
+            title="Zur Dashboard-Startseite"
+          >
+            <img 
+              src="/lovable-uploads/d6ac9ba9-7ad2-408b-a2b0-5f31c269dd53.png" 
+              alt="Renovirt Logo" 
+              className="h-8 w-auto" 
+            />
+          </button>
         </div>
       </SidebarHeader>
 
