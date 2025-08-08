@@ -47,7 +47,7 @@ const SupportMessage = ({ onSendChatHistory, onOpenContactForm }: SupportMessage
 
   return (
     <>
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4 min-w-0 w-full max-w-full">
         <div className="flex items-center gap-2 mb-3">
           <span className="font-medium text-gray-900">Direkter Support</span>
         </div>
@@ -56,10 +56,10 @@ const SupportMessage = ({ onSendChatHistory, onOpenContactForm }: SupportMessage
           War die Antwort nicht hilfreich? Senden Sie Ihren Chatverlauf an unser Support-Team oder nehmen Sie direkt Kontakt auf.
         </p>
         
-        <div className="flex flex-col sm:flex-row gap-2">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 min-w-0 w-full">
           <Button
             onClick={onOpenContactForm}
-            className="flex-1"
+            className="flex-1 min-w-0 whitespace-normal break-words text-center"
             size="sm"
           >
             <LifeBuoy className="w-4 h-4 mr-2" />
@@ -69,7 +69,7 @@ const SupportMessage = ({ onSendChatHistory, onOpenContactForm }: SupportMessage
           <Button
             onClick={handleSendChatHistory}
             variant="outline"
-            className="flex-1"
+            className="flex-1 min-w-0 whitespace-normal break-words text-center"
             size="sm"
           >
             <Mail className="w-4 h-4 mr-2" />
