@@ -13,20 +13,21 @@ interface ExtrasStepProps {
 }
 
 const ExtrasStep = ({ onNext, onPrev }: ExtrasStepProps) => {
-  const orderData = useOrderStore((state) => ({
-    extras: state.extras,
-    watermarkFile: state.watermarkFile,
-  }));
+  // Separate selectors to minimize re-renders
+  const extras = useOrderStore((state) => state.extras);
+  const watermarkFile = useOrderStore((state) => state.watermarkFile);
   const setExtras = useOrderStore((state) => state.setExtras);
   const setWatermarkFile = useOrderStore((state) => state.setWatermarkFile);
-  const extras = [
+  
+  // Memoize extras configuration to prevent recreations
+  const extrasConfig = React.useMemo(() => [
     {
       id: 'upscale' as const,
       icon: Image,
       title: 'Upscaling',
       description: 'Vergrößerung der Bildauflösung um das 2-fache',
       price: '2,00€',
-      enabled: orderData.extras.upscale
+      enabled: extras.upscale
     },
     {
       id: 'express' as const,
@@ -34,7 +35,7 @@ const ExtrasStep = ({ onNext, onPrev }: ExtrasStepProps) => {
       title: 'Express-Bearbeitung',
       description: 'Prioritäre Bearbeitung innerhalb von 24 Stunden',
       price: '2,00€',
-      enabled: orderData.extras.express
+      enabled: extras.express
     },
     {
       id: 'watermark' as const,
@@ -42,20 +43,21 @@ const ExtrasStep = ({ onNext, onPrev }: ExtrasStepProps) => {
       title: 'Eigenes Wasserzeichen',
       description: 'Upload Ihres eigenen Logos/Wasserzeichens',
       price: '2,00€',
-      enabled: orderData.extras.watermark
+      enabled: extras.watermark
     }
-  ];
+  ], [extras.upscale, extras.express, extras.watermark]);
 
-  const handleExtraToggle = (extraId: 'upscale' | 'express' | 'watermark') => {
+  // Memoize handlers to prevent recreation
+  const handleExtraToggle = React.useCallback((extraId: 'upscale' | 'express' | 'watermark') => {
     setExtras({
-      [extraId]: !orderData.extras[extraId]
+      [extraId]: !extras[extraId]
     });
-  };
+  }, [extras, setExtras]);
 
-  const handleWatermarkUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleWatermarkUpload = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     setWatermarkFile(file);
-  };
+  }, [setWatermarkFile]);
 
   return (
     <div className="space-y-4 md:space-y-8">
@@ -70,7 +72,7 @@ const ExtrasStep = ({ onNext, onPrev }: ExtrasStepProps) => {
 
       <div className="space-y-4 md:space-y-6 max-w-2xl mx-auto px-3 md:px-0">
         <div className="grid gap-3 md:gap-4">
-          {extras.map(extra => (
+          {extrasConfig.map(extra => (
             <Card 
               key={extra.id} 
               className={`cursor-pointer transition-all duration-200 rounded-2xl md:rounded-lg ${
@@ -107,7 +109,7 @@ const ExtrasStep = ({ onNext, onPrev }: ExtrasStepProps) => {
           ))}
         </div>
 
-        {orderData.extras.watermark && (
+        {extras.watermark && (
           <Card className="border-primary/20 bg-primary/5 rounded-2xl md:rounded-lg shadow-[0_4px_20px_rgb(0,0,0,0.05)]">
             <CardHeader className="pb-3 md:pb-4 px-4 md:px-6 pt-4 md:pt-6">
               <CardTitle className="text-base md:text-lg">Wasserzeichen-Upload</CardTitle>
@@ -123,9 +125,9 @@ const ExtrasStep = ({ onNext, onPrev }: ExtrasStepProps) => {
                   onChange={handleWatermarkUpload}
                   className="block w-full text-xs md:text-sm text-muted-foreground file:mr-3 md:file:mr-4 file:py-2 file:px-3 md:file:px-4 file:rounded-xl md:file:rounded-lg file:border-0 file:text-xs md:file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
                 />
-                {orderData.watermarkFile && (
+                {watermarkFile && (
                   <p className="text-xs md:text-sm text-success">
-                    Datei ausgewählt: {orderData.watermarkFile.name}
+                    Datei ausgewählt: {watermarkFile.name}
                   </p>
                 )}
               </div>
