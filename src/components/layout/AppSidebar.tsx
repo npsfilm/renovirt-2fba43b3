@@ -76,14 +76,15 @@ const AppSidebar = () => {
                 <SidebarMenuButton
                   onClick={() => navigate('/order')}
                   isActive={isActivePath('/order')}
+                  aria-current={isActivePath('/order') ? 'page' : undefined}
                   className={`w-full justify-start mb-4 rounded-lg shadow-md ${
                     isActivePath('/order')
                       ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                       : 'bg-primary text-primary-foreground hover:bg-primary/90'
                   }`}
                 >
-                  <Upload className="w-4 h-4 text-foreground" />
-                  <span className="text-foreground">Bilder hochladen</span>
+                  <Upload className="w-4 h-4 text-primary-foreground" />
+                  <span className="text-primary-foreground">Bilder hochladen</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
@@ -95,13 +96,14 @@ const AppSidebar = () => {
                     <SidebarMenuButton
                       onClick={() => navigate(item.url)}
                       isActive={isActivePath(item.url)}
+                      aria-current={isActivePath(item.url) ? 'page' : undefined}
                       className={`w-full justify-start ${
                         isActivePath(item.url)
-                          ? 'bg-primary/10 text-primary border-primary/20'
+                          ? 'bg-primary/10 text-primary border border-primary/20'
                           : 'hover:bg-sidebar-accent'
                       }`}
                     >
-                      <item.icon className="w-4 h-4 text-foreground" />
+                      <item.icon className="w-4 h-4" />
                       <span>{item.title}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -121,9 +123,10 @@ const AppSidebar = () => {
                 key={item.url}
                 onClick={() => navigate(item.url)}
                 isActive={isActivePath(item.url)}
+                aria-current={isActivePath(item.url) ? 'page' : undefined}
                 className={`w-full justify-start text-sm ${
                   isActivePath(item.url) 
-                    ? 'bg-primary/10 text-primary border-primary/20' 
+                    ? 'bg-primary/10 text-primary border border-primary/20' 
                     : 'hover:bg-sidebar-accent'
                 }`}
               >
