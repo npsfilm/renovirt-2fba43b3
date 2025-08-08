@@ -56,13 +56,13 @@ const PackageStep = ({ onNext, onPrev }: PackageStepProps) => {
       text: 'Alle Basic-Features enthalten'
     }, {
       icon: Wand2,
-      text: 'Entfernung störender Objekte & Himmelaustausch'
+      text: 'Entfernung störender Objekte'
     }, {
       icon: Crown,
       text: 'Retusche sensibler Details'
     }, {
       icon: Zap,
-      text: 'Stil-Optimierung'
+      text: 'Himmelaustausch'
     }, {
       icon: Clock,
       text: 'Priorisierte Bearbeitung'
