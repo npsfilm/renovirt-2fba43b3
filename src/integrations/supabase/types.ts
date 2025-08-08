@@ -290,6 +290,39 @@ export type Database = {
         }
         Relationships: []
       }
+      help_interaction_limits: {
+        Row: {
+          created_at: string | null
+          id: string
+          interaction_count: number | null
+          ip_address: unknown | null
+          session_id: string | null
+          updated_at: string | null
+          user_id: string | null
+          window_start: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          interaction_count?: number | null
+          ip_address?: unknown | null
+          session_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          window_start?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          interaction_count?: number | null
+          ip_address?: unknown | null
+          session_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          window_start?: string | null
+        }
+        Relationships: []
+      }
       help_interactions: {
         Row: {
           ai_response: string
@@ -959,6 +992,16 @@ export type Database = {
         }
         Returns: string
       }
+      check_help_interaction_rate_limit: {
+        Args: {
+          p_user_id?: string
+          p_ip_address?: unknown
+          p_session_id?: string
+          p_max_requests?: number
+          p_window_minutes?: number
+        }
+        Returns: boolean
+      }
       check_rate_limit: {
         Args: {
           identifier: string
@@ -970,6 +1013,20 @@ export type Database = {
       cleanup_abandoned_draft_orders: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      cleanup_old_help_rate_limits: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      create_secure_help_interaction: {
+        Args: {
+          p_question: string
+          p_ai_response: string
+          p_session_id: string
+          p_ip_address?: unknown
+          p_user_agent?: string
+        }
+        Returns: string
       }
       create_user_referral_code: {
         Args: { user_uuid: string }
