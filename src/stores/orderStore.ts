@@ -59,10 +59,13 @@ export const useOrderStore = create<OrderState>()(
         const effectiveImageCount = calculateEffectiveImageCount(state.files, state.photoType);
         const isValid = validateOrderData(state);
         
-        set({
-          effectiveImageCount,
-          isValid,
-        });
+        // Only update if values actually changed to prevent infinite loops
+        if (state.effectiveImageCount !== effectiveImageCount || state.isValid !== isValid) {
+          set({
+            effectiveImageCount,
+            isValid,
+          });
+        }
       },
 
       setPhotoType: (photoType) => {
