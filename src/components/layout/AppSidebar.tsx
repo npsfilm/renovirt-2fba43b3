@@ -67,14 +67,14 @@ const AppSidebar = () => {
                 <SidebarMenuButton
                   onClick={() => navigate('/order')}
                   isActive={isActivePath('/order')}
-                  className={`w-full justify-start mb-4 rounded-lg font-semibold shadow-md ${
+                  className={`w-full justify-start mb-4 rounded-lg shadow-md ${
                     isActivePath('/order')
                       ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                       : 'bg-primary text-primary-foreground hover:bg-primary/90'
                   }`}
                 >
                   <Upload className="w-4 h-4 text-foreground" />
-                  <span className="text-foreground">Neue Bestellung</span>
+                  <span className="text-foreground">Bilder hochladen</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
