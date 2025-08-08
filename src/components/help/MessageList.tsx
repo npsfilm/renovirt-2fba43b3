@@ -39,7 +39,7 @@ const MessageList = ({
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading]);
-  return <ScrollArea className="flex-1 p-4">
+  return <ScrollArea className="flex-1 p-4 pr-5 pb-6 overflow-x-hidden">
       <div className="space-y-4">
         {messages.length === 0 && <div className="text-center text-gray-500 mt-8">
             <Bot className="w-12 h-12 mx-auto mb-4 text-blue-600" />

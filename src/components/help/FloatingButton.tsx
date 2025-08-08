@@ -10,7 +10,7 @@ interface FloatingButtonProps {
 
 const FloatingButton = ({ onClick }: FloatingButtonProps) => {
   return (
-    <div className="fixed bottom-24 right-4 z-60 md:bottom-4">
+    <div className="fixed bottom-24 right-4 z-[60] md:bottom-4">
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>

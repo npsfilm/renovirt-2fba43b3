@@ -57,13 +57,13 @@ const ChatMessage = ({
         {message.type === 'user' ? 'Du' : 'AI'}
       </div>
       
-      <div className="flex flex-col max-w-[75%]">
+      <div className="flex flex-col min-w-0 max-w-[85%] sm:max-w-[75%]">
         <div className={`px-4 py-2 rounded-lg mb-1 ${
           message.type === 'user' 
             ? 'bg-blue-600 text-white rounded-tr-none' 
             : 'bg-gray-100 text-gray-800 rounded-tl-none'
         }`}>
-          <div className="text-sm whitespace-pre-wrap" dangerouslySetInnerHTML={{ 
+          <div className="text-sm whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{ 
             __html: message.content
               .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
               .replace(/\*(.*?)\*/g, '<em>$1</em>')
@@ -71,18 +71,16 @@ const ChatMessage = ({
           }} />
         </div>
         
-        <div className={`flex items-center text-xs text-gray-500 ${
-          message.type === 'user' ? 'justify-end' : ''
-        }`}>
+        <div className={`flex flex-wrap items-center text-xs text-gray-500 gap-2 ${message.type === 'user' ? 'justify-end' : ''}`}>
           <span>{formatTime(new Date(message.timestamp))}</span>
           
           {message.type === 'ai' && message.interactionId && !message.feedbackGiven && (
-            <div className="flex items-center ml-2 gap-2">
+            <div className="flex flex-wrap items-center ml-2 gap-2 w-full sm:w-auto mt-1 sm:mt-0">
               <span className="text-xs text-gray-500">War diese Antwort hilfreich?</span>
               <Button
                 variant="secondary"
                 size="sm"
-                className="h-6 px-2"
+                className="h-6 px-2 whitespace-nowrap shrink-0"
                 onClick={() => {
                   onFeedback(message.id, message.interactionId!, 5);
                   onProblemSolved?.();
@@ -93,7 +91,7 @@ const ChatMessage = ({
               <Button
                 variant="outline"
                 size="sm"
-                className="h-6 px-2"
+                className="h-6 px-2 whitespace-nowrap shrink-0"
                 onClick={() => {
                   onFeedback(message.id, message.interactionId!, 1);
                   onContactSupport(message.interactionId!);
