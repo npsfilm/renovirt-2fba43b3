@@ -6,10 +6,6 @@ import posthog from 'posthog-js';
 export type OrderStep = 'photo-type' | 'upload' | 'package' | 'extras' | 'summary' | 'confirmation';
 
 interface OrderState extends OrderData {
-  // Computed values
-  effectiveImageCount: number;
-  isValid: boolean;
-  
   // Actions
   setPhotoType: (photoType: OrderData['photoType']) => void;
   setFiles: (files: File[]) => void;
@@ -25,9 +21,6 @@ interface OrderState extends OrderData {
   setAcceptedTerms: (accepted: boolean) => void;
   updateOrderData: (updates: Partial<OrderData>) => void;
   resetOrder: () => void;
-  
-  // Internal helper
-  _computeValues: () => void;
 }
 
 const initialOrderData: OrderData = {
@@ -51,26 +44,9 @@ export const useOrderStore = create<OrderState>()(
   persist(
     (set, get) => ({
       ...initialOrderData,
-      effectiveImageCount: 0,
-      isValid: false,
-
-      _computeValues: () => {
-        const state = get();
-        const effectiveImageCount = calculateEffectiveImageCount(state.files, state.photoType);
-        const isValid = validateOrderData(state);
-        
-        // Only update if values actually changed to prevent infinite loops
-        if (state.effectiveImageCount !== effectiveImageCount || state.isValid !== isValid) {
-          set({
-            effectiveImageCount,
-            isValid,
-          });
-        }
-      },
 
       setPhotoType: (photoType) => {
         set({ photoType });
-        get()._computeValues();
         
         // PostHog: Track photo type selection
         posthog.capture('order_step_completed', {
@@ -82,7 +58,6 @@ export const useOrderStore = create<OrderState>()(
 
       setFiles: (files) => {
         set({ files });
-        get()._computeValues();
         
         // PostHog: Track file upload completion
         posthog.capture('order_step_completed', {
@@ -101,7 +76,6 @@ export const useOrderStore = create<OrderState>()(
           )
         );
         set({ files: [...currentFiles, ...uniqueNewFiles] });
-        get()._computeValues();
         
         // PostHog: Track files added during upload
         if (uniqueNewFiles.length > 0) {
@@ -116,12 +90,10 @@ export const useOrderStore = create<OrderState>()(
       removeFile: (index) => {
         const files = get().files.filter((_, i) => i !== index);
         set({ files });
-        get()._computeValues();
       },
 
       setPackage: (pkg) => {
         set({ package: pkg });
-        get()._computeValues();
         
         // PostHog: Track package selection
         if (pkg) {
@@ -137,7 +109,6 @@ export const useOrderStore = create<OrderState>()(
         const currentExtras = get().extras;
         const updatedExtras = { ...currentExtras, ...newExtras };
         set({ extras: updatedExtras });
-        get()._computeValues();
         
         // PostHog: Track extras selection
         posthog.capture('order_step_completed', {
@@ -150,37 +121,30 @@ export const useOrderStore = create<OrderState>()(
 
       setWatermarkFile: (watermarkFile) => {
         set({ watermarkFile });
-        get()._computeValues();
       },
 
       setEmail: (email) => {
         set({ email });
-        get()._computeValues();
       },
 
       setCompany: (company) => {
         set({ company });
-        get()._computeValues();
       },
 
       setObjectReference: (objectReference) => {
         set({ objectReference });
-        get()._computeValues();
       },
 
       setSpecialRequests: (specialRequests) => {
         set({ specialRequests });
-        get()._computeValues();
       },
 
       setAcceptedTerms: (acceptedTerms) => {
         set({ acceptedTerms });
-        get()._computeValues();
       },
 
       updateOrderData: (updates) => {
         set((state) => ({ ...state, ...updates }));
-        get()._computeValues();
       },
 
       resetOrder: () => {
@@ -198,8 +162,6 @@ export const useOrderStore = create<OrderState>()(
         
         set({
           ...initialOrderData,
-          effectiveImageCount: 0,
-          isValid: false,
         });
       },
     }),
@@ -219,10 +181,7 @@ export const useOrderStore = create<OrderState>()(
         specialRequests: state.specialRequests,
       }),
       onRehydrateStorage: () => (state) => {
-        // Recompute values after hydrating from storage
-        if (state) {
-          state._computeValues();
-        }
+        // No need for recomputation - values are computed on-demand
       },
     }
   )

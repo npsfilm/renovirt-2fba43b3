@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { useOrders } from '@/hooks/useOrders';
 import { generateOrderNumber } from '@/utils/orderNumberGenerator';
 import { useOrderStore } from '@/stores/orderStore';
+import { useEffectiveImageCount } from '@/hooks/useOrderComputed';
 
 interface ConfirmationStepProps {
   orderId?: string;
@@ -23,7 +24,7 @@ const ConfirmationStep = ({
     extras: state.extras,
     email: state.email,
   }));
-  const effectiveImageCount = useOrderStore((state) => state.effectiveImageCount);
+  const effectiveImageCount = useEffectiveImageCount();
   const {
     packages,
     addOns
