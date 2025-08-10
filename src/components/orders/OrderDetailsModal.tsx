@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Download, Package, Calendar, Euro, FileText, Image } from 'lucide-react';
+import { Download, Package, Calendar, Euro, FileText, Image, X } from 'lucide-react';
 import { downloadFile } from '@/utils/fileDownloadService';
 import CustomerInvoicesList from './CustomerInvoicesList';
 
@@ -135,7 +135,7 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
   if (isLoading) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="md:max-w-4xl md:max-h-[90vh] md:overflow-y-auto md:rounded-lg w-[100vw] h-[100dvh] max-w-none p-0 rounded-none overflow-hidden">
           <div className="flex items-center justify-center p-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
           </div>
