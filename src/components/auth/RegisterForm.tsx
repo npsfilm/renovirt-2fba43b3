@@ -243,7 +243,7 @@ const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
         
         <Button 
           type="submit" 
-          className="w-full h-9 sm:h-10 lg:h-11 font-medium bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow-md text-sm" 
+          className="w-full h-12 font-medium bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow-md text-base" 
           disabled={loading}
         >
           {loading ? 'Wird erstellt...' : 'Konto erstellen'}

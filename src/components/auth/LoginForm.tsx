@@ -130,7 +130,7 @@ const LoginForm = ({
       <div className="space-y-2 sm:space-y-3">
         <Button 
           variant="outline" 
-          className="w-full h-9 sm:h-10 lg:h-11 border-border bg-background hover:bg-muted text-foreground font-medium transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow-md text-sm" 
+          className="w-full h-12 border-border bg-background hover:bg-muted text-foreground font-medium transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow-md text-base" 
           onClick={handleGoogleAuth} 
           disabled={loading} 
           type="button"
@@ -173,43 +173,51 @@ const LoginForm = ({
       <form onSubmit={handleLogin} className="space-y-2 sm:space-y-3">
         <div className="space-y-1 sm:space-y-2">
           <div className="relative">
-            <Mail className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3 w-3 sm:h-4 sm:w-4" />
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5" />
             <Input 
-              id="email" 
-              name="email" 
-              type="email" 
-              placeholder="Ihre E-Mail Adresse" 
-              value={formData.email} 
-              onChange={handleInputChange} 
-              required 
-              className="bg-input border-border text-foreground placeholder-muted-foreground h-9 sm:h-10 lg:h-11 pl-8 sm:pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-sm" 
+              id="email"
+              name="email"
+              type="email"
+              placeholder="Ihre E-Mail Adresse"
+              value={formData.email}
+              onChange={handleInputChange}
+              required
+              autoFocus
+              inputMode="email"
+              autoComplete="email"
+              enterKeyHint="next"
+              autoCapitalize="none"
+              autoCorrect="off"
+              className="bg-input border-border text-foreground placeholder-muted-foreground h-12 pl-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-base"
             />
           </div>
         </div>
         <div className="space-y-1 sm:space-y-2">
           <div className="relative">
-            <Lock className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3 w-3 sm:h-4 sm:w-4" />
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5" />
             <Input 
-              id="password" 
-              name="password" 
-              type="password" 
-              placeholder="••••••••" 
-              value={formData.password} 
-              onChange={handleInputChange} 
-              required 
-              className="bg-input border-border text-foreground placeholder-muted-foreground h-9 sm:h-10 lg:h-11 pl-8 sm:pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-sm" 
+              id="password"
+              name="password"
+              type="password"
+              placeholder="••••••••"
+              value={formData.password}
+              onChange={handleInputChange}
+              required
+              autoComplete="current-password"
+              enterKeyHint="go"
+              className="bg-input border-border text-foreground placeholder-muted-foreground h-12 pl-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-base"
             />
           </div>
         </div>
         <Button 
           type="submit" 
-          className="w-full h-9 sm:h-10 lg:h-11 font-medium bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow-md group text-sm" 
+          className="w-full h-12 font-medium bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow-md group text-base" 
           disabled={loading}
         >
           {loading ? 'Wird angemeldet...' : (
             <>
               Anmelden
-              <ArrowRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4 transition-transform group-hover:translate-x-1" />
+              <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
             </>
           )}
         </Button>

@@ -27,7 +27,7 @@ const RegisterFormFields = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 lg:gap-4">
         <div className="space-y-1 sm:space-y-2">
           <div className="relative">
-            <User className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3 w-3 sm:h-4 sm:w-4" />
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5" />
             <Input
               id="firstName"
               name="firstName"
@@ -35,13 +35,16 @@ const RegisterFormFields = ({
               value={formData.firstName}
               onChange={onInputChange}
               required
-              className="bg-input border-border text-foreground placeholder-muted-foreground h-9 sm:h-10 lg:h-12 pl-8 sm:pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-sm"
+              autoComplete="given-name"
+              inputMode="text"
+              autoCapitalize="words"
+              className="bg-input border-border text-foreground placeholder-muted-foreground h-12 pl-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-base"
             />
           </div>
         </div>
         <div className="space-y-1 sm:space-y-2">
           <div className="relative">
-            <User className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3 w-3 sm:h-4 sm:w-4" />
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5" />
             <Input
               id="lastName"
               name="lastName"
@@ -49,7 +52,10 @@ const RegisterFormFields = ({
               value={formData.lastName}
               onChange={onInputChange}
               required
-              className="bg-input border-border text-foreground placeholder-muted-foreground h-9 sm:h-10 lg:h-12 pl-8 sm:pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-sm"
+              autoComplete="family-name"
+              inputMode="text"
+              autoCapitalize="words"
+              className="bg-input border-border text-foreground placeholder-muted-foreground h-12 pl-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-base"
             />
           </div>
         </div>
@@ -57,7 +63,7 @@ const RegisterFormFields = ({
       
       <div className="space-y-1 sm:space-y-2">
         <div className="relative">
-          <Mail className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3 w-3 sm:h-4 sm:w-4" />
+          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5" />
           <Input
             id="registerEmail"
             name="email"
@@ -66,14 +72,19 @@ const RegisterFormFields = ({
             value={formData.email}
             onChange={onInputChange}
             required
-            className="bg-input border-border text-foreground placeholder-muted-foreground h-9 sm:h-10 lg:h-12 pl-8 sm:pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-sm"
+            inputMode="email"
+            autoComplete="email"
+            enterKeyHint="next"
+            autoCapitalize="none"
+            autoCorrect="off"
+            className="bg-input border-border text-foreground placeholder-muted-foreground h-12 pl-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-base"
           />
         </div>
       </div>
       
       <div className="space-y-1 sm:space-y-2">
         <div className="relative">
-          <Lock className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3 w-3 sm:h-4 sm:w-4" />
+          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5" />
           <Input
             id="registerPassword"
             name="password"
@@ -82,7 +93,9 @@ const RegisterFormFields = ({
             value={formData.password}
             onChange={onInputChange}
             required
-            className="bg-input border-border text-foreground placeholder-muted-foreground h-9 sm:h-10 lg:h-12 pl-8 sm:pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-sm"
+            autoComplete="new-password"
+            enterKeyHint="go"
+            className="bg-input border-border text-foreground placeholder-muted-foreground h-12 pl-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-base"
           />
         </div>
         {showPasswordValidation && (

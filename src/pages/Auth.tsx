@@ -5,6 +5,7 @@ import { useCustomerProfile } from '@/hooks/useCustomerProfile';
 import AuthLayout from '@/components/auth/AuthLayout';
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
+import { useIsMobile } from '@/hooks/use-mobile';
 const Auth = () => {
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
   const {
@@ -15,10 +16,10 @@ const Auth = () => {
   } = useCustomerProfile();
   const navigate = useNavigate();
   const location = useLocation();
+  const isMobile = useIsMobile();
 
   // Die Seite abrufen, die der Benutzer vor der Weiterleitung zur Anmeldung besuchen wollte
   const from = location.state?.from?.pathname || '/dashboard';
-
   // Weiterleitung wenn bereits angemeldet
   useEffect(() => {
     const checkUserProfileAndRedirect = async () => {
@@ -64,7 +65,74 @@ const Auth = () => {
   const handleSwitchToLogin = () => {
     setActiveTab('login');
   };
-  return <div className="min-h-screen w-full bg-background flex items-center justify-center overflow-hidden">
+
+  // App-ähnliches Verhalten auf Mobilgeräten: Zoom & Scroll deaktivieren (nur /auth)
+  useEffect(() => {
+    if (!isMobile) return;
+
+    // SEO: Titel für die Auth-Seite setzen
+    document.title = 'Anmeldung & Registrierung – App-Ansicht';
+
+    const viewport = document.querySelector('meta[name="viewport"]') as HTMLMetaElement | null;
+    const prevViewport = viewport?.getAttribute('content') || '';
+    const newViewport = 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover';
+
+    if (viewport) {
+      viewport.setAttribute('content', newViewport);
+    } else {
+      const m = document.createElement('meta');
+      m.name = 'viewport';
+      m.content = newViewport;
+      document.head.appendChild(m);
+    }
+
+    const prevOverflow = document.body.style.overflow;
+    const prevOverscroll = (document.body.style as any).overscrollBehavior;
+    const prevTouchAction = (document.documentElement.style as any).touchAction;
+
+    document.body.style.overflow = 'hidden';
+    (document.body.style as any).overscrollBehavior = 'none';
+    (document.documentElement.style as any).touchAction = 'manipulation';
+
+    const prevent = (e: Event) => { e.preventDefault(); };
+    const onTouchEnd = (() => {
+      let last = 0;
+      return (e: TouchEvent) => {
+        const now = Date.now();
+        if (now - last <= 300) {
+          e.preventDefault();
+        }
+        last = now;
+      };
+    })();
+
+    const onWheel = (e: WheelEvent) => {
+      if ((e as any).ctrlKey) e.preventDefault();
+    };
+
+    document.addEventListener('gesturestart', prevent as EventListener, { passive: false });
+    document.addEventListener('gesturechange', prevent as EventListener, { passive: false });
+    document.addEventListener('gestureend', prevent as EventListener, { passive: false });
+    document.addEventListener('touchend', onTouchEnd as EventListener, { passive: false });
+    document.addEventListener('wheel', onWheel as EventListener, { passive: false });
+
+    return () => {
+      if (viewport) {
+        viewport.setAttribute('content', prevViewport);
+      }
+      document.body.style.overflow = prevOverflow;
+      (document.body.style as any).overscrollBehavior = prevOverscroll || '';
+      (document.documentElement.style as any).touchAction = prevTouchAction || '';
+
+      document.removeEventListener('gesturestart', prevent as EventListener);
+      document.removeEventListener('gesturechange', prevent as EventListener);
+      document.removeEventListener('gestureend', prevent as EventListener);
+      document.removeEventListener('touchend', onTouchEnd as EventListener);
+      document.removeEventListener('wheel', onWheel as EventListener);
+    };
+  }, [isMobile]);
+
+  return <div className="min-h-[100dvh] w-full bg-background flex items-center justify-center overflow-hidden touch-manipulation pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
       <div className="w-full h-full flex">
         {/* Left side - Auth Form */}
         <div className="w-full lg:w-3/5 xl:w-1/2 flex items-center justify-center p-[2vh] bg-background">
