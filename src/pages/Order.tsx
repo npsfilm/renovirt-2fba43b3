@@ -16,6 +16,7 @@ import SummaryStep from '@/components/order/SummaryStep';
 import ConfirmationStep from '@/components/order/ConfirmationStep';
 import { useOrderStore } from '@/stores/orderStore';
 import { useOrderMetaStore } from '@/stores/orderMetaStore';
+import { useOrderValidation } from '@/hooks/useOrderValidation';
 import { useOrderExitConfirmation } from '@/hooks/useOrderExitConfirmation';
 import { OrderExitConfirmationDialog } from '@/components/order/OrderExitConfirmationDialog';
 
@@ -29,9 +30,11 @@ const Order = () => {
   const currentStep = useOrderMetaStore((state) => state.currentStep);
   const nextStep = useOrderMetaStore((state) => state.nextStep);
   const prevStep = useOrderMetaStore((state) => state.prevStep);
-  const canProceedToNextStep = useOrderMetaStore((state) => state.canProceedToNextStep);
   const getStepIndex = useOrderMetaStore((state) => state.getStepIndex);
   const getProgressPercentage = useOrderMetaStore((state) => state.getProgressPercentage);
+  
+  // Use the validation hook instead of store function
+  const { canProceedToNextStep } = useOrderValidation();
 
   // Exit confirmation
   const {
@@ -60,7 +63,7 @@ const Order = () => {
   ];
 
   const handleNext = () => {
-    if (canProceedToNextStep()) {
+    if (canProceedToNextStep) {
       nextStep();
     }
   };
@@ -138,7 +141,7 @@ const Order = () => {
         {/* Mobile Fixed Bottom Action Bar */}
         <OrderActionBar
           currentStep={currentStep}
-          canProceed={canProceedToNextStep()}
+          canProceed={canProceedToNextStep}
           onNext={handleNext}
           onPrev={handlePrev}
         />

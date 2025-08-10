@@ -14,9 +14,6 @@ interface OrderMetaState {
   // Processing state
   setProcessing: (isProcessing: boolean, step?: string) => void;
   
-  // Step validation
-  canProceedToNextStep: () => boolean;
-  
   // Helper methods
   getStepIndex: (step: OrderStep) => number;
   getProgressPercentage: () => number;
@@ -60,28 +57,6 @@ export const useOrderMetaStore = create<OrderMetaState>((set, get) => ({
 
   setProcessing: (isProcessing, step) => 
     set({ isProcessing, processingStep: step }),
-
-  canProceedToNextStep: () => {
-    const { currentStep } = get();
-    
-    // Zugriff auf Order-Store ohne require
-    const orderState = useOrderStore.getState();
-    
-    switch (currentStep) {
-      case 'photo-type':
-        return orderState.photoType !== undefined;
-      case 'upload':
-        return orderState.files.length > 0;
-      case 'package':
-        return orderState.package !== undefined;
-      case 'extras':
-        return true;
-      case 'summary':
-        return orderState.acceptedTerms;
-      default:
-        return false;
-    }
-  },
 
   getStepIndex: (step) => {
     if (step === 'confirmation') return stepOrder.length;
