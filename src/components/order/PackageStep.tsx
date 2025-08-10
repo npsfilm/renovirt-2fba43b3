@@ -109,8 +109,36 @@ const PackageStep = ({ onNext, onPrev }: PackageStepProps) => {
       </div>
 
 {isMobile ? (
-        <div className="max-w-md mx-auto px-3 md:px-0 animate-fade-in">
-          <Carousel opts={{ loop: true, align: 'start' }}>
+        <div className="max-w-md mx-auto px-3 md:px-0 animate-fade-in" style={{ paddingBottom: 'calc(96px + env(safe-area-inset-bottom))' }}>
+          {/* Segmented Control */}
+          <div className="mb-3">
+            <ToggleGroup
+              type="single"
+              value={selectedPackage || 'Premium'}
+              onValueChange={(val) => {
+                if (!val) return;
+                setPackage(val as 'Basic' | 'Premium');
+                setSelectedIndex(val === 'Basic' ? 0 : 1);
+                if (carouselApi) {
+                  try { carouselApi.scrollTo(val === 'Basic' ? 0 : 1); } catch {}
+                }
+                posthog.capture('package_tab_switched', { to: val });
+              }}
+              className="w-full justify-center"
+            >
+              <ToggleGroupItem value="Basic" className="flex-1 rounded-l-xl data-[state=on]:bg-background data-[state=on]:text-foreground">Basic</ToggleGroupItem>
+              <ToggleGroupItem value="Premium" className="flex-1 rounded-r-xl data-[state=on]:bg-background data-[state=on]:text-foreground">Premium</ToggleGroupItem>
+            </ToggleGroup>
+          </div>
+
+          {/* Trust Bar */}
+          <div className="mb-3 flex items-center justify-center gap-4 text-xs text-foreground/80">
+            <div className="flex items-center gap-1.5"><Clock className="w-4 h-4" /><span>48h Lieferung</span></div>
+            <div className="flex items-center gap-1.5"><ShieldCheck className="w-4 h-4" /><span>Sichere Abwicklung</span></div>
+            <div className="flex items-center gap-1.5"><Sparkles className="w-4 h-4" /><span>Pro Qualität</span></div>
+          </div>
+
+          <Carousel opts={{ loop: true, align: 'start' }} setApi={setCarouselApi}>
             <CarouselContent>
               {packages.map((pkg) => {
                 const isSelected = selectedPackage === pkg.id;
@@ -184,6 +212,7 @@ const PackageStep = ({ onNext, onPrev }: PackageStepProps) => {
                               e.stopPropagation();
                               setDetailsPkgId(pkg.id);
                               setDetailsOpen(true);
+                              posthog.capture('package_details_opened', { package: pkg.id });
                             }}
                           >
                             Details
@@ -201,31 +230,89 @@ const PackageStep = ({ onNext, onPrev }: PackageStepProps) => {
             </div>
           </Carousel>
 
-          <Sheet open={detailsOpen} onOpenChange={setDetailsOpen}>
+          {/* Pagination Dots */}
+          <div className="mt-3 flex justify-center gap-2">
+            {packages.map((_, i) => (
+              <button
+                key={i}
+                aria-label={`Slide ${i + 1}`}
+                className={`h-2.5 w-2.5 rounded-full transition-all ${selectedIndex === i ? 'bg-foreground' : 'bg-muted'}`}
+                onClick={() => {
+                  setSelectedIndex(i);
+                  if (carouselApi) carouselApi.scrollTo(i);
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Sticky Auswahl Chip */}
+          <div className="fixed left-1/2 -translate-x-1/2 bottom-24 z-30">
+            {(() => {
+              const idx = selectedPackage === 'Basic' ? 0 : 1;
+              const pkg = packages[idx];
+              return (
+                <div className="px-3 py-1.5 rounded-full bg-background border border-border shadow-sm text-sm">
+                  Ausgewählt: <span className="font-medium">{pkg.name}</span> • <span className="font-semibold">{pkg.price}</span>
+                </div>
+              )
+            })()}
+          </div>
+
+          <Sheet open={detailsOpen} onOpenChange={(open) => { setDetailsOpen(open); if (open && detailsPkgId) { posthog.capture('package_details_opened', { package: detailsPkgId }); } }}>
             <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
               {detailsPkgId && (() => {
                 const pkg = packages.find((p) => p.id === detailsPkgId)!;
                 const isSelected = selectedPackage === pkg.id;
+                const allFeatures = Array.from(new Set(packages.flatMap((p) => p.features.map((f) => f.text))));
                 return (
                   <>
                     <SheetHeader>
                       <SheetTitle>{pkg.name}</SheetTitle>
                       <SheetDescription>{pkg.description}</SheetDescription>
                     </SheetHeader>
-                    <div className="px-4 pb-4 space-y-3">
-                      <div className="text-2xl font-bold">
-                        {pkg.price}
-                        <span className="text-sm font-normal text-muted-foreground ml-1">/ {pkg.priceUnit}</span>
-                      </div>
-                      <div className="space-y-2">
-                        {pkg.features.map((feature, idx) => (
-                          <div key={idx} className="flex items-center gap-3">
-                            <feature.icon className="w-4 h-4 text-foreground" />
-                            <span className="text-sm text-foreground/90">{feature.text}</span>
+
+                    <Tabs value={detailsTab} onValueChange={(v) => { setDetailsTab(v as 'details' | 'compare'); if (v === 'compare') { posthog.capture('package_compare_opened', { package: detailsPkgId }); } }} className="px-4">
+                      <TabsList className="w-full grid grid-cols-2 mb-3">
+                        <TabsTrigger value="details">Details</TabsTrigger>
+                        <TabsTrigger value="compare">Vergleich</TabsTrigger>
+                      </TabsList>
+
+                      <TabsContent value="details">
+                        <div className="pb-4 space-y-3">
+                          <div className="text-2xl font-bold">
+                            {pkg.price}
+                            <span className="text-sm font-normal text-muted-foreground ml-1">/ {pkg.priceUnit}</span>
                           </div>
-                        ))}
-                      </div>
-                    </div>
+                          <div className="space-y-2">
+                            {pkg.features.map((feature, idx) => (
+                              <div key={idx} className="flex items-center gap-3">
+                                <feature.icon className="w-4 h-4" />
+                                <span className="text-sm text-foreground/90">{feature.text}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </TabsContent>
+
+                      <TabsContent value="compare">
+                        <div className="pb-4 space-y-2">
+                          {allFeatures.map((f) => {
+                            const basicHas = packages[0].features.some((fe) => fe.text === f);
+                            const premiumHas = packages[1].features.some((fe) => fe.text === f);
+                            return (
+                              <div key={f} className="flex items-center justify-between text-sm py-2 border-b last:border-b-0 border-border">
+                                <span className="text-foreground/90">{f}</span>
+                                <div className="flex items-center gap-6">
+                                  <span className="flex items-center gap-1.5">{basicHas ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />} Basic</span>
+                                  <span className="flex items-center gap-1.5">{premiumHas ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />} Premium</span>
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </TabsContent>
+                    </Tabs>
+
                     <SheetFooter className="px-4 pb-4">
                       <Button
                         className={`w-full h-10 rounded-xl ${
