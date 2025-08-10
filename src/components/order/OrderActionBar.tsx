@@ -12,6 +12,9 @@ interface OrderActionBarProps {
   onPrev: () => void;
   isProcessing?: boolean;
   ctaLabel?: string;
+  currentStepTitle: string;
+  stepIndex: number;
+  totalSteps: number;
 }
 
 const OrderActionBar = ({
@@ -21,6 +24,9 @@ const OrderActionBar = ({
   onPrev,
   isProcessing = false,
   ctaLabel,
+  currentStepTitle,
+  stepIndex,
+  totalSteps,
 }: OrderActionBarProps) => {
   const isMobile = useIsMobile();
 
@@ -57,14 +63,14 @@ const OrderActionBar = ({
 
   return (
     <div className="fixed bottom-16 left-0 right-0 bg-white/98 backdrop-blur-xl border-t border-gray-200/80 shadow-2xl z-20">
-      {/* Enhanced Progress Section */}
+      {/* Step Info Section */}
       <div className="px-6 pt-5 pb-2">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-medium text-gray-600">
-            Schritt {currentIndex + 1} von {stepOrder.length}
+          <span className="text-sm font-medium text-gray-900">
+            {currentStepTitle}
           </span>
-          <span className="text-sm text-gray-500">
-            {Math.round(progress)}% abgeschlossen
+          <span className="text-sm text-gray-500 font-medium">
+            {stepIndex}/{totalSteps}
           </span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden shadow-inner">

@@ -109,40 +109,13 @@ const Order = () => {
   if (isMobile) {
     return (
       <MobileLayout>
-        {/* Mobile Compact Header with Progress */}
+        {/* Thin Progress Bar Only */}
         <div className="sticky top-0 z-30 bg-white/98 backdrop-blur-xl border-b border-gray-100 shadow-sm">
-          {/* Thin Progress Bar */}
           <div className="w-full bg-gray-100 h-1.5">
             <div 
               className="bg-primary h-1.5 transition-all duration-700 ease-out shadow-sm"
               style={{ width: `${getProgressPercentage()}%` }}
             />
-          </div>
-          
-          {/* Compact Header */}
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                {currentStep !== 'photo-type' && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handlePrev}
-                    className="p-2 h-9 w-9 rounded-full hover:bg-gray-100 transition-all duration-200"
-                  >
-                    <ArrowLeft className="w-5 h-5 text-gray-700" />
-                  </Button>
-                )}
-                <div>
-                  <h1 className="text-lg font-semibold text-gray-900 tracking-tight">
-                    {steps.find(step => step.status === 'current')?.title || 'Bestellung'}
-                  </h1>
-                  <p className="text-sm text-gray-500 font-medium">
-                    Schritt {getStepIndex(currentStep) + 1} von {stepOrder.length}
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -158,6 +131,9 @@ const Order = () => {
           onNext={handleNext}
           onPrev={handlePrev}
           ctaLabel={mobileCtaLabel}
+          currentStepTitle={steps.find(step => step.status === 'current')?.title || 'Bestellung'}
+          stepIndex={getStepIndex(currentStep) + 1}
+          totalSteps={stepOrder.length}
         />
       </MobileLayout>
     );
