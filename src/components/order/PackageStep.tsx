@@ -110,152 +110,89 @@ const PackageStep = ({ onNext, onPrev }: PackageStepProps) => {
 
 {isMobile ? (
         <div className="max-w-md mx-auto px-3 md:px-0 animate-fade-in" style={{ paddingBottom: 'calc(96px + env(safe-area-inset-bottom))' }}>
-          {/* Segmented Control */}
-          <div className="mb-3">
-            <ToggleGroup
-              type="single"
-              value={selectedPackage || 'Premium'}
-              onValueChange={(val) => {
-                if (!val) return;
-                setPackage(val as 'Basic' | 'Premium');
-                setSelectedIndex(val === 'Basic' ? 0 : 1);
-                if (carouselApi) {
-                  try { carouselApi.scrollTo(val === 'Basic' ? 0 : 1); } catch {}
-                }
-                posthog.capture('package_tab_switched', { to: val });
-              }}
-              className="w-full justify-center"
-            >
-              <ToggleGroupItem value="Basic" className="flex-1 rounded-l-xl data-[state=on]:bg-background data-[state=on]:text-foreground">Basic</ToggleGroupItem>
-              <ToggleGroupItem value="Premium" className="flex-1 rounded-r-xl data-[state=on]:bg-background data-[state=on]:text-foreground">Premium</ToggleGroupItem>
-            </ToggleGroup>
-          </div>
-
-          {/* Trust Bar */}
-          <div className="mb-3 flex items-center justify-center gap-4 text-xs text-foreground/80">
+          {/* Simplified Trust Bar */}
+          <div className="mb-6 flex items-center justify-center gap-6 text-xs text-foreground/70">
             <div className="flex items-center gap-1.5"><Clock className="w-4 h-4" /><span>48h Lieferung</span></div>
             <div className="flex items-center gap-1.5"><ShieldCheck className="w-4 h-4" /><span>Sichere Abwicklung</span></div>
-            <div className="flex items-center gap-1.5"><Sparkles className="w-4 h-4" /><span>Pro Qualität</span></div>
           </div>
 
           <Carousel opts={{ loop: true, align: 'start' }} setApi={setCarouselApi}>
             <CarouselContent>
               {packages.map((pkg) => {
                 const isSelected = selectedPackage === pkg.id;
-                const isPopular = pkg.popular;
                 return (
                   <CarouselItem key={pkg.id} className="basis-full">
                     <Card
                       className={`relative cursor-pointer transition-all duration-300 ease-out transform flex flex-col rounded-2xl ${
                         isSelected
-                          ? 'ring-2 ring-primary border-primary shadow-[0_8px_30px_rgb(0,0,0,0.12)] scale-[1.02] bg-gradient-to-br ' + pkg.gradient
-                          : 'hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] hover:scale-[1.01] border-border bg-card shadow-[0_2px_8px_rgb(0,0,0,0.04)]'
-                      } ${isPopular ? 'border-primary/30' : ''}`}
+                          ? 'ring-2 ring-primary border-primary shadow-lg bg-background'
+                          : 'hover:shadow-md hover:scale-[1.01] border-border bg-card'
+                      }`}
                       onClick={() => setPackage(pkg.id)}
                     >
-                      {isPopular && (
-                        <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
-                          <Badge className="bg-warning text-warning-foreground px-3 py-1 shadow-sm text-xs rounded-full">
-                            Bestseller
-                          </Badge>
-                        </div>
-                      )}
-
-                      <CardHeader className="text-center pb-2 pt-5 px-5">
-                        <div className="flex items-center justify-center mb-2">
-                          <div className={`w-10 h-10 rounded-2xl flex items-center justify-center bg-muted`}>
+                      <CardHeader className="text-center pb-4 pt-6 px-6">
+                        <div className="flex items-center justify-center mb-3">
+                          <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
                             {pkg.id === 'Basic' ? (
-                              <Zap className={`w-5 h-5 text-foreground`} />
+                              <Zap className="w-6 h-6 text-foreground" />
                             ) : (
-                              <Crown className={`w-5 h-5 text-foreground`} />
+                              <Crown className="w-6 h-6 text-foreground" />
                             )}
                           </div>
                         </div>
-                        <CardTitle className="text-xl font-semibold">{pkg.name}</CardTitle>
-                        <div className="text-3xl font-bold text-foreground">
+                        <CardTitle className="text-2xl font-semibold mb-2">{pkg.name}</CardTitle>
+                        <div className="text-3xl font-bold text-foreground mb-3">
                           {pkg.price}
                           <span className="text-sm font-normal text-muted-foreground ml-1">/ {pkg.priceUnit}</span>
                         </div>
-                        <p className="text-muted-foreground text-sm leading-relaxed">{pkg.description}</p>
                       </CardHeader>
 
-                      <CardContent className="space-y-3 pt-0 flex-1 flex flex-col px-5 pb-4">
-                        <div className="space-y-2 flex-1">
-                          {pkg.features.slice(0, 3).map((feature, index) => (
+                      <CardContent className="pt-0 flex-1 flex flex-col px-6 pb-6">
+                        <div className="space-y-3 flex-1 mb-6">
+                          {pkg.features.slice(0, 2).map((feature, index) => (
                             <div key={index} className="flex items-center gap-3">
-                              <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                                <feature.icon className="w-3.5 h-3.5 text-foreground" />
+                              <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                <Check className="w-3 h-3 text-primary" />
                               </div>
-                              <span className="text-sm text-foreground/80 leading-tight">{feature.text}</span>
+                              <span className="text-sm text-foreground leading-tight">{feature.text}</span>
                             </div>
                           ))}
                         </div>
 
-                        <div className="mt-auto pt-2 grid grid-cols-2 gap-2">
-                          <Button
-                            className={`w-full transition-all duration-200 h-10 text-sm rounded-xl ${
-                              isSelected
-                                ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-md'
-                                : 'bg-muted hover:bg-muted/80 text-foreground border border-border'
-                            }`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setPackage(pkg.id);
-                            }}
-                          >
-                            {isSelected ? 'Ausgewählt' : 'Auswählen'}
-                          </Button>
-                          <Button
-                            variant="outline"
-                            className="h-10 rounded-xl"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setDetailsPkgId(pkg.id);
-                              setDetailsOpen(true);
-                              posthog.capture('package_details_opened', { package: pkg.id });
-                            }}
-                          >
-                            Details
-                          </Button>
-                        </div>
+                        <Button
+                          className={`w-full transition-all duration-200 h-12 text-base rounded-xl ${
+                            isSelected
+                              ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
+                              : 'bg-muted hover:bg-muted/80 text-foreground'
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPackage(pkg.id);
+                          }}
+                        >
+                          {isSelected ? 'Ausgewählt' : 'Auswählen'}
+                        </Button>
                       </CardContent>
                     </Card>
                   </CarouselItem>
                 );
               })}
             </CarouselContent>
-            <div className="flex items-center justify-center gap-2 mt-2">
-              <CarouselPrevious className="relative" />
-              <CarouselNext className="relative" />
-            </div>
           </Carousel>
 
-          {/* Pagination Dots */}
-          <div className="mt-3 flex justify-center gap-2">
+          {/* Simplified Pagination - only dots */}
+          <div className="mt-6 flex justify-center gap-2">
             {packages.map((_, i) => (
               <button
                 key={i}
                 aria-label={`Slide ${i + 1}`}
-                className={`h-2.5 w-2.5 rounded-full transition-all ${selectedIndex === i ? 'bg-foreground' : 'bg-muted'}`}
+                className={`h-2 w-2 rounded-full transition-all ${selectedIndex === i ? 'bg-primary w-6' : 'bg-muted'}`}
                 onClick={() => {
                   setSelectedIndex(i);
                   if (carouselApi) carouselApi.scrollTo(i);
                 }}
               />
             ))}
-          </div>
-
-          {/* Sticky Auswahl Chip */}
-          <div className="fixed left-1/2 -translate-x-1/2 bottom-24 z-30">
-            {(() => {
-              const idx = selectedPackage === 'Basic' ? 0 : 1;
-              const pkg = packages[idx];
-              return (
-                <div className="px-3 py-1.5 rounded-full bg-background border border-border shadow-sm text-sm">
-                  Ausgewählt: <span className="font-medium">{pkg.name}</span> • <span className="font-semibold">{pkg.price}</span>
-                </div>
-              )
-            })()}
           </div>
 
           <Sheet open={detailsOpen} onOpenChange={(open) => { setDetailsOpen(open); if (open && detailsPkgId) { posthog.capture('package_details_opened', { package: detailsPkgId }); } }}>
