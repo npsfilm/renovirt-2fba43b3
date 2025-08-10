@@ -11,6 +11,7 @@ interface OrderActionBarProps {
   onNext: () => void;
   onPrev: () => void;
   isProcessing?: boolean;
+  ctaLabel?: string;
 }
 
 const OrderActionBar = ({
@@ -18,7 +19,8 @@ const OrderActionBar = ({
   canProceed,
   onNext,
   onPrev,
-  isProcessing = false
+  isProcessing = false,
+  ctaLabel,
 }: OrderActionBarProps) => {
   const isMobile = useIsMobile();
 
@@ -96,7 +98,7 @@ const OrderActionBar = ({
           className="flex-1 min-w-[180px] h-12 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg transition-all duration-200 active:scale-[0.97] disabled:opacity-50 disabled:shadow-sm relative overflow-hidden"
         >
           <span className="relative z-10">
-            {isProcessing ? 'Verarbeitung...' : getNextButtonText()}
+            {isProcessing ? 'Verarbeitung...' : (ctaLabel || getNextButtonText())}
           </span>
           {!isProcessing && canProceed && (
             <div className="absolute inset-0 bg-white/10 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>

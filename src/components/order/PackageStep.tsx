@@ -3,11 +3,14 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Zap, Crown, Clock, Palette, Eye, Wand2, Sparkles, Cloud, Camera, RotateCw, Eraser, Edit, Home } from 'lucide-react';
+import { Zap, Crown, Clock, Palette, Sparkles, Cloud, Camera, Eraser, Edit, Home, ShieldCheck, Check, X } from 'lucide-react';
 import { useOrderStore } from '@/stores/orderStore';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter, SheetClose } from '@/components/ui/sheet';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { usePostHog } from '@/contexts/PostHogProvider';
 
 interface PackageStepProps {
   onNext: () => void;
@@ -19,6 +22,24 @@ const PackageStep = ({ onNext, onPrev }: PackageStepProps) => {
   const isMobile = useIsMobile();
   const [detailsOpen, setDetailsOpen] = React.useState(false);
   const [detailsPkgId, setDetailsPkgId] = React.useState<'Basic' | 'Premium' | null>(null);
+  const [detailsTab, setDetailsTab] = React.useState<'details' | 'compare'>('details');
+  const [carouselApi, setCarouselApi] = React.useState<CarouselApi | null>(null);
+  const [selectedIndex, setSelectedIndex] = React.useState<number>(selectedPackage === 'Basic' ? 0 : 1);
+  const posthog = usePostHog();
+
+  // Sync carousel selection and listen to changes
+  React.useEffect(() => {
+    if (!carouselApi) return;
+    const initialIndex = selectedPackage === 'Basic' ? 0 : 1;
+    try {
+      carouselApi.scrollTo(initialIndex, true);
+    } catch {}
+    const onSelect = () => setSelectedIndex(carouselApi.selectedScrollSnap());
+    carouselApi.on('select', onSelect);
+    return () => {
+      carouselApi.off('select', onSelect);
+    };
+  }, [carouselApi]);
 
   // Preselect Premium if nothing is selected
   React.useEffect(() => {

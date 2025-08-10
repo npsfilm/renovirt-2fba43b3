@@ -19,6 +19,7 @@ import { useOrderMetaStore } from '@/stores/orderMetaStore';
 import { useOrderValidation } from '@/hooks/useOrderValidation';
 import { useOrderExitConfirmation } from '@/hooks/useOrderExitConfirmation';
 import { OrderExitConfirmationDialog } from '@/components/order/OrderExitConfirmationDialog';
+import { usePostHog } from '@/contexts/PostHogProvider';
 
 interface ProgressStep {
   number: number;
@@ -32,6 +33,8 @@ const Order = () => {
   const prevStep = useOrderMetaStore((state) => state.prevStep);
   const getStepIndex = useOrderMetaStore((state) => state.getStepIndex);
   const getProgressPercentage = useOrderMetaStore((state) => state.getProgressPercentage);
+  const selectedPackage = useOrderStore((state) => state.package);
+  const posthog = usePostHog();
   
   // Use the validation hook instead of store function
   const { canProceedToNextStep } = useOrderValidation();
@@ -64,6 +67,13 @@ const Order = () => {
 
   const handleNext = () => {
     if (canProceedToNextStep) {
+      if (currentStep === 'package') {
+        const priceMap: Record<'Basic' | 'Premium', string> = { Basic: '9,00€', Premium: '13,00€' };
+        posthog.capture('package_next_clicked', {
+          selected_package: selectedPackage || 'unknown',
+          price: selectedPackage ? priceMap[selectedPackage] : undefined,
+        });
+      }
       nextStep();
     }
   };
@@ -92,6 +102,9 @@ const Order = () => {
   };
 
   const isMobile = useIsMobile();
+  const priceMap: Record<'Basic' | 'Premium', string> = { Basic: '9,00€', Premium: '13,00€' };
+  const mobileCtaLabel = currentStep === 'package' && selectedPackage ? `Weiter zu Extras – ${selectedPackage} • ${priceMap[selectedPackage]}` : undefined;
+  
   
   if (isMobile) {
     return (
@@ -144,6 +157,7 @@ const Order = () => {
           canProceed={canProceedToNextStep}
           onNext={handleNext}
           onPrev={handlePrev}
+          ctaLabel={mobileCtaLabel}
         />
       </MobileLayout>
     );
