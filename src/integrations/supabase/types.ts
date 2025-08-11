@@ -1032,6 +1032,16 @@ export type Database = {
         Args: { user_uuid: string }
         Returns: string
       }
+      enhanced_help_rate_limit: {
+        Args: {
+          p_user_id?: string
+          p_ip_address?: unknown
+          p_session_id?: string
+          p_max_requests?: number
+          p_window_minutes?: number
+        }
+        Returns: boolean
+      }
       generate_referral_code: {
         Args: { user_uuid: string }
         Returns: string
