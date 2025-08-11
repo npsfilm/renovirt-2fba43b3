@@ -62,3 +62,9 @@ export const usePostHog = () => {
   }
   return context.posthog;
 };
+
+// Optional hook that returns null if PostHogProvider is not mounted
+export const useOptionalPostHog = () => {
+  const context = useContext(PostHogContext);
+  return context?.posthog ?? null;
+};

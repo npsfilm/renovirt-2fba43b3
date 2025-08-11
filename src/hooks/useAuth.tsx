@@ -4,22 +4,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { validateUrlTokens, cleanupAuthState, secureSignOut, secureSignIn, secureEmailConfirmation } from '@/utils/authSecurity';
 import { createSecureSession, validateSession } from '@/utils/enhancedSessionSecurity';
 import { secureLog, logSecurityEvent } from '@/utils/secureLogging';
-import { usePostHog } from '@/contexts/PostHogProvider';
+import { useOptionalPostHog } from '@/contexts/PostHogProvider';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   
-  // Safe PostHog access with error handling
-  const getSafePostHog = () => {
-    try {
-      return usePostHog();
-    } catch (error) {
-      console.warn('PostHog not available:', error);
-      return null;
-    }
-  };
+  const posthog = useOptionalPostHog();
 
   useEffect(() => {
     // Handle email confirmation from URL tokens with security validation
@@ -98,7 +90,7 @@ export const useAuth = () => {
               logSecurityEvent('user_signed_in', { userId: session.user.id });
               
               // PostHog: Identify user and track sign in (safe)
-              const posthog = getSafePostHog();
+              // PostHog: Identify user and track sign in (safe)
               if (posthog) {
                 try {
                   posthog.identify(session.user.id, {
@@ -130,7 +122,7 @@ export const useAuth = () => {
               logSecurityEvent('user_signed_out');
               
               // PostHog: Track sign out and reset session (safe)
-              const posthog = getSafePostHog();
+              // PostHog: Track sign out and reset session (safe)
               if (posthog) {
                 try {
                   posthog.capture('user_signed_out');
@@ -153,7 +145,7 @@ export const useAuth = () => {
           
           // PostHog: Identify existing user if session exists (safe)
           if (session?.user) {
-            const posthog = getSafePostHog();
+            // PostHog: Identify existing user if session exists (safe)
             if (posthog) {
               try {
                 posthog.identify(session.user.id, {
