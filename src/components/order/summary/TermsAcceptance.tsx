@@ -19,7 +19,16 @@ const TermsAcceptance = ({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-start gap-3">
-          <Checkbox checked={acceptedTerms} onCheckedChange={(checked) => onTermsChange(checked === true)} className="mt-0.5" />
+          <Checkbox
+            checked={acceptedTerms}
+            onCheckedChange={(checked) => {
+              const next = checked === true;
+              if (next !== acceptedTerms) {
+                onTermsChange(next);
+              }
+            }}
+            className="mt-0.5"
+          />
           <div className="flex-1">
             <p className="text-sm text-gray-700 leading-relaxed">
               Mit der Bestellung akzeptiere ich die{' '}
