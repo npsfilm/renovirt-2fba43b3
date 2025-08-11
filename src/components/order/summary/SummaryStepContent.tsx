@@ -26,7 +26,7 @@ const SummaryStepContent = React.memo(({
   const handleTermsChange = useCallback((accepted: boolean) => {
     console.log('handleTermsChange called:', { accepted, current: orderData.acceptedTerms });
     onUpdateData({ acceptedTerms: accepted });
-  }, [onUpdateData, orderData.acceptedTerms]);
+  }, [onUpdateData]);
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 px-3 md:px-0">
       <div className="lg:col-span-2 space-y-4 md:space-y-6">

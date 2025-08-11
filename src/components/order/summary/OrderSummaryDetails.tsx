@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,7 +17,7 @@ interface OrderSummaryDetailsProps {
   onUpdateData: (updates: Partial<OrderData>) => void;
 }
 
-const OrderSummaryDetails = ({ orderData, onUpdateData }: OrderSummaryDetailsProps) => {
+const OrderSummaryDetails = React.memo(({ orderData, onUpdateData }: OrderSummaryDetailsProps) => {
   const [isUploadingWatermark, setIsUploadingWatermark] = useState(false);
   const { user } = useAuth();
 
@@ -40,11 +40,15 @@ const OrderSummaryDetails = ({ orderData, onUpdateData }: OrderSummaryDetailsPro
   });
 
   // Auto-fill email from user profile when component loads or user changes
-  useEffect(() => {
+  const memoizedEmailUpdate = useCallback(() => {
     if (user?.email && !orderData.email) {
       onUpdateData({ email: user.email });
     }
   }, [user?.email, orderData.email, onUpdateData]);
+  
+  useEffect(() => {
+    memoizedEmailUpdate();
+  }, [memoizedEmailUpdate]);
 
   const handleWatermarkUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -238,6 +242,8 @@ const OrderSummaryDetails = ({ orderData, onUpdateData }: OrderSummaryDetailsPro
       </Card>
     </div>
   );
-};
+});
+
+OrderSummaryDetails.displayName = 'OrderSummaryDetails';
 
 export default OrderSummaryDetails;

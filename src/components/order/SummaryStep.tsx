@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import SummaryStepHeader from './summary/SummaryStepHeader';
 import SummaryStepContent from './summary/SummaryStepContent';
 import SummaryStepActions from './summary/SummaryStepActions';
@@ -30,6 +30,12 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
     specialRequests: state.specialRequests,
   }));
   const updateOrderData = useOrderStore((state) => state.updateOrderData);
+  
+  // Memoize the updateOrderData function to prevent re-renders
+  const memoizedUpdateOrderData = useCallback((updates: Partial<typeof orderData>) => {
+    console.log('memoizedUpdateOrderData called with:', updates);
+    updateOrderData(updates);
+  }, [updateOrderData]);
 
   const {
     paymentMethod,
@@ -60,7 +66,7 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
 
       <SummaryStepContent
         orderData={orderData}
-        onUpdateData={updateOrderData}
+        onUpdateData={memoizedUpdateOrderData}
         paymentMethod={paymentMethod}
         creditsToUse={creditsToUse}
         onCreditsChange={setCreditsToUse}
