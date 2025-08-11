@@ -3,7 +3,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/layout/AppSidebar';
 import MobileBottomNav from '@/components/layout/MobileBottomNav';
-import MobileUploadCTA from '@/components/layout/MobileUploadCTA';
 
 interface MobileLayoutProps {
   children: React.ReactNode;
@@ -17,10 +16,9 @@ const MobileLayout = ({ children, className = '' }: MobileLayoutProps) => {
     // Mobile layout - edge-to-edge design for 375px viewport
     return (
       <div className="min-h-screen flex flex-col w-full overflow-x-hidden bg-gradient-to-br from-background via-background to-muted/20">
-        <main className={`flex-1 pb-24 ${className}`} style={{ paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom))' }}>
+        <main className={`flex-1 pb-20 ${className}`} style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom))' }}>
           {children}
         </main>
-        <MobileUploadCTA />
         <MobileBottomNav />
       </div>
     );

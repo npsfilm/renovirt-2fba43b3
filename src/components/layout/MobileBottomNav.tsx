@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, Package, HelpCircle, MoreHorizontal, FileText, User, Settings, LogOut, MessageSquare } from 'lucide-react';
+import { Home, Package, Upload, FileText, MoreHorizontal, User, Settings, LogOut, MessageSquare, HelpCircle } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigationGuard } from '@/contexts/NavigationGuardContext';
@@ -33,10 +33,24 @@ const MobileBottomNav = () => {
       path: '/orders',
       isActive: currentPath === '/orders',
     },
+    {
+      id: 'upload',
+      label: 'Hochladen',
+      icon: Upload,
+      path: '/order',
+      isActive: currentPath === '/order',
+      isUploadCTA: true,
+    },
+    {
+      id: 'billing',
+      label: 'Rechnungen',
+      icon: FileText,
+      path: '/billing',
+      isActive: currentPath === '/billing',
+    },
   ];
 
   const moreMenuItems = [
-    { id: 'billing', label: 'Rechnungen', icon: FileText, path: '/billing' },
     { id: 'profile', label: 'Profil', icon: User, path: '/profile' },
     { id: 'help', label: 'Hilfe', icon: HelpCircle, path: '/help' },
     { id: 'settings', label: 'Einstellungen', icon: Settings, path: '/settings' },
@@ -55,7 +69,7 @@ const MobileBottomNav = () => {
     setIsMoreMenuOpen(false);
   };
 
-  const isMoreActive = ['/billing', '/profile', '/help', '/settings', '/feedback'].includes(currentPath);
+  const isMoreActive = ['/profile', '/help', '/settings', '/feedback'].includes(currentPath);
 
   return (
     <>
@@ -130,17 +144,30 @@ const MobileBottomNav = () => {
               onClick={() => handleNavClick(item.path)}
               aria-label={item.label}
               className={cn(
-                'flex-1 flex flex-col items-center justify-center gap-1 active:scale-95 transition-all duration-150',
-                item.isActive ? 'text-foreground' : 'text-muted-foreground'
+                'flex-1 flex flex-col items-center justify-center gap-1 active:scale-95 transition-all duration-150 min-h-[44px]',
+                item.isUploadCTA 
+                  ? 'text-primary-foreground' 
+                  : item.isActive 
+                    ? 'text-foreground' 
+                    : 'text-muted-foreground'
               )}
             >
-              <div className="flex items-center justify-center h-5">
-                <item.icon className="h-[18px] w-[18px]" />
+              <div className={cn(
+                "flex items-center justify-center",
+                item.isUploadCTA ? "h-8 w-8 rounded-full bg-primary" : "h-5"
+              )}>
+                <item.icon className={cn(
+                  item.isUploadCTA ? "h-4 w-4" : "h-[18px] w-[18px]"
+                )} />
               </div>
               <span
                 className={cn(
                   'text-[10px] leading-tight text-center',
-                  item.isActive ? 'font-medium text-foreground' : 'font-normal text-muted-foreground'
+                  item.isUploadCTA
+                    ? 'font-medium text-primary'
+                    : item.isActive 
+                      ? 'font-medium text-foreground' 
+                      : 'font-normal text-muted-foreground'
                 )}
               >
                 {item.label}
@@ -153,7 +180,7 @@ const MobileBottomNav = () => {
             onClick={handleMoreClick}
             aria-label="Mehr"
             className={cn(
-              'flex-1 flex flex-col items-center justify-center gap-1 active:scale-95 transition-all duration-150',
+              'flex-1 flex flex-col items-center justify-center gap-1 active:scale-95 transition-all duration-150 min-h-[44px]',
               isMoreActive || isMoreMenuOpen ? 'text-foreground' : 'text-muted-foreground'
             )}
           >
