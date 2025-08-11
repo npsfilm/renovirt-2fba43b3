@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import OrderSummaryDetails from './OrderSummaryDetails';
 import PaymentMethodSelector from './PaymentMethodSelector';
 import TermsAcceptance from './TermsAcceptance';
@@ -14,13 +14,19 @@ interface SummaryStepContentProps {
   onCreditsChange: (credits: number) => void;
 }
 
-const SummaryStepContent = ({
+const SummaryStepContent = React.memo(({
   orderData,
   onUpdateData,
   paymentMethod,
   creditsToUse,
   onCreditsChange
 }: SummaryStepContentProps) => {
+  console.log('SummaryStepContent render:', { acceptedTerms: orderData.acceptedTerms });
+  
+  const handleTermsChange = useCallback((accepted: boolean) => {
+    console.log('handleTermsChange called:', { accepted, current: orderData.acceptedTerms });
+    onUpdateData({ acceptedTerms: accepted });
+  }, [onUpdateData, orderData.acceptedTerms]);
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 px-3 md:px-0">
       <div className="lg:col-span-2 space-y-4 md:space-y-6">
@@ -28,7 +34,7 @@ const SummaryStepContent = ({
         <PaymentMethodSelector paymentMethod={paymentMethod} onPaymentMethodChange={() => {}} />
         <TermsAcceptance 
           acceptedTerms={orderData.acceptedTerms} 
-          onTermsChange={(accepted) => onUpdateData({ acceptedTerms: accepted })} 
+          onTermsChange={handleTermsChange} 
         />
       </div>
 
@@ -41,6 +47,8 @@ const SummaryStepContent = ({
       </div>
     </div>
   );
-};
+});
+
+SummaryStepContent.displayName = 'SummaryStepContent';
 
 export default SummaryStepContent;

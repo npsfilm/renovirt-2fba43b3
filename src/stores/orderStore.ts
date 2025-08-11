@@ -141,7 +141,16 @@ export const useOrderStore = create<OrderState>()((set, get) => ({
   },
 
   updateOrderData: (updates) => {
-    set((state) => ({ ...state, ...updates }));
+    console.log('updateOrderData called with:', updates);
+    set((state) => {
+      const hasChanges = Object.keys(updates).some(key => state[key] !== updates[key]);
+      if (!hasChanges) {
+        console.log('No changes detected, skipping update');
+        return state;
+      }
+      console.log('Updating order data:', { ...state, ...updates });
+      return { ...state, ...updates };
+    });
   },
 
   resetOrder: () => {

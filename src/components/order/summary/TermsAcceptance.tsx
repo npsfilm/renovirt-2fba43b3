@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Shield, ExternalLink } from 'lucide-react';
@@ -6,10 +6,20 @@ interface TermsAcceptanceProps {
   acceptedTerms: boolean;
   onTermsChange: (accepted: boolean) => void;
 }
-const TermsAcceptance = ({
+const TermsAcceptance = React.memo(({
   acceptedTerms,
   onTermsChange
 }: TermsAcceptanceProps) => {
+  console.log('TermsAcceptance render:', { acceptedTerms });
+  
+  const handleCheckedChange = useCallback((checked: unknown) => {
+    console.log('Checkbox changed:', { checked, acceptedTerms });
+    const next = checked === true;
+    if (next !== acceptedTerms) {
+      console.log('Updating terms to:', next);
+      onTermsChange(next);
+    }
+  }, [acceptedTerms, onTermsChange]);
   return <Card className="border border-gray-200 shadow-sm">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg font-medium text-gray-900">
@@ -21,12 +31,7 @@ const TermsAcceptance = ({
         <div className="flex items-start gap-3">
           <Checkbox
             checked={acceptedTerms}
-            onCheckedChange={(checked) => {
-              const next = checked === true;
-              if (next !== acceptedTerms) {
-                onTermsChange(next);
-              }
-            }}
+            onCheckedChange={handleCheckedChange}
             className="mt-0.5"
           />
           <div className="flex-1">
@@ -51,5 +56,8 @@ const TermsAcceptance = ({
         </div>
       </CardContent>
     </Card>;
-};
+});
+
+TermsAcceptance.displayName = 'TermsAcceptance';
+
 export default TermsAcceptance;
