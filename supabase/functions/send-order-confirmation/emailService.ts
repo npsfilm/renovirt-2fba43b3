@@ -31,12 +31,31 @@ export class EmailService {
   }
 
   async sendOrderConfirmation(orderNumber: string, customerEmail: string, orderDetails: OrderConfirmationRequest['orderDetails']) {
+    // Validate email address
+    if (!customerEmail || typeof customerEmail !== 'string' || customerEmail.trim().length === 0) {
+      const error = `Invalid customerEmail provided: "${customerEmail}" for order ${orderNumber}`;
+      console.error(error);
+      throw new Error(`Ungültige E-Mail-Adresse: ${customerEmail || 'leer'}`);
+    }
+
+    const trimmedEmail = customerEmail.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      const error = `Invalid email format: "${trimmedEmail}" for order ${orderNumber}`;
+      console.error(error);
+      throw new Error(`Ungültiges E-Mail-Format: ${trimmedEmail}`);
+    }
+
+    console.log(`Preparing email for order ${orderNumber} to ${trimmedEmail}`);
+    console.log('Order details:', JSON.stringify(orderDetails, null, 2));
+
     const emailData = this.prepareEmailData(orderNumber, orderDetails);
     const htmlContent = generateEmailHTML(emailData);
 
+    console.log(`Sending email to: [${trimmedEmail}]`);
     const emailResponse = await this.resend.emails.send({
       from: "Renovirt <info@renovirt.de>",
-      to: [customerEmail],
+      to: [trimmedEmail],
       subject: `Renovirt – Bestellbestätigung ${orderNumber}`,
       html: htmlContent,
     });

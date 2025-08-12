@@ -57,22 +57,53 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
         orderData.extras[addon.name as keyof typeof orderData.extras]
       );
       
-      // Send confirmation email for invoice orders
-      try {
-        const orderDetails = await prepareOrderEmailDetails(
-          orderData,
-          selectedPackage,
-          imageCount,
-          totalPrice,
-          selectedAddOns,
-          user.id
-        );
+      // Validate email before sending confirmation
+      if (!orderData.email || orderData.email.trim().length === 0) {
+        console.error('No email address provided for order:', order.order_number);
+        secureLog('Order created without email confirmation - no email provided', { 
+          orderId: order.id, 
+          orderNumber: order.order_number 
+        });
+        
+        toast({
+          title: "Achtung",
+          description: "Bestellung erstellt, aber keine Bestätigungs-E-Mail versendet (keine E-Mail-Adresse).",
+          variant: "destructive",
+        });
+      } else {
+        // Send confirmation email for invoice orders
+        try {
+          const orderDetails = await prepareOrderEmailDetails(
+            orderData,
+            selectedPackage,
+            imageCount,
+            totalPrice,
+            selectedAddOns,
+            user.id
+          );
 
-        await sendOrderConfirmationEmail(order.order_number, orderData.email || '', orderDetails);
-      } catch (emailError) {
-        console.error('Failed to send confirmation email:', emailError);
-        // Don't fail the order for email issues
-        secureLog('Email sending failed but order created', { orderId: order.id, error: emailError });
+          await sendOrderConfirmationEmail(order.order_number, orderData.email, orderDetails);
+          
+          secureLog('Order confirmation email sent successfully', { 
+            orderId: order.id,
+            orderNumber: order.order_number,
+            email: orderData.email 
+          });
+        } catch (emailError) {
+          console.error('Failed to send confirmation email:', emailError);
+          secureLog('Email sending failed but order created', { 
+            orderId: order.id, 
+            orderNumber: order.order_number,
+            email: orderData.email,
+            error: emailError 
+          });
+          
+          toast({
+            title: "Bestellung erstellt",
+            description: "Bestellung erfolgreich erstellt, aber E-Mail-Versand fehlgeschlagen. Bitte kontaktieren Sie den Support.",
+            variant: "destructive",
+          });
+        }
       }
 
       // Send admin notification for invoice orders

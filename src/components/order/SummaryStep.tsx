@@ -30,19 +30,27 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
   const acceptedTerms = useOrderStore(state => state.acceptedTerms);
   const updateOrderData = useOrderStore(state => state.updateOrderData);
 
-  // Stable order data object using real store values
-  const orderData = useMemo(() => ({
-    photoType,
-    files,
-    package: packageType,
-    extras,
-    watermarkFile,
-    email,
-    company,
-    objectReference,
-    specialRequests,
-    acceptedTerms,
-  }), [photoType, files, packageType, extras, watermarkFile, email, company, objectReference, specialRequests, acceptedTerms]);
+  // Stable order data object using real store values with email validation
+  const orderData = useMemo(() => {
+    // Validate email before creating order data
+    const trimmedEmail = email?.trim();
+    if (trimmedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      console.warn('Invalid email format detected:', trimmedEmail);
+    }
+    
+    return {
+      photoType,
+      files,
+      package: packageType,
+      extras,
+      watermarkFile,
+      email: trimmedEmail || '',
+      company,
+      objectReference,
+      specialRequests,
+      acceptedTerms,
+    };
+  }, [photoType, files, packageType, extras, watermarkFile, email, company, objectReference, specialRequests, acceptedTerms]);
   
   // Use store's updateOrderData function with stable reference
   const memoizedUpdateOrderData = useCallback((updates: Partial<typeof orderData>) => {

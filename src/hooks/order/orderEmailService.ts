@@ -52,25 +52,54 @@ export const prepareOrderEmailDetails = async (
   };
 };
 
+export const validateEmailAddress = (email: string): boolean => {
+  if (!email || typeof email !== 'string') {
+    return false;
+  }
+  
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email.trim());
+};
+
 export const sendOrderConfirmationEmail = async (
   orderNumber: string,
   email: string,
   orderDetails: any
 ) => {
   try {
-    console.log('Sending confirmation email for order:', orderNumber, 'to:', email);
+    // Validate email address before sending
+    const trimmedEmail = email?.trim();
+    if (!validateEmailAddress(trimmedEmail)) {
+      const errorMsg = `Invalid email address for order ${orderNumber}: "${email}"`;
+      console.error(errorMsg);
+      throw new Error(`E-Mail-Adresse ungültig: ${email || 'leer'}`);
+    }
+
+    console.log('Sending confirmation email for order:', orderNumber, 'to:', trimmedEmail);
+    console.log('Order details for email:', {
+      orderNumber,
+      customerEmail: trimmedEmail,
+      packageName: orderDetails.packageName,
+      photoType: orderDetails.photoType,
+      imageCount: orderDetails.imageCount,
+      totalPrice: orderDetails.totalPrice,
+      extras: orderDetails.extras
+    });
     
     const { data, error } = await supabase.functions.invoke('send-order-confirmation', {
       body: {
         orderNumber,
-        customerEmail: email,
-        orderDetails
+        customerEmail: trimmedEmail,
+        orderDetails: {
+          ...orderDetails,
+          customerEmail: trimmedEmail // Ensure email is in orderDetails too
+        }
       }
     });
 
     if (error) {
       console.error('Edge function error:', error);
-      throw new Error(`Email service error: ${error.message}`);
+      throw new Error(`E-Mail-Service-Fehler: ${error.message}`);
     }
 
     console.log('Confirmation email sent successfully:', data);

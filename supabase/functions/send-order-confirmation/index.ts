@@ -12,6 +12,30 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { orderNumber, customerEmail, orderDetails }: OrderConfirmationRequest = await req.json();
 
+    // Log incoming request for debugging
+    console.log('Received order confirmation request:', {
+      orderNumber,
+      customerEmail,
+      hasOrderDetails: !!orderDetails,
+      orderDetailsKeys: orderDetails ? Object.keys(orderDetails) : []
+    });
+
+    // Validate request data
+    if (!orderNumber || !customerEmail || !orderDetails) {
+      const errorMsg = 'Missing required fields in request';
+      console.error(errorMsg, { orderNumber, customerEmail, hasOrderDetails: !!orderDetails });
+      return new Response(JSON.stringify({ 
+        error: errorMsg,
+        received: { orderNumber, customerEmail, hasOrderDetails: !!orderDetails }
+      }), {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders,
+        },
+      });
+    }
+
     // Check if RESEND_API_KEY is configured
     const configCheck = EmailService.checkConfiguration();
     if (!configCheck.success) {
