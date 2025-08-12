@@ -21,10 +21,10 @@ const SummaryStepContent = React.memo(({
   creditsToUse,
   onCreditsChange
 }: SummaryStepContentProps) => {
-  console.log('SummaryStepContent render:', { acceptedTerms: orderData.acceptedTerms });
+  console.log('📋 SummaryStepContent render:', { acceptedTerms: orderData.acceptedTerms });
   
   const handleTermsChange = useCallback((accepted: boolean) => {
-    console.log('handleTermsChange called:', { accepted, current: orderData.acceptedTerms });
+    console.log('✅ handleTermsChange called:', { accepted, current: orderData.acceptedTerms });
     if (accepted !== orderData.acceptedTerms) {
       onUpdateData({ acceptedTerms: accepted });
     }

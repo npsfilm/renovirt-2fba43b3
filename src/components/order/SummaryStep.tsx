@@ -78,7 +78,11 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
 
   // Enhanced submit handler with order ID navigation
   const handleEnhancedSubmit = useCallback(() => {
+    console.log('🎬 handleEnhancedSubmit called');
+    
     handleSubmitOrder((orderId: string) => {
+      console.log('🎯 Success callback called with orderId:', orderId);
+      
       // Track conversion event for session replay
       markConversionEvent('order_submitted', finalPrice);
       
@@ -92,6 +96,7 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
       }
       
       // Navigate to confirmation page with order ID
+      console.log('🚀 Navigating to order-confirmation with ID:', orderId);
       navigate(`/order-confirmation/${orderId}`);
     });
   }, [handleSubmitOrder, finalPrice, paymentMethod, markConversionEvent, trackFeatureUsage, navigate, isEnabled]);
