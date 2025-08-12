@@ -63,17 +63,6 @@ const PhotoTypeStep = ({ onNext }: PhotoTypeStepProps) => {
         </div>
       </div>
 
-      {/* Mobile Button Area - sticky at bottom */}
-      <div className="md:hidden sticky bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background/95 to-transparent pt-2 pb-3 px-3">
-        <Button
-          onClick={onNext}
-          disabled={!canProceed}
-          size="sm"
-          className="w-full shadow-sm"
-        >
-          Weiter zum Upload →
-        </Button>
-      </div>
 
       {/* Desktop Button Area - hidden on mobile */}
       <div className="hidden md:block sticky bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background/95 to-transparent pt-3 pb-4 px-2 flex-shrink-0 md:relative md:bg-none md:pt-4">
