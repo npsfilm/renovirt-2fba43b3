@@ -22,6 +22,7 @@ const PhotoTypeCard = ({
 }: PhotoTypeCardProps) => {
   const isMobile = useIsMobile();
 
+  if (isMobile) {
     return (
       <Label htmlFor={id} className="cursor-pointer block">
         <Card
