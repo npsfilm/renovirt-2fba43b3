@@ -34,7 +34,19 @@ const Order = () => {
   const getStepIndex = useOrderMetaStore((state) => state.getStepIndex);
   const getProgressPercentage = useOrderMetaStore((state) => state.getProgressPercentage);
   const selectedPackage = useOrderStore((state) => state.package);
+  const resetOrder = useOrderStore((state) => state.resetOrder);
+  const setCurrentStep = useOrderMetaStore((state) => state.setCurrentStep);
   const posthog = usePostHog();
+  
+  // Beim Öffnen des Bestellprozesses stets neu starten
+  useEffect(() => {
+    resetOrder();
+    setCurrentStep('photo-type');
+    return () => {
+      // Fortschritt beim Verlassen des Bestellprozesses löschen
+      resetOrder();
+    };
+  }, [resetOrder, setCurrentStep]);
   
   // Use the validation hook instead of store function
   const { canProceedToNextStep } = useOrderValidation();
