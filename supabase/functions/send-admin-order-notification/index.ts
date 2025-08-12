@@ -32,19 +32,10 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    // Admin-Rolle prüfen
-    const { data: profile } = await supabase
-      .from('customer_profiles')
-      .select('app_role')
-      .eq('user_id', user.id)
-      .single();
-
-    if (!profile || profile.app_role !== 'admin') {
-      return new Response(JSON.stringify({ error: 'Forbidden' }), {
-        status: 403,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
+    // Hinweis: Jeder authentifizierte Nutzer darf diese Funktion auslösen,
+    // da lediglich eine Admin-Benachrichtigung verschickt wird.
+    // Missbrauchsschutz sollte separat (Rate Limiting) erfolgen.
+    // Früherer Admin-Rollen-Check wurde entfernt, um Bestellungen durch Kunden nicht zu blockieren.
 
     const { orderNumber, orderDetails, customerDetails, paymentDetails }: AdminOrderNotificationRequest = await req.json();
 
