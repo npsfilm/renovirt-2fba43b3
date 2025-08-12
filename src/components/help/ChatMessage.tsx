@@ -3,6 +3,7 @@ import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import SupportMessage from './SupportMessage';
+import { validateAndSanitizeInput } from '@/utils/enhancedXSSProtection';
 
 interface Message {
   id: string;
@@ -69,10 +70,13 @@ const ChatMessage = ({
             : 'bg-card text-card-foreground border border-border rounded-tl-md'
         }`}>
           <div className="text-sm leading-relaxed whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{ 
-            __html: message.content
-              .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-              .replace(/\*(.*?)\*/g, '<em>$1</em>')
-              .replace(/\n- /g, '\n• ')
+            __html: validateAndSanitizeInput(
+              message.content
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\n- /g, '\n• '),
+              { allowedTags: ['strong','em','br'], maxLength: 5000 }
+            ).sanitized
           }} />
         </div>
         

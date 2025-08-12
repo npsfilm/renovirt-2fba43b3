@@ -76,10 +76,10 @@ verify_jwt = false
 verify_jwt = true
 
 [functions.send-order-confirmation]
-verify_jwt = false
+verify_jwt = true
 
 [functions.send-admin-order-notification]
-verify_jwt = false
+verify_jwt = true
 
 [functions.send-email-change-request]
 verify_jwt = true
@@ -88,4 +88,4 @@ verify_jwt = true
 verify_jwt = false
 
 [functions.verify-payment]
-verify_jwt = false
+verify_jwt = true

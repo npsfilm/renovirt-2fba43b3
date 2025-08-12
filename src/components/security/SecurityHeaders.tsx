@@ -16,16 +16,16 @@ const SecurityHeaders = () => {
     // Enhanced Content Security Policy
     addMetaTag('Content-Security-Policy', [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "script-src 'self' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: https: blob:",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.posthog.com https://eu.posthog.com wss://*.posthog.com",
       "frame-src 'self'",
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",
-      "frame-ancestors 'none'",
+      "frame-ancestors 'self' https://*.lovableproject.com https://app.renovirt.de",
       "block-all-mixed-content",
       "upgrade-insecure-requests"
     ].join('; '));
