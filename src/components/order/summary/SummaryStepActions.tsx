@@ -69,6 +69,31 @@ const SummaryStepActions = ({
         </Button>
       </div>
       
+      {/* Mobile Action Buttons */}
+      <div className="md:hidden flex flex-col gap-3">
+        <Button
+          onClick={onSubmit}
+          disabled={!canProceed || isProcessing}
+          className={`w-full min-h-[48px] text-base font-medium transition-all duration-200 ${
+            canProceed && !isProcessing
+              ? 'bg-primary hover:bg-primary/90 hover:shadow-lg active:scale-[0.98]'
+              : 'bg-gray-300 cursor-not-allowed'
+          }`}
+        >
+          {getButtonIcon()}
+          <span className="ml-2">{getButtonText()}</span>
+        </Button>
+        <Button
+          variant="outline"
+          onClick={onPrev}
+          disabled={isProcessing}
+          className="w-full"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Zurück
+        </Button>
+      </div>
+      
       {/* Security Notice */}
       <div className="text-center">
         <div className="flex items-center justify-center gap-2 text-xs md:text-sm text-gray-500">

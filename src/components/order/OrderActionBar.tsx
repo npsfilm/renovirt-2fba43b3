@@ -30,8 +30,8 @@ const OrderActionBar = ({
 }: OrderActionBarProps) => {
   const isMobile = useIsMobile();
 
-  // Only render on mobile and not on confirmation step
-  if (!isMobile || currentStep === 'confirmation') {
+  // Only render on mobile and not on summary or confirmation step
+  if (!isMobile || currentStep === 'confirmation' || currentStep === 'summary') {
     return null;
   }
 
@@ -54,8 +54,6 @@ const OrderActionBar = ({
         return 'Weiter zu Extras';
       case 'extras':
         return 'Weiter zur Übersicht';
-      case 'summary':
-        return 'Jetzt bestellen';
       default:
         return 'Weiter';
     }

@@ -10,7 +10,7 @@ import type { OrderData } from '@/utils/orderValidation';
 export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) => {
   const [creditsToUse, setCreditsToUse] = useState(0);
   const { user } = useAuth();
-  const { packages, addOns } = useOrderData();
+  const { packages, addOns, packagesLoading, addOnsLoading } = useOrderData();
   const { createOrder } = useOrderCreation(packages, addOns);
   const { toast } = useToast();
   
@@ -25,22 +25,38 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
   
   const finalPrice = useMemo(() => Math.max(0, totalPrice - creditsToUse), [totalPrice, creditsToUse]);
   
-  const canProceed = useMemo(() => !!(
-    orderData.photoType &&
-    orderData.package &&
-    orderData.acceptedTerms &&
-    orderData.email &&
-    orderData.email.includes('@')
-  ), [orderData.photoType, orderData.package, orderData.acceptedTerms, orderData.email]);
+  const canProceed = useMemo(() => {
+    const emailFromUser = user?.email?.trim() || '';
+    const emailFromOrder = orderData.email?.trim() || '';
+    const emailToUse = emailFromOrder || emailFromUser;
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailToUse);
+
+    return !!(
+      !packagesLoading &&
+      !addOnsLoading &&
+      orderData.photoType &&
+      orderData.package &&
+      orderData.acceptedTerms &&
+      emailValid
+    );
+  }, [user?.email, orderData.photoType, orderData.package, orderData.acceptedTerms, orderData.email, packagesLoading, addOnsLoading]);
 
   const handleSubmit = useCallback((onOrderSuccess?: (orderId: string) => void) => {
     const executeOrder = async () => {
+      // Determine effective email (orderData.email or fallback to user.email)
+      const emailFromUser = user?.email?.trim() || '';
+      const emailFromOrder = orderData.email?.trim() || '';
+      const emailToUse = emailFromOrder || emailFromUser;
+      const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailToUse);
+
       console.log('🔥 handleSubmit started', { 
-        canProceed, 
-        finalPrice, 
+        canProceed,
+        finalPrice,
         creditsToUse,
-        hasEmail: !!orderData.email,
-        emailValid: orderData.email?.includes('@')
+        emailFromOrder,
+        emailFromUser,
+        emailToUse,
+        emailValid
       });
 
       if (!user) {
@@ -53,8 +69,8 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
         return;
       }
 
-      if (!canProceed || !orderData.email || !orderData.email.includes('@')) {
-        console.log('❌ Validation failed', { canProceed, email: orderData.email });
+      if (!canProceed || !emailValid) {
+        console.log('❌ Validation failed', { canProceed, emailToUse, emailValid });
         toast({
           title: 'Unvollständige Angaben',
           description: 'Bitte überprüfen Sie Ihre Angaben, E-Mail-Adresse und akzeptieren Sie die AGB.',
@@ -74,8 +90,10 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
           finalPrice
         });
 
+        const effectiveOrderData = { ...orderData, email: emailToUse } as OrderData;
+
         const order = await createOrder({
-          orderData,
+          orderData: effectiveOrderData,
           paymentMethod
         });
 
