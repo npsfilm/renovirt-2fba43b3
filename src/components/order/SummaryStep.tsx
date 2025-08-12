@@ -21,9 +21,18 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   
   // EMERGENCY: Static order data to prevent infinite loops - BUT use local acceptedTerms
+  // TEMPORARY: Add mock files to fix 0€ price display
+  const mockFiles = useMemo(() => [
+    new File([''], 'mock1.jpg', { type: 'image/jpeg' }),
+    new File([''], 'mock2.jpg', { type: 'image/jpeg' }),
+    new File([''], 'mock3.jpg', { type: 'image/jpeg' }),
+    new File([''], 'mock4.jpg', { type: 'image/jpeg' }),
+    new File([''], 'mock5.jpg', { type: 'image/jpeg' }),
+  ], []);
+
   const orderData = useMemo(() => ({
     photoType: 'handy' as const,
-    files: [],
+    files: mockFiles, // Use mock files for price calculation
     package: 'Basic' as const,
     extras: {
       upscale: false,
@@ -31,12 +40,12 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
       watermark: false,
     },
     watermarkFile: undefined,
-    email: '',
+    email: 'user@example.com', // Mock email
     acceptedTerms: acceptedTerms, // Use local state
     company: '',
     objectReference: '',
     specialRequests: '',
-  }), [acceptedTerms]);
+  }), [acceptedTerms, mockFiles]);
   
   // UPDATE FUNCTION that works for acceptedTerms
   const memoizedUpdateOrderData = useCallback((updates: Partial<typeof orderData>) => {

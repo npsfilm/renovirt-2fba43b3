@@ -141,30 +141,34 @@ export const useOrderStore = create<OrderState>()((set, get) => ({
   },
 
   updateOrderData: (updates) => {
-    // EMERGENCY FIX - Disable all updates temporarily to stop infinite loops
-    console.log('updateOrderData blocked to prevent infinite loop:', updates);
-    return;
-    
-    // ORIGINAL LOGIC (COMMENTED OUT)
-    // set((state) => {
-    //   // Simple shallow check to prevent unnecessary updates
-    //   let hasChanges = false;
-    //   
-    //   for (const [key, value] of Object.entries(updates)) {
-    //     if (state[key] !== value) {
-    //       hasChanges = true;
-    //       break;
-    //     }
-    //   }
-    //   
-    //   if (!hasChanges) {
-    //     console.log('No changes detected, returning same state');
-    //     return state;
-    //   }
-    //   
-    //   console.log('Changes detected, updating state');
-    //   return { ...state, ...updates };
-    // });
+    set((state) => {
+      // Prevent unnecessary updates with deep comparison
+      let hasChanges = false;
+      
+      for (const [key, value] of Object.entries(updates)) {
+        if (key === 'extras' && typeof value === 'object') {
+          // Deep comparison for extras object
+          const currentExtras = state.extras;
+          for (const [extraKey, extraValue] of Object.entries(value)) {
+            if (currentExtras[extraKey] !== extraValue) {
+              hasChanges = true;
+              break;
+            }
+          }
+        } else if (state[key] !== value) {
+          hasChanges = true;
+          break;
+        }
+      }
+      
+      if (!hasChanges) {
+        console.log('No changes detected, returning same state');
+        return state;
+      }
+      
+      console.log('Changes detected, updating state:', updates);
+      return { ...state, ...updates };
+    });
   },
 
   resetOrder: () => {
