@@ -4,6 +4,7 @@ import { RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { LucideIcon } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+
 interface PhotoTypeCardProps {
   id: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5';
   title: string;
@@ -11,6 +12,7 @@ interface PhotoTypeCardProps {
   icon: LucideIcon;
   isSelected: boolean;
 }
+
 const PhotoTypeCard = ({
   id,
   title,
@@ -19,91 +21,112 @@ const PhotoTypeCard = ({
   isSelected
 }: PhotoTypeCardProps) => {
   const isMobile = useIsMobile();
-  if (isMobile) {
-    // Airbnb-style mobile design with enhanced styling
-    return <Label htmlFor={id} className="cursor-pointer block">
-        <Card className={`
-          relative overflow-hidden transition-all duration-300 ease-out
-          ${isSelected ? 'shadow-xl border-primary/30 bg-primary/5 shadow-primary/15 scale-[1.02]' : 'shadow-lg border-gray-200 bg-white hover:shadow-xl hover:border-gray-300 active:scale-[0.98]'}
-          border-2 rounded-3xl w-full min-h-[110px]
-        `}>
-          <CardContent className="p-6 relative">
+
+    return (
+      <Label htmlFor={id} className="cursor-pointer block">
+        <Card
+          className={`
+            relative overflow-hidden transition-all duration-300 ease-out
+            ${isSelected ? 'shadow-xl border-primary/30 bg-primary/5 shadow-primary/15 scale-[1.02]' : 'shadow-lg border-border bg-card hover:shadow-xl hover:border-border active:scale-[0.98]'}
+            border-2 rounded-2xl w-full min-h-[64px]
+          `}
+        >
+          <CardContent className="p-2 relative">
             {/* Hidden radio button for form functionality */}
             <RadioGroupItem value={id} id={id} className="sr-only" />
-            
-            <div className="flex items-start gap-5">
-              {/* Enhanced Icon */}
-              <div className={`
-                w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 flex-shrink-0 shadow-sm
-                ${isSelected ? 'bg-primary/15 shadow-lg shadow-primary/20' : 'bg-gray-50'}
-              `}>
-                <IconComponent className={`
-                  w-8 h-8 transition-all duration-300 transform origin-center scale-[1.2]
-                  ${isSelected ? 'text-primary' : 'text-gray-600'}
-                `} />
+
+            <div className="flex items-start gap-2">
+              {/* Icon */}
+              <div
+                className={`
+                  w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 flex-shrink-0 shadow-sm
+                  ${isSelected ? 'bg-primary/10 shadow-lg shadow-primary/20' : 'bg-muted'}
+                `}
+              >
+                <IconComponent
+                  className={`
+                    w-4 h-4 transition-all duration-300 transform origin-center
+                    text-foreground
+                  `}
+                />
               </div>
-              
-              {/* Enhanced Content */}
+
+              {/* Content */}
               <div className="flex-1 text-left min-w-0">
-                <h3 className={`
-                  text-lg font-semibold mb-2 transition-colors duration-300 leading-tight
-                  ${isSelected ? 'text-primary' : 'text-gray-900'}
-                `}>
+                <h3
+                  className={`
+                    text-sm font-medium mb-0.5 leading-tight transition-colors duration-300
+                    ${isSelected ? 'text-foreground' : 'text-foreground'}
+                  `}
+                >
                   {title}
                 </h3>
-                
-                <p className="text-sm text-gray-600 leading-relaxed">
+
+                <p className="text-xs text-muted-foreground leading-snug truncate">
                   {description}
                 </p>
               </div>
-
-              {/* Enhanced Airbnb-style checkmark indicator */}
-              
             </div>
 
-            {/* Airbnb-style subtle border highlight */}
-            {isSelected && <div className="absolute inset-0 rounded-3xl border-2 border-primary/40 pointer-events-none"></div>}
+            {/* Subtiles Border-Highlight im ausgewählten Zustand */}
+            {isSelected && (
+              <div className="absolute inset-0 rounded-2xl border-2 border-primary/40 pointer-events-none"></div>
+            )}
           </CardContent>
         </Card>
-      </Label>;
+      </Label>
+    );
   }
 
-  // Desktop design (unchanged)
-  return <Label htmlFor={id} className="cursor-pointer group">
-      <Card className={`
-        relative overflow-hidden transition-all duration-300 ease-out transform
-        ${isSelected ? 'ring-2 ring-primary shadow-lg scale-[1.02] bg-gradient-to-br from-primary/10 to-primary/20' : 'hover:shadow-md hover:scale-[1.01] border-border bg-card'}
-        border h-full
-      `}>
+  // Desktop-Design (unverändert)
+  return (
+    <Label htmlFor={id} className="cursor-pointer group">
+      <Card
+        className={`
+          relative overflow-hidden transition-all duration-300 ease-out transform
+          ${isSelected ? 'ring-2 ring-primary shadow-lg scale-[1.02] bg-gradient-to-br from-primary/10 to-primary/20' : 'hover:shadow-md hover:scale-[1.01] border-border bg-card'}
+          border h-full
+        `}
+      >
         <CardContent className="p-2 md:p-4 text-center relative">
           {/* Hidden radio button for form functionality */}
           <RadioGroupItem value={id} id={id} className="sr-only" />
-          
-          <div className={`
-            w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl flex items-center justify-center mx-auto mb-1 md:mb-2 transition-all duration-300
-            ${isSelected ? 'bg-primary/10 shadow-md' : 'bg-muted group-hover:bg-muted/80'}
-          `}>
-            <IconComponent className={`
-              w-4 h-4 md:w-6 md:h-6 transition-all duration-300 transform origin-center scale-[1.2]
-              ${isSelected ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'}
-            `} />
+
+          <div
+            className={`
+              w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl flex items-center justify-center mx-auto mb-1 md:mb-2 transition-all duration-300
+              ${isSelected ? 'bg-primary/10 shadow-md' : 'bg-muted group-hover:bg-muted/80'}
+            `}
+          >
+            <IconComponent
+              className={`
+                w-4 h-4 md:w-6 md:h-6 transition-all duration-300 transform origin-center scale-[1.2]
+                ${isSelected ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'}
+              `}
+            />
           </div>
-          
-          <h3 className={`
-            text-xs md:text-sm font-semibold mb-1 transition-colors duration-300
-            ${isSelected ? 'text-foreground' : 'text-foreground'}
-          `}>
+
+          <h3
+            className={`
+              text-xs md:text-sm font-semibold mb-1 transition-colors duration-300
+              ${isSelected ? 'text-foreground' : 'text-foreground'}
+            `}
+          >
             {title}
           </h3>
-          
-          <p className={`
-            text-xs leading-relaxed transition-colors duration-300 line-clamp-2
-            ${isSelected ? 'text-foreground/80' : 'text-muted-foreground'}
-          `}>
+
+          <p
+            className={`
+              text-xs leading-relaxed transition-colors duration-300 line-clamp-2
+              ${isSelected ? 'text-foreground/80' : 'text-muted-foreground'}
+            `}
+          >
             {description}
           </p>
         </CardContent>
       </Card>
-    </Label>;
+    </Label>
+  );
 };
+
 export default PhotoTypeCard;

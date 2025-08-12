@@ -20,7 +20,7 @@ const PhotoTypeStep = ({ onNext }: PhotoTypeStepProps) => {
   const isMobile = useIsMobile();
 
   return (
-    <div className={`${isMobile ? 'space-y-6' : 'flex flex-col h-full min-h-0'}`}>
+    <div className={`${isMobile ? 'min-h-screen flex flex-col' : 'flex flex-col h-full min-h-0'}`}>
       {/* Header - compact for desktop */}
       {!isMobile && (
         <div className="text-center space-y-1 px-2 py-2 flex-shrink-0">
@@ -32,11 +32,11 @@ const PhotoTypeStep = ({ onNext }: PhotoTypeStepProps) => {
       )}
 
       {/* Content Area */}
-      <div className={`${isMobile ? 'px-4 py-6 space-y-4' : 'flex-1 min-h-0 px-2 pt-2 overflow-y-auto'}`}>
+      <div className={`${isMobile ? 'px-3 py-2 pb-16 space-y-2 flex-1' : 'flex-1 min-h-0 px-2 pt-2 overflow-y-auto'}`}>
         <RadioGroup
           value={selectedType}
           onValueChange={setPhotoType}
-          className={`${isMobile ? 'space-y-4' : 'grid grid-cols-1 md:grid-cols-2 gap-3 mb-4'}`}
+          className={`${isMobile ? 'space-y-2' : 'grid grid-cols-1 md:grid-cols-2 gap-3 mb-4'}`}
         >
           {photoTypes.map((type) => (
             <PhotoTypeCard
@@ -61,6 +61,18 @@ const PhotoTypeStep = ({ onNext }: PhotoTypeStepProps) => {
         <div className="hidden md:block mb-3">
           <ProTipCard />
         </div>
+      </div>
+
+      {/* Mobile Button Area - sticky at bottom */}
+      <div className="md:hidden sticky bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background/95 to-transparent pt-2 pb-3 px-3">
+        <Button
+          onClick={onNext}
+          disabled={!canProceed}
+          size="sm"
+          className="w-full shadow-sm"
+        >
+          Weiter zum Upload →
+        </Button>
       </div>
 
       {/* Desktop Button Area - hidden on mobile */}
