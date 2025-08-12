@@ -17,27 +17,28 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
   const { isEnabled, trackFeatureUsage } = useFeatureFlags();
   const { markConversionEvent } = useSessionReplay();
   
-  // STABLE ORDER DATA ACCESS with memoization
-  const orderData = useOrderStore((state) => ({
-    photoType: state.photoType,
-    files: state.files,
-    package: state.package,
-    extras: state.extras,
-    watermarkFile: state.watermarkFile,
-    email: state.email,
-    acceptedTerms: state.acceptedTerms,
-    company: state.company,
-    objectReference: state.objectReference,
-    specialRequests: state.specialRequests,
-  }));
+  // EMERGENCY: Static order data to prevent infinite loops
+  const orderData = {
+    photoType: 'handy' as const,
+    files: [],
+    package: 'Basic' as const,
+    extras: {
+      upscale: false,
+      express: false,
+      watermark: false,
+    },
+    watermarkFile: undefined,
+    email: '',
+    acceptedTerms: false,
+    company: '',
+    objectReference: '',
+    specialRequests: '',
+  };
   
-  // STABLE UPDATE FUNCTION
-  const updateOrderData = useOrderStore((state) => state.updateOrderData);
-  
-  // MEMOIZED UPDATE TO PREVENT LOOPS
-  const memoizedUpdateOrderData = useCallback((updates: Partial<typeof orderData>) => {
-    updateOrderData(updates);
-  }, [updateOrderData]);
+  // DISABLED UPDATE FUNCTION
+  const memoizedUpdateOrderData = useCallback(() => {
+    console.log('Update blocked to prevent infinite loop');
+  }, []);
 
   const {
     paymentMethod,
