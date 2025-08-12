@@ -44,11 +44,12 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
     acceptedTerms,
   }), [photoType, files, packageType, extras, watermarkFile, email, company, objectReference, specialRequests, acceptedTerms]);
   
-  // Use store's updateOrderData function directly
+  // Use store's updateOrderData function with stable reference
   const memoizedUpdateOrderData = useCallback((updates: Partial<typeof orderData>) => {
     console.log('Updating order data:', updates);
-    updateOrderData(updates);
-  }, [updateOrderData]);
+    // Access updateOrderData directly from the store to avoid dependency issues
+    useOrderStore.getState().updateOrderData(updates);
+  }, []); // Empty dependency array since we're accessing store directly
 
   const {
     paymentMethod,
