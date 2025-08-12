@@ -31,11 +31,11 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
   }));
   const updateOrderData = useOrderStore((state) => state.updateOrderData);
   
-  // Memoize the updateOrderData function to prevent re-renders
+  // Memoize the updateOrderData function - NO dependency on updateOrderData to prevent loops
   const memoizedUpdateOrderData = useCallback((updates: Partial<typeof orderData>) => {
     console.log('memoizedUpdateOrderData called with:', updates);
     updateOrderData(updates);
-  }, [updateOrderData]);
+  }, []); // Empty dependency array to prevent recreation
 
   const {
     paymentMethod,

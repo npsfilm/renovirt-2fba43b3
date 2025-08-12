@@ -143,12 +143,36 @@ export const useOrderStore = create<OrderState>()((set, get) => ({
   updateOrderData: (updates) => {
     console.log('updateOrderData called with:', updates);
     set((state) => {
-      const hasChanges = Object.keys(updates).some(key => state[key] !== updates[key]);
+      // Deep comparison for arrays and objects
+      const hasChanges = Object.keys(updates).some(key => {
+        const currentValue = state[key];
+        const newValue = updates[key];
+        
+        // Handle array comparison (for files)
+        if (Array.isArray(currentValue) && Array.isArray(newValue)) {
+          return currentValue.length !== newValue.length || 
+                 currentValue.some((item, index) => item !== newValue[index]);
+        }
+        
+        // Handle object comparison (for extras, etc.)
+        if (typeof currentValue === 'object' && typeof newValue === 'object' && 
+            currentValue !== null && newValue !== null) {
+          const currentKeys = Object.keys(currentValue);
+          const newKeys = Object.keys(newValue);
+          return currentKeys.length !== newKeys.length ||
+                 currentKeys.some(k => currentValue[k] !== newValue[k]);
+        }
+        
+        // Handle primitive comparison
+        return currentValue !== newValue;
+      });
+      
       if (!hasChanges) {
-        console.log('No changes detected, skipping update');
-        return state;
+        console.log('No changes detected, returning same state object');
+        return state; // Return the same state object to prevent re-renders
       }
-      console.log('Updating order data:', { ...state, ...updates });
+      
+      console.log('Changes detected, updating order data');
       return { ...state, ...updates };
     });
   },
