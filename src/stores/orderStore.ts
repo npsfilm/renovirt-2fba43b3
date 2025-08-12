@@ -141,7 +141,7 @@ export const useOrderStore = create<OrderState>()((set, get) => ({
   },
 
   updateOrderData: (updates) => {
-    console.log('updateOrderData called with:', updates);
+    console.log('updateOrderData called with:', updates, 'Stack:', new Error().stack);
     set((state) => {
       // Deep comparison for arrays and objects
       const hasChanges = Object.keys(updates).some(key => {
@@ -150,8 +150,12 @@ export const useOrderStore = create<OrderState>()((set, get) => ({
         
         // Handle array comparison (for files)
         if (Array.isArray(currentValue) && Array.isArray(newValue)) {
-          return currentValue.length !== newValue.length || 
+          const arrayChanged = currentValue.length !== newValue.length || 
                  currentValue.some((item, index) => item !== newValue[index]);
+          if (arrayChanged) {
+            console.log(`Array change detected for ${key}:`, { current: currentValue, new: newValue });
+          }
+          return arrayChanged;
         }
         
         // Handle object comparison (for extras, etc.)
@@ -159,12 +163,20 @@ export const useOrderStore = create<OrderState>()((set, get) => ({
             currentValue !== null && newValue !== null) {
           const currentKeys = Object.keys(currentValue);
           const newKeys = Object.keys(newValue);
-          return currentKeys.length !== newKeys.length ||
+          const objectChanged = currentKeys.length !== newKeys.length ||
                  currentKeys.some(k => currentValue[k] !== newValue[k]);
+          if (objectChanged) {
+            console.log(`Object change detected for ${key}:`, { current: currentValue, new: newValue });
+          }
+          return objectChanged;
         }
         
         // Handle primitive comparison
-        return currentValue !== newValue;
+        const primitiveChanged = currentValue !== newValue;
+        if (primitiveChanged) {
+          console.log(`Primitive change detected for ${key}:`, { current: currentValue, new: newValue });
+        }
+        return primitiveChanged;
       });
       
       if (!hasChanges) {

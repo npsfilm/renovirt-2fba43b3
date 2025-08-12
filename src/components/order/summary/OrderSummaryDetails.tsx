@@ -39,14 +39,14 @@ const OrderSummaryDetails = React.memo(({ orderData, onUpdateData }: OrderSummar
     enabled: !!user?.id,
   });
 
-  // Auto-fill email from user profile when component loads or user changes
-  useEffect(() => {
-    // Only auto-fill email once when user is available and email field is empty
-    if (user?.email && !orderData.email) {
-      console.log('Auto-filling email from user profile:', user.email);
-      onUpdateData({ email: user.email });
-    }
-  }, [user?.id]); // Only depend on user.id to prevent loops
+  // TEMPORARILY DISABLED: Auto-fill email to debug infinite loop
+  // useEffect(() => {
+  //   // Only auto-fill email once when user is available and email field is empty
+  //   if (user?.email && !orderData.email) {
+  //     console.log('Auto-filling email from user profile:', user.email);
+  //     onUpdateData({ email: user.email });
+  //   }
+  // }, [user?.id]); // Only depend on user.id to prevent loops
 
   const handleWatermarkUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
