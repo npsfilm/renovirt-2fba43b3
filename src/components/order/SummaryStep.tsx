@@ -31,11 +31,14 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
   }));
   const updateOrderData = useOrderStore((state) => state.updateOrderData);
   
-  // Memoize the updateOrderData function - NO dependency on updateOrderData to prevent loops
+  // Stable reference for updateOrderData - use a ref to prevent recreation
+  const updateRef = React.useRef(updateOrderData);
+  updateRef.current = updateOrderData;
+  
   const memoizedUpdateOrderData = useCallback((updates: Partial<typeof orderData>) => {
     console.log('memoizedUpdateOrderData called with:', updates);
-    updateOrderData(updates);
-  }, []); // Empty dependency array to prevent recreation
+    updateRef.current(updates);
+  }, []); // No dependencies to ensure stable reference
 
   const {
     paymentMethod,
