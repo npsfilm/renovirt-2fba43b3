@@ -69,7 +69,7 @@ const OrderConfirmation = () => {
           `)
           .eq('id', orderId)
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
         if (orderError) {
           console.error('Error fetching order:', orderError);

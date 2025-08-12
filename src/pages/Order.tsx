@@ -13,7 +13,7 @@ import UploadStep from '@/components/order/UploadStep';
 import PackageStep from '@/components/order/PackageStep';
 import ExtrasStep from '@/components/order/ExtrasStep';
 import SummaryStep from '@/components/order/SummaryStep';
-import ConfirmationStep from '@/components/order/ConfirmationStep';
+
 import { useOrderStore } from '@/stores/orderStore';
 import { useOrderMetaStore } from '@/stores/orderMetaStore';
 import { useOrderValidation } from '@/hooks/useOrderValidation';
@@ -94,8 +94,6 @@ const Order = () => {
         return <ExtrasStep onNext={handleNext} onPrev={handlePrev} />;
       case 'summary':
         return <SummaryStep onNext={handleNext} onPrev={handlePrev} />;
-      case 'confirmation':
-        return <ConfirmationStep />;
       default:
         return null;
     }
