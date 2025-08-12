@@ -77,11 +77,7 @@ const AppSidebar = () => {
                   onClick={() => navigate('/order')}
                   isActive={isActivePath('/order')}
                   aria-current={isActivePath('/order') ? 'page' : undefined}
-                  className={`w-full justify-start mb-4 rounded-lg shadow-md ${
-                    isActivePath('/order')
-                      ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                      : 'bg-primary text-primary-foreground hover:bg-primary/90'
-                  }`}
+                  className="w-full justify-start mb-4 rounded-lg shadow-md bg-primary text-primary-foreground hover:bg-primary/90 data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
                 >
                   <Upload className="w-4 h-4 text-primary-foreground" />
                   <span className="text-primary-foreground">Bilder hochladen</span>
