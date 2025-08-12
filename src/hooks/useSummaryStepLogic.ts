@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useOrderData } from '@/hooks/useOrderData';
@@ -22,16 +22,21 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
 
   const { handleSubmitOrder, createOrderAfterPayment } = useSummaryOrderCreation();
 
-  const totalPrice = calculateOrderTotal(orderData, packages, addOns);
-  const finalPrice = Math.max(0, totalPrice - creditsToUse);
+  // Memoize expensive calculations to prevent infinite loops
+  const totalPrice = useMemo(() => {
+    if (!packages || !addOns) return 0;
+    return calculateOrderTotal(orderData, packages, addOns);
+  }, [orderData, packages, addOns]);
   
-  const canProceed = !!(
+  const finalPrice = useMemo(() => Math.max(0, totalPrice - creditsToUse), [totalPrice, creditsToUse]);
+  
+  const canProceed = useMemo(() => !!(
     orderData.photoType &&
     orderData.package &&
     orderData.acceptedTerms
-  );
+  ), [orderData.photoType, orderData.package, orderData.acceptedTerms]);
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     // Simplified order handling for invoice-only payment
     handleSubmitOrder(
       orderData,
@@ -43,7 +48,7 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
       null, // No Stripe payment function needed
       onNext
     );
-  };
+  }, [handleSubmitOrder, orderData, paymentMethod, creditsToUse, finalPrice, canProceed, onNext]);
 
   // No payment success handler needed for invoice payments
 

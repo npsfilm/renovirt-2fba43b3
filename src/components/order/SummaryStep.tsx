@@ -52,6 +52,9 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
     };
   }, [photoType, files, packageType, extras, watermarkFile, email, company, objectReference, specialRequests, acceptedTerms]);
   
+  // Prevent infinite loops by stabilizing the orderData reference
+  const stableOrderData = useMemo(() => orderData, [JSON.stringify(orderData)]);
+  
   // Use store's updateOrderData function with stable reference
   const memoizedUpdateOrderData = useCallback((updates: Partial<typeof orderData>) => {
     console.log('Updating order data:', updates);
@@ -67,7 +70,7 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
     finalPrice,
     isProcessing,
     handleSubmitOrder
-  } = useSummaryStepLogic(orderData, () => {
+  } = useSummaryStepLogic(stableOrderData, () => {
     // Track conversion event for session replay
     markConversionEvent('order_submitted', finalPrice);
     
@@ -87,7 +90,7 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
       <SummaryStepHeader />
 
       <SummaryStepContent
-        orderData={orderData}
+        orderData={stableOrderData}
         onUpdateData={memoizedUpdateOrderData}
         paymentMethod={paymentMethod}
         creditsToUse={creditsToUse}
