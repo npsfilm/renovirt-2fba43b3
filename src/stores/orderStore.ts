@@ -141,14 +141,15 @@ export const useOrderStore = create<OrderState>()((set, get) => ({
   },
 
   updateOrderData: (updates) => {
+    console.log('Store updateOrderData called with:', updates);
     set((state) => {
-      // Prevent unnecessary updates with deep comparison
+      // Prevent unnecessary updates with shallow comparison
       let hasChanges = false;
       
       for (const [key, value] of Object.entries(updates)) {
-        if (key === 'extras' && typeof value === 'object') {
+        if (key === 'extras' && typeof value === 'object' && value !== null) {
           // Deep comparison for extras object
-          const currentExtras = state.extras;
+          const currentExtras = state.extras || {};
           for (const [extraKey, extraValue] of Object.entries(value)) {
             if (currentExtras[extraKey] !== extraValue) {
               hasChanges = true;

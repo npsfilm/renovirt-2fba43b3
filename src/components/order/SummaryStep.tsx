@@ -52,15 +52,14 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
     };
   }, [photoType, files, packageType, extras, watermarkFile, email, company, objectReference, specialRequests, acceptedTerms]);
   
-  // Prevent infinite loops by stabilizing the orderData reference
-  const stableOrderData = useMemo(() => orderData, [JSON.stringify(orderData)]);
+  // Use orderData directly - the useMemo above already provides stability
+  // No need for additional JSON.stringify memoization which causes performance issues
   
   // Use store's updateOrderData function with stable reference
   const memoizedUpdateOrderData = useCallback((updates: Partial<typeof orderData>) => {
-    console.log('Updating order data:', updates);
-    // Access updateOrderData directly from the store to avoid dependency issues
-    useOrderStore.getState().updateOrderData(updates);
-  }, []); // Empty dependency array since we're accessing store directly
+    console.log('memoizedUpdateOrderData called with:', updates);
+    updateOrderData(updates);
+  }, [updateOrderData]);
 
   const {
     paymentMethod,
@@ -70,7 +69,7 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
     finalPrice,
     isProcessing,
     handleSubmitOrder
-  } = useSummaryStepLogic(stableOrderData, () => {
+  } = useSummaryStepLogic(orderData, () => {
     // Track conversion event for session replay
     markConversionEvent('order_submitted', finalPrice);
     
@@ -90,7 +89,7 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
       <SummaryStepHeader />
 
       <SummaryStepContent
-        orderData={stableOrderData}
+        orderData={orderData}
         onUpdateData={memoizedUpdateOrderData}
         paymentMethod={paymentMethod}
         creditsToUse={creditsToUse}
