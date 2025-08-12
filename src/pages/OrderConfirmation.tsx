@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { CheckCircle, Loader2, AlertCircle } from 'lucide-react';
+import { CheckCircle, Loader2, AlertCircle, Calendar, Clock, ShieldCheck, Lock, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -184,6 +184,72 @@ const OrderConfirmation = () => {
     });
   };
 
+  // ETA-Berechnung nach bereits verwendeten Regeln (Werktage 10–18 Uhr, Express 24h / Standard 48h)
+  const BUS_START_HOUR = 10;
+  const BUS_END_HOUR = 18;
+  const EXPRESS_HOURS = 24;
+  const STANDARD_HOURS = 48;
+
+  const nextBusinessDay = (dt: Date): Date => {
+    const d = new Date(dt);
+    d.setDate(d.getDate() + 1);
+    while (d.getDay() === 0 || d.getDay() === 6) {
+      d.setDate(d.getDate() + 1);
+    }
+    d.setHours(BUS_START_HOUR, 0, 0, 0);
+    return d;
+  };
+
+  const processingStart = (orderDt: Date): Date => {
+    const orderHour = orderDt.getHours();
+    if (orderDt.getDay() === 0 || orderDt.getDay() === 6) return nextBusinessDay(orderDt);
+    if (orderHour < BUS_START_HOUR) {
+      const result = new Date(orderDt);
+      result.setHours(BUS_START_HOUR, 0, 0, 0);
+      return result;
+    }
+    if (orderHour >= BUS_END_HOUR) {
+      return nextBusinessDay(orderDt);
+    }
+    return orderDt;
+  };
+
+  const intoDeliveryWindow = (dt: Date): Date => {
+    let result = new Date(dt);
+    if (result.getDay() === 0 || result.getDay() === 6) {
+      result = nextBusinessDay(result);
+    }
+    const hour = result.getHours();
+    if (hour < BUS_START_HOUR) {
+      result.setHours(BUS_START_HOUR, 0, 0, 0);
+    } else if (hour >= BUS_END_HOUR) {
+      result = nextBusinessDay(result);
+    }
+    return result;
+  };
+
+  const calculateETA = (orderDt: Date, express: boolean): Date => {
+    const start = processingStart(orderDt);
+    const hours = express ? EXPRESS_HOURS : STANDARD_HOURS;
+    const target = new Date(start);
+    target.setTime(target.getTime() + hours * 60 * 60 * 1000);
+    return intoDeliveryWindow(target);
+  };
+
+  const formatDateTime = (date: Date) =>
+    new Intl.DateTimeFormat('de-DE', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'Europe/Berlin',
+    }).format(date);
+
+  const orderCreatedAt = new Date(order.created_at);
+  const deliveryDate = calculateETA(orderCreatedAt, !!order.extras?.express);
+  const slaHours = order.extras?.express ? 24 : 48;
+
   const extras = formatExtras(order.extras);
 
   return (
@@ -202,6 +268,20 @@ const OrderConfirmation = () => {
               Vielen Dank für Ihre Bestellung. Wir haben alle Details erhalten und werden mit der Bearbeitung beginnen.
             </p>
           </CardHeader>
+          <CardFooter className="justify-center gap-6 flex-wrap">
+            <div className="flex items-center gap-2 text-gray-700">
+              <ShieldCheck className="w-4 h-4 text-foreground" />
+              <span className="text-sm">SSL-gesicherte Übertragung</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-700">
+              <Lock className="w-4 h-4 text-foreground" />
+              <span className="text-sm">Datenschutz (DSGVO)</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-700">
+              <CreditCard className="w-4 h-4 text-foreground" />
+              <span className="text-sm">Sichere Zahlung</span>
+            </div>
+          </CardFooter>
         </Card>
 
         {/* Order Details */}
@@ -273,7 +353,44 @@ const OrderConfirmation = () => {
           </Card>
         </div>
 
-        {/* Price Summary */}
+        {/* Lieferzeit & Zeitplan */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">Lieferzeit & Zeitplan</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-foreground" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Voraussichtliche Fertigstellung</p>
+                <p className="font-semibold">{formatDateTime(deliveryDate)}</p>
+                <p className="text-xs text-gray-500 mt-1">SLA: {slaHours} Std. innerhalb der Geschäftszeiten (Mo–Fr, 10–18 Uhr)</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 pt-2">
+              <div className="flex items-center gap-3 animate-fade-in">
+                <div className="w-6 h-6 rounded-full border border-gray-300 text-gray-700 flex items-center justify-center text-xs font-semibold">1</div>
+                <span className="text-gray-700">Annahme</span>
+              </div>
+              <div className="flex items-center gap-3 animate-fade-in">
+                <div className="w-6 h-6 rounded-full border border-gray-300 text-gray-700 flex items-center justify-center text-xs font-semibold">2</div>
+                <span className="text-gray-700">Bearbeitung</span>
+              </div>
+              <div className="flex items-center gap-3 animate-fade-in">
+                <div className="w-6 h-6 rounded-full border border-gray-300 text-gray-700 flex items-center justify-center text-xs font-semibold">3</div>
+                <span className="text-gray-700">Prüfung</span>
+              </div>
+              <div className="flex items-center gap-3 animate-fade-in">
+                <div className="w-6 h-6 rounded-full border border-gray-300 text-gray-700 flex items-center justify-center text-xs font-semibold">4</div>
+                <span className="text-gray-700">Bereitstellung</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Preisübersicht */}
         <Card className="mt-6">
           <CardHeader>
             <CardTitle className="text-lg font-semibold">Preisübersicht</CardTitle>
