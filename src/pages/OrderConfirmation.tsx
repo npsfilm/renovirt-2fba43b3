@@ -36,9 +36,14 @@ const OrderConfirmation = () => {
 
   useEffect(() => {
     const fetchOrder = async () => {
-      if (!orderId || !user) {
-        setError('Bestellung oder Benutzer nicht gefunden');
+      if (!orderId) {
+        setError('Bestellung nicht angegeben');
         setLoading(false);
+        return;
+      }
+
+      if (!user) {
+        // Warten bis der Benutzer über ProtectedRoute verfügbar ist
         return;
       }
 
@@ -100,17 +105,6 @@ const OrderConfirmation = () => {
     fetchOrder();
   }, [orderId, user]);
 
-  useEffect(() => {
-    // Redirect if no orderId or user
-    if (!loading && (!orderId || !user)) {
-      toast({
-        title: 'Zugriff verweigert',
-        description: 'Sie müssen angemeldet sein, um diese Seite zu sehen.',
-        variant: 'destructive',
-      });
-      navigate('/auth');
-    }
-  }, [loading, orderId, user, navigate, toast]);
 
   if (loading) {
     return (
