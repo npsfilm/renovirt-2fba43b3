@@ -17,6 +17,7 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
   const { isEnabled, trackFeatureUsage } = useFeatureFlags();
   const { markConversionEvent } = useSessionReplay();
   
+  // SIMPLIFIED ORDER DATA ACCESS
   const orderData = useOrderStore((state) => ({
     photoType: state.photoType,
     files: state.files,
@@ -29,16 +30,9 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
     objectReference: state.objectReference,
     specialRequests: state.specialRequests,
   }));
+  
+  // DIRECT ACCESS TO PREVENT CALLBACK ISSUES
   const updateOrderData = useOrderStore((state) => state.updateOrderData);
-  
-  // Stable reference for updateOrderData - use a ref to prevent recreation
-  const updateRef = React.useRef(updateOrderData);
-  updateRef.current = updateOrderData;
-  
-  const memoizedUpdateOrderData = useCallback((updates: Partial<typeof orderData>) => {
-    console.log('memoizedUpdateOrderData called with:', updates);
-    updateRef.current(updates);
-  }, []); // No dependencies to ensure stable reference
 
   const {
     paymentMethod,
@@ -69,7 +63,7 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
 
       <SummaryStepContent
         orderData={orderData}
-        onUpdateData={memoizedUpdateOrderData}
+        onUpdateData={updateOrderData}
         paymentMethod={paymentMethod}
         creditsToUse={creditsToUse}
         onCreditsChange={setCreditsToUse}

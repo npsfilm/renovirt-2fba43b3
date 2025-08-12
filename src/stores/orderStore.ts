@@ -141,50 +141,26 @@ export const useOrderStore = create<OrderState>()((set, get) => ({
   },
 
   updateOrderData: (updates) => {
-    console.log('updateOrderData called with:', updates, 'Stack:', new Error().stack);
+    // SIMPLIFIED UPDATE LOGIC TO PREVENT INFINITE LOOPS
+    console.log('updateOrderData called with:', updates);
+    
     set((state) => {
-      // Deep comparison for arrays and objects
-      const hasChanges = Object.keys(updates).some(key => {
-        const currentValue = state[key];
-        const newValue = updates[key];
-        
-        // Handle array comparison (for files)
-        if (Array.isArray(currentValue) && Array.isArray(newValue)) {
-          const arrayChanged = currentValue.length !== newValue.length || 
-                 currentValue.some((item, index) => item !== newValue[index]);
-          if (arrayChanged) {
-            console.log(`Array change detected for ${key}:`, { current: currentValue, new: newValue });
-          }
-          return arrayChanged;
-        }
-        
-        // Handle object comparison (for extras, etc.)
-        if (typeof currentValue === 'object' && typeof newValue === 'object' && 
-            currentValue !== null && newValue !== null) {
-          const currentKeys = Object.keys(currentValue);
-          const newKeys = Object.keys(newValue);
-          const objectChanged = currentKeys.length !== newKeys.length ||
-                 currentKeys.some(k => currentValue[k] !== newValue[k]);
-          if (objectChanged) {
-            console.log(`Object change detected for ${key}:`, { current: currentValue, new: newValue });
-          }
-          return objectChanged;
-        }
-        
-        // Handle primitive comparison
-        const primitiveChanged = currentValue !== newValue;
-        if (primitiveChanged) {
-          console.log(`Primitive change detected for ${key}:`, { current: currentValue, new: newValue });
-        }
-        return primitiveChanged;
-      });
+      // Simple shallow check to prevent unnecessary updates
+      let hasChanges = false;
       
-      if (!hasChanges) {
-        console.log('No changes detected, returning same state object');
-        return state; // Return the same state object to prevent re-renders
+      for (const [key, value] of Object.entries(updates)) {
+        if (state[key] !== value) {
+          hasChanges = true;
+          break;
+        }
       }
       
-      console.log('Changes detected, updating order data');
+      if (!hasChanges) {
+        console.log('No changes detected, returning same state');
+        return state;
+      }
+      
+      console.log('Changes detected, updating state');
       return { ...state, ...updates };
     });
   },
