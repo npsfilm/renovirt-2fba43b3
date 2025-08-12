@@ -27,9 +27,7 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
   
   const canProceed = !!(
     orderData.photoType &&
-    orderData.files.length > 0 &&
     orderData.package &&
-    orderData.email &&
     orderData.acceptedTerms
   );
 

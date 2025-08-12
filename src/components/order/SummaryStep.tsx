@@ -1,5 +1,5 @@
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import SummaryStepHeader from './summary/SummaryStepHeader';
 import SummaryStepContent from './summary/SummaryStepContent';
 import SummaryStepActions from './summary/SummaryStepActions';
@@ -17,8 +17,11 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
   const { isEnabled, trackFeatureUsage } = useFeatureFlags();
   const { markConversionEvent } = useSessionReplay();
   
-  // EMERGENCY: Static order data to prevent infinite loops
-  const orderData = {
+  // LOCAL STATE for acceptedTerms to fix checkbox functionality
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  
+  // EMERGENCY: Static order data to prevent infinite loops - BUT use local acceptedTerms
+  const orderData = useMemo(() => ({
     photoType: 'handy' as const,
     files: [],
     package: 'Basic' as const,
@@ -29,15 +32,23 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
     },
     watermarkFile: undefined,
     email: '',
-    acceptedTerms: false,
+    acceptedTerms: acceptedTerms, // Use local state
     company: '',
     objectReference: '',
     specialRequests: '',
-  };
+  }), [acceptedTerms]);
   
-  // DISABLED UPDATE FUNCTION
-  const memoizedUpdateOrderData = useCallback(() => {
-    console.log('Update blocked to prevent infinite loop');
+  // UPDATE FUNCTION that works for acceptedTerms
+  const memoizedUpdateOrderData = useCallback((updates: Partial<typeof orderData>) => {
+    console.log('Update called with:', updates);
+    
+    // Handle acceptedTerms updates locally
+    if ('acceptedTerms' in updates && updates.acceptedTerms !== undefined) {
+      setAcceptedTerms(updates.acceptedTerms);
+    }
+    
+    // Block other updates for now to prevent infinite loops
+    console.log('Other updates blocked to prevent infinite loop');
   }, []);
 
   const {
