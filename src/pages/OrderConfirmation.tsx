@@ -366,25 +366,7 @@ const OrderConfirmation = () => {
               <div>
                 <p className="text-sm text-gray-600">Voraussichtliche Fertigstellung</p>
                 <p className="font-semibold">{formatDateTime(deliveryDate)}</p>
-                <p className="text-xs text-gray-500 mt-1">SLA: {slaHours} Std. innerhalb der Geschäftszeiten (Mo–Fr, 10–18 Uhr)</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 pt-2">
-              <div className="flex items-center gap-3 animate-fade-in">
-                <div className="w-6 h-6 rounded-full border border-gray-300 text-gray-700 flex items-center justify-center text-xs font-semibold">1</div>
-                <span className="text-gray-700">Annahme</span>
-              </div>
-              <div className="flex items-center gap-3 animate-fade-in">
-                <div className="w-6 h-6 rounded-full border border-gray-300 text-gray-700 flex items-center justify-center text-xs font-semibold">2</div>
-                <span className="text-gray-700">Bearbeitung</span>
-              </div>
-              <div className="flex items-center gap-3 animate-fade-in">
-                <div className="w-6 h-6 rounded-full border border-gray-300 text-gray-700 flex items-center justify-center text-xs font-semibold">3</div>
-                <span className="text-gray-700">Prüfung</span>
-              </div>
-              <div className="flex items-center gap-3 animate-fade-in">
-                <div className="w-6 h-6 rounded-full border border-gray-300 text-gray-700 flex items-center justify-center text-xs font-semibold">4</div>
-                <span className="text-gray-700">Bereitstellung</span>
+                <p className="text-xs text-gray-500 mt-1">Bearbeitungszeit: {slaHours} Std. innerhalb der Geschäftszeiten (Mo.–Fr., 10–18 Uhr)</p>
               </div>
             </div>
           </CardContent>
