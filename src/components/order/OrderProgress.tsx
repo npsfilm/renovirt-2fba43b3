@@ -18,7 +18,7 @@ const OrderProgress = ({ steps }: OrderProgressProps) => {
       {/* Mobile version - keep existing layout */}
       <div className="flex items-center justify-between md:hidden">
         {steps.map((step, index) => (
-          <React.Fragment key={step.number}>
+          <div key={step.number} className="contents">
             <div className="flex flex-col items-center">
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
@@ -56,7 +56,7 @@ const OrderProgress = ({ steps }: OrderProgressProps) => {
                 />
               </div>
             )}
-          </React.Fragment>
+          </div>
         ))}
       </div>
 
@@ -64,7 +64,7 @@ const OrderProgress = ({ steps }: OrderProgressProps) => {
       <div className="hidden md:block">
         <div className="flex items-center justify-center space-x-6">
           {steps.map((step, index) => (
-            <React.Fragment key={step.number}>
+            <div key={step.number} className="contents">
               <div className="flex items-center space-x-3">
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300 ${
@@ -102,7 +102,7 @@ const OrderProgress = ({ steps }: OrderProgressProps) => {
                   />
                 </div>
               )}
-            </React.Fragment>
+            </div>
           ))}
         </div>
       </div>
