@@ -10,7 +10,7 @@ import type { OrderData } from '@/utils/orderValidation';
 export const useSummaryOrderCreation = () => {
   const { user } = useAuth();
   const { packages, addOns } = useOrderData();
-  const { createOrder, createOrderAfterPayment } = useOrderCreation(packages, addOns);
+  const { createOrder } = useOrderCreation(packages, addOns);
   const { toast } = useToast();
 
   const handleSubmitOrder = async (
@@ -21,7 +21,7 @@ export const useSummaryOrderCreation = () => {
     canProceed: boolean,
     setIsProcessing: (processing: boolean) => void,
     initiateStripePayment: null,
-    onNext: () => void
+    onNext: (orderId?: string) => void
   ) => {
     if (!user) {
       toast({
@@ -32,10 +32,11 @@ export const useSummaryOrderCreation = () => {
       return;
     }
 
-    if (!canProceed) {
+    // Enhanced validation including email
+    if (!canProceed || !orderData.email || !orderData.email.includes('@')) {
       toast({
         title: 'Unvollständige Angaben',
-        description: 'Bitte überprüfen Sie Ihre Angaben und akzeptieren Sie die AGB.',
+        description: 'Bitte überprüfen Sie Ihre Angaben, E-Mail-Adresse und akzeptieren Sie die AGB.',
         variant: 'destructive',
       });
       return;
@@ -62,29 +63,36 @@ export const useSummaryOrderCreation = () => {
       secureLog('Creating order with secure data', {
         hasFiles: orderData.files.length > 0,
         creditsUsed: creditsToUse,
-        paymentMethod
+        paymentMethod,
+        email: orderData.email
       });
 
-      // For invoice payment, create the order immediately
-      {
-        await createOrder({
-          orderData: secureOrderData,
-          paymentMethod: paymentMethod
-        });
+      // Create the order and get the order ID
+      const order = await createOrder({
+        orderData: secureOrderData,
+        paymentMethod: paymentMethod
+      });
 
+      logSecurityEvent('order_creation_success', { 
+        userId: user.id,
+        paymentMethod,
+        orderId: order.id
+      });
+
+      // Only proceed to next step if order was created successfully
+      if (order && order.id) {
         toast({
           title: 'Bestellung erfolgreich!',
           description: finalPrice > 0 
             ? 'Ihre Bestellung wurde aufgegeben. Sie erhalten eine Rechnung per E-Mail.' 
             : 'Ihre kostenlose Bestellung wurde aufgegeben.',
         });
-        onNext();
+        
+        // Pass the order ID to the next step
+        onNext(order.id);
+      } else {
+        throw new Error('Bestellung wurde erstellt, aber keine Order-ID erhalten');
       }
-
-      logSecurityEvent('order_creation_success', { 
-        userId: user.id,
-        paymentMethod
-      });
 
     } catch (error: any) {
       console.error('Order creation failed:', error);
@@ -105,7 +113,6 @@ export const useSummaryOrderCreation = () => {
   };
 
   return {
-    handleSubmitOrder,
-    createOrderAfterPayment
+    handleSubmitOrder
   };
 };

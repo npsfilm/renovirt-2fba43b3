@@ -22,8 +22,14 @@ export const validateOrderData = (data: OrderData): boolean => {
     data.files.length > 0 &&
     data.package &&
     data.email &&
+    data.email.includes('@') &&
     data.acceptedTerms
   );
+};
+
+export const validateEmailAddress = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
 };
 
 export const calculateEffectiveImageCount = (files: File[], photoType?: string): number => {

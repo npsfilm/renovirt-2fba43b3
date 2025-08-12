@@ -32,6 +32,7 @@ import AdminRoute from '@/components/admin/AdminRoute';
 import AdminHelpAnalytics from '@/pages/AdminHelpAnalytics';
 import AdminFeedback from '@/pages/AdminFeedback';
 import PaymentSuccess from '@/pages/PaymentSuccess';
+import OrderConfirmation from '@/pages/OrderConfirmation';
 import EmailVerification from '@/pages/EmailVerification';
 import Onboarding from '@/pages/Onboarding';
 import AGB from '@/pages/AGB';
@@ -166,6 +167,15 @@ function AppContent() {
         <AdminRoute>
           <AdminFeedback />
         </AdminRoute>
+      } />
+      
+      {/* Order Confirmation Route */}
+      <Route path="/order-confirmation/:orderId" element={
+        <ProtectedRoute>
+          <ErrorBoundary>
+            <OrderConfirmation />
+          </ErrorBoundary>
+        </ProtectedRoute>
       } />
       
       {/* Payment Success Route */}

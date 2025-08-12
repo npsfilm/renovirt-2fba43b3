@@ -1,5 +1,6 @@
 
 import React, { useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SummaryStepHeader from './summary/SummaryStepHeader';
 import SummaryStepContent from './summary/SummaryStepContent';
 import SummaryStepActions from './summary/SummaryStepActions';
@@ -14,6 +15,7 @@ interface SummaryStepProps {
 }
 
 const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
+  const navigate = useNavigate();
   const { isEnabled, trackFeatureUsage } = useFeatureFlags();
   const { markConversionEvent } = useSessionReplay();
   
@@ -70,19 +72,29 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
     isProcessing,
     handleSubmitOrder
   } = useSummaryStepLogic(orderData, () => {
-    // Track conversion event for session replay
-    markConversionEvent('order_submitted', finalPrice);
-    
-    // Track enhanced order flow feature usage
-    if (isEnabled('enhanced-order-flow')) {
-      trackFeatureUsage('enhanced-order-flow', 'order_completed', {
-        order_value: finalPrice,
-        payment_method: paymentMethod
-      });
-    }
-    
+    // Default navigation fallback
     onNext();
   });
+
+  // Enhanced submit handler with order ID navigation
+  const handleEnhancedSubmit = useCallback(() => {
+    handleSubmitOrder((orderId: string) => {
+      // Track conversion event for session replay
+      markConversionEvent('order_submitted', finalPrice);
+      
+      // Track feature flag usage
+      if (isEnabled('enhanced-order-flow')) {
+        trackFeatureUsage('enhanced-order-flow', 'order_completed', {
+          order_value: finalPrice,
+          payment_method: paymentMethod,
+          orderId
+        });
+      }
+      
+      // Navigate to confirmation page with order ID
+      navigate(`/order-confirmation/${orderId}`);
+    });
+  }, [handleSubmitOrder, finalPrice, paymentMethod, markConversionEvent, trackFeatureUsage, navigate, isEnabled]);
 
   return (
     <div className="space-y-3 md:space-y-4">
@@ -98,7 +110,7 @@ const SummaryStep = ({ onNext, onPrev }: SummaryStepProps) => {
 
       <SummaryStepActions
         onPrev={onPrev}
-        onSubmit={handleSubmitOrder}
+        onSubmit={handleEnhancedSubmit}
         canProceed={canProceed}
         isProcessing={isProcessing}
         finalPrice={finalPrice}

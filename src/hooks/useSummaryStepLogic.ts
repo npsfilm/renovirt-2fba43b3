@@ -20,7 +20,7 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
   const [paymentMethod] = useState<'invoice'>('invoice');
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const { handleSubmitOrder, createOrderAfterPayment } = useSummaryOrderCreation();
+  const { handleSubmitOrder } = useSummaryOrderCreation();
 
   // Memoize expensive calculations to prevent infinite loops
   const totalPrice = useMemo(() => {
@@ -33,11 +33,13 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
   const canProceed = useMemo(() => !!(
     orderData.photoType &&
     orderData.package &&
-    orderData.acceptedTerms
-  ), [orderData.photoType, orderData.package, orderData.acceptedTerms]);
+    orderData.acceptedTerms &&
+    orderData.email &&
+    orderData.email.includes('@')
+  ), [orderData.photoType, orderData.package, orderData.acceptedTerms, orderData.email]);
 
-  const handleSubmit = useCallback(() => {
-    // Simplified order handling for invoice-only payment
+  const handleSubmit = useCallback((onOrderSuccess?: (orderId: string) => void) => {
+    // Enhanced order handling with order ID callback
     handleSubmitOrder(
       orderData,
       paymentMethod,
@@ -46,7 +48,13 @@ export const useSummaryStepLogic = (orderData: OrderData, onNext: () => void) =>
       canProceed,
       setIsProcessing,
       null, // No Stripe payment function needed
-      onNext
+      (orderId?: string) => {
+        if (orderId && onOrderSuccess) {
+          onOrderSuccess(orderId);
+        } else {
+          onNext();
+        }
+      }
     );
   }, [handleSubmitOrder, orderData, paymentMethod, creditsToUse, finalPrice, canProceed, onNext]);
 
