@@ -110,13 +110,13 @@ const OrderConfirmation = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-muted flex items-center justify-center p-4">
         <Card className="w-full max-w-2xl">
           <CardHeader className="text-center">
-            <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-              <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
+            <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+              <Loader2 className="w-6 h-6 text-primary animate-spin" />
             </div>
-            <CardTitle className="text-xl font-semibold text-gray-900">
+            <CardTitle className="text-xl font-semibold text-foreground">
               Bestelldetails werden geladen...
             </CardTitle>
           </CardHeader>
@@ -127,18 +127,18 @@ const OrderConfirmation = () => {
 
   if (error || !order) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-muted flex items-center justify-center p-4">
         <Card className="w-full max-w-2xl">
           <CardHeader className="text-center">
-            <div className="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
-              <AlertCircle className="w-6 h-6 text-red-600" />
+            <div className="mx-auto w-12 h-12 bg-error/10 rounded-full flex items-center justify-center mb-4">
+              <AlertCircle className="w-6 h-6 text-error" />
             </div>
-            <CardTitle className="text-xl font-semibold text-gray-900">
+            <CardTitle className="text-xl font-semibold text-foreground">
               Bestellung nicht gefunden
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-center">
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               {error || 'Die angeforderte Bestellung konnte nicht gefunden werden.'}
             </p>
             <div className="space-y-2">
@@ -256,7 +256,7 @@ const OrderConfirmation = () => {
 
   return (
     <MobileLayout>
-      <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="min-h-screen bg-muted py-8 px-4">
         <div className="max-w-4xl mx-auto">
           {/* Success Header */}
           <Card className="mb-6">
@@ -264,24 +264,24 @@ const OrderConfirmation = () => {
               <div className="mx-auto w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mb-4">
                 <CheckCircle className="w-8 h-8 text-success" />
               </div>
-              <CardTitle className="text-2xl font-bold text-gray-900">
+              <CardTitle className="text-2xl font-bold text-foreground">
                 Bestellung erfolgreich aufgegeben!
               </CardTitle>
-              <p className="text-gray-600 mt-2">
+              <p className="text-muted-foreground mt-2">
                 Vielen Dank für Ihre Bestellung. Wir haben alle Details erhalten und werden mit der Bearbeitung beginnen.
               </p>
             </CardHeader>
             <CardFooter className="justify-center gap-6 flex-wrap">
-              <div className="flex items-center gap-2 text-gray-700">
-                <ShieldCheck className="w-4 h-4 text-foreground" />
+              <div className="flex items-center gap-2 text-subtle">
+                <ShieldCheck className="w-4 h-4 text-success" />
                 <span className="text-sm">SSL-gesicherte Übertragung</span>
               </div>
-              <div className="flex items-center gap-2 text-gray-700">
-                <Lock className="w-4 h-4 text-foreground" />
+              <div className="flex items-center gap-2 text-subtle">
+                <Lock className="w-4 h-4 text-success" />
                 <span className="text-sm">Datenschutz (DSGVO)</span>
               </div>
-              <div className="flex items-center gap-2 text-gray-700">
-                <CreditCard className="w-4 h-4 text-foreground" />
+              <div className="flex items-center gap-2 text-subtle">
+                <CreditCard className="w-4 h-4 text-success" />
                 <span className="text-sm">Sichere Zahlung</span>
               </div>
             </CardFooter>
@@ -296,22 +296,22 @@ const OrderConfirmation = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Bestellnummer:</span>
+                  <span className="text-muted-foreground">Bestellnummer:</span>
                   <span className="font-semibold">{order.order_number}</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Status:</span>
+                  <span className="text-muted-foreground">Status:</span>
                   <OrderStatusBadge status={order.status} />
                 </div>
                 
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Bestelldatum:</span>
+                  <span className="text-muted-foreground">Bestelldatum:</span>
                   <span>{formatDate(order.created_at)}</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">E-Mail:</span>
+                  <span className="text-muted-foreground">E-Mail:</span>
                   <span>{order.customer_email}</span>
                 </div>
               </CardContent>
@@ -324,23 +324,23 @@ const OrderConfirmation = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Paket:</span>
+                  <span className="text-muted-foreground">Paket:</span>
                   <span className="font-semibold">{order.package.name}</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Foto-Typ:</span>
+                  <span className="text-muted-foreground">Foto-Typ:</span>
                   <span>{formatPhotoType(order.photo_type)}</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Anzahl Bilder:</span>
+                  <span className="text-muted-foreground">Anzahl Bilder:</span>
                   <span>{order.image_count}</span>
                 </div>
                 
                 {extras.length > 0 && (
                   <div>
-                    <span className="text-gray-600 block mb-2">Extras:</span>
+                    <span className="text-muted-foreground block mb-2">Extras:</span>
                     <div className="flex flex-wrap gap-2">
                       {extras.map((extra, index) => (
                         <Badge key={index} variant="secondary">
@@ -361,13 +361,13 @@ const OrderConfirmation = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
-                  <Calendar className="w-5 h-5 text-foreground" />
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Calendar className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Voraussichtliche Fertigstellung</p>
+                  <p className="text-sm text-muted-foreground">Voraussichtliche Fertigstellung</p>
                   <p className="font-semibold">{formatDateTime(deliveryDate)}</p>
-                  <p className="text-xs text-gray-500 mt-1">Bearbeitungszeit: {slaHours} Std. innerhalb der Geschäftszeiten (Mo.–Fr., 10–18 Uhr)</p>
+                  <p className="text-xs text-subtle mt-1">Bearbeitungszeit: {slaHours} Std. innerhalb der Geschäftszeiten (Mo.–Fr., 10–18 Uhr)</p>
                 </div>
               </div>
             </CardContent>
@@ -383,7 +383,7 @@ const OrderConfirmation = () => {
                 <span>Gesamtpreis:</span>
                 <span>{order.total_price.toFixed(2)} €</span>
               </div>
-              <p className="text-sm text-gray-600 mt-2">
+              <p className="text-sm text-muted-foreground mt-2">
                 Inkl. 19% MwSt. | Sie erhalten eine Rechnung per E-Mail.
               </p>
             </CardContent>
@@ -396,24 +396,24 @@ const OrderConfirmation = () => {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-blue-600 text-sm font-semibold">1</span>
+                <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-primary text-sm font-semibold">1</span>
                 </div>
-                <p className="text-gray-700">Sie erhalten eine Bestätigungs-E-Mail mit allen Details.</p>
+                <p className="text-foreground">Sie erhalten eine Bestätigungs-E-Mail mit allen Details.</p>
               </div>
               
               <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-blue-600 text-sm font-semibold">2</span>
+                <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-primary text-sm font-semibold">2</span>
                 </div>
-                <p className="text-gray-700">Wir beginnen mit der professionellen Bearbeitung Ihrer Bilder.</p>
+                <p className="text-foreground">Wir beginnen mit der professionellen Bearbeitung Ihrer Bilder.</p>
               </div>
               
               <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-blue-600 text-sm font-semibold">3</span>
+                <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-primary text-sm font-semibold">3</span>
                 </div>
-                <p className="text-gray-700">Sie erhalten eine Benachrichtigung, sobald Ihre Bilder fertig sind.</p>
+                <p className="text-foreground">Sie erhalten eine Benachrichtigung, sobald Ihre Bilder fertig sind.</p>
               </div>
             </CardContent>
           </Card>

@@ -11,9 +11,9 @@ const OrderStatusBadge = ({ status }: OrderStatusBadgeProps) => {
     pending: { label: 'Warteschlange', className: 'bg-warning text-warning-foreground' },
     processing: { label: 'In Bearbeitung', className: 'bg-primary text-primary-foreground' },
     quality_check: { label: 'Überprüfung', className: 'bg-accent text-accent-foreground' },
-    revision: { label: 'In Revision', className: 'bg-orange-100 text-orange-800' },
+    revision: { label: 'In Revision', className: 'bg-warning/80 text-warning-foreground' },
     completed: { label: 'Abgeschlossen', className: 'bg-success text-success-foreground' },
-    delivered: { label: 'Abgeschlossen & bezahlt', className: 'bg-green-100 text-green-800' },
+    delivered: { label: 'Abgeschlossen & bezahlt', className: 'bg-success/90 text-success-foreground' },
     cancelled: { label: 'Storniert', className: 'bg-error text-error-foreground' },
   };
 

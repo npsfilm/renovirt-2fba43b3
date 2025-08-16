@@ -36,6 +36,23 @@
     --destructive: 4 78% 57%; /* #E74C3C */
     --destructive-foreground: 0 0% 100%; /* #ffffff */
 
+    /* Status Colors */
+    --success: 78 26% 50%; /* #91A56E - Using primary green */
+    --success-foreground: 0 0% 100%; /* #ffffff */
+    
+    --warning: 45 93% 58%; /* #F39C12 */
+    --warning-foreground: 0 0% 100%; /* #ffffff */
+    
+    --error: 4 78% 57%; /* #E74C3C - Same as destructive */
+    --error-foreground: 0 0% 100%; /* #ffffff */
+    
+    --info: 220 14% 68%; /* #9CA3AF - Using accent */
+    --info-foreground: 145 14% 15%; /* #1E2B20 */
+
+    /* Text Colors */
+    --text-subtle: 145 20% 45%; /* #5A6B5C */
+    --text-on-surface: 145 14% 15%; /* #1E2B20 */
+
     /* Border & Input */
     --border: 78 33% 85%; /* #DDE4D4 */
     --input: 78 38% 93%; /* #EDF3E9 */

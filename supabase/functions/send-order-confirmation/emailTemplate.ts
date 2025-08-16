@@ -35,7 +35,7 @@ export const generateEmailHTML = (data: EmailTemplateData): string => {
     .subtle { color:#607160; }
     .muted { color:#1E2B20; opacity:.8; }
     .divider { height:1px; background:#E0E6D8; }
-    .tag { display:inline-block; background:#D1A760; color:#fff; padding:6px 10px; border-radius:4px; font-weight:700; }
+    .tag { display:inline-block; background:#91A56E; color:#fff; padding:6px 10px; border-radius:4px; font-weight:700; }
     /* Progress tracker */
     .track-wrap { position:relative; padding:24px 18px; background:#FAFAF7; border:1px solid #E0E6D8; border-radius:10px; }
     .track-line { position:relative; height:4px; background:#E0E6D8; margin:18px 18px; border-radius:4px; }
@@ -46,7 +46,7 @@ export const generateEmailHTML = (data: EmailTemplateData): string => {
     .step { font-size:13px; color:#1E2B20; text-align:center; }
     .step small { display:block; color:#607160; margin-top:4px; }
     /* Cards */
-    .card { background:#FAFAF7; border-left:4px solid #D1A760; border-radius:8px; }
+    .card { background:#FAFAF7; border-left:4px solid #91A56E; border-radius:8px; }
     .shop { background:#FAFAF7; border-radius:10px; }
     /* Mobile */
     @media screen and (max-width:600px){
@@ -211,7 +211,7 @@ export const generateEmailHTML = (data: EmailTemplateData): string => {
             <td class="px" style="padding:24px 0 8px;">
               <div class="shop" style="padding:18px; text-align:center;">
                 <p style="margin:0 0 10px; font-size:14px; color:#1E2B20;">Fragen zur Bestellung?</p>
-                <a href="mailto:info@renovirt.de" class="btn" style="background:#393939;">Hilfe anfordern</a>
+                <a href="mailto:info@renovirt.de" class="btn" style="background:#1E2B20;">Hilfe anfordern</a>
                 <p class="subtle" style="margin:10px 0 0; font-size:12px;">oder antworten Sie direkt auf diese E-Mail</p>
               </div>
             </td>
