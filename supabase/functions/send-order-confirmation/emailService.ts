@@ -20,11 +20,24 @@ export class EmailService {
     const customerGreeting = getCustomerGreeting(orderDetails);
     const extrasHtml = generateExtrasHtml(orderDetails.extras);
 
+    // Map photo type IDs to readable labels
+    const photoTypeLabels: Record<string, string> = {
+      'handy': 'Handy',
+      'kamera': 'Kamera', 
+      'bracketing-3': 'Bracketing (3 Bilder)',
+      'bracketing-5': 'Bracketing (5 Bilder)'
+    };
+
+    const readablePhotoType = photoTypeLabels[orderDetails.photoType] || orderDetails.photoType;
+
     return {
       orderNumber,
       customerGreeting,
       estimatedDelivery,
-      orderDetails,
+      orderDetails: {
+        ...orderDetails,
+        photoType: readablePhotoType
+      },
       extrasHtml,
       currentYear: new Date().getFullYear()
     };

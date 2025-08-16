@@ -70,7 +70,8 @@ export const generateEmailHTML = (data: EmailTemplateData): string => {
           <!-- Hero confirm -->
           <tr>
             <td class="px" style="padding-top:34px;">
-              <h2 style="margin:0 0 6px; font-size:22px; color:#1E2B20;">Danke! Ihre Bestellung ist bestätigt.</h2>
+              <h2 style="margin:0 0 6px; font-size:22px; color:#1E2B20;">${data.customerGreeting},</h2>
+              <p style="margin:0 0 6px; font-size:22px; color:#1E2B20;">vielen Dank! Ihre Bestellung ist bestätigt.</p>
               <p class="muted" style="margin:0 0 18px; font-size:15px;">
                 Wir starten jetzt mit der Bearbeitung. Sie erhalten eine E-Mail, sobald Ihre Dateien fertig sind.
               </p>
@@ -185,21 +186,6 @@ export const generateEmailHTML = (data: EmailTemplateData): string => {
                   <td width="50%" valign="top" style="padding-right:14px;">
                     <h4 style="margin:0 0 10px; font-size:16px; color:#1E2B20;">Rechnungsdetails</h4>
                     <table role="presentation" width="100%">
-                      <tr>
-                        <td style="padding:6px 0;">Zwischensumme</td>
-                        <td style="padding:6px 0;" align="right">—</td>
-                      </tr>
-                      <tr>
-                        <td style="padding:6px 0;">Umsatzsteuer</td>
-                        <td style="padding:6px 0;" align="right">—</td>
-                      </tr>
-                      <tr>
-                        <td style="padding:6px 0;">Service/Transfer</td>
-                        <td style="padding:6px 0;" align="right">—</td>
-                      </tr>
-                      <tr>
-                        <td class="divider" colspan="2" style="padding-top:8px;"></td>
-                      </tr>
                       <tr>
                         <td style="padding:10px 0; font-weight:700;">Gesamt</td>
                         <td style="padding:10px 0; font-weight:700;" align="right">${formatEuro(data.orderDetails.totalPrice)}</td>
