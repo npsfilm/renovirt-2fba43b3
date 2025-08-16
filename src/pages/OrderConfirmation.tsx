@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import OrderStatusBadge from '@/components/admin/orders/OrderStatusBadge';
 import { useAuth } from '@/hooks/useAuth';
+import MobileLayout from '@/components/layout/MobileLayout';
 
 
 interface OrderDetails {
@@ -254,179 +255,181 @@ const OrderConfirmation = () => {
   const extras = formatExtras(order.extras);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Success Header */}
-        <Card className="mb-6">
-          <CardHeader className="text-center">
-            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle className="w-8 h-8 text-green-600" />
-            </div>
-            <CardTitle className="text-2xl font-bold text-gray-900">
-              Bestellung erfolgreich aufgegeben!
-            </CardTitle>
-            <p className="text-gray-600 mt-2">
-              Vielen Dank für Ihre Bestellung. Wir haben alle Details erhalten und werden mit der Bearbeitung beginnen.
-            </p>
-          </CardHeader>
-          <CardFooter className="justify-center gap-6 flex-wrap">
-            <div className="flex items-center gap-2 text-gray-700">
-              <ShieldCheck className="w-4 h-4 text-foreground" />
-              <span className="text-sm">SSL-gesicherte Übertragung</span>
-            </div>
-            <div className="flex items-center gap-2 text-gray-700">
-              <Lock className="w-4 h-4 text-foreground" />
-              <span className="text-sm">Datenschutz (DSGVO)</span>
-            </div>
-            <div className="flex items-center gap-2 text-gray-700">
-              <CreditCard className="w-4 h-4 text-foreground" />
-              <span className="text-sm">Sichere Zahlung</span>
-            </div>
-          </CardFooter>
-        </Card>
-
-        {/* Order Details */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Order Summary */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold">Bestellübersicht</CardTitle>
+    <MobileLayout>
+      <div className="min-h-screen bg-gray-50 py-8 px-4">
+        <div className="max-w-4xl mx-auto">
+          {/* Success Header */}
+          <Card className="mb-6">
+            <CardHeader className="text-center">
+              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <CheckCircle className="w-8 h-8 text-green-600" />
+              </div>
+              <CardTitle className="text-2xl font-bold text-gray-900">
+                Bestellung erfolgreich aufgegeben!
+              </CardTitle>
+              <p className="text-gray-600 mt-2">
+                Vielen Dank für Ihre Bestellung. Wir haben alle Details erhalten und werden mit der Bearbeitung beginnen.
+              </p>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Bestellnummer:</span>
-                <span className="font-semibold">{order.order_number}</span>
+            <CardFooter className="justify-center gap-6 flex-wrap">
+              <div className="flex items-center gap-2 text-gray-700">
+                <ShieldCheck className="w-4 h-4 text-foreground" />
+                <span className="text-sm">SSL-gesicherte Übertragung</span>
               </div>
-              
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Status:</span>
-                <OrderStatusBadge status={order.status} />
+              <div className="flex items-center gap-2 text-gray-700">
+                <Lock className="w-4 h-4 text-foreground" />
+                <span className="text-sm">Datenschutz (DSGVO)</span>
               </div>
-              
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Bestelldatum:</span>
-                <span>{formatDate(order.created_at)}</span>
+              <div className="flex items-center gap-2 text-gray-700">
+                <CreditCard className="w-4 h-4 text-foreground" />
+                <span className="text-sm">Sichere Zahlung</span>
               </div>
-              
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">E-Mail:</span>
-                <span>{order.customer_email}</span>
-              </div>
-            </CardContent>
+            </CardFooter>
           </Card>
 
-          {/* Package & Services */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold">Paket & Services</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Paket:</span>
-                <span className="font-semibold">{order.package.name}</span>
-              </div>
-              
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Foto-Typ:</span>
-                <span>{formatPhotoType(order.photo_type)}</span>
-              </div>
-              
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Anzahl Bilder:</span>
-                <span>{order.image_count}</span>
-              </div>
-              
-              {extras.length > 0 && (
-                <div>
-                  <span className="text-gray-600 block mb-2">Extras:</span>
-                  <div className="flex flex-wrap gap-2">
-                    {extras.map((extra, index) => (
-                      <Badge key={index} variant="secondary">
-                        {extra}
-                      </Badge>
-                    ))}
-                  </div>
+          {/* Order Details */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Order Summary */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">Bestellübersicht</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Bestellnummer:</span>
+                  <span className="font-semibold">{order.order_number}</span>
                 </div>
-              )}
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Status:</span>
+                  <OrderStatusBadge status={order.status} />
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Bestelldatum:</span>
+                  <span>{formatDate(order.created_at)}</span>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">E-Mail:</span>
+                  <span>{order.customer_email}</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Package & Services */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">Paket & Services</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Paket:</span>
+                  <span className="font-semibold">{order.package.name}</span>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Foto-Typ:</span>
+                  <span>{formatPhotoType(order.photo_type)}</span>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Anzahl Bilder:</span>
+                  <span>{order.image_count}</span>
+                </div>
+                
+                {extras.length > 0 && (
+                  <div>
+                    <span className="text-gray-600 block mb-2">Extras:</span>
+                    <div className="flex flex-wrap gap-2">
+                      {extras.map((extra, index) => (
+                        <Badge key={index} variant="secondary">
+                          {extra}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Lieferzeit & Zeitplan */}
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold">Lieferzeit & Zeitplan</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
+                  <Calendar className="w-5 h-5 text-foreground" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Voraussichtliche Fertigstellung</p>
+                  <p className="font-semibold">{formatDateTime(deliveryDate)}</p>
+                  <p className="text-xs text-gray-500 mt-1">Bearbeitungszeit: {slaHours} Std. innerhalb der Geschäftszeiten (Mo.–Fr., 10–18 Uhr)</p>
+                </div>
+              </div>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Lieferzeit & Zeitplan */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold">Lieferzeit & Zeitplan</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
-                <Calendar className="w-5 h-5 text-foreground" />
+          {/* Preisübersicht */}
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold">Preisübersicht</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex justify-between items-center text-lg font-bold">
+                <span>Gesamtpreis:</span>
+                <span>{order.total_price.toFixed(2)} €</span>
               </div>
-              <div>
-                <p className="text-sm text-gray-600">Voraussichtliche Fertigstellung</p>
-                <p className="font-semibold">{formatDateTime(deliveryDate)}</p>
-                <p className="text-xs text-gray-500 mt-1">Bearbeitungszeit: {slaHours} Std. innerhalb der Geschäftszeiten (Mo.–Fr., 10–18 Uhr)</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+              <p className="text-sm text-gray-600 mt-2">
+                Inkl. 19% MwSt. | Sie erhalten eine Rechnung per E-Mail.
+              </p>
+            </CardContent>
+          </Card>
 
-        {/* Preisübersicht */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold">Preisübersicht</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-between items-center text-lg font-bold">
-              <span>Gesamtpreis:</span>
-              <span>{order.total_price.toFixed(2)} €</span>
-            </div>
-            <p className="text-sm text-gray-600 mt-2">
-              Inkl. 19% MwSt. | Sie erhalten eine Rechnung per E-Mail.
-            </p>
-          </CardContent>
-        </Card>
+          {/* Next Steps */}
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold">Nächste Schritte</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-start space-x-3">
+                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-blue-600 text-sm font-semibold">1</span>
+                </div>
+                <p className="text-gray-700">Sie erhalten eine Bestätigungs-E-Mail mit allen Details.</p>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-blue-600 text-sm font-semibold">2</span>
+                </div>
+                <p className="text-gray-700">Wir beginnen mit der professionellen Bearbeitung Ihrer Bilder.</p>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-blue-600 text-sm font-semibold">3</span>
+                </div>
+                <p className="text-gray-700">Sie erhalten eine Benachrichtigung, sobald Ihre Bilder fertig sind.</p>
+              </div>
+            </CardContent>
+          </Card>
 
-        {/* Next Steps */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold">Nächste Schritte</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-start space-x-3">
-              <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-blue-600 text-sm font-semibold">1</span>
-              </div>
-              <p className="text-gray-700">Sie erhalten eine Bestätigungs-E-Mail mit allen Details.</p>
-            </div>
-            
-            <div className="flex items-start space-x-3">
-              <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-blue-600 text-sm font-semibold">2</span>
-              </div>
-              <p className="text-gray-700">Wir beginnen mit der professionellen Bearbeitung Ihrer Bilder.</p>
-            </div>
-            
-            <div className="flex items-start space-x-3">
-              <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-blue-600 text-sm font-semibold">3</span>
-              </div>
-              <p className="text-gray-700">Sie erhalten eine Benachrichtigung, sobald Ihre Bilder fertig sind.</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Action Buttons */}
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Button onClick={() => navigate('/orders')} className="w-full">
-            Alle meine Bestellungen ansehen
-          </Button>
-          <Button variant="outline" onClick={() => navigate('/dashboard')} className="w-full">
-            Zurück zum Dashboard
-          </Button>
+          {/* Action Buttons */}
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Button onClick={() => navigate('/orders')} className="w-full">
+              Alle meine Bestellungen ansehen
+            </Button>
+            <Button variant="outline" onClick={() => navigate('/dashboard')} className="w-full">
+              Zurück zum Dashboard
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </MobileLayout>
   );
 };
 
