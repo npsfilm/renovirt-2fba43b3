@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
+import OrderStatusBadge from '@/components/admin/orders/OrderStatusBadge';
 import { useAuth } from '@/hooks/useAuth';
 
 
@@ -299,9 +300,7 @@ const OrderConfirmation = () => {
               
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Status:</span>
-                <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
-                  {order.status}
-                </Badge>
+                <OrderStatusBadge status={order.status} />
               </div>
               
               <div className="flex justify-between items-center">
