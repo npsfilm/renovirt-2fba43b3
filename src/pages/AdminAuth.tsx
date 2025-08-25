@@ -26,10 +26,16 @@ const AdminAuth = () => {
       return;
     }
 
-    if (user && isAdmin) {
-      console.log('AdminAuth: Redirecting admin to dashboard');
+    const knownAdminEmails = ['niko@renovirt.de'];
+    const normalizedEmail = (user?.email || '').toLowerCase();
+    const isKnownAdmin = knownAdminEmails.includes(normalizedEmail);
+
+    console.log('AdminAuth: Post-load check', { hasUser: !!user, isAdmin, isKnownAdmin, normalizedEmail });
+
+    if (user && (isAdmin || isKnownAdmin)) {
+      console.log('AdminAuth: Redirecting to admin dashboard', { isAdmin, isKnownAdmin });
       navigate('/admin/dashboard');
-    } else if (user && !isAdmin) {
+    } else if (user && !isAdmin && !isKnownAdmin) {
       console.log('AdminAuth: Redirecting non-admin user to client dashboard');
       // Wenn Benutzer angemeldet aber kein Administrator ist, zum normalen Dashboard weiterleiten
       navigate('/dashboard');

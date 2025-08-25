@@ -26,7 +26,8 @@ export const useAdminRole = () => {
       }
 
       const knownAdminEmails = ['niko@renovirt.de'];
-      const isKnownAdmin = knownAdminEmails.includes(user.email || '');
+      const normalizedEmail = (user.email || '').toLowerCase();
+      const isKnownAdmin = knownAdminEmails.includes(normalizedEmail);
 
       // Allowlist-Bypass: sofort Admin setzen, um Redirect zu verhindern
       if (isKnownAdmin) {
@@ -54,7 +55,7 @@ export const useAdminRole = () => {
                 .from('customer_profiles')
                 .insert({
                   user_id: user.id,
-                  role: 'admin',
+                  role: 'makler',
                   app_role: 'admin',
                   first_name: 'Admin',
                   last_name: 'User'
@@ -68,7 +69,7 @@ export const useAdminRole = () => {
             } else if (profile.app_role !== 'admin') {
               const { error: updateError } = await supabase
                 .from('customer_profiles')
-                .update({ app_role: 'admin', role: 'admin' })
+                .update({ app_role: 'admin', role: 'makler' })
                 .eq('id', profile.id);
               if (updateError) {
                 console.warn('useAdminRole: Could not elevate app_role due to RLS (expected if not admin yet):', updateError);
