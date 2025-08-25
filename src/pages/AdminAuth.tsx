@@ -39,8 +39,11 @@ const AdminAuth = () => {
   }, [user, isAdmin, authLoading, adminLoading, navigate]);
 
   const handleAuthSuccess = () => {
-    console.log('AdminAuth: Auth success, navigation will be handled by useEffect');
-    // Nach erfolgreicher Anmeldung wird die Weiterleitung durch den useEffect oben gehandhabt
+    console.log('AdminAuth: Auth success, checking admin status...');
+    // Kurze Verzögerung um Admin-Role-Check zu ermöglichen
+    setTimeout(() => {
+      window.location.reload(); // Erzwingt Neuladung der Admin-Rollen-Prüfung
+    }, 500);
   };
 
   if (authLoading || adminLoading) {
