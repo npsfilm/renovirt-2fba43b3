@@ -6,7 +6,7 @@ export const useProfileSanitization = () => {
   const sanitizeProfileData = (data: CustomerProfileData): CustomerProfileData => {
     return {
       role: data.role,
-      salutation: data.salutation,
+      salutation: data.salutation?.toLowerCase(),
       firstName: sanitizeInput(data.firstName),
       lastName: sanitizeInput(data.lastName),
       company: sanitizeInput(data.company),

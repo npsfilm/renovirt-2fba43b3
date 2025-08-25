@@ -117,9 +117,9 @@ export const PersonalDataStep: React.FC<PersonalDataStepProps> = ({
               <SelectValue placeholder="Bitte wählen Sie Ihre Anrede" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Herr">Herr</SelectItem>
-              <SelectItem value="Frau">Frau</SelectItem>
-              <SelectItem value="Divers">Divers</SelectItem>
+              <SelectItem value="herr">Herr</SelectItem>
+              <SelectItem value="frau">Frau</SelectItem>
+              <SelectItem value="divers">Divers</SelectItem>
             </SelectContent>
           </Select>
         </div>

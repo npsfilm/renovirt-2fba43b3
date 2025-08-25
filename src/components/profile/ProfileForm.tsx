@@ -87,7 +87,7 @@ const ProfileForm = () => {
       
       const newFormData = {
         role: existingProfile.role || '',
-        salutation: existingProfile.salutation || '',
+        salutation: existingProfile.salutation?.toLowerCase() || '',
         firstName: existingProfile.first_name || '',
         lastName: existingProfile.last_name || '',
         company: existingProfile.company || '',

@@ -11,7 +11,7 @@ export const useProfileValidation = () => {
       errors.push('Ungültige Rolle ausgewählt');
     }
     
-    if (!data.salutation || !['Herr', 'Frau', 'Divers'].includes(data.salutation)) {
+    if (!data.salutation || !['herr', 'frau', 'divers'].includes(data.salutation)) {
       errors.push('Ungültige Anrede ausgewählt');
     }
     

@@ -40,9 +40,9 @@ const PersonalInformationSection: React.FC<PersonalInformationSectionProps> = ({
               <SelectValue placeholder="Anrede wählen" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Herr">Herr</SelectItem>
-              <SelectItem value="Frau">Frau</SelectItem>
-              <SelectItem value="Divers">Divers</SelectItem>
+              <SelectItem value="herr">Herr</SelectItem>
+              <SelectItem value="frau">Frau</SelectItem>
+              <SelectItem value="divers">Divers</SelectItem>
             </SelectContent>
           </Select>
         </div>
