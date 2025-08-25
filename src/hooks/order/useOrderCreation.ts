@@ -139,7 +139,16 @@ export const useOrderCreation = (packages: any[], addOns: any[]) => {
     onError: (error: any) => {
       secureLog('Order creation error:', error);
       
-      const errorMessage = error.message || 'Es ist ein unerwarteter Fehler aufgetreten';
+      let errorMessage = error.message || 'Es ist ein unerwarteter Fehler aufgetreten';
+      
+      // Handle specific foreign key constraint violation
+      if (error.message && error.message.includes('fk_orders_customer_profiles')) {
+        errorMessage = 'Kundenprofil ist unvollständig. Bitte vervollständigen Sie Ihr Profil und versuchen Sie es erneut.';
+        secureLog('Foreign key constraint violation - customer profile missing', { 
+          userId: user?.id, 
+          error: error.message 
+        });
+      }
       
       toast({
         title: "Fehler bei der Bestellung",

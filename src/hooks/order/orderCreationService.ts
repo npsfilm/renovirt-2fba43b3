@@ -6,6 +6,35 @@ import { generateOrderNumber } from '@/utils/orderNumberGenerator';
 import type { OrderData } from '@/utils/orderValidation';
 import type { OrderCreationParams } from './orderCreationTypes';
 
+const ensureCustomerProfile = async (userId: string) => {
+  // Check if customer profile exists
+  const { data: existingProfile, error: checkError } = await supabase
+    .from('customer_profiles')
+    .select('id')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (checkError) {
+    console.error('Error checking customer profile:', checkError);
+    return;
+  }
+
+  // If profile doesn't exist, create a minimal one
+  if (!existingProfile) {
+    const { error: insertError } = await supabase
+      .from('customer_profiles')
+      .insert({
+        user_id: userId,
+        role: 'client' // Default role
+      });
+
+    if (insertError) {
+      console.error('Error creating customer profile:', insertError);
+      throw new Error('Kundenprofil konnte nicht erstellt werden');
+    }
+  }
+};
+
 export const createOrderInDatabase = async (
   { orderData, paymentMethod }: OrderCreationParams,
   packages: any[],
@@ -15,6 +44,9 @@ export const createOrderInDatabase = async (
 ) => {
   const selectedPackage = packages.find(pkg => pkg.name === orderData.package);
   if (!selectedPackage) throw new Error('Paket nicht gefunden');
+
+  // Ensure customer profile exists before creating order
+  await ensureCustomerProfile(userId);
 
   const totalPrice = calculateOrderTotal(orderData, packages, addOns);
   const imageCount = calculateEffectiveImageCount(orderData.files, orderData.photoType);
