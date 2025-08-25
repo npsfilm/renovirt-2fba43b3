@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -973,9 +973,9 @@ export type Database = {
     Functions: {
       approve_referral_by_admin: {
         Args: {
-          referral_id_param: string
-          admin_user_id: string
           admin_notes_param?: string
+          admin_user_id: string
+          referral_id_param: string
         }
         Returns: Json
       }
@@ -986,18 +986,18 @@ export type Database = {
       audit_admin_action: {
         Args: {
           action_type: string
-          table_name: string
-          record_id?: string
           details?: Json
+          record_id?: string
+          table_name: string
         }
         Returns: string
       }
       check_help_interaction_rate_limit: {
         Args: {
-          p_user_id?: string
           p_ip_address?: unknown
-          p_session_id?: string
           p_max_requests?: number
+          p_session_id?: string
+          p_user_id?: string
           p_window_minutes?: number
         }
         Returns: boolean
@@ -1020,10 +1020,10 @@ export type Database = {
       }
       create_secure_help_interaction: {
         Args: {
-          p_question: string
           p_ai_response: string
-          p_session_id: string
           p_ip_address?: unknown
+          p_question: string
+          p_session_id: string
           p_user_agent?: string
         }
         Returns: string
@@ -1034,10 +1034,10 @@ export type Database = {
       }
       enhanced_help_rate_limit: {
         Args: {
-          p_user_id?: string
           p_ip_address?: unknown
-          p_session_id?: string
           p_max_requests?: number
+          p_session_id?: string
+          p_user_id?: string
           p_window_minutes?: number
         }
         Returns: boolean
@@ -1049,43 +1049,43 @@ export type Database = {
       get_admin_referrals: {
         Args: Record<PropertyKey, never>
         Returns: {
-          id: string
-          referral_code: string
-          created_at: string
-          first_order_id: string
           admin_approved: boolean
           admin_approved_at: string
           admin_approved_by: string
+          admin_name: string
           admin_notes: string
-          reward_amount: number
-          referrer_name: string
-          referrer_user_id: string
+          created_at: string
+          first_order_id: string
+          id: string
+          referral_code: string
           referred_name: string
           referred_user_id: string
-          admin_name: string
+          referrer_name: string
+          referrer_user_id: string
+          reward_amount: number
         }[]
       }
       get_help_analytics: {
-        Args: { start_date?: string; end_date?: string }
+        Args: { end_date?: string; start_date?: string }
         Returns: {
-          total_questions: number
           avg_satisfaction: number
+          daily_stats: Json
           support_contact_rate: number
           top_questions: string[]
-          daily_stats: Json
+          total_questions: number
         }[]
       }
       get_security_events: {
         Args: Record<PropertyKey, never>
         Returns: {
-          id: string
-          event_type: string
-          user_id: string
-          details: Json
-          ip_address: unknown
-          user_agent: string
           created_at: string
+          details: Json
+          event_type: string
+          id: string
+          ip_address: unknown
           severity: string
+          user_agent: string
+          user_id: string
         }[]
       }
       get_user_credits: {
@@ -1098,16 +1098,16 @@ export type Database = {
       }
       log_security_event: {
         Args: {
-          p_event_type: string
           p_details?: Json
-          p_severity?: string
+          p_event_type: string
           p_ip_address?: string
+          p_severity?: string
           p_user_agent?: string
         }
         Returns: string
       }
       process_referral: {
-        Args: { referral_code_param: string; new_user_id: string }
+        Args: { new_user_id: string; referral_code_param: string }
         Returns: Json
       }
       update_order_payment_status: {
@@ -1120,16 +1120,16 @@ export type Database = {
       }
       update_order_status: {
         Args: {
+          p_admin_notes?: string
+          p_estimated_completion?: string
+          p_message?: string
           p_order_id: string
           p_status: string
-          p_message?: string
-          p_estimated_completion?: string
-          p_admin_notes?: string
         }
         Returns: undefined
       }
       use_user_credits: {
-        Args: { user_uuid: string; amount_to_use: number }
+        Args: { amount_to_use: number; user_uuid: string }
         Returns: Json
       }
     }
