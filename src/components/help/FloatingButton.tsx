@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { LifeBuoy } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface FloatingButtonProps {
@@ -20,7 +20,7 @@ const FloatingButton = ({ onClick }: FloatingButtonProps) => {
               aria-label="Support & Hilfe öffnen"
               className="rounded-full h-14 w-14 bg-primary hover:bg-primary/90 shadow-lg"
             >
-              <LifeBuoy className="w-6 h-6" />
+              <MessageCircle className="w-6 h-6" />
             </Button>
           </TooltipTrigger>
           <TooltipContent>
