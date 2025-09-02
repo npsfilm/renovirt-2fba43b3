@@ -33,7 +33,7 @@ const PhotoTypeCard = ({
         className={`
           relative overflow-hidden transition-all duration-300 ease-out group
           ${isSelected ? 'ring-2 ring-primary shadow-xl bg-primary/10' : 'shadow-md border-border bg-card hover:shadow-lg hover:border-primary/20'}
-          border-2 rounded-3xl w-full h-[110px]
+          border-2 rounded-3xl w-full h-[110px] md:h-[200px] md:aspect-square
         `}
         onClick={() => setPhotoType?.(id)}
       >
@@ -41,34 +41,34 @@ const PhotoTypeCard = ({
           {/* Hidden radio button for form functionality */}
           <RadioGroupItem value={id} id={id} className="sr-only" />
 
-          <div className="flex items-center gap-3 h-full">
+          <div className="flex items-center gap-3 h-full md:flex-col md:text-center md:justify-center md:gap-4">
             {/* Icon */}
             <div className="flex items-center justify-center flex-shrink-0">
               {isCustomImage ? (
                 <img
                   src={icon as string}
                   alt={title}
-                  className="h-[72px] md:h-20 w-auto object-contain transition-all duration-300"
+                  className="h-[72px] md:h-16 w-auto object-contain transition-all duration-300"
                 />
               ) : (
                 React.createElement(icon as LucideIcon, {
-                  className: `h-12 w-12 transition-all duration-300 ${isSelected ? 'text-primary' : 'text-foreground'}`
+                  className: `h-12 w-12 md:h-16 md:w-16 transition-all duration-300 ${isSelected ? 'text-primary' : 'text-foreground'}`
                 })
               )}
             </div>
 
             {/* Content */}
-            <div className="flex-1 text-left min-w-0 flex flex-col justify-center">
+            <div className="flex-1 text-left min-w-0 flex flex-col justify-center md:text-center">
               <h3
                 className={`
-                  text-xl font-bold mb-1 leading-tight transition-colors duration-300
+                  text-xl font-bold mb-1 leading-tight transition-colors duration-300 md:text-lg
                   ${isSelected ? 'text-foreground' : 'text-foreground'}
                 `}
               >
                 {title}
               </h3>
 
-              <p className="text-base text-muted-foreground leading-snug line-clamp-2">
+              <p className="text-base text-muted-foreground leading-snug line-clamp-2 md:text-sm">
                 {description}
               </p>
             </div>

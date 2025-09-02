@@ -38,7 +38,7 @@ const PhotoTypeStep = ({ onNext }: PhotoTypeStepProps) => {
           onValueChange={setPhotoType}
           className="h-full"
         >
-          <div className="flex flex-col gap-1 sm:gap-2 h-[65%]">
+          <div className="flex flex-col gap-1 sm:gap-2 h-[65%] md:grid md:grid-cols-2 md:gap-4 md:h-auto">
             {photoTypes.map((type) => (
               <PhotoTypeCard
                 key={type.id}
