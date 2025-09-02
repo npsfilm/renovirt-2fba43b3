@@ -91,7 +91,12 @@ const Order = () => {
   };
 
   const handlePrev = () => {
-    prevStep();
+    if (currentStep === 'photo-type') {
+      // Navigate to dashboard when going back from first step
+      window.location.href = '/dashboard';
+    } else {
+      prevStep();
+    }
   };
 
   const renderCurrentStep = () => {
@@ -144,6 +149,13 @@ const Order = () => {
           currentStepTitle={steps.find(step => step.status === 'current')?.title || 'Bestellung'}
           stepIndex={getStepIndex(currentStep) + 1}
           totalSteps={stepOrder.length}
+        />
+
+        {/* Exit Confirmation Dialog for Mobile */}
+        <OrderExitConfirmationDialog
+          open={showConfirmDialog}
+          onContinue={handleContinueOrder}
+          onExit={handleExitOrder}
         />
       </MobileLayout>
     );

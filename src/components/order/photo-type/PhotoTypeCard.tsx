@@ -11,6 +11,7 @@ interface PhotoTypeCardProps {
   description: string;
   icon: LucideIcon;
   isSelected: boolean;
+  setPhotoType?: (id: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5') => void;
 }
 
 const PhotoTypeCard = ({
@@ -18,7 +19,8 @@ const PhotoTypeCard = ({
   title,
   description,
   icon: IconComponent,
-  isSelected
+  isSelected,
+  setPhotoType
 }: PhotoTypeCardProps) => {
   const isMobile = useIsMobile();
 
@@ -31,6 +33,7 @@ const PhotoTypeCard = ({
             ${isSelected ? 'shadow-xl border-primary/30 bg-primary/5 shadow-primary/15 scale-[1.02]' : 'shadow-lg border-border bg-card hover:shadow-xl hover:border-border active:scale-[0.98]'}
             border-2 rounded-2xl w-full min-h-[64px]
           `}
+          onClick={() => setPhotoType?.(id)}
         >
           <CardContent className="p-2 relative">
             {/* Hidden radio button for form functionality */}
@@ -88,6 +91,7 @@ const PhotoTypeCard = ({
           ${isSelected ? 'ring-2 ring-primary shadow-lg scale-[1.02] bg-gradient-to-br from-primary/10 to-primary/20' : 'hover:shadow-md hover:scale-[1.01] border-border bg-card'}
           border h-full
         `}
+        onClick={() => setPhotoType?.(id)}
       >
         <CardContent className="p-2 md:p-4 text-center relative">
           {/* Hidden radio button for form functionality */}

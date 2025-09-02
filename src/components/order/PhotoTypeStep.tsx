@@ -46,6 +46,7 @@ const PhotoTypeStep = ({ onNext }: PhotoTypeStepProps) => {
               description={type.description}
               icon={type.icon}
               isSelected={selectedType === type.id}
+              setPhotoType={setPhotoType}
             />
           ))}
         </RadioGroup>
