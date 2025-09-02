@@ -9,7 +9,8 @@ interface PhotoTypeCardProps {
   id: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5';
   title: string;
   description: string;
-  icon: LucideIcon;
+  icon: LucideIcon | string;
+  isCustomImage?: boolean;
   isSelected: boolean;
   setPhotoType?: (id: 'handy' | 'kamera' | 'bracketing-3' | 'bracketing-5') => void;
 }
@@ -18,7 +19,8 @@ const PhotoTypeCard = ({
   id,
   title,
   description,
-  icon: IconComponent,
+  icon,
+  isCustomImage = false,
   isSelected,
   setPhotoType
 }: PhotoTypeCardProps) => {
@@ -47,12 +49,17 @@ const PhotoTypeCard = ({
                 ${isSelected ? 'bg-primary/20 shadow-lg shadow-primary/30' : 'bg-gradient-to-br from-muted to-muted/80'}
               `}
             >
-              <IconComponent
-                className={`
-                  w-8 h-8 transition-all duration-300 transform origin-center
-                  ${isSelected ? 'text-primary' : 'text-foreground'}
-                `}
-              />
+              {isCustomImage ? (
+                <img 
+                  src={icon as string} 
+                  alt={title}
+                  className="w-8 h-8 object-contain transition-all duration-300 transform origin-center"
+                />
+              ) : (
+                React.createElement(icon as LucideIcon, {
+                  className: `w-8 h-8 transition-all duration-300 transform origin-center ${isSelected ? 'text-primary' : 'text-foreground'}`
+                })
+              )}
             </div>
 
             {/* Content */}
@@ -81,56 +88,8 @@ const PhotoTypeCard = ({
     </Label>
   );
 
-  // Desktop-Design (unverändert)
-  return (
-    <Label htmlFor={id} className="cursor-pointer group">
-      <Card
-        className={`
-          relative overflow-hidden transition-all duration-300 ease-out transform
-          ${isSelected ? 'ring-2 ring-primary shadow-lg scale-[1.02] bg-gradient-to-br from-primary/10 to-primary/20' : 'hover:shadow-md hover:scale-[1.01] border-border bg-card'}
-          border h-full
-        `}
-        onClick={() => setPhotoType?.(id)}
-      >
-        <CardContent className="p-2 md:p-4 text-center relative">
-          {/* Hidden radio button for form functionality */}
-          <RadioGroupItem value={id} id={id} className="sr-only" />
-
-          <div
-            className={`
-              w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl flex items-center justify-center mx-auto mb-1 md:mb-2 transition-all duration-300
-              ${isSelected ? 'bg-primary/10 shadow-md' : 'bg-muted group-hover:bg-muted/80'}
-            `}
-          >
-            <IconComponent
-              className={`
-                w-4 h-4 md:w-6 md:h-6 transition-all duration-300 transform origin-center scale-[1.2]
-                ${isSelected ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'}
-              `}
-            />
-          </div>
-
-          <h3
-            className={`
-              text-xs md:text-sm font-semibold mb-1 transition-colors duration-300
-              ${isSelected ? 'text-foreground' : 'text-foreground'}
-            `}
-          >
-            {title}
-          </h3>
-
-          <p
-            className={`
-              text-xs leading-relaxed transition-colors duration-300 line-clamp-2
-              ${isSelected ? 'text-foreground/80' : 'text-muted-foreground'}
-            `}
-          >
-            {description}
-          </p>
-        </CardContent>
-      </Card>
-    </Label>
-  );
+  // Desktop-Design (unverändert) 
+  // Note: This code is unreachable due to early return above
 };
 
 export default PhotoTypeCard;

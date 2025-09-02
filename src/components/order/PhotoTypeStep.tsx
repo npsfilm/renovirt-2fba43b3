@@ -46,6 +46,7 @@ const PhotoTypeStep = ({ onNext }: PhotoTypeStepProps) => {
                 title={type.title}
                 description={type.description}
                 icon={type.icon}
+                isCustomImage={type.isCustomImage}
                 isSelected={selectedType === type.id}
                 setPhotoType={setPhotoType}
               />
