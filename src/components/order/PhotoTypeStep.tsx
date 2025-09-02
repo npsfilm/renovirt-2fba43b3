@@ -31,12 +31,12 @@ const PhotoTypeStep = ({ onNext }: PhotoTypeStepProps) => {
         </div>
       )}
 
-      {/* Content Area */}
-      <div className={`${isMobile ? 'px-3 py-2 pb-20 flex-1 overflow-hidden' : 'flex-1 min-h-0 px-2 pt-2 overflow-y-auto'}`}>
+      {/* Content Area - FORCED MOBILE SPACING */}
+      <div className="px-2 py-1 pb-20 flex-1 overflow-hidden">
         <RadioGroup
           value={selectedType}
           onValueChange={setPhotoType}
-          className={`${isMobile ? 'grid grid-cols-1 gap-1.5 h-full' : 'grid grid-cols-1 md:grid-cols-2 gap-3 mb-4'}`}
+          className="grid grid-cols-1 gap-1 h-full"
         >
           {photoTypes.map((type) => (
             <PhotoTypeCard

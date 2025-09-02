@@ -24,63 +24,62 @@ const PhotoTypeCard = ({
 }: PhotoTypeCardProps) => {
   const isMobile = useIsMobile();
 
-  if (isMobile) {
-    return (
-      <Label htmlFor={id} className="cursor-pointer block">
-        <Card
-          className={`
-            relative overflow-hidden transition-all duration-300 ease-out group
-            ${isSelected ? 'ring-2 ring-primary shadow-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 shadow-primary/20' : 'shadow-lg border-border bg-card hover:shadow-xl hover:border-primary/20 hover:bg-gradient-to-r hover:from-muted/50 hover:to-muted/30 active:scale-[0.98]'}
-            border-2 rounded-2xl w-full h-[72px]
-          `}
-          onClick={() => setPhotoType?.(id)}
-        >
-          <CardContent className="p-3 relative h-full">
-            {/* Hidden radio button for form functionality */}
-            <RadioGroupItem value={id} id={id} className="sr-only" />
+  // FORCE COMPACT MOBILE LAYOUT - NO CONDITIONS
+  return (
+    <Label htmlFor={id} className="cursor-pointer block">
+      <Card
+        className={`
+          relative overflow-hidden transition-all duration-300 ease-out group
+          ${isSelected ? 'ring-2 ring-primary shadow-xl bg-primary/10' : 'shadow-md border-border bg-card hover:shadow-lg hover:border-primary/20'}
+          border-2 rounded-2xl w-full h-[65px]
+        `}
+        onClick={() => setPhotoType?.(id)}
+      >
+        <CardContent className="p-2.5 relative h-full">
+          {/* Hidden radio button for form functionality */}
+          <RadioGroupItem value={id} id={id} className="sr-only" />
 
-            <div className="flex items-center gap-3 h-full">
-              {/* Icon */}
-              <div
+          <div className="flex items-center gap-2.5 h-full">
+            {/* Icon */}
+            <div
+              className={`
+                w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 flex-shrink-0 shadow-sm
+                ${isSelected ? 'bg-primary/20 shadow-lg shadow-primary/30' : 'bg-gradient-to-br from-muted to-muted/80'}
+              `}
+            >
+              <IconComponent
                 className={`
-                  w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 flex-shrink-0 shadow-md
-                  ${isSelected ? 'bg-primary/20 shadow-lg shadow-primary/30 ring-2 ring-primary/30' : 'bg-gradient-to-br from-muted to-muted/80 group-hover:from-primary/5 group-hover:to-primary/10'}
+                  w-5 h-5 transition-all duration-300 transform origin-center
+                  ${isSelected ? 'text-primary' : 'text-foreground'}
                 `}
-              >
-                <IconComponent
-                  className={`
-                    w-6 h-6 transition-all duration-300 transform origin-center
-                    ${isSelected ? 'text-primary scale-110' : 'text-foreground group-hover:text-primary group-hover:scale-105'}
-                  `}
-                />
-              </div>
-
-              {/* Content */}
-              <div className="flex-1 text-left min-w-0 flex flex-col justify-center">
-                <h3
-                  className={`
-                    text-base font-semibold mb-0.5 leading-tight transition-colors duration-300
-                    ${isSelected ? 'text-foreground' : 'text-foreground group-hover:text-primary'}
-                  `}
-                >
-                  {title}
-                </h3>
-
-                <p className="text-sm text-muted-foreground leading-snug line-clamp-2">
-                  {description}
-                </p>
-              </div>
+              />
             </div>
 
-            {/* Subtiler Gloss-Effekt im ausgewählten Zustand */}
-            {isSelected && (
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none"></div>
-            )}
-          </CardContent>
-        </Card>
-      </Label>
-    );
-  }
+            {/* Content */}
+            <div className="flex-1 text-left min-w-0 flex flex-col justify-center">
+              <h3
+                className={`
+                  text-sm font-semibold mb-0 leading-tight transition-colors duration-300
+                  ${isSelected ? 'text-foreground' : 'text-foreground'}
+                `}
+              >
+                {title}
+              </h3>
+
+              <p className="text-xs text-muted-foreground leading-snug line-clamp-1">
+                {description}
+              </p>
+            </div>
+          </div>
+
+          {/* Selection indicator */}
+          {isSelected && (
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none"></div>
+          )}
+        </CardContent>
+      </Card>
+    </Label>
+  );
 
   // Desktop-Design (unverändert)
   return (
