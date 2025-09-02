@@ -43,16 +43,16 @@ const PhotoTypeCard = ({
 
           <div className="flex items-center gap-[1.15rem] h-full">
             {/* Icon */}
-            <div className="w-16 h-16 flex items-center justify-center flex-shrink-0">
+            <div className="flex items-center justify-center flex-shrink-0">
               {isCustomImage ? (
-                <img 
-                  src={icon as string} 
+                <img
+                  src={icon as string}
                   alt={title}
-                  className="w-10 h-10 object-contain transition-all duration-300"
+                  className="h-10 w-auto object-contain transition-all duration-300"
                 />
               ) : (
                 React.createElement(icon as LucideIcon, {
-                  className: `w-10 h-10 transition-all duration-300 ${isSelected ? 'text-primary' : 'text-foreground'}`
+                  className: `h-10 w-10 transition-all duration-300 ${isSelected ? 'text-primary' : 'text-foreground'}`
                 })
               )}
             </div>
