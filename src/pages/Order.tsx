@@ -124,15 +124,17 @@ const Order = () => {
   if (isMobile) {
     return (
       <MobileLayout>
-        {/* Thin Progress Bar Only */}
-        <div className="sticky top-0 z-30 bg-white/98 backdrop-blur-xl border-b border-gray-100 shadow-sm">
-          <div className="w-full bg-gray-100 h-1.5">
+        <div className="h-full flex flex-col overflow-hidden">
+          {/* Thin Progress Bar Only */}
+          <div className="sticky top-0 z-30 bg-white/98 backdrop-blur-xl border-b border-gray-100 shadow-sm flex-shrink-0">
+            <div className="w-full bg-gray-100 h-1.5">
+            </div>
           </div>
-        </div>
 
-        {/* Step Content */}
-        <div className="pb-32">
-          {renderCurrentStep()}
+          {/* Step Content */}
+          <div className="flex-1 overflow-hidden">
+            {renderCurrentStep()}
+          </div>
         </div>
         
         {/* Mobile Fixed Bottom Action Bar */}

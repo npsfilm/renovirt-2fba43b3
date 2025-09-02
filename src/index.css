@@ -3,6 +3,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent unnecessary scrolling */
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+#root {
+  height: 100%;
+}
+
 @layer base {
   :root {
     /* Base Colors */

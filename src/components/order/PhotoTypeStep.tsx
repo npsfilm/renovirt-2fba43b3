@@ -20,7 +20,7 @@ const PhotoTypeStep = ({ onNext }: PhotoTypeStepProps) => {
   const isMobile = useIsMobile();
 
   return (
-    <div className={`${isMobile ? 'h-screen flex flex-col overflow-hidden' : 'flex flex-col h-full min-h-0'}`}>
+    <div className="h-full flex flex-col overflow-hidden">
       {/* Header - compact for desktop */}
       {!isMobile && (
         <div className="text-center space-y-1 px-2 py-2 flex-shrink-0">
@@ -31,8 +31,8 @@ const PhotoTypeStep = ({ onNext }: PhotoTypeStepProps) => {
         </div>
       )}
 
-      {/* Content Area - MINIMAL SPACING */}
-      <div className="px-3 py-1 pb-20 flex-1 overflow-hidden">
+      {/* Content Area - NO SCROLL */}
+      <div className="px-3 py-1 flex-1 overflow-hidden">
         <RadioGroup
           value={selectedType}
           onValueChange={setPhotoType}
