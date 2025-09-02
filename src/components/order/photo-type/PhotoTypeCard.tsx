@@ -35,7 +35,7 @@ const PhotoTypeCard = ({
         `}
         onClick={() => setPhotoType?.(id)}
       >
-        <CardContent className="p-[1.375rem] relative h-full">
+        <CardContent className="p-4 relative h-full">
           {/* Hidden radio button for form functionality */}
           <RadioGroupItem value={id} id={id} className="sr-only" />
 
@@ -43,13 +43,13 @@ const PhotoTypeCard = ({
             {/* Icon */}
             <div
               className={`
-                w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 flex-shrink-0 shadow-md
+                w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 flex-shrink-0 shadow-md
                 ${isSelected ? 'bg-primary/20 shadow-lg shadow-primary/30' : 'bg-gradient-to-br from-muted to-muted/80'}
               `}
             >
               <IconComponent
                 className={`
-                  w-7 h-7 transition-all duration-300 transform origin-center
+                  w-8 h-8 transition-all duration-300 transform origin-center
                   ${isSelected ? 'text-primary' : 'text-foreground'}
                 `}
               />
@@ -59,14 +59,14 @@ const PhotoTypeCard = ({
             <div className="flex-1 text-left min-w-0 flex flex-col justify-center">
               <h3
                 className={`
-                  text-lg font-bold mb-1 leading-tight transition-colors duration-300
+                  text-xl font-bold mb-1 leading-tight transition-colors duration-300
                   ${isSelected ? 'text-foreground' : 'text-foreground'}
                 `}
               >
                 {title}
               </h3>
 
-              <p className="text-sm text-muted-foreground leading-snug line-clamp-2">
+              <p className="text-base text-muted-foreground leading-snug line-clamp-2">
                 {description}
               </p>
             </div>
