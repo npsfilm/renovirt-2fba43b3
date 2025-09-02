@@ -29,52 +29,52 @@ const PhotoTypeCard = ({
       <Label htmlFor={id} className="cursor-pointer block">
         <Card
           className={`
-            relative overflow-hidden transition-all duration-300 ease-out
-            ${isSelected ? 'shadow-xl border-primary/30 bg-primary/5 shadow-primary/15 scale-[1.02]' : 'shadow-lg border-border bg-card hover:shadow-xl hover:border-border active:scale-[0.98]'}
-            border-2 rounded-2xl w-full min-h-[64px]
+            relative overflow-hidden transition-all duration-300 ease-out group
+            ${isSelected ? 'ring-2 ring-primary shadow-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 shadow-primary/20' : 'shadow-lg border-border bg-card hover:shadow-xl hover:border-primary/20 hover:bg-gradient-to-r hover:from-muted/50 hover:to-muted/30 active:scale-[0.98]'}
+            border-2 rounded-3xl w-full h-[80px]
           `}
           onClick={() => setPhotoType?.(id)}
         >
-          <CardContent className="p-2 relative">
+          <CardContent className="p-4 relative h-full">
             {/* Hidden radio button for form functionality */}
             <RadioGroupItem value={id} id={id} className="sr-only" />
 
-            <div className="flex items-start gap-2">
+            <div className="flex items-center gap-4 h-full">
               {/* Icon */}
               <div
                 className={`
-                  w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 flex-shrink-0 shadow-sm
-                  ${isSelected ? 'bg-primary/10 shadow-lg shadow-primary/20' : 'bg-muted'}
+                  w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 flex-shrink-0 shadow-md
+                  ${isSelected ? 'bg-primary/20 shadow-lg shadow-primary/30 ring-2 ring-primary/30' : 'bg-gradient-to-br from-muted to-muted/80 group-hover:from-primary/5 group-hover:to-primary/10'}
                 `}
               >
                 <IconComponent
                   className={`
-                    w-4 h-4 transition-all duration-300 transform origin-center
-                    text-foreground
+                    w-6 h-6 transition-all duration-300 transform origin-center
+                    ${isSelected ? 'text-primary scale-110' : 'text-foreground group-hover:text-primary group-hover:scale-105'}
                   `}
                 />
               </div>
 
               {/* Content */}
-              <div className="flex-1 text-left min-w-0">
+              <div className="flex-1 text-left min-w-0 flex flex-col justify-center">
                 <h3
                   className={`
-                    text-sm font-medium mb-0.5 leading-tight transition-colors duration-300
-                    ${isSelected ? 'text-foreground' : 'text-foreground'}
+                    text-base font-semibold mb-1 leading-tight transition-colors duration-300
+                    ${isSelected ? 'text-foreground' : 'text-foreground group-hover:text-primary'}
                   `}
                 >
                   {title}
                 </h3>
 
-                <p className="text-xs text-muted-foreground leading-snug truncate">
+                <p className="text-sm text-muted-foreground leading-snug line-clamp-2">
                   {description}
                 </p>
               </div>
             </div>
 
-            {/* Subtiles Border-Highlight im ausgewählten Zustand */}
+            {/* Subtiler Gloss-Effekt im ausgewählten Zustand */}
             {isSelected && (
-              <div className="absolute inset-0 rounded-2xl border-2 border-primary/40 pointer-events-none"></div>
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none"></div>
             )}
           </CardContent>
         </Card>
