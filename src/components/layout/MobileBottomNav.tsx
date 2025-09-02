@@ -58,8 +58,14 @@ const MobileBottomNav = () => {
   ];
 
   const handleNavClick = (path: string) => {
-    navigate(path);
-    setIsMoreMenuOpen(false);
+    try {
+      console.log('[MobileBottomNav] nav click ->', path);
+      navigate(path);
+    } catch (e) {
+      console.error('[MobileBottomNav] navigate error', e);
+    } finally {
+      setIsMoreMenuOpen(false);
+    }
   };
 
   const handleMoreClick = () => setIsMoreMenuOpen((v) => !v);
@@ -133,7 +139,7 @@ const MobileBottomNav = () => {
 
       {/* Bottom Navigation Bar - Edge-to-edge */}
       <div
-        className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-40"
+        className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-[60] pointer-events-auto"
         role="navigation"
         aria-label="Hauptnavigation mobil"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
