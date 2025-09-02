@@ -38,7 +38,7 @@ const PhotoTypeStep = ({ onNext }: PhotoTypeStepProps) => {
           onValueChange={setPhotoType}
           className="h-full"
         >
-          <div className="flex flex-col gap-1 sm:gap-2 h-[58%] md:h-[65%]">
+          <div className="flex flex-col gap-1 sm:gap-2 h-[65%]">
             {photoTypes.map((type) => (
               <PhotoTypeCard
                 key={type.id}
@@ -56,7 +56,7 @@ const PhotoTypeStep = ({ onNext }: PhotoTypeStepProps) => {
 
         {/* Conditional Content */}
         {selectedType?.startsWith('bracketing') && (
-          <div className={`${isMobile ? 'mt-2' : 'mb-3'}`}>
+          <div className={`${isMobile ? 'mt-6' : 'mb-3'}`}>
             <BracketingInfoCard selectedType={selectedType as 'bracketing-3' | 'bracketing-5'} />
           </div>
         )}
