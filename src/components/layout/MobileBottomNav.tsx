@@ -80,7 +80,7 @@ const MobileBottomNav = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/20 z-40"
+            className="fixed inset-0 bg-black/20 z-50"
             onClick={() => setIsMoreMenuOpen(false)}
           />
         )}
@@ -106,6 +106,7 @@ const MobileBottomNav = () => {
                     key={item.id}
                     onClick={() => handleNavClick(item.path)}
                     aria-label={item.label}
+                    type="button"
                     className="w-full flex items-center gap-4 p-4 text-left text-foreground active:scale-95 transition-transform"
                   >
                     <item.icon className="h-5 w-5 text-muted-foreground" />
@@ -117,6 +118,7 @@ const MobileBottomNav = () => {
                   <button
                     onClick={handleLogout}
                     aria-label="Abmelden"
+                    type="button"
                     className="w-full flex items-center gap-4 p-4 text-left text-destructive active:scale-95 transition-transform"
                   >
                     <LogOut className="h-5 w-5" />
@@ -131,7 +133,7 @@ const MobileBottomNav = () => {
 
       {/* Bottom Navigation Bar - Edge-to-edge */}
       <div
-        className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-30"
+        className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-40"
         role="navigation"
         aria-label="Hauptnavigation mobil"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
@@ -143,6 +145,7 @@ const MobileBottomNav = () => {
               key={item.id}
               onClick={() => handleNavClick(item.path)}
               aria-label={item.label}
+              type="button"
               className={cn(
                 'flex-1 flex flex-col items-center justify-center gap-1 active:scale-95 transition-all duration-150 min-h-[44px]',
                 item.isUploadCTA 
@@ -179,6 +182,7 @@ const MobileBottomNav = () => {
           <button
             onClick={handleMoreClick}
             aria-label="Mehr"
+            type="button"
             className={cn(
               'flex-1 flex flex-col items-center justify-center gap-1 active:scale-95 transition-all duration-150 min-h-[44px]',
               isMoreActive || isMoreMenuOpen ? 'text-foreground' : 'text-muted-foreground'
