@@ -20,14 +20,14 @@ export const photoTypes = [
     id: 'bracketing-3' as const,
     title: 'Bracketing (3 Bilder)',
     description: 'HDR-Serie mit 3 verschiedenen Belichtungen',
-    icon: Layers,
-    isCustomImage: false,
+    icon: '/lovable-uploads/f7975080-14dd-4918-a9d5-fba88ccb867e.png',
+    isCustomImage: true,
   },
   {
     id: 'bracketing-5' as const,
     title: 'Bracketing (5 Bilder)',
     description: 'HDR-Serie mit 5 verschiedenen Belichtungen',
-    icon: Layers,
-    isCustomImage: false,
+    icon: '/lovable-uploads/345765bb-2387-48e6-9e64-329c84271522.png',
+    isCustomImage: true,
   },
 ];
