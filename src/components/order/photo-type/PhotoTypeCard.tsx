@@ -35,7 +35,7 @@ const PhotoTypeCard = ({
         `}
         onClick={() => setPhotoType?.(id)}
       >
-        <CardContent className="p-5 relative h-full">
+        <CardContent className="p-[1.375rem] relative h-full">
           {/* Hidden radio button for form functionality */}
           <RadioGroupItem value={id} id={id} className="sr-only" />
 
