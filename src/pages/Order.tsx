@@ -127,10 +127,6 @@ const Order = () => {
         {/* Thin Progress Bar Only */}
         <div className="sticky top-0 z-30 bg-white/98 backdrop-blur-xl border-b border-gray-100 shadow-sm">
           <div className="w-full bg-gray-100 h-1.5">
-            <div 
-              className="bg-primary h-1.5 transition-all duration-700 ease-out shadow-sm"
-              style={{ width: `${getProgressPercentage()}%` }}
-            />
           </div>
         </div>
 
