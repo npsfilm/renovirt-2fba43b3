@@ -26,7 +26,7 @@ const PhotoTypeCard = ({
 
   // FORCE COMPACT MOBILE LAYOUT - NO CONDITIONS
   return (
-    <Label htmlFor={id} className="cursor-pointer block">
+    <Label htmlFor={id} className="cursor-pointer block leading-none">
       <Card
         className={`
           relative overflow-hidden transition-all duration-300 ease-out group

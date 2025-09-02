@@ -36,7 +36,7 @@ const PhotoTypeStep = ({ onNext }: PhotoTypeStepProps) => {
         <RadioGroup
           value={selectedType}
           onValueChange={setPhotoType}
-          className="grid grid-cols-1 gap-1 h-full"
+          className="grid grid-cols-1 gap-0.5 h-full"
         >
           {photoTypes.map((type) => (
             <PhotoTypeCard
