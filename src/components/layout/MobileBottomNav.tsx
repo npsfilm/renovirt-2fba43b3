@@ -104,6 +104,7 @@ const MobileBottomNav = () => {
                 {moreMenuItems.map((item) => (
                   <button
                     key={item.id}
+                    type="button"
                     onClick={() => handleNavClick(item.path)}
                     aria-label={item.label}
                     className="w-full flex items-center gap-4 p-4 text-left text-foreground active:scale-95 transition-transform"
@@ -115,6 +116,7 @@ const MobileBottomNav = () => {
 
                 <div className="border-t border-border pt-2 mt-3">
                   <button
+                    type="button"
                     onClick={handleLogout}
                     aria-label="Abmelden"
                     className="w-full flex items-center gap-4 p-4 text-left text-destructive active:scale-95 transition-transform"
@@ -141,6 +143,7 @@ const MobileBottomNav = () => {
           {mainNavItems.map((item) => (
             <button
               key={item.id}
+              type="button"
               onClick={() => handleNavClick(item.path)}
               aria-label={item.label}
               className={cn(
@@ -177,6 +180,7 @@ const MobileBottomNav = () => {
 
           {/* More button */}
           <button
+            type="button"
             onClick={handleMoreClick}
             aria-label="Mehr"
             className={cn(
