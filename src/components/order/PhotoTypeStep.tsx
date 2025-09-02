@@ -36,19 +36,21 @@ const PhotoTypeStep = ({ onNext }: PhotoTypeStepProps) => {
         <RadioGroup
           value={selectedType}
           onValueChange={setPhotoType}
-          className="grid grid-cols-1 gap-0.5 h-full"
+          className="h-full"
         >
-          {photoTypes.map((type) => (
-            <PhotoTypeCard
-              key={type.id}
-              id={type.id}
-              title={type.title}
-              description={type.description}
-              icon={type.icon}
-              isSelected={selectedType === type.id}
-              setPhotoType={setPhotoType}
-            />
-          ))}
+          <div className="flex flex-col gap-1 sm:gap-2 h-full">
+            {photoTypes.map((type) => (
+              <PhotoTypeCard
+                key={type.id}
+                id={type.id}
+                title={type.title}
+                description={type.description}
+                icon={type.icon}
+                isSelected={selectedType === type.id}
+                setPhotoType={setPhotoType}
+              />
+            ))}
+          </div>
         </RadioGroup>
 
         {/* Conditional Content */}
