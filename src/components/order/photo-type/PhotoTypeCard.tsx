@@ -31,15 +31,15 @@ const PhotoTypeCard = ({
           className={`
             relative overflow-hidden transition-all duration-300 ease-out group
             ${isSelected ? 'ring-2 ring-primary shadow-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 shadow-primary/20' : 'shadow-lg border-border bg-card hover:shadow-xl hover:border-primary/20 hover:bg-gradient-to-r hover:from-muted/50 hover:to-muted/30 active:scale-[0.98]'}
-            border-2 rounded-3xl w-full h-[76px]
+            border-2 rounded-2xl w-full h-[72px]
           `}
           onClick={() => setPhotoType?.(id)}
         >
-          <CardContent className="p-3.5 relative h-full">
+          <CardContent className="p-3 relative h-full">
             {/* Hidden radio button for form functionality */}
             <RadioGroupItem value={id} id={id} className="sr-only" />
 
-            <div className="flex items-center gap-3.5 h-full">
+            <div className="flex items-center gap-3 h-full">
               {/* Icon */}
               <div
                 className={`
