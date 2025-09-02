@@ -133,7 +133,7 @@ const MobileBottomNav = () => {
 
       {/* Bottom Navigation Bar - Edge-to-edge */}
       <div
-        className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-30"
+        className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-50"
         role="navigation"
         aria-label="Hauptnavigation mobil"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
