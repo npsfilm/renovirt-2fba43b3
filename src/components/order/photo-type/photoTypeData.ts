@@ -13,8 +13,8 @@ export const photoTypes = [
     id: 'kamera' as const,
     title: 'Kamera',
     description: 'Einzelaufnahmen von professioneller Kamera',
-    icon: Camera,
-    isCustomImage: false,
+    icon: '/lovable-uploads/83ff57f8-6c2f-44ef-b68f-f5e16ab70d91.png',
+    isCustomImage: true,
   },
   {
     id: 'bracketing-3' as const,
