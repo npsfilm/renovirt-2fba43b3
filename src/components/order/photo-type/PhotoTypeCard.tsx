@@ -39,7 +39,7 @@ const PhotoTypeCard = ({
           {/* Hidden radio button for form functionality */}
           <RadioGroupItem value={id} id={id} className="sr-only" />
 
-          <div className="flex items-center gap-4 h-full">
+          <div className="flex items-center gap-[1.15rem] h-full">
             {/* Icon */}
             <div
               className={`
