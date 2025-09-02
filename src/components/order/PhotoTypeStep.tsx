@@ -31,12 +31,12 @@ const PhotoTypeStep = ({ onNext }: PhotoTypeStepProps) => {
         </div>
       )}
 
-      {/* Content Area - FORCED MOBILE SPACING */}
-      <div className="px-2 py-1 pb-20 flex-1 overflow-hidden">
+      {/* Content Area - LARGER CARDS */}
+      <div className="px-3 py-2 pb-20 flex-1 overflow-hidden">
         <RadioGroup
           value={selectedType}
           onValueChange={setPhotoType}
-          className="grid grid-cols-1 gap-1 h-full"
+          className="grid grid-cols-1 gap-2 h-full"
         >
           {photoTypes.map((type) => (
             <PhotoTypeCard

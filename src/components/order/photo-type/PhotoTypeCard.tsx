@@ -31,25 +31,25 @@ const PhotoTypeCard = ({
         className={`
           relative overflow-hidden transition-all duration-300 ease-out group
           ${isSelected ? 'ring-2 ring-primary shadow-xl bg-primary/10' : 'shadow-md border-border bg-card hover:shadow-lg hover:border-primary/20'}
-          border-2 rounded-2xl w-full h-[65px]
+          border-2 rounded-3xl w-full h-[90px]
         `}
         onClick={() => setPhotoType?.(id)}
       >
-        <CardContent className="p-2.5 relative h-full">
+        <CardContent className="p-4 relative h-full">
           {/* Hidden radio button for form functionality */}
           <RadioGroupItem value={id} id={id} className="sr-only" />
 
-          <div className="flex items-center gap-2.5 h-full">
+          <div className="flex items-center gap-4 h-full">
             {/* Icon */}
             <div
               className={`
-                w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 flex-shrink-0 shadow-sm
+                w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 flex-shrink-0 shadow-md
                 ${isSelected ? 'bg-primary/20 shadow-lg shadow-primary/30' : 'bg-gradient-to-br from-muted to-muted/80'}
               `}
             >
               <IconComponent
                 className={`
-                  w-5 h-5 transition-all duration-300 transform origin-center
+                  w-7 h-7 transition-all duration-300 transform origin-center
                   ${isSelected ? 'text-primary' : 'text-foreground'}
                 `}
               />
@@ -59,14 +59,14 @@ const PhotoTypeCard = ({
             <div className="flex-1 text-left min-w-0 flex flex-col justify-center">
               <h3
                 className={`
-                  text-sm font-semibold mb-0 leading-tight transition-colors duration-300
+                  text-lg font-bold mb-1 leading-tight transition-colors duration-300
                   ${isSelected ? 'text-foreground' : 'text-foreground'}
                 `}
               >
                 {title}
               </h3>
 
-              <p className="text-xs text-muted-foreground leading-snug line-clamp-1">
+              <p className="text-sm text-muted-foreground leading-snug line-clamp-2">
                 {description}
               </p>
             </div>
@@ -74,7 +74,7 @@ const PhotoTypeCard = ({
 
           {/* Selection indicator */}
           {isSelected && (
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none"></div>
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none"></div>
           )}
         </CardContent>
       </Card>
