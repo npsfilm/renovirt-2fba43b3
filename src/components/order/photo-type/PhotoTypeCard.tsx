@@ -41,18 +41,18 @@ const PhotoTypeCard = ({
           {/* Hidden radio button for form functionality */}
           <RadioGroupItem value={id} id={id} className="sr-only" />
 
-          <div className="flex items-center gap-[1.15rem] h-full">
+          <div className="flex items-center gap-3 h-full">
             {/* Icon */}
             <div className="flex items-center justify-center flex-shrink-0">
               {isCustomImage ? (
                 <img
                   src={icon as string}
                   alt={title}
-                  className="h-10 w-auto object-contain transition-all duration-300"
+                  className="h-16 w-auto object-contain transition-all duration-300"
                 />
               ) : (
                 React.createElement(icon as LucideIcon, {
-                  className: `h-10 w-10 transition-all duration-300 ${isSelected ? 'text-primary' : 'text-foreground'}`
+                  className: `h-12 w-12 transition-all duration-300 ${isSelected ? 'text-primary' : 'text-foreground'}`
                 })
               )}
             </div>
