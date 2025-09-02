@@ -48,7 +48,7 @@ const PhotoTypeCard = ({
                 <img
                   src={icon as string}
                   alt={title}
-                  className="h-16 w-auto object-contain transition-all duration-300"
+                  className="h-[72px] md:h-20 w-auto object-contain transition-all duration-300"
                 />
               ) : (
                 React.createElement(icon as LucideIcon, {
