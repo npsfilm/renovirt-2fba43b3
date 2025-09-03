@@ -8,22 +8,13 @@ const BracketingInfoCard = ({
   selectedType
 }: BracketingInfoCardProps) => {
   return <Card className="bg-gradient-to-r from-info/5 to-info/10 border-info/20 shadow-sm">
-      <CardContent className="p-6">
-        <div className="flex items-start space-x-4">
-          
-          <div className="flex-1">
-            <h4 className="text-base font-semibold text-foreground mb-2">Bracketing-Information</h4>
-            <p className="text-muted-foreground mb-3 leading-relaxed text-sm">
-              {selectedType === 'bracketing-3' ? 'Ihre hochgeladenen Bilder werden automatisch in 3er-Gruppen für HDR-Verarbeitung gruppiert.' : 'Ihre hochgeladenen Bilder werden automatisch in 5er-Gruppen für HDR-Verarbeitung gruppiert.'}
-            </p>
-            <div className="bg-info/10 rounded-lg p-3">
-              <p className="text-sm text-info/80 font-medium">
-                Die Anzahl der Bilder für die Preisberechnung wird basierend auf den resultierenden HDR-Bildern angepasst. 
-                Z.B. 6 Bilder mit 3er-Reihen ergeben 2 finale HDR-Bilder.
-              </p>
-            </div>
-          </div>
-        </div>
+      <CardContent className="p-3 md:p-4">
+        <h4 className="text-sm font-semibold text-foreground mb-1">Bracketing-Information</h4>
+        <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
+          {selectedType === 'bracketing-3' 
+            ? 'Bilder werden in 3er-Gruppen für HDR-Verarbeitung gruppiert. Die Preisberechnung erfolgt basierend auf den resultierenden HDR-Bildern (z.B. 6 Bilder = 2 finale HDR-Bilder).' 
+            : 'Bilder werden in 5er-Gruppen für HDR-Verarbeitung gruppiert. Die Preisberechnung erfolgt basierend auf den resultierenden HDR-Bildern (z.B. 10 Bilder = 2 finale HDR-Bilder).'}
+        </p>
       </CardContent>
     </Card>;
 };
