@@ -1,7 +1,6 @@
 
 import React, { useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import UploadZone from './upload/UploadZone';
 import FileList from './upload/FileList';
