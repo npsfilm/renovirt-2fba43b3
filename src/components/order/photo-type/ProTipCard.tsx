@@ -8,7 +8,7 @@ const ProTipCard = () => {
   const navigate = useNavigate();
   
   return (
-    <Card className="bg-gradient-to-r from-success/5 to-success/10 border-success/20 shadow-sm">
+    <Card className="bg-[#FF972E]/50 border-[#FF972E]/30 shadow-sm">
       <CardContent className="p-3 md:p-4">
         <div className="flex items-center gap-2 mb-2">
           <div className="w-5 h-5 bg-success/10 rounded-lg flex items-center justify-center">
