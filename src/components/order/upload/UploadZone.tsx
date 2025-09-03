@@ -76,14 +76,12 @@ const UploadZone = ({
   return <SecureUploadZone onFiles={onFiles} maxFiles={maxFiles} userId={user?.id} className="w-full">
       <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer bg-gray-50 hover:bg-gray-100">
         <div className="flex flex-col items-center space-y-4">
-          <div className="flex space-x-2">
+          <div className="flex justify-center">
             <img 
               src="/lovable-uploads/f217e090-3a69-475a-8aad-bc893e8ac871.png" 
               alt="Upload" 
-              className="h-12 w-12" 
+              className="h-24 w-24" 
             />
-            <Image className="h-12 w-12 text-blue-500" />
-            <FileImage className="h-12 w-12 text-green-500" />
           </div>
           
           <div className="space-y-2">
