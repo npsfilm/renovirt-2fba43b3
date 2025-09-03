@@ -9,26 +9,24 @@ const ProTipCard = () => {
   
   return (
     <Card className="bg-gradient-to-r from-success/5 to-success/10 border-success/20 shadow-sm">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-base text-foreground flex items-center gap-2">
-          <div className="w-6 h-6 bg-success/10 rounded-lg flex items-center justify-center">
+      <CardContent className="p-3 md:p-4">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-5 h-5 bg-success/10 rounded-lg flex items-center justify-center">
             <Info className="w-3 h-3 text-success" />
           </div>
-          Pro-Tipp für beste Ergebnisse
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <p className="text-muted-foreground mb-3 text-xs leading-tight">
-          Für optimale Bildqualität empfehlen wir, unsere detaillierten Guidelines zu befolgen.
+          <h4 className="text-sm font-semibold text-foreground">Video Guidelines</h4>
+        </div>
+        <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+          Bitte lesen Sie unsere Anleitung durch, damit wir Ihnen am Ende die bestmögliche Bearbeitung liefern können.
         </p>
         <Button 
           variant="outline" 
           size="sm" 
           onClick={() => navigate('/guidelines')} 
-          className="text-success border-success/30 hover:bg-success/5 hover:border-success/50 transition-all duration-200 h-7 px-3 text-xs"
+          className="text-success border-success/30 hover:bg-success/5 hover:border-success/50 transition-all duration-200 h-6 px-2 text-xs"
         >
           <ExternalLink className="w-3 h-3 mr-1" />
-          Tipps & Tricks
+          Guidelines
         </Button>
       </CardContent>
     </Card>
