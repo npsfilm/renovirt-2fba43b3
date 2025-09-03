@@ -84,7 +84,7 @@ const UploadStep = ({ onNext, onPrev }: UploadStepProps) => {
 
       <Card className={`${isMobile ? 'mx-0 shadow-2xl border-0 rounded-none' : 'border-0 md:border rounded-none md:rounded-lg'}`}>
         <CardContent className={`${isMobile ? 'p-6' : 'p-3 md:p-6'}`}>
-          <UploadZone onFiles={handleFiles} supportedFormats={supportedFormats} maxFileSize={maxFileSize} maxFiles={maxFiles} />
+          <UploadZone onFiles={handleFiles} supportedFormats={supportedFormats} maxFileSize={maxFileSize} maxFiles={maxFiles} hasFiles={files.length > 0} />
 
           <FileList files={files} onRemoveFile={removeFile} photoType={photoType} bracketingDivisor={bracketingDivisor} effectivePhotos={effectivePhotos} />
         </CardContent>
