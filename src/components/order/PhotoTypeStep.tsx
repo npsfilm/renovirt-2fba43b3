@@ -20,7 +20,7 @@ const PhotoTypeStep = ({ onNext }: PhotoTypeStepProps) => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
+    <div className="h-screen flex flex-col overflow-hidden">
       {/* Header - compact for desktop */}
       {!isMobile && (
         <div className="text-center space-y-1 px-2 py-2 flex-shrink-0">
@@ -31,7 +31,7 @@ const PhotoTypeStep = ({ onNext }: PhotoTypeStepProps) => {
         </div>
       )}
 
-      {/* Content Area - NO SCROLL */}
+      {/* Content Area - scrollable content */}
       <div className="px-3 py-1 flex-1 overflow-hidden">
         <RadioGroup
           value={selectedType}
@@ -67,17 +67,18 @@ const PhotoTypeStep = ({ onNext }: PhotoTypeStepProps) => {
         </div>
       </div>
 
-
-      {/* Desktop Button Area - hidden on mobile */}
-      <div className="hidden md:block sticky bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background/95 to-transparent pt-3 pb-4 px-2 flex-shrink-0 md:relative md:bg-none md:pt-4">
-        <Button 
-          onClick={onNext} 
-          disabled={!canProceed}
-          size="lg"
-          className="w-full md:w-auto md:min-w-[180px] md:ml-auto md:flex shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02]"
-        >
-          Weiter zum Upload →
-        </Button>
+      {/* Fixed Button Area - always visible at bottom */}
+      <div className="sticky bottom-0 left-0 right-0 bg-background border-t border-border/20 p-4 flex-shrink-0 shadow-lg">
+        <div className="flex justify-end">
+          <Button 
+            onClick={onNext} 
+            disabled={!canProceed}
+            size="lg"
+            className="min-w-[180px] shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02]"
+          >
+            Weiter zum Upload →
+          </Button>
+        </div>
       </div>
     </div>
   );
