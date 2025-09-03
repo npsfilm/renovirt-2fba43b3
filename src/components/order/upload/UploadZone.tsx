@@ -8,7 +8,6 @@ interface UploadZoneProps {
   supportedFormats: string[];
   maxFileSize: number;
   maxFiles: number;
-  hasFiles?: boolean;
 }
 const UploadZone = ({
   onFiles,

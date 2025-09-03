@@ -83,16 +83,11 @@ const UploadStep = ({ onNext, onPrev }: UploadStepProps) => {
         <BracketingInfo photoType={photoType} bracketingDivisor={bracketingDivisor} />
       </div>
 
-      <Card className={`${isMobile ? 'mx-0 shadow-2xl border-0 rounded-none' : 'border-0 md:border rounded-none md:rounded-lg'} flex-1 flex flex-col overflow-hidden`}>
-        <CardContent className={`${isMobile ? 'p-6' : 'p-3 md:p-6'} flex-1 flex flex-col overflow-hidden`}>
-          <div className={`flex-shrink-0 transition-all duration-300 ${files.length > 0 ? 'h-32' : 'h-64'}`}>
-            <UploadZone onFiles={handleFiles} supportedFormats={supportedFormats} maxFileSize={maxFileSize} maxFiles={maxFiles} hasFiles={files.length > 0} />
-          </div>
-          
-          {/* FileList with scroll */}
-          <div className="flex-1 overflow-y-auto">
-            <FileList files={files} onRemoveFile={removeFile} photoType={photoType} bracketingDivisor={bracketingDivisor} effectivePhotos={effectivePhotos} />
-          </div>
+      <Card className={`${isMobile ? 'mx-0 shadow-2xl border-0 rounded-none' : 'border-0 md:border rounded-none md:rounded-lg'}`}>
+        <CardContent className={`${isMobile ? 'p-6' : 'p-3 md:p-6'}`}>
+          <UploadZone onFiles={handleFiles} supportedFormats={supportedFormats} maxFileSize={maxFileSize} maxFiles={maxFiles} />
+
+          <FileList files={files} onRemoveFile={removeFile} photoType={photoType} bracketingDivisor={bracketingDivisor} effectivePhotos={effectivePhotos} />
         </CardContent>
       </Card>
 
