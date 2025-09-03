@@ -8,24 +8,24 @@ const ProTipCard = () => {
   const navigate = useNavigate();
   
   return (
-    <Card className="bg-[#FF972E]/50 border-[#FF972E]/30 shadow-sm">
-      <CardContent className="p-3 md:p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-5 h-5 bg-success/10 rounded-lg flex items-center justify-center">
-            <Info className="w-3 h-3 text-success" />
+    <Card className="bg-[#FF972E]/70 border-[#FF972E] border-2 shadow-lg">
+      <CardContent className="p-2 md:p-3">
+        <div className="flex items-center gap-2 mb-1">
+          <div className="w-4 h-4 bg-white/20 rounded-lg flex items-center justify-center">
+            <Info className="w-2.5 h-2.5 text-white" />
           </div>
-          <h4 className="text-sm font-semibold text-foreground">Video Guidelines</h4>
+          <h4 className="text-xs font-semibold text-white">Video Guidelines</h4>
         </div>
-        <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+        <p className="text-xs text-white/90 mb-2 leading-tight">
           Bitte lesen Sie unsere Anleitung durch, damit wir Ihnen am Ende die bestmögliche Bearbeitung liefern können.
         </p>
         <Button 
           variant="outline" 
           size="sm" 
           onClick={() => navigate('/guidelines')} 
-          className="text-success border-success/30 hover:bg-success/5 hover:border-success/50 transition-all duration-200 h-6 px-2 text-xs"
+          className="text-white border-white/50 hover:bg-white/20 hover:border-white transition-all duration-200 h-5 px-2 text-xs bg-white/10"
         >
-          <ExternalLink className="w-3 h-3 mr-1" />
+          <ExternalLink className="w-2.5 h-2.5 mr-1" />
           Guidelines
         </Button>
       </CardContent>
